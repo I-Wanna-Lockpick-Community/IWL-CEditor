@@ -1,4 +1,4 @@
-[gd_scene load_steps=4 format=4 uid="uid://2hd65vn44me7"]
+[gd_scene load_steps=4 format=3 uid="uid://2hd65vn44me7"]
 
 [ext_resource type="Texture2D" uid="uid://dsany13ywiwir" path="res://assets/level/tiles.png" id="1_2q6dc"]
 
@@ -23,5 +23,8 @@ sources/1 = SubResource("TileSetAtlasSource_w7c3h")
 
 [node name="tiles" type="TileMapLayer" parent="."]
 unique_name_in_owner = true
-tile_map_data = PackedByteArray("AAAGAAwAAQABAAEAAAAGAA0AAQABAAEAAAAGAA4AAQABAAEAAAAGAA8AAQABAAEAAAAGABAAAQABAAEAAAAHABAAAQABAAEAAAAIABAAAQABAAEAAAAJABAAAQABAAEAAAAKAA8AAQABAAEAAAALAA8AAQABAAEAAAAMAA8AAQABAAEAAAANAA8AAQABAAEAAAAOAA8AAQABAAEAAAAPAA8AAQABAAEAAAAQAA8AAQABAAEAAAARABAAAQABAAEAAAASABAAAQABAAEAAAATABAAAQABAAEAAAAUABAAAQABAAEAAAAVABAAAQABAAEAAAAWABAAAQABAAEAAAAXABAAAQABAAEAAAAYABAAAQABAAEAAAAZABAAAQABAAEAAAAZAA8AAQABAAEAAAAZAA4AAQABAAEAAAAZAA0AAQABAAEAAAANAAgAAQABAAEAAAARAAgAAQABAAEAAAA=")
 tile_set = SubResource("TileSet_w8frs")
+
+[node name="editorCamera" type="Camera2D" parent="."]
+unique_name_in_owner = true
+anchor_mode = 0

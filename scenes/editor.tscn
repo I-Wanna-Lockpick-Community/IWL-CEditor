@@ -1,17 +1,28 @@
-[gd_scene load_steps=11 format=3 uid="uid://djnt51xv7wn52"]
+[gd_scene load_steps=14 format=3 uid="uid://djnt51xv7wn52"]
 
 [ext_resource type="Theme" uid="uid://bvfthh0vm4fbp" path="res://resources/ui/uiTheme.tres" id="1_j8y2p"]
 [ext_resource type="Script" uid="uid://2wjcj6frwpjo" path="res://scripts/editor.gd" id="2_o435n"]
 [ext_resource type="Script" uid="uid://ced7aml4sfanx" path="res://scripts/modes.gd" id="3_3vi5u"]
 [ext_resource type="Texture2D" uid="uid://brlbjt36syjq8" path="res://assets/ui/select.png" id="4_78fwb"]
+[ext_resource type="Script" uid="uid://buv3n70m06kje" path="res://scripts/nodes/hotkeyButton.gd" id="5_3vi5u"]
 [ext_resource type="Texture2D" uid="uid://tcsqjcnuio0j" path="res://assets/ui/tile.png" id="5_74j0u"]
 [ext_resource type="Texture2D" uid="uid://cx3mntdf11c1g" path="res://assets/ui/key.png" id="6_sdh1e"]
 [ext_resource type="Texture2D" uid="uid://ckk7i2y24ysor" path="res://assets/ui/door.png" id="7_2w0at"]
 [ext_resource type="PackedScene" uid="uid://2hd65vn44me7" path="res://scenes/level.tscn" id="8_5tdu1"]
-[ext_resource type="Script" uid="uid://b8v7boh47xdl1" path="res://scripts/level.gd" id="9_q8l03"]
+[ext_resource type="Shader" uid="uid://befrul0j4yc02" path="res://resources/level.gdshader" id="8_o435n"]
+[ext_resource type="Script" uid="uid://bstn8if8s6o5j" path="res://scripts/level.gd" id="11_3vi5u"]
 
 [sub_resource type="ButtonGroup" id="ButtonGroup_wm3ai"]
 resource_name = "modes"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_3vi5u"]
+shader = ExtResource("8_o435n")
+shader_parameter/GRID_COLOR = Color(0.54763263, 0.5476326, 0.5476326, 1)
+shader_parameter/OUTOFBOUNDS_COLOR = Color(0.20990813, 0.20990813, 0.2099081, 1)
+shader_parameter/levelSize = Vector2(800, 608)
+shader_parameter/screenPosition = Vector2(0, 0)
+shader_parameter/mousePosition = Vector2(0, 0)
+shader_parameter/cameraZoom = Vector2(1, 1)
 
 [node name="editor" type="Control"]
 layout_mode = 3
@@ -32,6 +43,7 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="c" type="PanelContainer" parent="c"]
+z_index = 1
 layout_mode = 2
 
 [node name="c" type="MarginContainer" parent="c/c"]
@@ -49,6 +61,9 @@ toggle_mode = true
 button_pressed = true
 button_group = SubResource("ButtonGroup_wm3ai")
 icon = ExtResource("4_78fwb")
+script = ExtResource("5_3vi5u")
+hotkey = 4194305
+metadata/_custom_type_script = "uid://buv3n70m06kje"
 
 [node name="tile" type="Button" parent="c/c/c/modes"]
 layout_mode = 2
@@ -56,6 +71,9 @@ theme_type_variation = &"ModeButton"
 toggle_mode = true
 button_group = SubResource("ButtonGroup_wm3ai")
 icon = ExtResource("5_74j0u")
+script = ExtResource("5_3vi5u")
+hotkey = 84
+metadata/_custom_type_script = "uid://buv3n70m06kje"
 
 [node name="key" type="Button" parent="c/c/c/modes"]
 layout_mode = 2
@@ -63,6 +81,9 @@ theme_type_variation = &"ModeButton"
 toggle_mode = true
 button_group = SubResource("ButtonGroup_wm3ai")
 icon = ExtResource("6_sdh1e")
+script = ExtResource("5_3vi5u")
+hotkey = 75
+metadata/_custom_type_script = "uid://buv3n70m06kje"
 
 [node name="door" type="Button" parent="c/c/c/modes"]
 layout_mode = 2
@@ -70,21 +91,26 @@ theme_type_variation = &"ModeButton"
 toggle_mode = true
 button_group = SubResource("ButtonGroup_wm3ai")
 icon = ExtResource("7_2w0at")
+script = ExtResource("5_3vi5u")
+hotkey = 68
+metadata/_custom_type_script = "uid://buv3n70m06kje"
 
 [node name="levelViewportCont" type="SubViewportContainer" parent="c"]
 unique_name_in_owner = true
+material = SubResource("ShaderMaterial_3vi5u")
 layout_mode = 2
 size_flags_vertical = 3
 stretch = true
 
 [node name="levelViewport" type="SubViewport" parent="c/levelViewportCont"]
 handle_input_locally = false
-size = Vector2i(1152, 604)
+canvas_item_default_texture_filter = 0
+size = Vector2i(800, 608)
 render_target_update_mode = 4
 
 [node name="level" parent="c/levelViewportCont/levelViewport" instance=ExtResource("8_5tdu1")]
 unique_name_in_owner = true
-script = ExtResource("9_q8l03")
+script = ExtResource("11_3vi5u")
 
 [connection signal="pressed" from="c/c/c/modes/select" to="c/c/c/modes" method="_setMode" binds= [0]]
 [connection signal="pressed" from="c/c/c/modes/tile" to="c/c/c/modes" method="_setMode" binds= [1]]

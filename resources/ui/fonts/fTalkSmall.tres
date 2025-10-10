@@ -1,0 +1,7 @@
+[gd_resource type="FontVariation" load_steps=2 format=3 uid="uid://c6aqbwbfgvl1a"]
+
+[ext_resource type="FontFile" uid="uid://b8ju0v36a1n3" path="res://resources/ui/fonts/msgothic.ttc" id="1_k0in0"]
+
+[resource]
+base_font = ExtResource("1_k0in0")
+variation_embolden = 1.0
