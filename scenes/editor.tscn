@@ -82,7 +82,7 @@ toggle_mode = true
 button_group = SubResource("ButtonGroup_wm3ai")
 icon = ExtResource("6_sdh1e")
 script = ExtResource("5_3vi5u")
-defaultHotkey = 75
+defaultHotkey = 66
 pressedHotkey = 4194326
 metadata/_custom_type_script = "uid://buv3n70m06kje"
 

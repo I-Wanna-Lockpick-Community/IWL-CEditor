@@ -55,7 +55,7 @@ func hotkey(event:InputEventKey) -> void:
 	match event.keycode:
 		KEY_ESCAPE: modes.setMode(Mode.SELECT)
 		KEY_T: modes.setMode(Mode.TILE)
-		KEY_K: modes.setMode(Mode.KEY)
+		KEY_B: modes.setMode(Mode.KEY)
 		KEY_D: modes.setMode(Mode.DOOR)
 
 func zoomCamera(factor:float) -> void:

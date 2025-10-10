@@ -10,8 +10,17 @@ func _ready() -> void:
 	connect("toggled", queue_redraw.unbind(1))
 
 func _draw() -> void:
-	draw_string(fTalk,Vector2(0,size.y+12),OS.get_keycode_string(getCurrentHotkey()).left(3),HORIZONTAL_ALIGNMENT_CENTER,size.x,12)
+	draw_string(fTalk,Vector2(0,size.y+12),getCurrentHotkey(),HORIZONTAL_ALIGNMENT_CENTER,size.x,12)
 
-func getCurrentHotkey() -> Key:
-	if button_pressed and pressedHotkey: return pressedHotkey
-	return defaultHotkey
+func getCurrentHotkey() -> String:
+	if button_pressed:
+		if pressedHotkey: return keyToString(pressedHotkey)
+		else: return ""
+	if defaultHotkey: return keyToString(defaultHotkey)
+	else: return ""
+
+func keyToString(key:Key) -> String:
+	match key:
+		KEY_CTRL: return "Ctrl"
+		KEY_ESCAPE: return "Esc"
+		_: return OS.get_keycode_string(key)
