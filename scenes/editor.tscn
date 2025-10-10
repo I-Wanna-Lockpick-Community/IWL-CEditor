@@ -22,7 +22,7 @@ shader_parameter/OUTOFBOUNDS_COLOR = Color(0.20990813, 0.20990813, 0.2099081, 1)
 shader_parameter/levelSize = Vector2(800, 608)
 shader_parameter/screenPosition = Vector2(0, 0)
 shader_parameter/mousePosition = Vector2(0, 0)
-shader_parameter/cameraZoom = Vector2(1, 1)
+shader_parameter/rCameraZoom = 1.0
 
 [node name="editor" type="Control"]
 layout_mode = 3
@@ -62,7 +62,7 @@ button_pressed = true
 button_group = SubResource("ButtonGroup_wm3ai")
 icon = ExtResource("4_78fwb")
 script = ExtResource("5_3vi5u")
-hotkey = 4194305
+defaultHotkey = 4194305
 metadata/_custom_type_script = "uid://buv3n70m06kje"
 
 [node name="tile" type="Button" parent="c/c/c/modes"]
@@ -72,7 +72,7 @@ toggle_mode = true
 button_group = SubResource("ButtonGroup_wm3ai")
 icon = ExtResource("5_74j0u")
 script = ExtResource("5_3vi5u")
-hotkey = 84
+defaultHotkey = 84
 metadata/_custom_type_script = "uid://buv3n70m06kje"
 
 [node name="key" type="Button" parent="c/c/c/modes"]
@@ -82,7 +82,8 @@ toggle_mode = true
 button_group = SubResource("ButtonGroup_wm3ai")
 icon = ExtResource("6_sdh1e")
 script = ExtResource("5_3vi5u")
-hotkey = 75
+defaultHotkey = 75
+pressedHotkey = 4194326
 metadata/_custom_type_script = "uid://buv3n70m06kje"
 
 [node name="door" type="Button" parent="c/c/c/modes"]
@@ -92,7 +93,8 @@ toggle_mode = true
 button_group = SubResource("ButtonGroup_wm3ai")
 icon = ExtResource("7_2w0at")
 script = ExtResource("5_3vi5u")
-hotkey = 68
+defaultHotkey = 68
+pressedHotkey = 4194326
 metadata/_custom_type_script = "uid://buv3n70m06kje"
 
 [node name="levelViewportCont" type="SubViewportContainer" parent="c"]
@@ -105,7 +107,7 @@ stretch = true
 [node name="levelViewport" type="SubViewport" parent="c/levelViewportCont"]
 handle_input_locally = false
 canvas_item_default_texture_filter = 0
-size = Vector2i(800, 608)
+size = Vector2i(864, 672)
 render_target_update_mode = 4
 
 [node name="level" parent="c/levelViewportCont/levelViewport" instance=ExtResource("8_5tdu1")]

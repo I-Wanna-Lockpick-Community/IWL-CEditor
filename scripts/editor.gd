@@ -24,7 +24,7 @@ func _process(_delta):
 	mouseTilePosition = Vector2i(mouseWorldPosition) / Vector2i(32,32)
 	levelViewportCont.material.set_shader_parameter("mousePosition",mouseWorldPosition)
 	levelViewportCont.material.set_shader_parameter("screenPosition",level.editorCamera.position-levelViewportCont.position/level.editorCamera.zoom)
-	levelViewportCont.material.set_shader_parameter("cameraZoom",level.editorCamera.zoom)
+	levelViewportCont.material.set_shader_parameter("rCameraZoom",1/level.editorCamera.zoom.x)
 
 func _input(event:InputEvent) -> void:
 	if event is InputEventMouse:
