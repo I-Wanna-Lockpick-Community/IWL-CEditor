@@ -11,16 +11,23 @@ var mode:Mode = Mode.SELECT
 var mouseWorldPosition:Vector2
 var mouseTilePosition:Vector2i
 
+var targetCameraZoom:float = 1
+var zoomPoint:Vector2 # the point where the latest zoom was targetted
+
 func _process(_delta):
 	queue_redraw()
+	var scaleFactor:float = (targetCameraZoom/level.editorCamera.zoom.x)**0.2
+	level.editorCamera.zoom *= scaleFactor
+	level.editorCamera.position += (1-1/scaleFactor) * worldspaceToScreenspace(zoomPoint) / level.editorCamera.zoom
+
+	mouseWorldPosition = screenspaceToWorldspace(get_global_mouse_position())
+	mouseTilePosition = Vector2i(mouseWorldPosition) / Vector2i(32,32)
+	levelViewportCont.material.set_shader_parameter("mousePosition",mouseWorldPosition)
+	levelViewportCont.material.set_shader_parameter("screenPosition",level.editorCamera.position-levelViewportCont.position/level.editorCamera.zoom)
+	levelViewportCont.material.set_shader_parameter("cameraZoom",level.editorCamera.zoom)
 
 func _input(event:InputEvent) -> void:
 	if event is InputEventMouse:
-		mouseWorldPosition = (event.position - levelViewportCont.position)/level.editorCamera.zoom + level.editorCamera.position
-		mouseTilePosition = Vector2i(mouseWorldPosition) / Vector2i(32,32)
-		levelViewportCont.material.set_shader_parameter("mousePosition",mouseWorldPosition)
-		levelViewportCont.material.set_shader_parameter("screenPosition",level.editorCamera.position-levelViewportCont.position/level.editorCamera.zoom)
-		levelViewportCont.material.set_shader_parameter("cameraZoom",level.editorCamera.zoom)
 		# move camera
 		if event is InputEventMouseMotion and Input.is_mouse_button_pressed(MOUSE_BUTTON_MIDDLE):
 			level.editorCamera.position -= event.relative / level.editorCamera.zoom
@@ -44,14 +51,20 @@ func _input(event:InputEvent) -> void:
 		if event.pressed:
 			hotkey(event)
 
-func hotkey(event:InputEventKey):
+func hotkey(event:InputEventKey) -> void:
 	match event.keycode:
 		KEY_ESCAPE: modes.setMode(Mode.SELECT)
 		KEY_T: modes.setMode(Mode.TILE)
 		KEY_K: modes.setMode(Mode.KEY)
 		KEY_D: modes.setMode(Mode.DOOR)
 
-func zoomCamera(factor:float):
-	level.editorCamera.position += (1-1/factor) * levelViewportCont.get_local_mouse_position() / level.editorCamera.zoom
-	level.editorCamera.zoom *= factor
-	if abs(level.editorCamera.zoom.x - 1) < 0.001: level.editorCamera.zoom = Vector2(1,1)
+func zoomCamera(factor:float) -> void:
+	targetCameraZoom *= factor
+	zoomPoint = mouseWorldPosition
+	if abs(targetCameraZoom - 1) < 0.001: targetCameraZoom = 1
+
+func worldspaceToScreenspace(vector:Vector2) -> Vector2:
+	return (vector - level.editorCamera.position)*level.editorCamera.zoom + levelViewportCont.position
+
+func screenspaceToWorldspace(vector:Vector2) -> Vector2:
+	return (vector - levelViewportCont.position)/level.editorCamera.zoom + level.editorCamera.position

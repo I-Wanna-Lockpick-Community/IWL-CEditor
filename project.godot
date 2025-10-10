@@ -17,8 +17,8 @@ config/icon="uid://b5g2tn4r1674k"
 
 [display]
 
-window/size/viewport_width=800
-window/size/viewport_height=652
+window/size/viewport_width=864
+window/size/viewport_height=716
 
 [rendering]
 
