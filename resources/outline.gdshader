@@ -3,7 +3,6 @@ shader_type canvas_item;
 uniform vec4 color : source_color = vec4(1.0);
 uniform float rCameraZoom = 1.0; // reciprocal of camera zoom
 uniform float width : hint_range(0, 10) = 1.0;
-uniform int pattern : hint_range(0, 2) = 0; // diamond, circle, square
 
 void vertex() {
 	VERTEX += sign(UV * 2.0 - 1.0)*rCameraZoom*width;

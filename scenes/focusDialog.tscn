@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=3 uid="uid://8bth374yqwpe"]
+[gd_scene load_steps=4 format=3 uid="uid://8bth374yqwpe"]
 
 [ext_resource type="Theme" uid="uid://bvfthh0vm4fbp" path="res://resources/ui/uiTheme.tres" id="1_eqegh"]
 [ext_resource type="Script" uid="uid://dm8t82nhqkdlc" path="res://scripts/focusDialog.gd" id="2_k8bto"]
+[ext_resource type="Script" uid="uid://c70juj2p5s6yd" path="res://scripts/nodes/colorSelector.gd" id="3_wmate"]
 
 [node name="focusDialog" type="Control"]
 layout_mode = 3
@@ -24,6 +25,13 @@ grow_horizontal = 2
 grow_vertical = 0
 theme_type_variation = &"DialogPanelContainer"
 
-[node name="Label" type="Label" parent="c"]
+[node name="c" type="MarginContainer" parent="c"]
 layout_mode = 2
-text = "key"
+
+[node name="keyColorSelector" type="GridContainer" parent="c/c"]
+unique_name_in_owner = true
+layout_mode = 2
+script = ExtResource("3_wmate")
+metadata/_custom_type_script = "uid://c70juj2p5s6yd"
+
+[connection signal="select" from="c/c/keyColorSelector" to="." method="_keyColorSelected"]

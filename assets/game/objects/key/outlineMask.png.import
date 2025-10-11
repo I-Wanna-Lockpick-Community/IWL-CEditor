@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cfsgge1j4uoay"
-path="res://.godot/imported/fillGlitch.png-1d0ad8d9746f3adad766889586353215.ctex"
+uid="uid://bsmhevkepw354"
+path="res://.godot/imported/outlineMask.png-2e4b629917df4ff8b1957bb3fe9b8840.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/level/objects/key/fillGlitch.png"
-dest_files=["res://.godot/imported/fillGlitch.png-1d0ad8d9746f3adad766889586353215.ctex"]
+source_file="res://assets/game/objects/key/outlineMask.png"
+dest_files=["res://.godot/imported/outlineMask.png-2e4b629917df4ff8b1957bb3fe9b8840.ctex"]
 
 [params]
 

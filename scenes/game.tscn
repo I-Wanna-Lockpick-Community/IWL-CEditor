@@ -1,6 +1,6 @@
 [gd_scene load_steps=7 format=3 uid="uid://2hd65vn44me7"]
 
-[ext_resource type="Texture2D" uid="uid://dsany13ywiwir" path="res://assets/level/tiles.png" id="1_2q6dc"]
+[ext_resource type="Texture2D" uid="uid://dsany13ywiwir" path="res://assets/game/tiles.png" id="1_2q6dc"]
 [ext_resource type="Shader" uid="uid://b2shnv6yt8l2j" path="res://resources/outline.gdshader" id="2_w8frs"]
 [ext_resource type="Script" uid="uid://c7ptucaohcnil" path="res://scripts/focusOutline.gd" id="3_mx8sn"]
 
@@ -26,9 +26,8 @@ shader = ExtResource("2_w8frs")
 shader_parameter/color = Color(1, 1, 1, 1)
 shader_parameter/rCameraZoom = 1.0
 shader_parameter/width = 1.0000000475
-shader_parameter/pattern = 2
 
-[node name="level" type="Node2D"]
+[node name="game" type="Node2D"]
 
 [node name="tiles" type="TileMapLayer" parent="."]
 unique_name_in_owner = true
@@ -43,3 +42,6 @@ limit_enabled = false
 [node name="focusOutline" type="Node2D" parent="."]
 material = SubResource("ShaderMaterial_ppgk2")
 script = ExtResource("3_mx8sn")
+
+[node name="objects" type="Node" parent="."]
+unique_name_in_owner = true

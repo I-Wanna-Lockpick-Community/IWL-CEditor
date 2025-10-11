@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cvrpk821cbwe8"
-path="res://.godot/imported/sprKey_5.png-4b8611f8fcee19a84ec69783f0c3a14e.ctex"
+uid="uid://csyf3o1s4pmxp"
+path="res://.godot/imported/frame.png-9921b11c3f3933f7f2633794593866a9.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/level/objects/key/sprKey_5.png"
-dest_files=["res://.godot/imported/sprKey_5.png-4b8611f8fcee19a84ec69783f0c3a14e.ctex"]
+source_file="res://assets/game/objects/key/frame.png"
+dest_files=["res://.godot/imported/frame.png-9921b11c3f3933f7f2633794593866a9.ctex"]
 
 [params]
 

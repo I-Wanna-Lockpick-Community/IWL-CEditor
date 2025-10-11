@@ -20,11 +20,12 @@ func addChange(change:Change) -> void:
 func _process(_delta) -> void:
 	if saveBuffered:
 		saveBuffered = false
-		if undoStack[len(undoStack)-1] is UndoSeperator: return
+		if undoStack[stackPosition] is UndoSeperator: return
 		undoStack.append(UndoSeperator.new())
 		stackPosition += 1
 
 func undo() -> void:
+	if stackPosition == 0: return
 	if undoStack[stackPosition] is UndoSeperator: stackPosition -= 1
 	while true:
 		var change = undoStack[stackPosition]
@@ -43,7 +44,7 @@ func redo() -> void:
 
 
 class Change extends RefCounted:
-	var level:Level
+	var game:Game
 	var cancelled:bool = false
 	# is a singular recorded change
 	func do() -> void: pass
@@ -59,23 +60,23 @@ class TileChange extends Change:
 	var beforeTile:bool # probably make a tile enum at some point but right now we either have tile or not
 	var afterTile:bool # same as above
 
-	func _init(_level:Level,_position:Vector2i,_afterTile:bool) -> void:
-		level = _level
+	func _init(_game:Game,_position:Vector2i,_afterTile:bool) -> void:
+		game = _game
 		position = _position
 		afterTile = _afterTile
-		beforeTile = level.tiles.get_cell_source_id(position) != -1
+		beforeTile = game.tiles.get_cell_source_id(position) != -1
 		if afterTile == beforeTile:
 			cancelled = true
 			return
 		do()
 
 	func do() -> void:
-		if afterTile: level.tiles.set_cell(position,1,Vector2i(1,1))
-		else: level.tiles.erase_cell(position)
+		if afterTile: game.tiles.set_cell(position,1,Vector2i(1,1))
+		else: game.tiles.erase_cell(position)
 
 	func undo() -> void:
-		if beforeTile: level.tiles.set_cell(position,1,Vector2i(1,1))
-		else: level.tiles.erase_cell(position)
+		if beforeTile: game.tiles.set_cell(position,1,Vector2i(1,1))
+		else: game.tiles.erase_cell(position)
 
 	func _to_string() -> String:
 		return "<TileChange>"
@@ -84,19 +85,44 @@ class CreateKeyChange extends Change:
 	var position:Vector2i
 	var id:int
 
-	func _init(_level:Level,_position:Vector2i) -> void:
-		level = _level
+	func _init(_game:Game,_position:Vector2i) -> void:
+		game = _game
 		position = _position
-		id = level.objIdIter
-		level.objIdIter += 1
+		id = game.objIdIter
+		game.objIdIter += 1
 		do()
 	
 	func do() -> void:
 		var key:oKey = preload("res://scenes/objects/oKey.tscn").instantiate()
 		key.position = position
-		level.keys[id] = key
-		level.add_child(key)
+		key.id = id
+		game.keys[id] = key
+		game.objects.add_child(key)
 
 	func undo() -> void:
-		level.keys[id].queue_free()
-		level.keys.erase(id)
+		game.keys[id].queue_free()
+		game.keys.erase(id)
+
+class DeleteKeyChange extends Change:
+	var position:Vector2i
+	var id:int
+	var color:Game.COLOR
+
+	func _init(_game:Game,key:oKey) -> void:
+		game = _game
+		position = key.position
+		id = key.id
+		color = key.color
+		do()
+
+	func do() -> void:
+		game.keys[id].queue_free()
+		game.keys.erase(id)
+	
+	func undo() -> void:
+		var key:oKey = preload("res://scenes/objects/oKey.tscn").instantiate()
+		key.position = position
+		key.id = id
+		key.color = color
+		game.keys[id] = key
+		game.objects.add_child(key)

@@ -45,7 +45,7 @@ content_margin_left = 0.0
 content_margin_top = 0.0
 content_margin_right = 0.0
 content_margin_bottom = 0.0
-bg_color = Color(0.1, 0.1, 0.1, 0.6)
+bg_color = Color(0.16206557, 0.1620656, 0.16206554, 1)
 corner_detail = 5
 
 [resource]
