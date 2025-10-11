@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dy0302s1k4h3y"
-path="res://.godot/imported/sprKey_3.png-27e81a8c1d7208550097304cb56d8cae.ctex"
+uid="uid://csyf3o1s4pmxp"
+path="res://.godot/imported/frame.png-5b83a58b2a13ed2e85410cb8f92d7e24.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/level/objects/key/sprKey_3.png"
-dest_files=["res://.godot/imported/sprKey_3.png-27e81a8c1d7208550097304cb56d8cae.ctex"]
+source_file="res://assets/level/objects/key/frame.png"
+dest_files=["res://.godot/imported/frame.png-5b83a58b2a13ed2e85410cb8f92d7e24.ctex"]
 
 [params]
 

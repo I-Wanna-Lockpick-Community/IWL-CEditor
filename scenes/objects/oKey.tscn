@@ -1,0 +1,20 @@
+[gd_scene load_steps=3 format=3 uid="uid://bcr4ds1anmwjq"]
+
+[ext_resource type="Script" uid="uid://boiwo8vk6byve" path="res://scripts/objects/oKey.gd" id="1_47wsx"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_47wsx"]
+size = Vector2(32, 32)
+
+[node name="OKey" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 32.0
+offset_bottom = 32.0
+mouse_filter = 1
+script = ExtResource("1_47wsx")
+
+[node name="Area2D" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+position = Vector2(16, 16)
+shape = SubResource("RectangleShape2D_47wsx")

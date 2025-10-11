@@ -4,6 +4,8 @@ class_name Editor
 @onready var level:Level = %level
 @onready var modes:Modes = %modes
 @onready var levelViewportCont:SubViewportContainer = %levelViewportCont
+@onready var changes:Changes = %changes
+@onready var focusDialog:FocusDialog = %focusDialog
 
 enum Mode {SELECT, TILE, KEY, DOOR, PASTE}
 var mode:Mode = Mode.SELECT
@@ -14,7 +16,7 @@ var mouseTilePosition:Vector2i
 var targetCameraZoom:float = 1
 var zoomPoint:Vector2 # the point where the latest zoom was targetted
 
-func _process(_delta):
+func _process(_delta) -> void:
 	queue_redraw()
 	var scaleFactor:float = (targetCameraZoom/level.editorCamera.zoom.x)**0.2
 	level.editorCamera.zoom *= scaleFactor
@@ -26,7 +28,7 @@ func _process(_delta):
 	levelViewportCont.material.set_shader_parameter("screenPosition",level.editorCamera.position-levelViewportCont.position/level.editorCamera.zoom)
 	levelViewportCont.material.set_shader_parameter("rCameraZoom",1/level.editorCamera.zoom.x)
 
-func _input(event:InputEvent) -> void:
+func _gui_input(event:InputEvent) -> void:
 	if event is InputEventMouse:
 		# move camera
 		if event is InputEventMouseMotion and Input.is_mouse_button_pressed(MOUSE_BUTTON_MIDDLE):
@@ -40,23 +42,29 @@ func _input(event:InputEvent) -> void:
 			Mode.TILE:
 				if level.levelBounds.has_point(mouseWorldPosition):
 					if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
-						level.tiles.set_cell(mouseTilePosition,1,Vector2i(1,1))
+						changes.addChange(Changes.TileChange.new(level,mouseTilePosition,true))
 					elif Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT):
-						level.tiles.erase_cell(mouseTilePosition)
+						changes.addChange(Changes.TileChange.new(level,mouseTilePosition,false))
+				if event is InputEventMouseButton and !event.is_pressed() and event.button_index in [MOUSE_BUTTON_LEFT, MOUSE_BUTTON_RIGHT]:
+					changes.bufferSave()
 			Mode.KEY:
 				if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
-					level.add_child(oKey.new(mouseTilePosition*Vector2i(32,32)))
-					if !Input.is_key_pressed(KEY_CTRL): modes.setMode(Mode.SELECT)
-	elif event is InputEventKey:
-		if event.pressed:
-			hotkey(event)
+					changes.addChange(Changes.CreateKeyChange.new(level,mouseTilePosition*Vector2i(32,32)))
+					if !Input.is_key_pressed(KEY_CTRL):
+						modes.setMode(Mode.SELECT)
+						changes.bufferSave()
+				if event is InputEventMouseButton and !event.is_pressed() and event.button_index in [MOUSE_BUTTON_LEFT, MOUSE_BUTTON_RIGHT]:
+					changes.bufferSave()
 
-func hotkey(event:InputEventKey) -> void:
-	match event.keycode:
-		KEY_ESCAPE: modes.setMode(Mode.SELECT)
-		KEY_T: modes.setMode(Mode.TILE)
-		KEY_B: modes.setMode(Mode.KEY)
-		KEY_D: modes.setMode(Mode.DOOR)
+func _shortcut_input(event:InputEvent) -> void:
+	if event is InputEventKey:
+		match event.keycode:
+			KEY_ESCAPE: modes.setMode(Mode.SELECT)
+			KEY_T: modes.setMode(Mode.TILE)
+			KEY_B: modes.setMode(Mode.KEY)
+			KEY_D: modes.setMode(Mode.DOOR)
+			KEY_Z: if Input.is_key_pressed(KEY_CTRL): changes.undo()
+			KEY_Y: if Input.is_key_pressed(KEY_CTRL): changes.redo()
 
 func zoomCamera(factor:float) -> void:
 	targetCameraZoom *= factor
@@ -68,3 +76,7 @@ func worldspaceToScreenspace(vector:Vector2) -> Vector2:
 
 func screenspaceToWorldspace(vector:Vector2) -> Vector2:
 	return (vector - levelViewportCont.position)/level.editorCamera.zoom + level.editorCamera.position
+
+func focus(object:Control) -> void:
+	if object is oKey:
+		focusDialog.focused = object

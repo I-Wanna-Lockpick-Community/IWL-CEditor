@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://6aw4dxljfgdt"
-path="res://.godot/imported/sprKey_2.png-4bf9d8e1a47d4554d432fb9c77bc1044.ctex"
+uid="uid://r8nw5yi4xusj"
+path="res://.godot/imported/frameNegative.png-620e13a51fc525972118372035274e17.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/level/objects/key/sprKey_2.png"
-dest_files=["res://.godot/imported/sprKey_2.png-4bf9d8e1a47d4554d432fb9c77bc1044.ctex"]
+source_file="res://assets/level/objects/key/frameNegative.png"
+dest_files=["res://.godot/imported/frameNegative.png-620e13a51fc525972118372035274e17.ctex"]
 
 [params]
 

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://xt1mrsr4et13"
-path="res://.godot/imported/sprKey_1.png-98f1d87f4a180747c10e4095c71501f5.ctex"
+uid="uid://d3jek120ilxbv"
+path="res://.godot/imported/frameGlitch.png-b37ae7f882a772c50c4b779272cb2b8f.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/level/objects/key/sprKey_1.png"
-dest_files=["res://.godot/imported/sprKey_1.png-98f1d87f4a180747c10e4095c71501f5.ctex"]
+source_file="res://assets/level/objects/key/frameGlitch.png"
+dest_files=["res://.godot/imported/frameGlitch.png-b37ae7f882a772c50c4b779272cb2b8f.ctex"]
 
 [params]
 

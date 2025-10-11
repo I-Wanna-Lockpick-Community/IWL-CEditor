@@ -1,6 +1,8 @@
-[gd_scene load_steps=4 format=3 uid="uid://2hd65vn44me7"]
+[gd_scene load_steps=7 format=3 uid="uid://2hd65vn44me7"]
 
 [ext_resource type="Texture2D" uid="uid://dsany13ywiwir" path="res://assets/level/tiles.png" id="1_2q6dc"]
+[ext_resource type="Shader" uid="uid://b2shnv6yt8l2j" path="res://resources/outline.gdshader" id="2_w8frs"]
+[ext_resource type="Script" uid="uid://c7ptucaohcnil" path="res://scripts/focusOutline.gd" id="3_mx8sn"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_w7c3h"]
 texture = ExtResource("1_2q6dc")
@@ -19,6 +21,13 @@ tile_size = Vector2i(32, 32)
 physics_layer_0/collision_layer = 1
 sources/1 = SubResource("TileSetAtlasSource_w7c3h")
 
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ppgk2"]
+shader = ExtResource("2_w8frs")
+shader_parameter/color = Color(1, 1, 1, 1)
+shader_parameter/rCameraZoom = 1.0
+shader_parameter/width = 1.0000000475
+shader_parameter/pattern = 2
+
 [node name="level" type="Node2D"]
 
 [node name="tiles" type="TileMapLayer" parent="."]
@@ -30,3 +39,7 @@ unique_name_in_owner = true
 position = Vector2(-32, -32)
 anchor_mode = 0
 limit_enabled = false
+
+[node name="focusOutline" type="Node2D" parent="."]
+material = SubResource("ShaderMaterial_ppgk2")
+script = ExtResource("3_mx8sn")

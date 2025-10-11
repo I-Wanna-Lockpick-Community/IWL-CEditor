@@ -5,6 +5,10 @@ class_name Level
 @onready var tiles:TileMapLayer = %tiles
 @onready var editorCamera:Camera2D = %editorCamera
 
+var objIdIter:int = 0 # for creating objects
+
+var keys:Dictionary[int,oKey] = {}
+
 var levelBounds:Rect2i = Rect2i(0,0,800,608):
 	set(value):
 		levelBounds = value

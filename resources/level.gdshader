@@ -1,6 +1,6 @@
 shader_type canvas_item;
 
-uniform vec3 GRID_COLOR:source_color;
+uniform vec4 GRID_COLOR:source_color;
 uniform vec3 OUTOFBOUNDS_COLOR:source_color;
 
 uniform vec2 levelSize = vec2(800,608);
@@ -24,6 +24,6 @@ void fragment() {
 		COLOR.rgb = OUTOFBOUNDS_COLOR;
 	} else if (mod(XY.x,32.0) < rCameraZoom || mod(XY.y,32.0) < rCameraZoom) {
 		// draw grid
-		COLOR.rgb = lerpColor(GRID_COLOR,COLOR.rgb,min(lengthSquared(mousePosition-XY)/1e4,1.0));
+		COLOR.rgb = lerpColor(COLOR.rgb,GRID_COLOR.rgb,GRID_COLOR.a*(1.0-min(lengthSquared(mousePosition-XY)/1e4,1.0)));
 	}
 }
