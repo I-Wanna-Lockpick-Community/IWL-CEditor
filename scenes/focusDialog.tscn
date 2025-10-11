@@ -31,6 +31,7 @@ layout_mode = 2
 [node name="keyColorSelector" type="GridContainer" parent="c/c"]
 unique_name_in_owner = true
 layout_mode = 2
+theme = ExtResource("1_eqegh")
 script = ExtResource("3_wmate")
 metadata/_custom_type_script = "uid://c70juj2p5s6yd"
 

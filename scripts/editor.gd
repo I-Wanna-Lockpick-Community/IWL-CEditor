@@ -53,19 +53,23 @@ func _gui_input(event:InputEvent) -> void:
 				if game.gameBounds.has_point(mouseWorldPosition):
 					if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
 						changes.addChange(Changes.TileChange.new(game,mouseTilePosition,true))
+						focusDialog.defocus()
 					elif Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT):
 						changes.addChange(Changes.TileChange.new(game,mouseTilePosition,false))
+						focusDialog.defocus()
 				if event is InputEventMouseButton and !event.is_pressed() and event.button_index in [MOUSE_BUTTON_LEFT, MOUSE_BUTTON_RIGHT]:
 					changes.bufferSave()
 			Mode.KEY:
-				if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
+				if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and objectHovered is not KeyBulk:
 					changes.addChange(Changes.CreateKeyChange.new(game,mouseTilePosition*Vector2i(32,32)))
+					focusDialog.defocus()
 					if !Input.is_key_pressed(KEY_CTRL):
 						modes.setMode(Mode.SELECT)
 						changes.bufferSave()
 				if Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT):
-					if objectHovered is oKey:
+					if objectHovered is KeyBulk:
 						changes.addChange(Changes.DeleteKeyChange.new(game,objectHovered))
+						focusDialog.defocus()
 						changes.bufferSave()
 						objectHovered = null
 				if event is InputEventMouseButton and !event.is_pressed() and event.button_index in [MOUSE_BUTTON_LEFT, MOUSE_BUTTON_RIGHT]:

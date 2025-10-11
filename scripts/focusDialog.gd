@@ -2,13 +2,14 @@ extends Control
 class_name FocusDialog
 
 @onready var editor:Editor = get_node("/root/editor")
+@onready var keyColorSelector:ColorSelector = %keyColorSelector
 
 var focused:Control # the object that is currently focused
 
 func focus(object:Control) -> void:
-	if object is oKey:
+	if object is KeyBulk:
 		focused = object
-		%keyColorSelector.setColor(focused.color)
+		keyColorSelector.setColor(focused.color)
 
 func defocus() -> void:
 	focused = null
@@ -21,6 +22,7 @@ func _process(_delta) -> void:
 	else:
 		visible = false
 
-func _keyColorSelected(color: Game.COLOR):
-	if focused is not oKey: return
-	focused.color = color
+func _keyColorSelected(color: Game.COLOR) -> void:
+	if focused is not KeyBulk: return
+	editor.changes.addChange(Changes.KeyPropertyChange.new(editor.game,focused,&"color",color))
+	editor.changes.bufferSave()

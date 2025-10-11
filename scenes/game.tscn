@@ -2,7 +2,7 @@
 
 [ext_resource type="Texture2D" uid="uid://dsany13ywiwir" path="res://assets/game/tiles.png" id="1_2q6dc"]
 [ext_resource type="Shader" uid="uid://b2shnv6yt8l2j" path="res://resources/outline.gdshader" id="2_w8frs"]
-[ext_resource type="Script" uid="uid://c7ptucaohcnil" path="res://scripts/focusOutline.gd" id="3_mx8sn"]
+[ext_resource type="Script" uid="uid://c7ptucaohcnil" path="res://scripts/outline.gd" id="3_mx8sn"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_w7c3h"]
 texture = ExtResource("1_2q6dc")
@@ -39,7 +39,7 @@ position = Vector2(-32, -32)
 anchor_mode = 0
 limit_enabled = false
 
-[node name="focusOutline" type="Node2D" parent="."]
+[node name="outline" type="Node2D" parent="."]
 material = SubResource("ShaderMaterial_ppgk2")
 script = ExtResource("3_mx8sn")
 

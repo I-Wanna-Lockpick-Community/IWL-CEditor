@@ -1,5 +1,13 @@
 [gd_resource type="Theme" load_steps=7 format=3 uid="uid://bvfthh0vm4fbp"]
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_sy460"]
+content_margin_left = 2.0
+content_margin_top = 2.0
+content_margin_right = 2.0
+content_margin_bottom = 2.0
+bg_color = Color(0.101960786, 0.101960786, 0.101960786, 0)
+corner_detail = 5
+
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_wu0u2"]
 bg_color = Color(0.25323758, 0.2532376, 0.2532375, 1)
 border_width_left = 2
@@ -12,6 +20,14 @@ corner_radius_top_right = 2
 corner_radius_bottom_right = 2
 corner_radius_bottom_left = 2
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_yev5y"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(0.16206557, 0.1620656, 0.16206554, 1)
+corner_detail = 5
+
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_51dj7"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_waqcv"]
@@ -20,14 +36,6 @@ content_margin_top = 2.0
 content_margin_right = 2.0
 content_margin_bottom = 2.0
 bg_color = Color(0.585062, 0.585062, 0.5850621, 0.6)
-corner_detail = 5
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_sy460"]
-content_margin_left = 2.0
-content_margin_top = 2.0
-content_margin_right = 2.0
-content_margin_bottom = 2.0
-bg_color = Color(0.1, 0.1, 0.1, 0.6)
 corner_detail = 5
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_51dj7"]
@@ -40,25 +48,22 @@ border_width_bottom = 2
 border_color = Color(1, 1, 1, 1)
 corner_detail = 5
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_yev5y"]
-content_margin_left = 0.0
-content_margin_top = 0.0
-content_margin_right = 0.0
-content_margin_bottom = 0.0
-bg_color = Color(0.16206557, 0.1620656, 0.16206554, 1)
-corner_detail = 5
-
 [resource]
 BoxContainer/constants/separation = 0
+ColorSelector/base_type = &"GridContainer"
+ColorSelectorButton/base_type = &"RadioButton"
+ColorSelectorButton/styles/normal = SubResource("StyleBoxFlat_sy460")
 DialogPanelContainer/base_type = &"PanelContainer"
 DialogPanelContainer/styles/panel = SubResource("StyleBoxFlat_wu0u2")
+GridContainer/constants/h_separation = 0
+GridContainer/constants/v_separation = 0
 MarginContainer/constants/margin_bottom = 4
 MarginContainer/constants/margin_left = 4
 MarginContainer/constants/margin_right = 4
 MarginContainer/constants/margin_top = 4
-ModeButton/base_type = &"Button"
-ModeButton/styles/focus = SubResource("StyleBoxEmpty_51dj7")
-ModeButton/styles/hover = SubResource("StyleBoxFlat_waqcv")
-ModeButton/styles/normal = SubResource("StyleBoxFlat_sy460")
-ModeButton/styles/pressed = SubResource("StyleBoxFlat_51dj7")
 PanelContainer/styles/panel = SubResource("StyleBoxFlat_yev5y")
+RadioButton/base_type = &"Button"
+RadioButton/styles/focus = SubResource("StyleBoxEmpty_51dj7")
+RadioButton/styles/hover = SubResource("StyleBoxFlat_waqcv")
+RadioButton/styles/normal = SubResource("StyleBoxFlat_sy460")
+RadioButton/styles/pressed = SubResource("StyleBoxFlat_51dj7")

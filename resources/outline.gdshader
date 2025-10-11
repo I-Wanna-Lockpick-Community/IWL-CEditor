@@ -3,8 +3,9 @@ shader_type canvas_item;
 uniform vec4 color : source_color = vec4(1.0);
 uniform float rCameraZoom = 1.0; // reciprocal of camera zoom
 uniform float width : hint_range(0, 10) = 1.0;
-
+varying flat vec4 modulate;
 void vertex() {
+	modulate = COLOR;
 	VERTEX += sign(UV * 2.0 - 1.0)*rCameraZoom*width;
 }
 
@@ -25,8 +26,8 @@ bool isWithinOutline(vec2 uv, vec2 texture_pixel_size, sampler2D texture) {
 void fragment() {
 	vec2 uv = UV/(vec2(1.0,1.0) - 2.0*width*rCameraZoom*TEXTURE_PIXEL_SIZE) - width*rCameraZoom*TEXTURE_PIXEL_SIZE;
 	if (isWithinOutline(uv, TEXTURE_PIXEL_SIZE, TEXTURE)) {
-		COLOR.a = 1.0;
-		COLOR.rgb = color.rgb;
+		COLOR.a = modulate.a;
+		COLOR.rgb = color.rgb * modulate.rgb;
 	} else {
 		COLOR.a = 0.0;
 	}

@@ -27,6 +27,9 @@ func _process(_delta) -> void:
 func undo() -> void:
 	if stackPosition == 0: return
 	if undoStack[stackPosition] is UndoSeperator: stackPosition -= 1
+	else:
+		assert(stackPosition == len(undoStack)-1)
+		undoStack.append(UndoSeperator.new())
 	while true:
 		var change = undoStack[stackPosition]
 		if change is UndoSeperator: return
@@ -93,7 +96,7 @@ class CreateKeyChange extends Change:
 		do()
 	
 	func do() -> void:
-		var key:oKey = preload("res://scenes/objects/oKey.tscn").instantiate()
+		var key:KeyBulk = preload("res://scenes/objects/KeyBulk.tscn").instantiate()
 		key.position = position
 		key.id = id
 		game.keys[id] = key
@@ -108,7 +111,7 @@ class DeleteKeyChange extends Change:
 	var id:int
 	var color:Game.COLOR
 
-	func _init(_game:Game,key:oKey) -> void:
+	func _init(_game:Game,key:KeyBulk) -> void:
 		game = _game
 		position = key.position
 		id = key.id
@@ -120,9 +123,33 @@ class DeleteKeyChange extends Change:
 		game.keys.erase(id)
 	
 	func undo() -> void:
-		var key:oKey = preload("res://scenes/objects/oKey.tscn").instantiate()
+		var key:KeyBulk = preload("res://scenes/objects/KeyBulk.tscn").instantiate()
 		key.position = position
 		key.id = id
 		key.color = color
 		game.keys[id] = key
 		game.objects.add_child(key)
+
+class KeyPropertyChange extends Change:
+	var id:int
+	var property:StringName
+	var before:Variant
+	var after:Variant
+	
+	func _init(_game:Game,key:KeyBulk,_property:StringName,_after:Variant) -> void:
+		game = _game
+		id = key.id
+		property = _property
+		before = key.get(property)
+		after = _after
+		do()
+
+	func do() -> void:
+		var key:KeyBulk = game.keys[id]
+		key.set(property, after)
+		if game.editor.focusDialog.focused == key: game.editor.focusDialog.keyColorSelector.setColor(after)
+	
+	func undo() -> void:
+		var key:KeyBulk = game.keys[id]
+		key.set(property, before)
+		if game.editor.focusDialog.focused == key: game.editor.focusDialog.keyColorSelector.setColor(before)
