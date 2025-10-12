@@ -1,7 +1,11 @@
 extends Node2D
 class_name Game
 
-enum KEY {NORMAL, EXACT, ORDINAL, STAR, UNSTAR, SIGNFLIP, POSROTOR, NEGROTOR, CURSE, UNCURSE}
+const KEYTYPES:int = 9
+enum KEY {NORMAL, EXACT, STAR, UNSTAR, SIGNFLIP, POSROTOR, NEGROTOR, CURSE, UNCURSE}
+const KEYTYPE_TEXTURE_OFFSETS:Array[int] = [0,1,2,3,0,0,0,0,0]
+
+const LOCKTYPES:int = 5
 enum LOCK {NORMAL, BLANK, BLAST, ALL, EXACT}
 
 const COLORS:int = 22
@@ -21,8 +25,20 @@ const MASTER_KEY_TEXTURE:Array[Texture2D] = [
 	preload("res://assets/game/key/master/normal1.png"),
 	preload("res://assets/game/key/master/normal2.png"),
 	preload("res://assets/game/key/master/normal3.png"),
+	preload("res://assets/game/key/master/exact0.png"),
+	preload("res://assets/game/key/master/exact1.png"),
+	preload("res://assets/game/key/master/exact2.png"),
+	preload("res://assets/game/key/master/exact3.png"),
+	preload("res://assets/game/key/master/star0.png"),
+	preload("res://assets/game/key/master/star1.png"),
+	preload("res://assets/game/key/master/star2.png"),
+	preload("res://assets/game/key/master/star3.png"),
+	preload("res://assets/game/key/master/unstar0.png"),
+	preload("res://assets/game/key/master/unstar1.png"),
+	preload("res://assets/game/key/master/unstar2.png"),
+	preload("res://assets/game/key/master/unstar3.png"),
 ]
-func masterKeyTex() -> Texture2D: return MASTER_KEY_TEXTURE[goldIndex%4]
+func masterKeyTex(type:KEY) -> Texture2D: return MASTER_KEY_TEXTURE[goldIndex%4 + KEYTYPE_TEXTURE_OFFSETS[type]*4]
 
 
 const PURE_TEXTURE:Array[Texture2D] = [

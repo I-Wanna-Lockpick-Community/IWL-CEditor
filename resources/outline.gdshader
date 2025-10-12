@@ -9,7 +9,10 @@ void vertex() {
 	VERTEX += sign(UV * 2.0 - 1.0)*rCameraZoom*width;
 }
 
-bool isWithinOutline(vec2 uv, vec2 texture_pixel_size, sampler2D texture) {
+bool isOnOutline(vec2 uv, vec2 texture_pixel_size, sampler2D texture) {
+	if (uv == clamp(uv, vec2(0.0), vec2(1.0)) && texture(texture, uv).a > 0.0) {
+		return false;
+	}
 	for (float x = -width; x <= width; x++) {
 		x = min(x,width);
 		for (float y = -width; y <= width; y++) {
@@ -25,7 +28,7 @@ bool isWithinOutline(vec2 uv, vec2 texture_pixel_size, sampler2D texture) {
 
 void fragment() {
 	vec2 uv = UV/(vec2(1.0,1.0) - 2.0*width*rCameraZoom*TEXTURE_PIXEL_SIZE) - width*rCameraZoom*TEXTURE_PIXEL_SIZE;
-	if (isWithinOutline(uv, TEXTURE_PIXEL_SIZE, TEXTURE)) {
+	if (isOnOutline(uv, TEXTURE_PIXEL_SIZE, TEXTURE)) {
 		COLOR.a = modulate.a;
 		COLOR.rgb = color.rgb * modulate.rgb;
 	} else {
