@@ -20,6 +20,7 @@ func focus(object:GameObject, new:bool=true) -> void:
 func defocus() -> void:
 	if !focused: return
 	focused = null
+	editor.quickSet.cancel()
 	deinteract()
 
 func interact(edit:NumberEdit) -> void:
@@ -51,6 +52,7 @@ func receiveKey(event:InputEvent) -> bool:
 				editor.changes.addChange(Changes.DeleteKeyChange.new(editor.game,focused))
 				editor.objectHovered = null
 				editor.objectDragged = null
+			KEY_Y: _keyInfiniteToggled(!focused.infinite)
 			_: return false
 	return true
 

@@ -6,8 +6,8 @@ class_name QuickSet
 @onready var editor:Editor = get_node("/root/editor")
 
 var COLORS_ONELETTER:MatchSet = MatchSet.new(MATCH_RULE.EQUALS, [
-								["X", Game.COLOR.MASTER],	["W", Game.COLOR.WHITE],	["O", Game.COLOR.ORANGE],	["P", Game.COLOR.PURPLE],	["R", Game.COLOR.RED],		["G", Game.COLOR.GREEN],	["B", Game.COLOR.BLUE],
-	["I", Game.COLOR.PINK], 	["C", Game.COLOR.CYAN],		["K", Game.COLOR.BLACK],	["N", Game.COLOR.BROWN],	["U", Game.COLOR.PURE],		["L", Game.COLOR.GLITCH],	["S", Game.COLOR.STONE],	["D", Game.COLOR.DYNAMITE],
+									["X", Game.COLOR.MASTER],	["W", Game.COLOR.WHITE],	["O", Game.COLOR.ORANGE],	["P", Game.COLOR.PURPLE],	["R", Game.COLOR.RED],		["G", Game.COLOR.GREEN],	["B", Game.COLOR.BLUE],
+	["I", Game.COLOR.PINK],			["Y", Game.COLOR.CYAN],		["K", Game.COLOR.BLACK],	["N", Game.COLOR.BROWN],	["U", Game.COLOR.PURE],		["L", Game.COLOR.GLITCH],	["S", Game.COLOR.STONE],	["D", Game.COLOR.DYNAMITE],
 	["Q", Game.COLOR.QUICKSILVER],	["A", Game.COLOR.MAROON],	["F", Game.COLOR.FOREST],	["V", Game.COLOR.NAVY],		["C", Game.COLOR.ICE],		["M", Game.COLOR.MUD],		["T", Game.COLOR.GRAFFITI]
 ])
 var COLORS_NAME:MatchSet = MatchSet.new(MATCH_RULE.FROM_START, [
@@ -46,13 +46,18 @@ var object:GameComponent # the component whose properties that we are setting
 var input:String
 var matched:int = -1
 var matchComment:String = ""
+var completeMatch:String = "" # if this is a partial match, display the complete name
 
 func updateText() -> void:
 	var string:String = ""
 	if quick  == QUICK.NONE: text = ""; return
 	match quick:
 		QUICK.COLOR: string += "color: "
-	string += input.rpad(INPUT_CHAR_LIMIT)
+	if completeMatch:
+		string += input
+		string += "[color=#999999]" + completeMatch.right(completeMatch.length()-input.length()).rpad(INPUT_CHAR_LIMIT-input.length()) + "[/color]"
+	else:
+		string += input.rpad(INPUT_CHAR_LIMIT)
 	if matched != -1:
 		string += " // " + Game.COLOR.keys()[matched] + " " + matchComment
 	text = string
@@ -64,14 +69,19 @@ func startQuick(_quick:QUICK, _object:GameComponent) -> void:
 	input = ""
 	updateText()
 
+func cancel() -> void:
+	quick = QUICK.NONE
+	text = ""
+
 func evaluateQuick() -> void:
 	matched = -1
 	matchComment = ""
+	completeMatch = ""
 	match quick:
 		QUICK.COLOR:
 			if matchesId(Game.COLORS): matched = input.to_int(); matchComment = "(id)"
 			elif COLORS_ONELETTER.check(input): matched = COLORS_ONELETTER.result; matchComment = "(abbreviation)"
-			elif COLORS_NAME.check(input): matched = COLORS_NAME.result; matchComment = "(name)"
+			elif COLORS_NAME.check(input): matched = COLORS_NAME.result; matchComment = "(name)"; completeMatch = COLORS_NAME.completeMatch
 
 func receiveKey(event:InputEventKey) -> void:
 	if event.keycode >= 32 and event.keycode < 128:
@@ -82,7 +92,7 @@ func receiveKey(event:InputEventKey) -> void:
 			KEY_BACKSPACE:
 				if Input.is_key_pressed(KEY_CTRL): input = ""
 				input = input.left(input.length()-1)
-			KEY_ENTER:
+			KEY_TAB, KEY_ENTER:
 				if matched != -1: apply()
 				quick = QUICK.NONE
 			KEY_ESCAPE: quick = QUICK.NONE
@@ -100,6 +110,7 @@ class MatchSet extends RefCounted:
 	var rule:MATCH_RULE
 	var matches:Array[Array]
 
+	var completeMatch:String
 	var result:int
 
 	func _init(_rule:MATCH_RULE, _matches:Array[Array]) -> void:
@@ -115,6 +126,7 @@ class MatchSet extends RefCounted:
 						return true
 				MATCH_RULE.FROM_START:
 					if match[0].find(string.to_upper()) == 0:
+						completeMatch = match[0]
 						result = match[1]
 						return true
 		return false

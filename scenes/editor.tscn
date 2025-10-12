@@ -143,7 +143,7 @@ stretch = true
 [node name="gameViewport" type="SubViewport" parent="c/gameViewportCont"]
 handle_input_locally = false
 canvas_item_default_texture_filter = 0
-size = Vector2i(864, 647)
+size = Vector2i(864, 672)
 render_target_update_mode = 4
 
 [node name="game" parent="c/gameViewportCont/gameViewport" instance=ExtResource("8_5tdu1")]
@@ -163,6 +163,7 @@ layout_mode = 2
 theme_override_colors/default_color = Color(0.8289096, 0.82890975, 0.8289095, 1)
 theme_override_fonts/normal_font = ExtResource("12_2w0at")
 theme_override_font_sizes/normal_font_size = 12
+bbcode_enabled = true
 fit_content = true
 scroll_active = false
 autowrap_mode = 0
