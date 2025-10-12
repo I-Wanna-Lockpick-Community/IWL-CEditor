@@ -1,8 +1,8 @@
-[gd_scene load_steps=19 format=3 uid="uid://djnt51xv7wn52"]
+[gd_scene load_steps=21 format=3 uid="uid://djnt51xv7wn52"]
 
 [ext_resource type="Theme" uid="uid://bvfthh0vm4fbp" path="res://assets/ui/uiTheme.tres" id="1_j8y2p"]
-[ext_resource type="Script" uid="uid://2wjcj6frwpjo" path="res://scripts/editor.gd" id="2_o435n"]
-[ext_resource type="Script" uid="uid://ced7aml4sfanx" path="res://scripts/modes.gd" id="3_3vi5u"]
+[ext_resource type="Script" uid="uid://2wjcj6frwpjo" path="res://scripts/singletons/editor.gd" id="2_o435n"]
+[ext_resource type="Script" uid="uid://ced7aml4sfanx" path="res://scripts/singletons/modes.gd" id="3_3vi5u"]
 [ext_resource type="Texture2D" uid="uid://brlbjt36syjq8" path="res://assets/ui/select.png" id="4_78fwb"]
 [ext_resource type="Script" uid="uid://buv3n70m06kje" path="res://scripts/nodes/hotkeyButton.gd" id="5_3vi5u"]
 [ext_resource type="Texture2D" uid="uid://tcsqjcnuio0j" path="res://assets/ui/tile.png" id="5_74j0u"]
@@ -10,9 +10,11 @@
 [ext_resource type="Texture2D" uid="uid://ckk7i2y24ysor" path="res://assets/ui/door.png" id="7_2w0at"]
 [ext_resource type="PackedScene" uid="uid://2hd65vn44me7" path="res://scenes/game.tscn" id="8_5tdu1"]
 [ext_resource type="Shader" uid="uid://befrul0j4yc02" path="res://resources/level.gdshader" id="8_o435n"]
-[ext_resource type="Script" uid="uid://bstn8if8s6o5j" path="res://scripts/game.gd" id="11_3vi5u"]
+[ext_resource type="Script" uid="uid://bstn8if8s6o5j" path="res://scripts/singletons/game.gd" id="11_3vi5u"]
+[ext_resource type="FontFile" uid="uid://cjub6sxbu8elx" path="res://resources/fonts/RobotoMono-SemiBold.ttf" id="12_2w0at"]
 [ext_resource type="PackedScene" uid="uid://8bth374yqwpe" path="res://scenes/focusDialog.tscn" id="12_74j0u"]
-[ext_resource type="Script" uid="uid://csgec0mt1klfc" path="res://scripts/changes.gd" id="12_78fwb"]
+[ext_resource type="Script" uid="uid://csgec0mt1klfc" path="res://scripts/singletons/changes.gd" id="12_78fwb"]
+[ext_resource type="Script" uid="uid://y6lb6luqyxy2" path="res://scripts/singletons/quickSet.gd" id="14_sdh1e"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_74j0u"]
 content_margin_left = 2.0
@@ -141,12 +143,30 @@ stretch = true
 [node name="gameViewport" type="SubViewport" parent="c/gameViewportCont"]
 handle_input_locally = false
 canvas_item_default_texture_filter = 0
-size = Vector2i(2, 2)
+size = Vector2i(864, 647)
 render_target_update_mode = 4
 
 [node name="game" parent="c/gameViewportCont/gameViewport" instance=ExtResource("8_5tdu1")]
 unique_name_in_owner = true
 script = ExtResource("11_3vi5u")
+
+[node name="c2" type="PanelContainer" parent="c"]
+layout_mode = 2
+
+[node name="c" type="MarginContainer" parent="c/c2"]
+layout_mode = 2
+
+[node name="quickSet" type="RichTextLabel" parent="c/c2/c"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 17)
+layout_mode = 2
+theme_override_colors/default_color = Color(0.8289096, 0.82890975, 0.8289095, 1)
+theme_override_fonts/normal_font = ExtResource("12_2w0at")
+theme_override_font_sizes/normal_font_size = 12
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+script = ExtResource("14_sdh1e")
 
 [node name="focusDialog" parent="." instance=ExtResource("12_74j0u")]
 unique_name_in_owner = true

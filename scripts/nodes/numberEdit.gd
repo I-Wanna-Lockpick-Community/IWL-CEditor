@@ -49,8 +49,10 @@ func receiveKey(key:InputEventKey):
 				if value == 0: bufferedNegative = false
 				@warning_ignore("integer_division") setValue(value/10)
 		KEY_I: if get_parent() is ComplexNumberEdit: get_parent().rotate()
+		_: return false
 	if number != -1:
 		if newlyInteracted: setValue(0,true)
 		newlyInteracted = false
 		if value < 0 || bufferedNegative: setValue(value*10-number)
 		else: setValue(value*10+number)
+	return true

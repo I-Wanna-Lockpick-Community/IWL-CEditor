@@ -6,13 +6,8 @@
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_47wsx"]
 size = Vector2(32, 32)
 
-[node name="keyBulk" type="Area2D"]
+[node name="keyBulk" type="Node2D"]
 script = ExtResource("1_v3lj7")
-metadata/_custom_type_script = "uid://boiwo8vk6byve"
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(16, 16)
-shape = SubResource("RectangleShape2D_47wsx")
 
 [node name="drawText" type="Label" parent="."]
 unique_name_in_owner = true
@@ -27,3 +22,9 @@ offset_bottom = 35.0
 grow_vertical = 0
 text = "1"
 label_settings = ExtResource("2_gyh00")
+
+[node name="collision" type="Area2D" parent="."]
+
+[node name="shape" type="CollisionShape2D" parent="collision"]
+position = Vector2(16, 16)
+shape = SubResource("RectangleShape2D_47wsx")

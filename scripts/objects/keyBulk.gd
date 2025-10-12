@@ -81,7 +81,7 @@ func outlineTex() -> Texture2D:
 				Game.COLOR.MASTER:
 					return preload("res://assets/game/key/master/outlineMask.png")
 				Game.COLOR.DYNAMITE: return preload("res://assets/game/key/dynamite/outlineMask.png")
-				Game.COLOR.SILVER: return preload("res://assets/game/key/silver/outlineMask.png")
+				Game.COLOR.QUICKSILVER: return preload("res://assets/game/key/silver/outlineMask.png")
 				_: return preload("res://assets/game/key/normal/outlineMask.png")
 
 func updateDraw() -> void:
@@ -95,7 +95,7 @@ func updateDraw() -> void:
 		Game.COLOR.PURE: texture = editor.game.pureKeyTex()
 		Game.COLOR.STONE: texture = editor.game.stoneKeyTex()
 		Game.COLOR.DYNAMITE: texture = editor.game.dynamiteKeyTex()
-		Game.COLOR.SILVER: texture = editor.game.silverKeyTex()
+		Game.COLOR.QUICKSILVER: texture = editor.game.quicksilverKeyTex()
 		Game.COLOR.ICE: texture = editor.game.iceKeyTex()
 		Game.COLOR.MUD: texture = editor.game.mudKeyTex()
 		Game.COLOR.GRAFFITI: texture = editor.game.graffitiKeyTex()

@@ -36,7 +36,7 @@ class ColorSelectorButton extends SelectorButton:
 			Game.COLOR.PURE: texture = editor.game.pureTex()
 			Game.COLOR.STONE: texture = editor.game.stoneTex()
 			Game.COLOR.DYNAMITE: texture = editor.game.dynamiteTex()
-			Game.COLOR.SILVER: texture = editor.game.silverTex()
+			Game.COLOR.QUICKSILVER: texture = editor.game.quicksilverTex()
 		if texture:
 			RenderingServer.canvas_item_add_texture_rect(drawMain,rect,texture)
 		else:
