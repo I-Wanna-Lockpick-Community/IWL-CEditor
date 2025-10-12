@@ -147,9 +147,11 @@ class KeyPropertyChange extends Change:
 	func do() -> void:
 		var key:KeyBulk = game.keys[id]
 		key.set(property, after)
-		if game.editor.focusDialog.focused == key: game.editor.focusDialog.keyColorSelector.setColor(after)
+		if property != &"position": key.updateDraw()
+		if game.editor.focusDialog.focused == key: game.editor.focusDialog.focus(key)
 	
 	func undo() -> void:
 		var key:KeyBulk = game.keys[id]
 		key.set(property, before)
-		if game.editor.focusDialog.focused == key: game.editor.focusDialog.keyColorSelector.setColor(before)
+		if property != &"position": key.updateDraw()
+		if game.editor.focusDialog.focused == key: game.editor.focusDialog.focus(key)

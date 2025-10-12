@@ -7,6 +7,7 @@ enum LOCK {NORMAL, BLANK, BLAST, ALL, EXACT}
 const COLORS:int = 22
 enum COLOR {MASTER, WHITE, ORANGE, PURPLE, RED, GREEN, BLUE, PINK, CYAN, BLACK, BROWN, PURE, GLITCH, STONE, DYNAMITE, SILVER, MAROON, FOREST, NAVY, ICE, MUD, GRAFFITI}
 
+static func isAnimated(color:COLOR) -> bool: return color in [COLOR.MASTER, COLOR.PURE, COLOR.DYNAMITE, COLOR.SILVER]
 
 const MASTER_TEXTURE:Array[Texture2D] = [
 	preload("res://assets/game/colorTexture/master0.png"),
@@ -14,14 +15,14 @@ const MASTER_TEXTURE:Array[Texture2D] = [
 	preload("res://assets/game/colorTexture/master2.png"),
 	preload("res://assets/game/colorTexture/master3.png")
 ]
-func masterTex() -> Texture2D: return MASTER_TEXTURE[int(goldIndex)%4]
+func masterTex() -> Texture2D: return MASTER_TEXTURE[goldIndex%4]
 const MASTER_KEY_TEXTURE:Array[Texture2D] = [
 	preload("res://assets/game/key/master/normal0.png"),
 	preload("res://assets/game/key/master/normal1.png"),
 	preload("res://assets/game/key/master/normal2.png"),
 	preload("res://assets/game/key/master/normal3.png"),
 ]
-func masterKeyTex() -> Texture2D: return MASTER_KEY_TEXTURE[int(goldIndex)%4]
+func masterKeyTex() -> Texture2D: return MASTER_KEY_TEXTURE[goldIndex%4]
 
 
 const PURE_TEXTURE:Array[Texture2D] = [
@@ -30,17 +31,23 @@ const PURE_TEXTURE:Array[Texture2D] = [
 	preload("res://assets/game/colorTexture/pure2.png"),
 	preload("res://assets/game/colorTexture/pure3.png")
 ]
-func pureTex() -> Texture2D: return PURE_TEXTURE[int(goldIndex)%4]
+func pureTex() -> Texture2D: return PURE_TEXTURE[goldIndex%4]
 const PURE_KEY_TEXTURE:Array[Texture2D] = [
 	preload("res://assets/game/key/pure/normal0.png"),
 	preload("res://assets/game/key/pure/normal1.png"),
 	preload("res://assets/game/key/pure/normal2.png"),
 	preload("res://assets/game/key/pure/normal3.png"),
 ]
-func pureKeyTex() -> Texture2D: return PURE_KEY_TEXTURE[int(goldIndex)%4]
+func pureKeyTex() -> Texture2D: return PURE_KEY_TEXTURE[goldIndex%4]
 
 
 func stoneTex() -> Texture2D: return preload("res://assets/game/colorTexture/stone.png")
+const STONE_KEY_TEXTURE:Array[Texture2D] = [
+	preload("res://assets/game/key/stone/normal.png"),
+]
+func stoneKeyTex() -> Texture2D: return STONE_KEY_TEXTURE[0]
+
+
 const DYNAMITE_TEXTURE:Array[Texture2D] = [
 	preload("res://assets/game/colorTexture/dynamite0.png"),
 	preload("res://assets/game/colorTexture/dynamite1.png"),
@@ -55,20 +62,58 @@ const DYNAMITE_TEXTURE:Array[Texture2D] = [
 	preload("res://assets/game/colorTexture/dynamite10.png"),
 	preload("res://assets/game/colorTexture/dynamite11.png")
 ]
-const STONE_KEY_TEXTURE:Array[Texture2D] = [
-	preload("res://assets/game/key/stone/normal.png"),
+func dynamiteTex() -> Texture2D: return DYNAMITE_TEXTURE[goldIndex]
+const DYNAMITE_KEY_TEXTURE:Array[Texture2D] = [
+	preload("res://assets/game/key/dynamite/normal0.png"),
+	preload("res://assets/game/key/dynamite/normal1.png"),
+	preload("res://assets/game/key/dynamite/normal2.png"),
+	preload("res://assets/game/key/dynamite/normal3.png"),
+	preload("res://assets/game/key/dynamite/normal4.png"),
+	preload("res://assets/game/key/dynamite/normal5.png"),
+	preload("res://assets/game/key/dynamite/normal6.png"),
+	preload("res://assets/game/key/dynamite/normal7.png"),
+	preload("res://assets/game/key/dynamite/normal8.png"),
+	preload("res://assets/game/key/dynamite/normal9.png"),
+	preload("res://assets/game/key/dynamite/normal10.png"),
+	preload("res://assets/game/key/dynamite/normal11.png")
 ]
-func stoneKeyTex() -> Texture2D: return STONE_KEY_TEXTURE[0]
+func dynamiteKeyTex() -> Texture2D: return DYNAMITE_KEY_TEXTURE[goldIndex]
 
 
-func dynamiteTex() -> Texture2D: return DYNAMITE_TEXTURE[int(goldIndex)]
 const SILVER_TEXTURE:Array[Texture2D] = [
 	preload("res://assets/game/colorTexture/silver0.png"),
 	preload("res://assets/game/colorTexture/silver1.png"),
 	preload("res://assets/game/colorTexture/silver2.png"),
 	preload("res://assets/game/colorTexture/silver3.png")
 ]
-func silverTex() -> Texture2D: return SILVER_TEXTURE[int(goldIndex)%4]
+func silverTex() -> Texture2D: return SILVER_TEXTURE[goldIndex%4]
+const SILVER_KEY_TEXTURE:Array[Texture2D] = [
+	preload("res://assets/game/key/silver/normal0.png"),
+	preload("res://assets/game/key/silver/normal1.png"),
+	preload("res://assets/game/key/silver/normal2.png"),
+	preload("res://assets/game/key/silver/normal3.png")
+]
+func silverKeyTex() -> Texture2D: return SILVER_KEY_TEXTURE[goldIndex%4]
+
+
+const ICE_KEY_TEXTURE:Array[Texture2D] = [
+	preload("res://assets/game/key/ice/normal.png"),
+]
+func iceKeyTex() -> Texture2D: return ICE_KEY_TEXTURE[0]
+
+
+const MUD_KEY_TEXTURE:Array[Texture2D] = [
+	preload("res://assets/game/key/mud/normal.png"),
+]
+func mudKeyTex() -> Texture2D: return MUD_KEY_TEXTURE[0]
+
+
+const GRAFFITI_KEY_TEXTURE:Array[Texture2D] = [
+	preload("res://assets/game/key/graffiti/normal.png"),
+]
+func graffitiKeyTex() -> Texture2D: return GRAFFITI_KEY_TEXTURE[0]
+
+
 
 const highTone:Array[Color] = [
 	Color8(231,191,152),
@@ -151,7 +196,9 @@ const darkTone:Array[Color] = [
 @onready var objects:Node = %objects
 
 var objIdIter:int = 0 # for creating objects
-var goldIndex:float = 0 # youve seen this before
+var goldIndex:int = 0 # youve seen this before
+var goldIndexFloat:float = 0
+signal goldIndexChanged
 
 var keys:Dictionary[int,KeyBulk] = {}
 
@@ -160,7 +207,12 @@ var gameBounds:Rect2i = Rect2i(0,0,800,608):
 		gameBounds = value
 		editor.gameViewportCont.material.set_shader_material("gameSize",gameBounds.size)
 
+const GLITCH_MATERIAL:ShaderMaterial = preload("res://resources/glitchDrawMaterial.tres")
+
 func _process(delta:float) -> void:
-	goldIndex += delta*6 # 0.1 per frame, 60fps
-	if goldIndex > 12: goldIndex -= 12
+	goldIndexFloat += delta*6 # 0.1 per frame, 60fps
+	if goldIndexFloat > 12: goldIndexFloat -= 12
+	if goldIndex != int(goldIndexFloat):
+		goldIndex = int(goldIndexFloat)
+		goldIndexChanged.emit()
 	RenderingServer.global_shader_parameter_set(&"NOISE_OFFSET", Vector2(randf_range(-1000, 1000), randf_range(-1000, 1000)))

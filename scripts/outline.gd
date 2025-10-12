@@ -10,7 +10,7 @@ func _draw() -> void:
 	if editor.objectHovered:
 		drawOutline(editor.objectHovered,Color("#ffffff88"))
 
-func drawOutline(object:Control,color:Color=Color.WHITE) -> void:
+func drawOutline(object:GameObject,color:Color=Color.WHITE) -> void:
 	if object is KeyBulk:
 		draw_texture(object.outlineTex(),object.position,color)
 

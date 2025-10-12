@@ -4,9 +4,9 @@ class_name FocusDialog
 @onready var editor:Editor = get_node("/root/editor")
 @onready var keyColorSelector:ColorSelector = %keyColorSelector
 
-var focused:Control # the object that is currently focused
+var focused:GameObject # the object that is currently focused
 
-func focus(object:Control) -> void:
+func focus(object:GameObject) -> void:
 	if object is KeyBulk:
 		focused = object
 		keyColorSelector.setColor(focused.color)
