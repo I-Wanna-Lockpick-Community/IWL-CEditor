@@ -14,6 +14,7 @@ func focus(object:GameObject, new:bool=true) -> void:
 		%keyTypeSelector.setSelect(focused.type)
 		%keyNumberEdit.visible = focused.type in [Game.KEY.NORMAL,Game.KEY.EXACT]
 		%keyNumberEdit.setValue(focused.count, true)
+		%keyInfiniteToggle.button_pressed = focused.infinite
 		if new: interact(%keyNumberEdit.realEdit)
 
 func defocus() -> void:
@@ -37,12 +38,21 @@ func deinteract() -> void:
 func receiveKey(event:InputEvent) -> bool:
 	if focused is KeyBulk:
 		match event.keycode:
-			KEY_C: editor.quickSet.startQuick(QuickSet.QUICK.COLOR, focused); return true
+			KEY_N: _keyTypeSelected(Game.KEY.NORMAL)
+			KEY_E: _keyTypeSelected(Game.KEY.EXACT if focused.type != Game.KEY.EXACT else Game.KEY.NORMAL)
+			KEY_S: _keyTypeSelected(Game.KEY.STAR if focused.type != Game.KEY.STAR else Game.KEY.UNSTAR)
+			KEY_R:
+				if focused.type == Game.KEY.SIGNFLIP: _keyTypeSelected(Game.KEY.NEGROTOR)
+				elif focused.type == Game.KEY.POSROTOR: _keyTypeSelected(Game.KEY.SIGNFLIP)
+				else: _keyTypeSelected(Game.KEY.POSROTOR)
+			KEY_C: editor.quickSet.startQuick(QuickSet.QUICK.COLOR, focused)
+			KEY_U: _keyTypeSelected(Game.KEY.CURSE if focused.type != Game.KEY.CURSE else Game.KEY.UNCURSE)
 			KEY_DELETE:
 				editor.changes.addChange(Changes.DeleteKeyChange.new(editor.game,focused))
 				editor.objectHovered = null
 				editor.objectDragged = null
-	return false
+			_: return false
+	return true
 
 func _process(_delta) -> void:
 	if focused:
@@ -64,4 +74,9 @@ func _keyTypeSelected(type:Game.KEY) -> void:
 func _keyNumberSet(count:Number):
 	if focused is not KeyBulk: return
 	editor.changes.addChange(Changes.KeyPropertyChange.new(editor.game,focused,&"count",count))
+	editor.changes.bufferSave()
+
+func _keyInfiniteToggled(value:bool):
+	if focused is not KeyBulk: return
+	editor.changes.addChange(Changes.KeyPropertyChange.new(editor.game,focused,&"infinite",value))
 	editor.changes.bufferSave()

@@ -1,10 +1,14 @@
-[gd_scene load_steps=6 format=3 uid="uid://8bth374yqwpe"]
+[gd_scene load_steps=10 format=3 uid="uid://8bth374yqwpe"]
 
 [ext_resource type="Theme" uid="uid://bvfthh0vm4fbp" path="res://assets/ui/uiTheme.tres" id="1_eqegh"]
 [ext_resource type="Script" uid="uid://dm8t82nhqkdlc" path="res://scripts/singletons/focusDialog.gd" id="2_k8bto"]
 [ext_resource type="Script" uid="uid://c70juj2p5s6yd" path="res://scripts/nodes/colorSelector.gd" id="3_wmate"]
 [ext_resource type="Script" uid="uid://dgllodap6540" path="res://scripts/nodes/keyTypeSelector.gd" id="4_cb7cu"]
 [ext_resource type="PackedScene" uid="uid://tpxbw5vtj5nx" path="res://scenes/complexNumberEdit.tscn" id="5_qjvko"]
+[ext_resource type="Script" uid="uid://c5vkwqyqnu1o7" path="res://scripts/nodes/keepWorldScale.gd" id="6_fr1sg"]
+[ext_resource type="Texture2D" uid="uid://dl1koipaukdj" path="res://assets/ui/keyInfiniteToggle/normal.png" id="7_w3a3f"]
+[ext_resource type="Texture2D" uid="uid://bulx3wvhsmgvx" path="res://assets/empty.png" id="8_w3a3f"]
+[ext_resource type="Texture2D" uid="uid://qd82dduwyvjj" path="res://assets/ui/keyInfiniteToggle/hover.png" id="9_4nd11"]
 
 [node name="focusDialog" type="Control"]
 layout_mode = 3
@@ -51,6 +55,32 @@ metadata/_custom_type_script = "uid://dgllodap6540"
 unique_name_in_owner = true
 layout_mode = 2
 
+[node name="keepWorldScale" type="Control" parent="keyDialog"]
+anchors_preset = 0
+offset_top = -8.0
+offset_bottom = -8.0
+script = ExtResource("6_fr1sg")
+
+[node name="keyInfiniteToggle" type="TextureButton" parent="keyDialog/keepWorldScale"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_top = -32.0
+offset_right = 16.0
+offset_bottom = -16.0
+grow_horizontal = 2
+grow_vertical = 0
+toggle_mode = true
+action_mode = 0
+texture_normal = ExtResource("7_w3a3f")
+texture_pressed = ExtResource("8_w3a3f")
+texture_hover = ExtResource("9_4nd11")
+stretch_mode = 0
+
 [node name="Polygon2D" type="Polygon2D" parent="."]
 rotation = 3.1415927
 color = Color(0.25490198, 0.25490198, 0.25490198, 1)
@@ -65,3 +95,4 @@ default_color = Color(0.8352941, 0.8352941, 0.8352941, 1)
 [connection signal="select" from="keyDialog/c/c/VBoxContainer/keyColorSelector" to="." method="_keyColorSelected"]
 [connection signal="select" from="keyDialog/c/c/VBoxContainer/keyTypeSelector" to="." method="_keyTypeSelected"]
 [connection signal="valueSet" from="keyDialog/c/c/VBoxContainer/keyNumberEdit" to="." method="_keyNumberSet"]
+[connection signal="toggled" from="keyDialog/keepWorldScale/keyInfiniteToggle" to="." method="_keyInfiniteToggled"]

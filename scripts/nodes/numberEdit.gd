@@ -43,6 +43,7 @@ func receiveKey(key:InputEventKey):
 			if value == 0: bufferedNegative = !bufferedNegative
 			setValue(-value)
 		KEY_BACKSPACE:
+			newlyInteracted = false
 			if Input.is_key_pressed(KEY_CTRL): setValue(0)
 			else:
 				if value > -10 and value < 0: bufferedNegative = true

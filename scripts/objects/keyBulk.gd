@@ -44,6 +44,7 @@ func getFrameGlitch() -> Texture2D: return FRAME_GLITCH[Game.KEYTYPE_TEXTURE_OFF
 const SIGNFLIP_SYMBOL:Texture2D = preload("res://assets/game/key/symbols/signflip.png")
 const POSROTOR_SYMBOL:Texture2D = preload("res://assets/game/key/symbols/posrotor.png")
 const NEGROTOR_SYMBOL:Texture2D = preload("res://assets/game/key/symbols/negrotor.png")
+const INFINITE_SYMBOL:Texture2D = preload("res://assets/game/key/symbols/infinite.png")
 
 @onready var editor:Editor = get_node("/root/editor")
 
@@ -51,6 +52,7 @@ var id:int
 var color:Game.COLOR = Game.COLOR.WHITE
 var type:Game.KEY = Game.KEY.NORMAL
 var count:Number = Number.new(1,0)
+var infinite:bool = false
 
 var drawMain:RID
 var drawGlitch:RID
@@ -92,13 +94,13 @@ func updateDraw() -> void:
 	var texture:Texture2D
 	match color:
 		Game.COLOR.MASTER: texture = editor.game.masterKeyTex(type)
-		Game.COLOR.PURE: texture = editor.game.pureKeyTex()
-		Game.COLOR.STONE: texture = editor.game.stoneKeyTex()
-		Game.COLOR.DYNAMITE: texture = editor.game.dynamiteKeyTex()
-		Game.COLOR.QUICKSILVER: texture = editor.game.quicksilverKeyTex()
-		Game.COLOR.ICE: texture = editor.game.iceKeyTex()
-		Game.COLOR.MUD: texture = editor.game.mudKeyTex()
-		Game.COLOR.GRAFFITI: texture = editor.game.graffitiKeyTex()
+		Game.COLOR.PURE: texture = editor.game.pureKeyTex(type)
+		Game.COLOR.STONE: texture = editor.game.stoneKeyTex(type)
+		Game.COLOR.DYNAMITE: texture = editor.game.dynamiteKeyTex(type)
+		Game.COLOR.QUICKSILVER: texture = editor.game.quicksilverKeyTex(type)
+		Game.COLOR.ICE: texture = editor.game.iceKeyTex(type)
+		Game.COLOR.MUD: texture = editor.game.mudKeyTex(type)
+		Game.COLOR.GRAFFITI: texture = editor.game.graffitiKeyTex(type)
 	if texture:
 		RenderingServer.canvas_item_add_texture_rect(drawMain,rect,texture)
 	elif color == Game.COLOR.GLITCH:
@@ -119,3 +121,4 @@ func updateDraw() -> void:
 		Game.KEY.SIGNFLIP: RenderingServer.canvas_item_add_texture_rect(drawSymbol,rect,SIGNFLIP_SYMBOL)
 		Game.KEY.POSROTOR, Game.KEY.CURSE: RenderingServer.canvas_item_add_texture_rect(drawSymbol,rect,POSROTOR_SYMBOL)
 		Game.KEY.NEGROTOR, Game.KEY.UNCURSE: RenderingServer.canvas_item_add_texture_rect(drawSymbol,rect,NEGROTOR_SYMBOL)
+	if infinite: RenderingServer.canvas_item_add_texture_rect(drawSymbol,rect,INFINITE_SYMBOL)
