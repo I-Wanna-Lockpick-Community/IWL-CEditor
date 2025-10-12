@@ -1,4 +1,4 @@
-[gd_resource type="Theme" load_steps=7 format=3 uid="uid://bvfthh0vm4fbp"]
+[gd_resource type="Theme" load_steps=9 format=3 uid="uid://bvfthh0vm4fbp"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_wu0u2"]
 bg_color = Color(0.25323758, 0.2532376, 0.2532375, 1)
@@ -11,6 +11,29 @@ corner_radius_top_left = 2
 corner_radius_top_right = 2
 corner_radius_bottom_right = 2
 corner_radius_bottom_left = 2
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_kty0u"]
+content_margin_left = 1.0
+content_margin_top = 0.0
+content_margin_right = 2.0
+content_margin_bottom = 1.0
+bg_color = Color(0.17163703, 0.17163706, 0.17163697, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_8jef3"]
+content_margin_left = 1.0
+content_margin_top = 0.0
+content_margin_right = 2.0
+content_margin_bottom = 1.0
+bg_color = Color(0.17163703, 0.17163706, 0.17163697, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0, 0.51479346, 0.9935469, 1)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_yev5y"]
 content_margin_left = 0.0
@@ -59,6 +82,10 @@ MarginContainer/constants/margin_bottom = 4
 MarginContainer/constants/margin_left = 4
 MarginContainer/constants/margin_right = 4
 MarginContainer/constants/margin_top = 4
+NumberEditPanelContainer/base_type = &"PanelContainer"
+NumberEditPanelContainer/styles/panel = SubResource("StyleBoxFlat_kty0u")
+NumberEditPanelContainerSelected/base_type = &"PanelContainer"
+NumberEditPanelContainerSelected/styles/panel = SubResource("StyleBoxFlat_8jef3")
 PanelContainer/styles/panel = SubResource("StyleBoxFlat_yev5y")
 RadioButton/base_type = &"Button"
 RadioButton/styles/focus = SubResource("StyleBoxEmpty_51dj7")

@@ -1,0 +1,7 @@
+[gd_resource type="FontVariation" load_steps=2 format=3 uid="uid://b6iokajn60hc0"]
+
+[ext_resource type="FontFile" uid="uid://cbdf0vwq4e3xt" path="res://resources/fonts/khmerui.ttf" id="1_4ljqe"]
+
+[resource]
+base_font = ExtResource("1_4ljqe")
+variation_embolden = 1.0

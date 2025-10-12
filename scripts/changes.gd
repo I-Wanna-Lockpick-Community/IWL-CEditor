@@ -146,12 +146,14 @@ class KeyPropertyChange extends Change:
 
 	func do() -> void:
 		var key:KeyBulk = game.keys[id]
-		key.set(property, after)
+		if after is Number: key.set(property, after.copy())
+		else: key.set(property, after)
 		if property != &"position": key.updateDraw()
-		if game.editor.focusDialog.focused == key: game.editor.focusDialog.focus(key)
+		if game.editor.focusDialog.focused == key: game.editor.focusDialog.focus(key, false)
 	
 	func undo() -> void:
 		var key:KeyBulk = game.keys[id]
-		key.set(property, before)
+		if before is Number: key.set(property, before.copy())
+		else: key.set(property, before)
 		if property != &"position": key.updateDraw()
-		if game.editor.focusDialog.focused == key: game.editor.focusDialog.focus(key)
+		if game.editor.focusDialog.focused == key: game.editor.focusDialog.focus(key, false)

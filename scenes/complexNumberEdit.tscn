@@ -1,0 +1,34 @@
+[gd_scene load_steps=6 format=3 uid="uid://tpxbw5vtj5nx"]
+
+[ext_resource type="Theme" uid="uid://bvfthh0vm4fbp" path="res://assets/ui/uiTheme.tres" id="1_n5xw7"]
+[ext_resource type="Script" uid="uid://baijlter1i5mk" path="res://scripts/nodes/complexNumberEdit.gd" id="2_0uk8m"]
+[ext_resource type="Texture2D" uid="uid://ciyd5ja4gu1u1" path="res://assets/ui/complexNumberEditPlus.png" id="3_205pp"]
+[ext_resource type="PackedScene" uid="uid://sm362bc2r4fm" path="res://scenes/numberEdit.tscn" id="3_dqp57"]
+[ext_resource type="Texture2D" uid="uid://dy5pu0dl7us8k" path="res://assets/ui/complexNumberEditI.png" id="4_dqp57"]
+
+[node name="complexNumberEdit" type="HBoxContainer"]
+offset_right = 88.0
+offset_bottom = 17.0
+theme = ExtResource("1_n5xw7")
+script = ExtResource("2_0uk8m")
+
+[node name="realEdit" parent="." instance=ExtResource("3_dqp57")]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="plus" type="TextureRect" parent="."]
+layout_mode = 2
+texture = ExtResource("3_205pp")
+stretch_mode = 3
+
+[node name="imaginaryEdit" parent="." instance=ExtResource("3_dqp57")]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="plus2" type="TextureRect" parent="."]
+layout_mode = 2
+texture = ExtResource("4_dqp57")
+stretch_mode = 3
+
+[connection signal="valueSet" from="realEdit" to="." method="_realSet"]
+[connection signal="valueSet" from="imaginaryEdit" to="." method="_imaginarySet"]

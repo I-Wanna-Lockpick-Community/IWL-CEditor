@@ -95,8 +95,9 @@ func dragObject() -> bool:
 	if objectDragged is KeyBulk: changes.addChange(Changes.KeyPropertyChange.new(game,objectDragged,&"position",dragPosition))
 	return true
 
-func _shortcut_input(event:InputEvent) -> void:
+func _input(event:InputEvent) -> void:
 	if event is InputEventKey and event.is_pressed():
+		if focusDialog.interacted and focusDialog.interacted.receiveKey(event): return
 		match event.keycode:
 			KEY_ESCAPE:
 				modes.setMode(Mode.SELECT)

@@ -1,7 +1,7 @@
 extends Button
 class_name HotkeyButton
 
-const fTalk:FontVariation = preload("res://resources/fonts/fTalkSmall.tres")
+const fTalk:FontVariation = preload("res://resources/fonts/fControls.tres")
 
 @export var defaultHotkey:Key
 @export var pressedHotkey:Key

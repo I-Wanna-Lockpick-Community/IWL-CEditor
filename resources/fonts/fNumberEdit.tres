@@ -1,0 +1,7 @@
+[gd_resource type="FontVariation" load_steps=2 format=3 uid="uid://s8hoox1x423q"]
+
+[ext_resource type="FontFile" uid="uid://dus56bcgsl6op" path="res://resources/fonts/MSGOTHIC.TTC" id="1_iug84"]
+
+[resource]
+base_font = ExtResource("1_iug84")
+variation_face_index = 1

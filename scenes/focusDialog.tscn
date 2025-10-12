@@ -1,9 +1,10 @@
-[gd_scene load_steps=5 format=3 uid="uid://8bth374yqwpe"]
+[gd_scene load_steps=6 format=3 uid="uid://8bth374yqwpe"]
 
-[ext_resource type="Theme" uid="uid://bvfthh0vm4fbp" path="res://resources/uiTheme.tres" id="1_eqegh"]
+[ext_resource type="Theme" uid="uid://bvfthh0vm4fbp" path="res://assets/ui/uiTheme.tres" id="1_eqegh"]
 [ext_resource type="Script" uid="uid://dm8t82nhqkdlc" path="res://scripts/focusDialog.gd" id="2_k8bto"]
 [ext_resource type="Script" uid="uid://c70juj2p5s6yd" path="res://scripts/nodes/colorSelector.gd" id="3_wmate"]
 [ext_resource type="Script" uid="uid://dgllodap6540" path="res://scripts/nodes/keyTypeSelector.gd" id="4_cb7cu"]
+[ext_resource type="PackedScene" uid="uid://tpxbw5vtj5nx" path="res://scenes/complexNumberEdit.tscn" id="5_qjvko"]
 
 [node name="focusDialog" type="Control"]
 layout_mode = 3
@@ -12,47 +13,55 @@ theme = ExtResource("1_eqegh")
 theme_type_variation = &"DialogPanelContainer"
 script = ExtResource("2_k8bto")
 
-[node name="c" type="PanelContainer" parent="."]
+[node name="keyDialog" type="Control" parent="."]
+anchors_preset = 0
+
+[node name="c" type="PanelContainer" parent="keyDialog"]
 layout_mode = 1
-anchors_preset = 7
+anchors_preset = 5
 anchor_left = 0.5
-anchor_top = 1.0
 anchor_right = 0.5
-anchor_bottom = 1.0
-offset_left = -18.0
-offset_top = -36.0
-offset_right = 18.0
+offset_left = -87.0
+offset_right = 87.0
+offset_bottom = 36.0
 grow_horizontal = 2
-grow_vertical = 0
 theme_type_variation = &"DialogPanelContainer"
 
-[node name="c" type="MarginContainer" parent="c"]
+[node name="c" type="MarginContainer" parent="keyDialog/c"]
 layout_mode = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="c/c"]
+[node name="VBoxContainer" type="VBoxContainer" parent="keyDialog/c/c"]
 layout_mode = 2
+theme_override_constants/separation = 2
 
-[node name="keyColorSelector" type="GridContainer" parent="c/c/VBoxContainer"]
+[node name="keyColorSelector" type="GridContainer" parent="keyDialog/c/c/VBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 theme = ExtResource("1_eqegh")
 script = ExtResource("3_wmate")
 metadata/_custom_type_script = "uid://c70juj2p5s6yd"
 
-[node name="keyTypeSelector" type="GridContainer" parent="c/c/VBoxContainer"]
+[node name="keyTypeSelector" type="GridContainer" parent="keyDialog/c/c/VBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 script = ExtResource("4_cb7cu")
 metadata/_custom_type_script = "uid://dgllodap6540"
 
+[node name="keyNumberEdit" parent="keyDialog/c/c/VBoxContainer" instance=ExtResource("5_qjvko")]
+unique_name_in_owner = true
+layout_mode = 2
+
 [node name="Polygon2D" type="Polygon2D" parent="."]
+rotation = 3.1415927
 color = Color(0.25490198, 0.25490198, 0.25490198, 1)
 polygon = PackedVector2Array(0, 5, 8, -3, -8, -3)
 
 [node name="Line2D" type="Line2D" parent="."]
+rotation = 3.1415927
 points = PackedVector2Array(-8, -1, -6, -1, 0, 5, 6, -1, 8, -1)
 width = 2.0
 default_color = Color(0.8352941, 0.8352941, 0.8352941, 1)
 
-[connection signal="select" from="c/c/VBoxContainer/keyColorSelector" to="." method="_keyColorSelected"]
-[connection signal="select" from="c/c/VBoxContainer/keyTypeSelector" to="." method="_keyTypeSelected"]
+[connection signal="select" from="keyDialog/c/c/VBoxContainer/keyColorSelector" to="." method="_keyColorSelected"]
+[connection signal="select" from="keyDialog/c/c/VBoxContainer/keyTypeSelector" to="." method="_keyTypeSelected"]
+[connection signal="valueSet" from="keyDialog/c/c/VBoxContainer/keyNumberEdit" to="." method="_keyNumberSet"]
