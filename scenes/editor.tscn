@@ -143,7 +143,7 @@ stretch = true
 [node name="gameViewport" type="SubViewport" parent="c/gameViewportCont"]
 handle_input_locally = false
 canvas_item_default_texture_filter = 0
-size = Vector2i(864, 672)
+size = Vector2i(821, 629)
 render_target_update_mode = 4
 
 [node name="game" parent="c/gameViewportCont/gameViewport" instance=ExtResource("8_5tdu1")]

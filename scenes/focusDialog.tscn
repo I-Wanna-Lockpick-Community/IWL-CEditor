@@ -18,6 +18,8 @@ theme_type_variation = &"DialogPanelContainer"
 script = ExtResource("2_k8bto")
 
 [node name="keyDialog" type="Control" parent="."]
+unique_name_in_owner = true
+visible = false
 anchors_preset = 0
 
 [node name="c" type="PanelContainer" parent="keyDialog"]
@@ -81,6 +83,30 @@ texture_pressed = ExtResource("8_w3a3f")
 texture_hover = ExtResource("9_4nd11")
 stretch_mode = 0
 
+[node name="doorDialog" type="Control" parent="."]
+unique_name_in_owner = true
+anchors_preset = 0
+
+[node name="c" type="PanelContainer" parent="doorDialog"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -20.0
+offset_right = 20.0
+offset_bottom = 40.0
+grow_horizontal = 2
+theme_type_variation = &"DialogPanelContainer"
+
+[node name="c" type="MarginContainer" parent="doorDialog/c"]
+layout_mode = 2
+
+[node name="doorColorSpendSelector" type="GridContainer" parent="doorDialog/c/c"]
+unique_name_in_owner = true
+layout_mode = 2
+script = ExtResource("3_wmate")
+metadata/_custom_type_script = "uid://c70juj2p5s6yd"
+
 [node name="Polygon2D" type="Polygon2D" parent="."]
 rotation = 3.1415927
 color = Color(0.25490198, 0.25490198, 0.25490198, 1)
@@ -96,3 +122,4 @@ default_color = Color(0.8352941, 0.8352941, 0.8352941, 1)
 [connection signal="select" from="keyDialog/c/c/VBoxContainer/keyTypeSelector" to="." method="_keyTypeSelected"]
 [connection signal="valueSet" from="keyDialog/c/c/VBoxContainer/keyNumberEdit" to="." method="_keyNumberSet"]
 [connection signal="toggled" from="keyDialog/keepWorldScale/keyInfiniteToggle" to="." method="_keyInfiniteToggled"]
+[connection signal="select" from="doorDialog/c/c/doorColorSpendSelector" to="." method="_doorColorSpendSelected"]

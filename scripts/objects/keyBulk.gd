@@ -46,8 +46,6 @@ const POSROTOR_SYMBOL:Texture2D = preload("res://assets/game/key/symbols/posroto
 const NEGROTOR_SYMBOL:Texture2D = preload("res://assets/game/key/symbols/negrotor.png")
 const INFINITE_SYMBOL:Texture2D = preload("res://assets/game/key/symbols/infinite.png")
 
-@onready var editor:Editor = get_node("/root/editor")
-
 var id:int
 var color:Game.COLOR = Game.COLOR.WHITE
 var type:Game.KEY = Game.KEY.NORMAL
@@ -58,8 +56,9 @@ var drawMain:RID
 var drawGlitch:RID
 var drawSymbol:RID
 
+func _init() -> void : size = Vector2(32,32)
+
 func _ready() -> void:
-	size = Vector2(32,32)
 	drawMain = RenderingServer.canvas_item_create()
 	drawGlitch = RenderingServer.canvas_item_create()
 	drawSymbol = RenderingServer.canvas_item_create()

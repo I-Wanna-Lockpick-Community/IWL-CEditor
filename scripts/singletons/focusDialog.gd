@@ -15,7 +15,13 @@ func focus(object:GameObject, new:bool=true) -> void:
 		%keyNumberEdit.visible = focused.type in [Game.KEY.NORMAL,Game.KEY.EXACT]
 		%keyNumberEdit.setValue(focused.count, true)
 		%keyInfiniteToggle.button_pressed = focused.infinite
+		%keyDialog.visible = true
+		%doorDialog.visible = false
 		if new: interact(%keyNumberEdit.realEdit)
+	elif object is Door:
+		%doorColorSpendSelector.setSelect(focused.colorSpend)
+		%keyDialog.visible = false
+		%doorDialog.visible = true
 
 func defocus() -> void:
 	if !focused: return
@@ -54,6 +60,14 @@ func receiveKey(event:InputEvent) -> bool:
 				editor.objectDragged = null
 			KEY_Y: _keyInfiniteToggled(!focused.infinite)
 			_: return false
+	elif focused is Door:
+		match event.keycode:
+			KEY_C: editor.quickSet.startQuick(QuickSet.QUICK.COLOR, focused)
+			KEY_DELETE:
+				editor.changes.addChange(Changes.DeleteDoorChange.new(editor.game,focused))
+				editor.objectHovered = null
+				editor.objectDragged = null
+			_: return false
 	return true
 
 func _process(_delta) -> void:
@@ -65,20 +79,25 @@ func _process(_delta) -> void:
 
 func _keyColorSelected(color:Game.COLOR) -> void:
 	if focused is not KeyBulk: return
-	editor.changes.addChange(Changes.KeyPropertyChange.new(editor.game,focused,&"color",color))
+	editor.changes.addChange(Changes.PropertyChange.new(editor.game,focused,&"color",color))
 	editor.changes.bufferSave()
 
 func _keyTypeSelected(type:Game.KEY) -> void:
 	if focused is not KeyBulk: return
-	editor.changes.addChange(Changes.KeyPropertyChange.new(editor.game,focused,&"type",type))
+	editor.changes.addChange(Changes.PropertyChange.new(editor.game,focused,&"type",type))
 	editor.changes.bufferSave()
 
 func _keyNumberSet(count:Number):
 	if focused is not KeyBulk: return
-	editor.changes.addChange(Changes.KeyPropertyChange.new(editor.game,focused,&"count",count))
+	editor.changes.addChange(Changes.PropertyChange.new(editor.game,focused,&"count",count))
 	editor.changes.bufferSave()
 
 func _keyInfiniteToggled(value:bool):
 	if focused is not KeyBulk: return
-	editor.changes.addChange(Changes.KeyPropertyChange.new(editor.game,focused,&"infinite",value))
+	editor.changes.addChange(Changes.PropertyChange.new(editor.game,focused,&"infinite",value))
+	editor.changes.bufferSave()
+
+func _doorColorSpendSelected(colorSpend:Game.COLOR):
+	if focused is not Door: return
+	editor.changes.addChange(Changes.PropertyChange.new(editor.game,focused,&"colorSpend",colorSpend))
 	editor.changes.bufferSave()

@@ -234,13 +234,15 @@ var goldIndexFloat:float = 0
 signal goldIndexChanged
 
 var keys:Dictionary[int,KeyBulk] = {}
+var doors:Dictionary[int,Door] = {}
 
-var gameBounds:Rect2i = Rect2i(0,0,800,608):
+var levelBounds:Rect2i = Rect2i(0,0,800,608):
 	set(value):
-		gameBounds = value
-		editor.gameViewportCont.material.set_shader_material("gameSize",gameBounds.size)
+		levelBounds = value
+		editor.gameViewportCont.material.set_shader_material("gameSize",levelBounds.size)
 
 const GLITCH_MATERIAL:ShaderMaterial = preload("res://resources/glitchDrawMaterial.tres")
+const PIXELATED_MATERIAL:ShaderMaterial = preload("res://resources/pixelatedDrawMaterial.tres")
 
 func _process(delta:float) -> void:
 	goldIndexFloat += delta*6 # 0.1 per frame, 60fps
@@ -249,3 +251,4 @@ func _process(delta:float) -> void:
 		goldIndex = int(goldIndexFloat)
 		goldIndexChanged.emit()
 	RenderingServer.global_shader_parameter_set(&"NOISE_OFFSET", Vector2(randf_range(-1000, 1000), randf_range(-1000, 1000)))
+	RenderingServer.global_shader_parameter_set(&"RCAMERA_ZOOM", 1/editorCamera.zoom.x)

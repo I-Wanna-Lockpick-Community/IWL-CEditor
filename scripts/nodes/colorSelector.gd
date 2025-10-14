@@ -29,7 +29,7 @@ class ColorSelectorButton extends SelectorButton:
 	
 	func updateDraw() -> void:
 		RenderingServer.canvas_item_clear(drawMain)
-		var rect:Rect2 = Rect2(position+Vector2(1,1), size-Vector2(2,2))
+		var rect:Rect2 = Rect2(position+Vector2.ONE, size-Vector2(2,2))
 		var texture:Texture2D
 		match value:
 			Game.COLOR.MASTER: texture = editor.game.masterTex()

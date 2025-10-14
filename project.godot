@@ -17,7 +17,7 @@ config/icon="uid://b5g2tn4r1674k"
 
 [display]
 
-window/size/viewport_width=864
+window/size/viewport_width=821
 window/size/viewport_height=698
 
 [rendering]
@@ -31,4 +31,8 @@ renderer/rendering_method.mobile="gl_compatibility"
 NOISE_OFFSET={
 "type": "vec2",
 "value": Vector2(314, 159)
+}
+RCAMERA_ZOOM={
+"type": "float",
+"value": 1.0
 }

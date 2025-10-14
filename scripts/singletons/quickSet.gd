@@ -52,7 +52,9 @@ func updateText() -> void:
 	var string:String = ""
 	if quick  == QUICK.NONE: text = ""; return
 	match quick:
-		QUICK.COLOR: string += "color: "
+		QUICK.COLOR:
+			if object is Door: string += "spend color: "
+			else: string += "color: "
 	if completeMatch:
 		string += input
 		string += "[color=#999999]" + completeMatch.right(completeMatch.length()-input.length()).rpad(INPUT_CHAR_LIMIT-input.length()) + "[/color]"
@@ -85,7 +87,7 @@ func evaluateQuick() -> void:
 
 func receiveKey(event:InputEventKey) -> void:
 	if event.keycode >= 32 and event.keycode < 128:
-		input += char(event.unicode)
+		input += char(event.unicode).to_upper()
 		input = input.right(INPUT_CHAR_LIMIT)
 	else:
 		match event.keycode:
@@ -103,6 +105,7 @@ func apply() -> void:
 	match quick:
 		QUICK.COLOR:
 			if object is KeyBulk: editor.focusDialog._keyColorSelected(matched)
+			if object is Door: editor.focusDialog._doorColorSpendSelected(matched)
 
 func matchesId(values:int) -> bool: return input.is_valid_int() and input.to_int() >= 0 and input.to_int() < values
 

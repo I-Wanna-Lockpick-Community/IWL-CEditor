@@ -11,11 +11,12 @@ var saveBuffered:bool = false
 func bufferSave() -> void:
 	saveBuffered = true
 
-func addChange(change:Change) -> void:
-	if change.cancelled: return
+func addChange(change:Change) -> Change:
+	if change.cancelled: return change
 	if stackPosition != len(undoStack) - 1: undoStack = undoStack.slice(0,stackPosition+1)
 	undoStack.append(change)
 	stackPosition += 1
+	return change
 
 func _process(_delta) -> void:
 	if saveBuffered:
@@ -96,7 +97,7 @@ class CreateKeyChange extends Change:
 		do()
 	
 	func do() -> void:
-		var key:KeyBulk = preload("res://scenes/objects/KeyBulk.tscn").instantiate()
+		var key:KeyBulk = preload("res://scenes/objects/keyBulk.tscn").instantiate()
 		key.position = position
 		key.id = id
 		game.keys[id] = key
@@ -110,12 +111,18 @@ class DeleteKeyChange extends Change:
 	var position:Vector2i
 	var id:int
 	var color:Game.COLOR
+	var type:Game.KEY
+	var count:Number
+	var infinite:bool
 
 	func _init(_game:Game,key:KeyBulk) -> void:
 		game = _game
 		position = key.position
 		id = key.id
 		color = key.color
+		type = key.type
+		count = key.count
+		infinite = key.infinite
 		do()
 
 	func do() -> void:
@@ -123,37 +130,91 @@ class DeleteKeyChange extends Change:
 		game.keys.erase(id)
 	
 	func undo() -> void:
-		var key:KeyBulk = preload("res://scenes/objects/KeyBulk.tscn").instantiate()
+		var key:KeyBulk = preload("res://scenes/objects/keyBulk.tscn").instantiate()
 		key.position = position
 		key.id = id
 		key.color = color
+		key.type = type
+		key.count = count.copy()
+		key.infinite = infinite
 		game.keys[id] = key
 		game.objects.add_child(key)
 
-class KeyPropertyChange extends Change:
+class CreateDoorChange extends Change:
+	var position:Vector2i
+	var id:int
+
+	func _init(_game:Game,_position:Vector2i) -> void:
+		game = _game
+		position = _position
+		id = game.objIdIter
+		game.objIdIter += 1
+		do()
+	
+	func do() -> void:
+		var door:Door = preload("res://scenes/objects/door.tscn").instantiate()
+		door.position = position
+		door.id = id
+		game.doors[id] = door
+		game.objects.add_child(door)
+
+	func undo() -> void:
+		game.doors[id].queue_free()
+		game.doors.erase(id)
+
+class DeleteDoorChange extends Change:
+	var position:Vector2i
+	var id:int
+	var size:Vector2
+
+	func _init(_game:Game,door:Door) -> void:
+		game = _game
+		position = door.position
+		id = door.id
+		size = door.size
+		do()
+
+	func do() -> void:
+		game.doors[id].queue_free()
+		game.doors.erase(id)
+	
+	func undo() -> void:
+		var door:Door = preload("res://scenes/objects/door.tscn").instantiate()
+		door.position = position
+		door.id = id
+		door.size = size
+		game.doors[id] = door
+		game.objects.add_child(door)
+
+class PropertyChange extends Change:
 	var id:int
 	var property:StringName
 	var before:Variant
 	var after:Variant
+	var componentType:GameComponent.TYPES
 	
-	func _init(_game:Game,key:KeyBulk,_property:StringName,_after:Variant) -> void:
+	func _init(_game:Game,component:GameComponent,_property:StringName,_after:Variant) -> void:
 		game = _game
-		id = key.id
+		id = component.id
 		property = _property
-		before = key.get(property)
+		before = component.get(property)
 		after = _after
+		if component is KeyBulk: componentType = GameComponent.TYPES.KEY
+		elif component is Door: componentType = GameComponent.TYPES.DOOR
+		if before == after:
+			cancelled = true
+			return
 		do()
 
-	func do() -> void:
-		var key:KeyBulk = game.keys[id]
-		if after is Number: key.set(property, after.copy())
-		else: key.set(property, after)
-		if property != &"position": key.updateDraw()
-		if game.editor.focusDialog.focused == key: game.editor.focusDialog.focus(key, false)
+	func do() -> void: changeValue(after)
+	func undo() -> void: changeValue(before)
 	
-	func undo() -> void:
-		var key:KeyBulk = game.keys[id]
-		if before is Number: key.set(property, before.copy())
-		else: key.set(property, before)
-		if property != &"position": key.updateDraw()
-		if game.editor.focusDialog.focused == key: game.editor.focusDialog.focus(key, false)
+	func changeValue(value:Variant) -> void:
+		var component:GameComponent
+		match componentType:
+			GameComponent.TYPES.KEY: component = game.keys[id]
+			GameComponent.TYPES.DOOR: component = game.doors[id]
+		if value is Number: component.set(property, value.copy())
+		else: component.set(property, value)
+		if property != &"position": component.updateDraw()
+		if game.editor.focusDialog.focused == component: game.editor.focusDialog.focus(component, false)
