@@ -56,8 +56,7 @@ func receiveKey(event:InputEvent) -> bool:
 			KEY_U: _keyTypeSelected(Game.KEY.CURSE if focused.type != Game.KEY.CURSE else Game.KEY.UNCURSE)
 			KEY_DELETE:
 				editor.changes.addChange(Changes.DeleteKeyChange.new(editor.game,focused))
-				editor.objectHovered = null
-				editor.objectDragged = null
+				editor.changes.bufferSave()
 			KEY_Y: _keyInfiniteToggled(!focused.infinite)
 			_: return false
 	elif focused is Door:
@@ -65,8 +64,7 @@ func receiveKey(event:InputEvent) -> bool:
 			KEY_C: editor.quickSet.startQuick(QuickSet.QUICK.COLOR, focused)
 			KEY_DELETE:
 				editor.changes.addChange(Changes.DeleteDoorChange.new(editor.game,focused))
-				editor.objectHovered = null
-				editor.objectDragged = null
+				editor.changes.bufferSave()
 			_: return false
 	return true
 

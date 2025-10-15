@@ -110,12 +110,10 @@ func _gui_input(event:InputEvent) -> void:
 							focusDialog.defocus()
 							if !Input.is_key_pressed(KEY_CTRL):
 								modes.setMode(MODE.SELECT)
-								changes.bufferSave()
 				if Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT):
 					if objectHovered is KeyBulk:
 						changes.addChange(Changes.DeleteKeyChange.new(game,objectHovered))
-						objectHovered = null
-						objectDragged = null
+						changes.bufferSave()
 			MODE.DOOR:
 				if isLeftClick(event):
 					if objectHovered is Door:
@@ -130,8 +128,7 @@ func _gui_input(event:InputEvent) -> void:
 				if Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT):
 					if objectHovered is Door:
 						changes.addChange(Changes.DeleteDoorChange.new(game,objectHovered))
-						objectHovered = null
-						objectDragged = null
+						changes.bufferSave()
 
 func startPositionDrag(object:GameObject) -> void:
 	focusDialog.focus(object)

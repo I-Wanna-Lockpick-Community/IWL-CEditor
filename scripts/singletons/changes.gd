@@ -126,6 +126,9 @@ class DeleteKeyChange extends Change:
 		do()
 
 	func do() -> void:
+		game.editor.objectHovered = null
+		game.editor.objectDragged = null
+		game.editor.focusDialog.defocus()
 		game.keys[id].queue_free()
 		game.keys.erase(id)
 	
@@ -175,6 +178,9 @@ class DeleteDoorChange extends Change:
 		do()
 
 	func do() -> void:
+		game.editor.objectHovered = null
+		game.editor.objectDragged = null
+		game.editor.focusDialog.defocus()
 		game.doors[id].queue_free()
 		game.doors.erase(id)
 	

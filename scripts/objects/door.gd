@@ -38,13 +38,15 @@ func updateDraw() -> void:
 	RenderingServer.canvas_item_set_instance_shader_parameter(drawScaled, &"size", size)
 	var rect:Rect2 = Rect2(Vector2.ZERO, size)
 	var texture:Texture2D
+	var tileTexture:bool = false
 	match colorSpend:
 		Game.COLOR.MASTER: texture = editor.game.masterTex()
 		Game.COLOR.PURE: texture = editor.game.pureTex()
 		Game.COLOR.STONE: texture = editor.game.stoneTex()
-		Game.COLOR.DYNAMITE: texture = editor.game.dynamiteTex()
+		Game.COLOR.DYNAMITE: texture = editor.game.dynamiteTex(); tileTexture = true
 	if texture:
-		RenderingServer.canvas_item_add_texture_rect(drawScaled,rect,texture)
+		if tileTexture: RenderingServer.canvas_item_add_texture_rect(drawMain,rect,texture,true)
+		else: RenderingServer.canvas_item_add_texture_rect(drawScaled,rect,texture)
 	elif colorSpend == Game.COLOR.GLITCH:
 		RenderingServer.canvas_item_add_nine_patch(drawGlitch,rect,TEXTURE_RECT,SPEND_HIGH,CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,Game.highTone[Game.COLOR.GLITCH])
 		RenderingServer.canvas_item_add_nine_patch(drawGlitch,rect,TEXTURE_RECT,SPEND_MAIN,CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,Game.mainTone[Game.COLOR.GLITCH])
