@@ -63,6 +63,7 @@ func _ready() -> void:
 	drawGlitch = RenderingServer.canvas_item_create()
 	drawSymbol = RenderingServer.canvas_item_create()
 	RenderingServer.canvas_item_set_material(drawGlitch,Game.GLITCH_MATERIAL.get_rid())
+	RenderingServer.canvas_item_set_instance_shader_parameter(drawGlitch,&"size",size)
 	RenderingServer.canvas_item_set_parent(drawMain,get_canvas_item())
 	RenderingServer.canvas_item_set_parent(drawGlitch,get_canvas_item())
 	RenderingServer.canvas_item_set_parent(drawSymbol,get_canvas_item())

@@ -55,7 +55,6 @@ shader_parameter/OUTOFBOUNDS_COLOR = Color(0.20990813, 0.20990813, 0.2099081, 1)
 shader_parameter/levelSize = Vector2(800, 608)
 shader_parameter/screenPosition = Vector2(0, 0)
 shader_parameter/mousePosition = Vector2(0, 0)
-shader_parameter/rCameraZoom = 1.0
 
 [node name="editor" type="Control"]
 layout_mode = 3

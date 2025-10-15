@@ -13,24 +13,30 @@ const TILE:RenderingServer.NinePatchAxisMode = RenderingServer.NinePatchAxisMode
 var id:int
 var colorSpend:Game.COLOR = Game.COLOR.WHITE
 
+var drawScaled:RID
 var drawMain:RID
 var drawGlitch:RID
 
 func _init() -> void : size = Vector2(32,32)
 
 func _ready() -> void:
+	drawScaled = RenderingServer.canvas_item_create()
 	drawMain = RenderingServer.canvas_item_create()
 	drawGlitch = RenderingServer.canvas_item_create()
-	RenderingServer.canvas_item_set_material(drawMain,Game.PIXELATED_MATERIAL.get_rid())
+	RenderingServer.canvas_item_set_material(drawScaled,Game.PIXELATED_MATERIAL.get_rid())
 	RenderingServer.canvas_item_set_material(drawGlitch,Game.GLITCH_MATERIAL.get_rid())
+	RenderingServer.canvas_item_set_parent(drawScaled,get_canvas_item())
 	RenderingServer.canvas_item_set_parent(drawMain,get_canvas_item())
 	RenderingServer.canvas_item_set_parent(drawGlitch,get_canvas_item())
 	updateDraw()
 	editor.game.connect(&"goldIndexChanged", updateDraw)
 
 func updateDraw() -> void:
+	RenderingServer.canvas_item_clear(drawScaled)
 	RenderingServer.canvas_item_clear(drawMain)
 	RenderingServer.canvas_item_clear(drawGlitch)
+	RenderingServer.canvas_item_set_instance_shader_parameter(drawScaled, &"size", size)
+	RenderingServer.canvas_item_set_instance_shader_parameter(drawGlitch, &"size", size)
 	var rect:Rect2 = Rect2(Vector2.ZERO, size)
 	var texture:Texture2D
 	match colorSpend:
@@ -39,9 +45,11 @@ func updateDraw() -> void:
 		Game.COLOR.STONE: texture = editor.game.stoneTex()
 		Game.COLOR.DYNAMITE: texture = editor.game.dynamiteTex()
 	if texture:
-		RenderingServer.canvas_item_add_texture_rect(drawMain,rect,texture)
+		RenderingServer.canvas_item_add_texture_rect(drawScaled,rect,texture)
 	elif colorSpend == Game.COLOR.GLITCH:
-		pass
+		RenderingServer.canvas_item_add_nine_patch(drawGlitch,rect,TEXTURE_RECT,SPEND_HIGH,CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,Game.highTone[Game.COLOR.GLITCH])
+		RenderingServer.canvas_item_add_nine_patch(drawGlitch,rect,TEXTURE_RECT,SPEND_MAIN,CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,Game.mainTone[Game.COLOR.GLITCH])
+		RenderingServer.canvas_item_add_nine_patch(drawGlitch,rect,TEXTURE_RECT,SPEND_DARK,CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,Game.darkTone[Game.COLOR.GLITCH])
 	else:
 		RenderingServer.canvas_item_add_nine_patch(drawMain,rect,TEXTURE_RECT,SPEND_HIGH,CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,Game.highTone[colorSpend])
 		RenderingServer.canvas_item_add_nine_patch(drawMain,rect,TEXTURE_RECT,SPEND_MAIN,CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,Game.mainTone[colorSpend])
