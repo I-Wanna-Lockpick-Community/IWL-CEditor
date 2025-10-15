@@ -1,30 +1,27 @@
 extends RefCounted
-class_name Complex
+class_name C
 
-const LABEL = preload("res://resources/numberLabel.tres")
-const LABEL_NEGATIVE = preload("res://resources/numberLabelNegative.tres")
+var r:Q
+var i:Q
 
-var r:int
-var i:int
+func _init(_r:Variant,_i:Variant=0) -> void:
+	r = Q.new(_r)
+	i = Q.new(_i)
 
-func _init(_r:int,_i:int):
-	r = _r
-	i = _i
-
-func _to_string():
+func _to_string() -> String:
 	var rComponent:String
 	var iComponent:String = ""
-	if r: rComponent = str(r)
-	if i:
-		if i > 0 and r: iComponent += "+"
+	if r.neq(0): rComponent = str(r)
+	if i.neq(0):
+		if i.gt(0) and r.neq(0): iComponent += "+"
 		iComponent += str(i) + "i"
-	if !r and !i: return "0"
+	if r.eq(0) and i.eq(0): return "0"
 	return rComponent + iComponent
 
-func copy() -> Complex: return Complex.new(r,i)
+func copy() -> C: return C.new(r,i)
 
-func equals(realOrComplex:Variant, imaginary:int=0) -> bool: 
-	if realOrComplex is Complex: return r == realOrComplex.r and i == realOrComplex.i
-	else: return r == realOrComplex and i == imaginary
+func eq(realOrComplex:Variant, imaginary:=Q.new(0)) -> bool: 
+	if realOrComplex is C: return r.eq(realOrComplex.r) and i.eq(realOrComplex.i)
+	else: return r.eq(realOrComplex) and i.eq(imaginary)
 
-func sign() -> int: return sign(r) + sign(i)
+func sign() -> int: return r.sign() + i.sign()

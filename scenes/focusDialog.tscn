@@ -36,24 +36,24 @@ theme_type_variation = &"DialogPanelContainer"
 [node name="c" type="MarginContainer" parent="keyDialog/c"]
 layout_mode = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="keyDialog/c/c"]
+[node name="c" type="VBoxContainer" parent="keyDialog/c/c"]
 layout_mode = 2
 theme_override_constants/separation = 2
 
-[node name="keyColorSelector" type="GridContainer" parent="keyDialog/c/c/VBoxContainer"]
+[node name="keyColorSelector" type="GridContainer" parent="keyDialog/c/c/c"]
 unique_name_in_owner = true
 layout_mode = 2
 theme = ExtResource("1_eqegh")
 script = ExtResource("3_wmate")
 metadata/_custom_type_script = "uid://c70juj2p5s6yd"
 
-[node name="keyTypeSelector" type="GridContainer" parent="keyDialog/c/c/VBoxContainer"]
+[node name="keyTypeSelector" type="GridContainer" parent="keyDialog/c/c/c"]
 unique_name_in_owner = true
 layout_mode = 2
 script = ExtResource("4_cb7cu")
 metadata/_custom_type_script = "uid://dgllodap6540"
 
-[node name="keyNumberEdit" parent="keyDialog/c/c/VBoxContainer" instance=ExtResource("5_qjvko")]
+[node name="keyCountEdit" parent="keyDialog/c/c/c" instance=ExtResource("5_qjvko")]
 unique_name_in_owner = true
 layout_mode = 2
 
@@ -87,22 +87,50 @@ stretch_mode = 0
 unique_name_in_owner = true
 anchors_preset = 0
 
-[node name="c" type="PanelContainer" parent="doorDialog"]
+[node name="c" type="VBoxContainer" parent="doorDialog"]
 layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
-offset_left = -20.0
-offset_right = 20.0
+offset_left = -87.0
+offset_right = 87.0
 offset_bottom = 40.0
 grow_horizontal = 2
+theme_override_constants/separation = 4
+
+[node name="door" type="PanelContainer" parent="doorDialog/c"]
+layout_mode = 2
 theme_type_variation = &"DialogPanelContainer"
 
-[node name="c" type="MarginContainer" parent="doorDialog/c"]
+[node name="c" type="MarginContainer" parent="doorDialog/c/door"]
 layout_mode = 2
 
-[node name="doorColorSpendSelector" type="GridContainer" parent="doorDialog/c/c"]
+[node name="c" type="VBoxContainer" parent="doorDialog/c/door/c"]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="doorCopiesEdit" parent="doorDialog/c/door/c/c" instance=ExtResource("5_qjvko")]
 unique_name_in_owner = true
+layout_mode = 2
+
+[node name="doorColorSpendSelector" type="GridContainer" parent="doorDialog/c/door/c/c"]
+unique_name_in_owner = true
+layout_mode = 2
+script = ExtResource("3_wmate")
+metadata/_custom_type_script = "uid://c70juj2p5s6yd"
+
+[node name="lock" type="PanelContainer" parent="doorDialog/c"]
+layout_mode = 2
+theme_type_variation = &"DialogPanelContainer"
+
+[node name="c" type="MarginContainer" parent="doorDialog/c/lock"]
+layout_mode = 2
+
+[node name="c" type="VBoxContainer" parent="doorDialog/c/lock/c"]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="lockColorSelector" type="GridContainer" parent="doorDialog/c/lock/c/c"]
 layout_mode = 2
 script = ExtResource("3_wmate")
 metadata/_custom_type_script = "uid://c70juj2p5s6yd"
@@ -118,8 +146,9 @@ points = PackedVector2Array(-8, -1, -6, -1, 0, 5, 6, -1, 8, -1)
 width = 2.0
 default_color = Color(0.8352941, 0.8352941, 0.8352941, 1)
 
-[connection signal="select" from="keyDialog/c/c/VBoxContainer/keyColorSelector" to="." method="_keyColorSelected"]
-[connection signal="select" from="keyDialog/c/c/VBoxContainer/keyTypeSelector" to="." method="_keyTypeSelected"]
-[connection signal="valueSet" from="keyDialog/c/c/VBoxContainer/keyNumberEdit" to="." method="_keyNumberSet"]
+[connection signal="select" from="keyDialog/c/c/c/keyColorSelector" to="." method="_keyColorSelected"]
+[connection signal="select" from="keyDialog/c/c/c/keyTypeSelector" to="." method="_keyTypeSelected"]
+[connection signal="valueSet" from="keyDialog/c/c/c/keyCountEdit" to="." method="_keyCountSet"]
 [connection signal="toggled" from="keyDialog/keepWorldScale/keyInfiniteToggle" to="." method="_keyInfiniteToggled"]
-[connection signal="select" from="doorDialog/c/c/doorColorSpendSelector" to="." method="_doorColorSpendSelected"]
+[connection signal="valueSet" from="doorDialog/c/door/c/c/doorCopiesEdit" to="." method="_doorCopiesSet"]
+[connection signal="select" from="doorDialog/c/door/c/c/doorColorSpendSelector" to="." method="_doorColorSpendSelected"]

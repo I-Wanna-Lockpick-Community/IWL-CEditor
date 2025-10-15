@@ -1,7 +1,7 @@
 extends Node
 class_name Changes
 
-var undoStack:Array[RefCounted] = [UndoSeperator.new()]
+var undoStack:Array[RefCounted] = [UndoSeparator.new()]
 var stackPosition:int = 0
 
 var saveBuffered:bool = false
@@ -21,19 +21,19 @@ func addChange(change:Change) -> Change:
 func _process(_delta) -> void:
 	if saveBuffered:
 		saveBuffered = false
-		if undoStack[stackPosition] is UndoSeperator: return
-		undoStack.append(UndoSeperator.new())
+		if undoStack[stackPosition] is UndoSeparator: return
+		undoStack.append(UndoSeparator.new())
 		stackPosition += 1
 
 func undo() -> void:
 	if stackPosition == 0: return
-	if undoStack[stackPosition] is UndoSeperator: stackPosition -= 1
+	if undoStack[stackPosition] is UndoSeparator: stackPosition -= 1
 	else:
 		assert(stackPosition == len(undoStack)-1)
-		undoStack.append(UndoSeperator.new())
+		undoStack.append(UndoSeparator.new())
 	while true:
 		var change = undoStack[stackPosition]
-		if change is UndoSeperator: return
+		if change is UndoSeparator: return
 		change.undo()
 		stackPosition -= 1
 
@@ -42,7 +42,7 @@ func redo() -> void:
 	stackPosition += 1
 	while true:
 		var change = undoStack[stackPosition]
-		if change is UndoSeperator: return
+		if change is UndoSeparator: return
 		change.do()
 		stackPosition += 1
 
@@ -54,10 +54,10 @@ class Change extends RefCounted:
 	func do() -> void: pass
 	func undo() -> void: pass
 
-class UndoSeperator extends RefCounted:
+class UndoSeparator extends RefCounted:
 	# indicates the start/end of an undo in the stack
 	func _to_string() -> String:
-		return "<UndoSeperator>"
+		return "<UndoSeparator>"
 
 class TileChange extends Change:
 	var position:Vector2i
@@ -112,7 +112,7 @@ class DeleteKeyChange extends Change:
 	var id:int
 	var color:Game.COLOR
 	var type:Game.KEY
-	var count:Complex
+	var count:C
 	var infinite:bool
 
 	func _init(_game:Game,key:KeyBulk) -> void:
@@ -220,7 +220,8 @@ class PropertyChange extends Change:
 		match componentType:
 			GameComponent.TYPES.KEY: component = game.keys[id]
 			GameComponent.TYPES.DOOR: component = game.doors[id]
-		if value is Complex: component.set(property, value.copy())
+		if value is C or value is Q: component.set(property, value.copy())
 		else: component.set(property, value)
-		if property != &"position": component.updateDraw()
+		if property == &"size": component.shape.shape.size = value
+		component.queue_redraw()
 		if game.editor.focusDialog.focused == component: game.editor.focusDialog.focus(component, false)

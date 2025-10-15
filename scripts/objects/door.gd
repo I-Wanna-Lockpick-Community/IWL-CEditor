@@ -12,10 +12,15 @@ const TILE:RenderingServer.NinePatchAxisMode = RenderingServer.NinePatchAxisMode
 
 var id:int
 var colorSpend:Game.COLOR = Game.COLOR.WHITE
+var copies:C = C.new(1)
 
 var drawScaled:RID
 var drawMain:RID
 var drawGlitch:RID
+var drawCopies:RID
+
+const COPIES_COLOR = Color("#edeae7")
+const COPIES_OUTLINE_COLOR = Color("#3e2d1c")
 
 func _init() -> void : size = Vector2(32,32)
 
@@ -23,20 +28,22 @@ func _ready() -> void:
 	drawScaled = RenderingServer.canvas_item_create()
 	drawMain = RenderingServer.canvas_item_create()
 	drawGlitch = RenderingServer.canvas_item_create()
+	drawCopies = RenderingServer.canvas_item_create()
 	RenderingServer.canvas_item_set_material(drawScaled,Game.PIXELATED_MATERIAL.get_rid())
 	RenderingServer.canvas_item_set_material(drawGlitch,Game.GLITCH_MATERIAL.get_rid())
 	RenderingServer.canvas_item_set_parent(drawScaled,get_canvas_item())
 	RenderingServer.canvas_item_set_parent(drawMain,get_canvas_item())
 	RenderingServer.canvas_item_set_parent(drawGlitch,get_canvas_item())
-	updateDraw()
-	editor.game.connect(&"goldIndexChanged", updateDraw)
+	RenderingServer.canvas_item_set_parent(drawCopies,get_canvas_item())
 
-func updateDraw() -> void:
+func _draw() -> void:
 	RenderingServer.canvas_item_clear(drawScaled)
 	RenderingServer.canvas_item_clear(drawMain)
 	RenderingServer.canvas_item_clear(drawGlitch)
+	RenderingServer.canvas_item_clear(drawCopies)
 	RenderingServer.canvas_item_set_instance_shader_parameter(drawScaled, &"size", size)
 	var rect:Rect2 = Rect2(Vector2.ZERO, size)
+	# fill
 	var texture:Texture2D
 	var tileTexture:bool = false
 	match colorSpend:
@@ -44,6 +51,7 @@ func updateDraw() -> void:
 		Game.COLOR.PURE: texture = editor.game.pureTex()
 		Game.COLOR.STONE: texture = editor.game.stoneTex()
 		Game.COLOR.DYNAMITE: texture = editor.game.dynamiteTex(); tileTexture = true
+		Game.COLOR.QUICKSILVER: texture = editor.game.quicksilverTex()
 	if texture:
 		if tileTexture: RenderingServer.canvas_item_add_texture_rect(drawMain,rect,texture,true)
 		else: RenderingServer.canvas_item_add_texture_rect(drawScaled,rect,texture)
@@ -55,7 +63,11 @@ func updateDraw() -> void:
 		RenderingServer.canvas_item_add_nine_patch(drawMain,rect,TEXTURE_RECT,SPEND_HIGH,CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,Game.highTone[colorSpend])
 		RenderingServer.canvas_item_add_nine_patch(drawMain,rect,TEXTURE_RECT,SPEND_MAIN,CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,Game.mainTone[colorSpend])
 		RenderingServer.canvas_item_add_nine_patch(drawMain,rect,TEXTURE_RECT,SPEND_DARK,CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,Game.darkTone[colorSpend])
+	# frame
 	RenderingServer.canvas_item_add_nine_patch(drawMain,rect,TEXTURE_RECT,FRAME,CORNER_SIZE,CORNER_SIZE)
+	# copies
+	if !copies.eq(1): TextDraw.outlinedCentered(Game.FKEYX,drawCopies,"×"+str(copies),COPIES_COLOR,COPIES_OUTLINE_COLOR,25,Vector2(size.x/2,1))
+
 
 func receiveMouseInput(event:InputEventMouse) -> bool:
 	# resizing

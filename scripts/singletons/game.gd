@@ -244,6 +244,8 @@ var levelBounds:Rect2i = Rect2i(0,0,800,608):
 const GLITCH_MATERIAL:ShaderMaterial = preload("res://resources/glitchDrawMaterial.tres")
 const PIXELATED_MATERIAL:ShaderMaterial = preload("res://resources/pixelatedDrawMaterial.tres")
 
+const FKEYX:Font = preload("res://resources/fonts/fKeyX.tres")
+
 func _process(delta:float) -> void:
 	goldIndexFloat += delta*6 # 0.1 per frame, 60fps
 	if goldIndexFloat > 12: goldIndexFloat -= 12

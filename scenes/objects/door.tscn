@@ -1,6 +1,15 @@
-[gd_scene load_steps=2 format=3 uid="uid://8vb6fw2swqpa"]
+[gd_scene load_steps=3 format=3 uid="uid://8vb6fw2swqpa"]
 
 [ext_resource type="Script" uid="uid://ilxjbdbs4jx0" path="res://scripts/objects/door.gd" id="1_yar34"]
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_yar34"]
+size = Vector2(32, 32)
+
 [node name="door" type="Node2D"]
 script = ExtResource("1_yar34")
+
+[node name="collision" type="Area2D" parent="."]
+
+[node name="shape" type="CollisionShape2D" parent="collision"]
+unique_name_in_owner = true
+shape = SubResource("RectangleShape2D_yar34")

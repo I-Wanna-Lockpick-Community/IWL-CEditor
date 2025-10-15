@@ -46,16 +46,17 @@ const POSROTOR_SYMBOL:Texture2D = preload("res://assets/game/key/symbols/posroto
 const NEGROTOR_SYMBOL:Texture2D = preload("res://assets/game/key/symbols/negrotor.png")
 const INFINITE_SYMBOL:Texture2D = preload("res://assets/game/key/symbols/infinite.png")
 
+const FKEYBULK:Font = preload("res://resources/fonts/fKeyBulk.tres")
+
 var id:int
 var color:Game.COLOR = Game.COLOR.WHITE
 var type:Game.KEY = Game.KEY.NORMAL
-var count:Complex = Complex.new(1,0)
+var count:C = C.new(1)
 var infinite:bool = false
 
 var drawMain:RID
 var drawGlitch:RID
 var drawSymbol:RID
-
 func _init() -> void : size = Vector2(32,32)
 
 func _ready() -> void:
@@ -67,8 +68,7 @@ func _ready() -> void:
 	RenderingServer.canvas_item_set_parent(drawGlitch,get_canvas_item())
 	RenderingServer.canvas_item_set_parent(drawSymbol,get_canvas_item())
 	RenderingServer.canvas_item_set_z_index(drawSymbol,2)
-	updateDraw()
-	editor.game.connect(&"goldIndexChanged",func():if Game.isAnimated(color): updateDraw())
+	editor.game.connect(&"goldIndexChanged",func():if Game.isAnimated(color): queue_redraw())
 
 func outlineTex() -> Texture2D:
 	match type:
@@ -85,7 +85,7 @@ func outlineTex() -> Texture2D:
 				Game.COLOR.QUICKSILVER: return preload("res://assets/game/key/silver/outlineMask.png")
 				_: return preload("res://assets/game/key/normal/outlineMask.png")
 
-func updateDraw() -> void:
+func _draw() -> void:
 	RenderingServer.canvas_item_clear(drawMain)
 	RenderingServer.canvas_item_clear(drawGlitch)
 	RenderingServer.canvas_item_clear(drawSymbol)
@@ -109,15 +109,13 @@ func updateDraw() -> void:
 		if count.sign() < 0: RenderingServer.canvas_item_add_texture_rect(drawMain,rect,getFrameNegative())
 		else: RenderingServer.canvas_item_add_texture_rect(drawMain,rect,getFrame())
 		RenderingServer.canvas_item_add_texture_rect(drawMain,rect,getFill(),false,Game.mainTone[color])
-	%drawText.visible = false
 	match type:
 		Game.KEY.NORMAL, Game.KEY.EXACT:
-			%drawText.visible = true
-			if count.equals(1): %drawText.text = ""
-			else: %drawText.text = str(count)
-			if count.sign() < 0: %drawText.label_settings = Complex.LABEL_NEGATIVE
-			else: %drawText.label_settings = Complex.LABEL
+			if !count.eq(1): TextDraw.outlinedCentered(FKEYBULK,drawSymbol,str(count),keycountColor(),keycountOutlineColor(),18,Vector2(2,31),4)
 		Game.KEY.SIGNFLIP: RenderingServer.canvas_item_add_texture_rect(drawSymbol,rect,SIGNFLIP_SYMBOL)
 		Game.KEY.POSROTOR, Game.KEY.CURSE: RenderingServer.canvas_item_add_texture_rect(drawSymbol,rect,POSROTOR_SYMBOL)
 		Game.KEY.NEGROTOR, Game.KEY.UNCURSE: RenderingServer.canvas_item_add_texture_rect(drawSymbol,rect,NEGROTOR_SYMBOL)
 	if infinite: RenderingServer.canvas_item_add_texture_rect(drawSymbol,rect,INFINITE_SYMBOL)
+
+func keycountColor() -> Color: return Color("#363029") if count.sign() < 0 else Color("#ebe3dd")
+func keycountOutlineColor() -> Color: return Color("#d6cfc9") if count.sign() < 0 else Color("#363029")

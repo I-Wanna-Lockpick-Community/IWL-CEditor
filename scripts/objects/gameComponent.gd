@@ -4,4 +4,7 @@ class_name GameComponent
 
 enum TYPES {KEY, DOOR}
 
+var size:Vector2
+
+@onready var shape:CollisionShape2D = %shape
 @onready var editor:Editor = get_node("/root/editor")

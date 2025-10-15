@@ -26,5 +26,5 @@ void fragment() {
 		texture(noise, uv * scale + (direction_b * NOISE_OFFSET)).b
 	);
 
-	COLOR = vec4(blend*base.g, alpha*base.a) * 1.5 * modulate.g;
+	COLOR = vec4(blend*base.g * 1.5 * modulate.g, alpha*base.a);
 }
