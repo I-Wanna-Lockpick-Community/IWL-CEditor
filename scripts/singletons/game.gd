@@ -229,12 +229,14 @@ const darkTone:Array[Color] = [
 @onready var objects:Node = %objects
 
 var objIdIter:int = 0 # for creating objects
+var lockIdIter:int = 0 # for creating locks
 var goldIndex:int = 0 # youve seen this before
 var goldIndexFloat:float = 0
 signal goldIndexChanged
 
 var keys:Dictionary[int,KeyBulk] = {}
 var doors:Dictionary[int,Door] = {}
+var locks:Dictionary[int,Lock] = {}
 
 var levelBounds:Rect2i = Rect2i(0,0,800,608):
 	set(value):

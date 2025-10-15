@@ -104,6 +104,9 @@ class CreateKeyChange extends Change:
 		game.objects.add_child(key)
 
 	func undo() -> void:
+		game.editor.objectHovered = null
+		game.editor.objectDragged = null
+		game.editor.focusDialog.defocus()
 		game.keys[id].queue_free()
 		game.keys.erase(id)
 
@@ -162,6 +165,9 @@ class CreateDoorChange extends Change:
 		game.objects.add_child(door)
 
 	func undo() -> void:
+		game.editor.objectHovered = null
+		game.editor.objectDragged = null
+		game.editor.focusDialog.defocus()
 		game.doors[id].queue_free()
 		game.doors.erase(id)
 
@@ -169,12 +175,16 @@ class DeleteDoorChange extends Change:
 	var position:Vector2i
 	var id:int
 	var size:Vector2
+	var colorSpend:Game.COLOR
+	var copies:C
 
 	func _init(_game:Game,door:Door) -> void:
 		game = _game
 		position = door.position
 		id = door.id
 		size = door.size
+		colorSpend = door.colorSpend
+		copies = door.copies
 		do()
 
 	func do() -> void:
@@ -189,8 +199,66 @@ class DeleteDoorChange extends Change:
 		door.position = position
 		door.id = id
 		door.size = size
+		door.colorSpend = colorSpend
+		door.copies = copies
 		game.doors[id] = door
 		game.objects.add_child(door)
+
+class CreateLockChange extends Change:
+	var position:Vector2i
+	var id:int
+	var doorId:int
+
+	func _init(_game:Game,_position:Vector2i, _doorId:int) -> void:
+		game = _game
+		position = _position
+		id = game.lockIdIter
+		game.lockIdIter += 1
+		doorId = _doorId
+		do()
+	
+	func do() -> void:
+		var lock:Lock = Lock.new(game.doors[doorId])
+		lock.position = position
+		lock.id = id
+		lock.doorId = doorId
+		game.locks[id] = lock
+		game.doors[doorId].add_child(lock)
+
+	func undo() -> void:
+		game.editor.objectHovered = null
+		game.editor.objectDragged = null
+		game.locks[id].queue_free()
+		game.locks.erase(id)
+
+class DeleteLockChange extends Change:
+	var position:Vector2i
+	var id:int
+	var doorId:int
+	var color:Game.COLOR
+
+	func _init(_game:Game,lock:Lock) -> void:
+		game = _game
+		position = lock.position
+		id = lock.id
+		doorId = lock.doorId
+		color = lock.color
+		do()
+
+	func do() -> void:
+		game.editor.objectHovered = null
+		game.editor.objectDragged = null
+		game.locks[id].queue_free()
+		game.locks.erase(id)
+	
+	func undo() -> void:
+		var lock:Lock = Lock.new(game.doors[doorId])
+		lock.position = position
+		lock.id = id
+		lock.doorId = doorId
+		lock.color = color
+		game.locks[id] = lock
+		game.doors[doorId].add_child(lock)
 
 class PropertyChange extends Change:
 	var id:int
@@ -207,6 +275,7 @@ class PropertyChange extends Change:
 		after = _after
 		if component is KeyBulk: componentType = GameComponent.TYPES.KEY
 		elif component is Door: componentType = GameComponent.TYPES.DOOR
+		elif component is Lock: componentType = GameComponent.TYPES.LOCK
 		if before == after:
 			cancelled = true
 			return
@@ -220,8 +289,9 @@ class PropertyChange extends Change:
 		match componentType:
 			GameComponent.TYPES.KEY: component = game.keys[id]
 			GameComponent.TYPES.DOOR: component = game.doors[id]
+			GameComponent.TYPES.LOCK: component = game.locks[id]
 		if value is C or value is Q: component.set(property, value.copy())
 		else: component.set(property, value)
-		if property == &"size": component.shape.shape.size = value
+		if property == &"size" and component is GameObject: component.shape.shape.size = value
 		component.queue_redraw()
 		if game.editor.focusDialog.focused == component: game.editor.focusDialog.focus(component, false)

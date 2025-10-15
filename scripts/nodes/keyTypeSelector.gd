@@ -14,7 +14,7 @@ const ICONS:Array[Texture2D] = [
 ]
 
 func _ready() -> void:
-	columns = 9
+	columns = Game.KEYTYPES
 	options = range(Game.KEYTYPES)
 	defaultValue = Game.KEY.NORMAL
 	buttonType = KeyTypeSelectorButton

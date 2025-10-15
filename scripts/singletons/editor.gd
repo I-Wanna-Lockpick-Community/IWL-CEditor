@@ -18,6 +18,7 @@ var targetCameraZoom:float = 1
 var zoomPoint:Vector2 # the point where the latest zoom was targetted
 
 var objectHovered:GameObject
+var componentHovered:GameComponent # you can hover both a door and a lock at the same time so
 
 enum DRAG_MODE {POSITION, SIZE_FDIAG, SIZE_BDIAG, SIZE_VERT, SIZE_HORIZ}
 enum SIZE_DRAG_PIVOT {TOP_LEFT, TOP, TOP_RIGHT, LEFT, RIGHT, BOTTOM_LEFT, BOTTOM, BOTTOM_RIGHT}
@@ -43,15 +44,21 @@ func _process(_delta) -> void:
 	gameViewportCont.material.set_shader_parameter("screenPosition",game.editorCamera.position-gameViewportCont.position/game.editorCamera.zoom)
 	gameViewportCont.material.set_shader_parameter("rCameraZoom",1/game.editorCamera.zoom.x)
 
+	componentHovered = null
 	if !objectDragged:
 		objectHovered = null
 		for object in game.objects.get_children():
 			if mode == MODE.SELECT or (mode == MODE.KEY and object is KeyBulk) or (mode == MODE.DOOR and object is Door):
 				if Rect2(object.position, object.size).has_point(mouseWorldPosition):
 					objectHovered = object
+		if objectHovered is Door:
+			for lock in objectHovered.locks:
+				if Rect2(lock.getDrawPosition(), lock.size).has_point(mouseWorldPosition):
+					componentHovered = lock
 
 func _gui_input(event:InputEvent) -> void:
 	if event is InputEventMouse:
+		if focusDialog.focused and focusDialog.receiveMouseInput(event): return
 		# move camera
 		if event is InputEventMouseMotion and Input.is_mouse_button_pressed(MOUSE_BUTTON_MIDDLE):
 			game.editorCamera.position -= event.relative / game.editorCamera.zoom
@@ -85,6 +92,9 @@ func _gui_input(event:InputEvent) -> void:
 		match mode:
 			MODE.SELECT:
 				if isLeftClick(event): # if youre hovering something and you leftclick, focus it
+					if componentHovered:
+						focusDialog.focusComponent(componentHovered)
+					else: focusDialog.defocusComponent()
 					if objectHovered is GameObject:
 						startPositionDrag(objectHovered)
 					else: focusDialog.defocus()
@@ -116,6 +126,9 @@ func _gui_input(event:InputEvent) -> void:
 						changes.bufferSave()
 			MODE.DOOR:
 				if isLeftClick(event):
+					if componentHovered:
+						focusDialog.focusComponent(componentHovered)
+					else: focusDialog.defocusComponent()
 					if objectHovered is Door:
 						startPositionDrag(objectHovered)
 					else:

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cx3mntdf11c1g"
-path="res://.godot/imported/key.png-09ef44b4556c74789af9ef62b437eef7.ctex"
+uid="uid://cbcyxxsvn5ult"
+path="res://.godot/imported/6Bnormal.png-6ff388d3537bedc9acccf4b50dacff17.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/ui/key.png"
-dest_files=["res://.godot/imported/key.png-09ef44b4556c74789af9ef62b437eef7.ctex"]
+source_file="res://assets/game/lock/predefined/6Bnormal.png"
+dest_files=["res://.godot/imported/6Bnormal.png-6ff388d3537bedc9acccf4b50dacff17.ctex"]
 
 [params]
 

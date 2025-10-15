@@ -19,10 +19,12 @@ var drawMain:RID
 var drawGlitch:RID
 var drawCopies:RID
 
+var locks:Array[Lock] = []
+
 const COPIES_COLOR = Color("#edeae7")
 const COPIES_OUTLINE_COLOR = Color("#3e2d1c")
 
-func _init() -> void : size = Vector2(32,32)
+func _init() -> void: size = Vector2(32,32)
 
 func _ready() -> void:
 	drawScaled = RenderingServer.canvas_item_create()
@@ -35,6 +37,7 @@ func _ready() -> void:
 	RenderingServer.canvas_item_set_parent(drawMain,get_canvas_item())
 	RenderingServer.canvas_item_set_parent(drawGlitch,get_canvas_item())
 	RenderingServer.canvas_item_set_parent(drawCopies,get_canvas_item())
+	locks.append(editor.game.locks[editor.changes.addChange(Changes.CreateLockChange.new(editor.game,Vector2i.ZERO,id)).id])
 
 func _draw() -> void:
 	RenderingServer.canvas_item_clear(drawScaled)
@@ -67,7 +70,7 @@ func _draw() -> void:
 	RenderingServer.canvas_item_add_nine_patch(drawMain,rect,TEXTURE_RECT,FRAME,CORNER_SIZE,CORNER_SIZE)
 	# copies
 	if !copies.eq(1): TextDraw.outlinedCentered(Game.FKEYX,drawCopies,"×"+str(copies),COPIES_COLOR,COPIES_OUTLINE_COLOR,25,Vector2(size.x/2,1))
-
+	# locks
 
 func receiveMouseInput(event:InputEventMouse) -> bool:
 	# resizing

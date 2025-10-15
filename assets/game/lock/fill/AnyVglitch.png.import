@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://tcsqjcnuio0j"
-path="res://.godot/imported/tile.png-e30352ea12694f9b115ae962d384ae93.ctex"
+uid="uid://cgitl1uq5cdmb"
+path="res://.godot/imported/AnyVglitch.png-9d17bd78f883837c8a2d18b04c335a81.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/ui/tile.png"
-dest_files=["res://.godot/imported/tile.png-e30352ea12694f9b115ae962d384ae93.ctex"]
+source_file="res://assets/game/lock/fill/AnyVglitch.png"
+dest_files=["res://.godot/imported/AnyVglitch.png-9d17bd78f883837c8a2d18b04c335a81.ctex"]
 
 [params]
 

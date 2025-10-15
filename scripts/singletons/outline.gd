@@ -22,18 +22,23 @@ func draw() -> void:
 		drawOutline(editor.focusDialog.focused)
 	if editor.objectHovered:
 		drawOutline(editor.objectHovered,Color("#ffffff88"))
+	if editor.componentHovered:
+		drawOutline(editor.componentHovered,Color("#00a2ff88"))
+	if editor.focusDialog.componentFocused:
+		drawOutline(editor.focusDialog.componentFocused,Color("#00a2ffff"))
 
-func drawOutline(object:GameObject,color:Color=Color.WHITE) -> void:
-	if object is KeyBulk:
-		RenderingServer.canvas_item_add_texture_rect(drawShader,Rect2(object.position,object.size),object.outlineTex(),false,color)
-	if object is Door:
+func drawOutline(component:GameComponent,color:Color=Color.WHITE) -> void:
+	var pos:Vector2 = component.getDrawPosition()
+	if component is KeyBulk:
+		RenderingServer.canvas_item_add_texture_rect(drawShader,Rect2(pos,component.size),component.outlineTex(),false,color)
+	if component is Door or component is Lock:
 		RenderingServer.canvas_item_add_polyline(drawNormal,[ # cant just rectangle with the drawshader since uv doesnt work with rectangles, and there isnt a rectangle outline either from what i can tell
-			object.position,
-			object.position+Vector2(object.size.x+1/editor.game.editorCamera.zoom.x,0),
-			object.position+object.size+Vector2.ONE/editor.game.editorCamera.zoom,
-			object.position+Vector2(0,object.size.y+1/editor.game.editorCamera.zoom.x),
-			object.position # bitch
-		],[color,color,color,color],1/editor.game.editorCamera.zoom.x)
+			pos,
+			pos+Vector2(component.size.x+1/editor.game.editorCamera.zoom.x,0),
+			pos+component.size+Vector2.ONE/editor.game.editorCamera.zoom,
+			pos+Vector2(0,component.size.y+1/editor.game.editorCamera.zoom.x),
+			pos # bitch
+		],[color,color,color,color],2/editor.game.editorCamera.zoom.x)
 
 func _process(_delta) -> void:
 	draw()

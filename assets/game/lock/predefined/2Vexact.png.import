@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://brlbjt36syjq8"
-path="res://.godot/imported/select.png-ffdceea15c1d425c57c19763dc3e5718.ctex"
+uid="uid://c3otwjq0loq11"
+path="res://.godot/imported/2Vexact.png-3ea705cec69ad3e13bbbe7d62e8235fe.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/ui/select.png"
-dest_files=["res://.godot/imported/select.png-ffdceea15c1d425c57c19763dc3e5718.ctex"]
+source_file="res://assets/game/lock/predefined/2Vexact.png"
+dest_files=["res://.godot/imported/2Vexact.png-3ea705cec69ad3e13bbbe7d62e8235fe.ctex"]
 
 [params]
 
