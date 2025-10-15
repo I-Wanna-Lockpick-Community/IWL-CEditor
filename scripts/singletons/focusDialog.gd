@@ -87,7 +87,7 @@ func _keyTypeSelected(type:Game.KEY) -> void:
 	editor.changes.addChange(Changes.PropertyChange.new(editor.game,focused,&"type",type))
 	editor.changes.bufferSave()
 
-func _keyNumberSet(count:Number):
+func _keyNumberSet(count:Complex):
 	if focused is not KeyBulk: return
 	editor.changes.addChange(Changes.PropertyChange.new(editor.game,focused,&"count",count))
 	editor.changes.bufferSave()

@@ -36,7 +36,6 @@ func updateDraw() -> void:
 	RenderingServer.canvas_item_clear(drawMain)
 	RenderingServer.canvas_item_clear(drawGlitch)
 	RenderingServer.canvas_item_set_instance_shader_parameter(drawScaled, &"size", size)
-	RenderingServer.canvas_item_set_instance_shader_parameter(drawGlitch, &"size", size)
 	var rect:Rect2 = Rect2(Vector2.ZERO, size)
 	var texture:Texture2D
 	match colorSpend:
@@ -55,3 +54,33 @@ func updateDraw() -> void:
 		RenderingServer.canvas_item_add_nine_patch(drawMain,rect,TEXTURE_RECT,SPEND_MAIN,CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,Game.mainTone[colorSpend])
 		RenderingServer.canvas_item_add_nine_patch(drawMain,rect,TEXTURE_RECT,SPEND_DARK,CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,Game.darkTone[colorSpend])
 	RenderingServer.canvas_item_add_nine_patch(drawMain,rect,TEXTURE_RECT,FRAME,CORNER_SIZE,CORNER_SIZE)
+
+func receiveMouseInput(event:InputEventMouse) -> bool:
+	# resizing
+	if editor.objectDragged: return false
+	var dragCornerSize:Vector2 = Vector2(8,8)/editor.game.editorCamera.zoom
+	if Rect2(position+size-dragCornerSize,dragCornerSize).has_point(editor.mouseWorldPosition): # bottom right
+		DisplayServer.cursor_set_shape(DisplayServer.CURSOR_FDIAGSIZE)
+		if Editor.isLeftClick(event): editor.startSizeDrag(self,Editor.SIZE_DRAG_PIVOT.BOTTOM_RIGHT); return true
+	elif Rect2(position,dragCornerSize).has_point(editor.mouseWorldPosition): # top left
+		DisplayServer.cursor_set_shape(DisplayServer.CURSOR_FDIAGSIZE)
+		if Editor.isLeftClick(event): editor.startSizeDrag(self,Editor.SIZE_DRAG_PIVOT.TOP_LEFT); return true
+	elif Rect2(position+Vector2(size.x-dragCornerSize.x,0),dragCornerSize).has_point(editor.mouseWorldPosition): # top right
+		DisplayServer.cursor_set_shape(DisplayServer.CURSOR_BDIAGSIZE)
+		if Editor.isLeftClick(event): editor.startSizeDrag(self,Editor.SIZE_DRAG_PIVOT.TOP_RIGHT); return true
+	elif Rect2(position+Vector2(0,size.y-dragCornerSize.y),dragCornerSize).has_point(editor.mouseWorldPosition): # bottom left
+		DisplayServer.cursor_set_shape(DisplayServer.CURSOR_BDIAGSIZE)
+		if Editor.isLeftClick(event): editor.startSizeDrag(self,Editor.SIZE_DRAG_PIVOT.BOTTOM_LEFT); return true
+	elif Rect2(position,Vector2(size.x,dragCornerSize.y)).has_point(editor.mouseWorldPosition): # top
+		DisplayServer.cursor_set_shape(DisplayServer.CURSOR_VSIZE)
+		if Editor.isLeftClick(event): editor.startSizeDrag(self,Editor.SIZE_DRAG_PIVOT.TOP); return true
+	elif Rect2(position+Vector2(0,size.y-dragCornerSize.y),size-Vector2(0,dragCornerSize.y)).has_point(editor.mouseWorldPosition): # bottom
+		DisplayServer.cursor_set_shape(DisplayServer.CURSOR_VSIZE)
+		if Editor.isLeftClick(event): editor.startSizeDrag(self,Editor.SIZE_DRAG_PIVOT.BOTTOM); return true
+	elif Rect2(position,Vector2(dragCornerSize.x,size.y)).has_point(editor.mouseWorldPosition): # left
+		DisplayServer.cursor_set_shape(DisplayServer.CURSOR_HSIZE)
+		if Editor.isLeftClick(event): editor.startSizeDrag(self,Editor.SIZE_DRAG_PIVOT.LEFT); return true
+	elif Rect2(position+Vector2(size.x-dragCornerSize.x,0),size-Vector2(dragCornerSize.x,0)).has_point(editor.mouseWorldPosition): # right
+		DisplayServer.cursor_set_shape(DisplayServer.CURSOR_HSIZE)
+		if Editor.isLeftClick(event): editor.startSizeDrag(self,Editor.SIZE_DRAG_PIVOT.RIGHT); return true
+	return false

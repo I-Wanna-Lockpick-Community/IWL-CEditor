@@ -49,7 +49,7 @@ const INFINITE_SYMBOL:Texture2D = preload("res://assets/game/key/symbols/infinit
 var id:int
 var color:Game.COLOR = Game.COLOR.WHITE
 var type:Game.KEY = Game.KEY.NORMAL
-var count:Number = Number.new(1,0)
+var count:Complex = Complex.new(1,0)
 var infinite:bool = false
 
 var drawMain:RID
@@ -63,7 +63,6 @@ func _ready() -> void:
 	drawGlitch = RenderingServer.canvas_item_create()
 	drawSymbol = RenderingServer.canvas_item_create()
 	RenderingServer.canvas_item_set_material(drawGlitch,Game.GLITCH_MATERIAL.get_rid())
-	RenderingServer.canvas_item_set_instance_shader_parameter(drawGlitch,&"size",size)
 	RenderingServer.canvas_item_set_parent(drawMain,get_canvas_item())
 	RenderingServer.canvas_item_set_parent(drawGlitch,get_canvas_item())
 	RenderingServer.canvas_item_set_parent(drawSymbol,get_canvas_item())
@@ -104,20 +103,20 @@ func updateDraw() -> void:
 	if texture:
 		RenderingServer.canvas_item_add_texture_rect(drawMain,rect,texture)
 	elif color == Game.COLOR.GLITCH:
-		RenderingServer.canvas_item_add_texture_rect(drawMain,rect,getFrameGlitch())
-		RenderingServer.canvas_item_add_texture_rect(drawGlitch,rect,getFill())
+		RenderingServer.canvas_item_add_texture_rect(drawGlitch,rect,getFrameGlitch())
+		RenderingServer.canvas_item_add_texture_rect(drawGlitch,rect,getFill(),false,Game.mainTone[color])
 	else:
 		if count.sign() < 0: RenderingServer.canvas_item_add_texture_rect(drawMain,rect,getFrameNegative())
 		else: RenderingServer.canvas_item_add_texture_rect(drawMain,rect,getFrame())
-		RenderingServer.canvas_item_add_texture_rect(drawMain,rect,getFill(),false,editor.game.mainTone[color])
+		RenderingServer.canvas_item_add_texture_rect(drawMain,rect,getFill(),false,Game.mainTone[color])
 	%drawText.visible = false
 	match type:
 		Game.KEY.NORMAL, Game.KEY.EXACT:
 			%drawText.visible = true
 			if count.equals(1): %drawText.text = ""
 			else: %drawText.text = str(count)
-			if count.sign() < 0: %drawText.label_settings = Number.LABEL_NEGATIVE
-			else: %drawText.label_settings = Number.LABEL
+			if count.sign() < 0: %drawText.label_settings = Complex.LABEL_NEGATIVE
+			else: %drawText.label_settings = Complex.LABEL
 		Game.KEY.SIGNFLIP: RenderingServer.canvas_item_add_texture_rect(drawSymbol,rect,SIGNFLIP_SYMBOL)
 		Game.KEY.POSROTOR, Game.KEY.CURSE: RenderingServer.canvas_item_add_texture_rect(drawSymbol,rect,POSROTOR_SYMBOL)
 		Game.KEY.NEGROTOR, Game.KEY.UNCURSE: RenderingServer.canvas_item_add_texture_rect(drawSymbol,rect,NEGROTOR_SYMBOL)

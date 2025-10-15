@@ -1,5 +1,5 @@
 extends RefCounted
-class_name Number
+class_name Complex
 
 const LABEL = preload("res://resources/numberLabel.tres")
 const LABEL_NEGATIVE = preload("res://resources/numberLabelNegative.tres")
@@ -21,10 +21,10 @@ func _to_string():
 	if !r and !i: return "0"
 	return rComponent + iComponent
 
-func copy() -> Number: return Number.new(r,i)
+func copy() -> Complex: return Complex.new(r,i)
 
-func equals(realOrNumber:Variant, imaginary:int=0) -> bool: 
-	if realOrNumber is Number: return r == realOrNumber.r and i == realOrNumber.i
-	else: return r == realOrNumber and i == imaginary
+func equals(realOrComplex:Variant, imaginary:int=0) -> bool: 
+	if realOrComplex is Complex: return r == realOrComplex.r and i == realOrComplex.i
+	else: return r == realOrComplex and i == imaginary
 
 func sign() -> int: return sign(r) + sign(i)

@@ -112,7 +112,7 @@ class DeleteKeyChange extends Change:
 	var id:int
 	var color:Game.COLOR
 	var type:Game.KEY
-	var count:Number
+	var count:Complex
 	var infinite:bool
 
 	func _init(_game:Game,key:KeyBulk) -> void:
@@ -214,7 +214,7 @@ class PropertyChange extends Change:
 		match componentType:
 			GameComponent.TYPES.KEY: component = game.keys[id]
 			GameComponent.TYPES.DOOR: component = game.doors[id]
-		if value is Number: component.set(property, value.copy())
+		if value is Complex: component.set(property, value.copy())
 		else: component.set(property, value)
 		if property != &"position": component.updateDraw()
 		if game.editor.focusDialog.focused == component: game.editor.focusDialog.focus(component, false)

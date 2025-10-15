@@ -7,7 +7,7 @@ const float scale = 20.2;
 uniform float alpha: hint_range(0.0, 1.0) = 1.0;
 uniform sampler2D noise: repeat_enable;
 global uniform vec2 NOISE_OFFSET;
-instance uniform vec2 size = vec2(0,0);
+instance uniform bool scaled = true;
 varying vec4 modulate;
 
 void fragment() {
@@ -16,8 +16,8 @@ void fragment() {
 	vec4 base = texture(TEXTURE, UV);
 
 	vec2 uv = UV;
-	if (size != vec2(0,0)) {
-		uv = floor(uv*size)/size;
+	if (scaled) {
+		uv = floor(uv/TEXTURE_PIXEL_SIZE)*TEXTURE_PIXEL_SIZE;
 	}
 	// noise texture
 	vec3 blend = vec3(
@@ -26,5 +26,5 @@ void fragment() {
 		texture(noise, uv * scale + (direction_b * NOISE_OFFSET)).b
 	);
 
-	COLOR = vec4(blend*base.rgb, alpha*base.a) *1.5 * modulate.g;
+	COLOR = vec4(blend*base.g, alpha*base.a) * 1.5 * modulate.g;
 }

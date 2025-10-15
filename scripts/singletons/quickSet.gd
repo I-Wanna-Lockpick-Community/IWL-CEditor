@@ -53,8 +53,8 @@ func updateText() -> void:
 	if quick  == QUICK.NONE: text = ""; return
 	match quick:
 		QUICK.COLOR:
-			if object is Door: string += "spend color: "
-			else: string += "color: "
+			if object is Door: string += "SPEND COLOR: "
+			else: string += "COLOR: "
 	if completeMatch:
 		string += input
 		string += "[color=#999999]" + completeMatch.right(completeMatch.length()-input.length()).rpad(INPUT_CHAR_LIMIT-input.length()) + "[/color]"

@@ -19,11 +19,13 @@ var zoomPoint:Vector2 # the point where the latest zoom was targetted
 
 var objectHovered:GameObject
 
-enum DRAG_MODE {POSITION, SIZE}
+enum DRAG_MODE {POSITION, SIZE_FDIAG, SIZE_BDIAG, SIZE_VERT, SIZE_HORIZ}
+enum SIZE_DRAG_PIVOT {TOP_LEFT, TOP, TOP_RIGHT, LEFT, RIGHT, BOTTOM_LEFT, BOTTOM, BOTTOM_RIGHT}
 var objectDragged:GameObject
 var dragMode:DRAG_MODE
-var dragOffset: Vector2 # the offset for position dragging
+var dragOffset:Vector2 # the offset for position dragging
 var dragPivot:Vector2 # the pivot for size dragging
+var previousDragPosition:Vector2i # to check whether or not a drag would do anything
 
 func _process(_delta) -> void:
 	queue_redraw()
@@ -41,10 +43,12 @@ func _process(_delta) -> void:
 	gameViewportCont.material.set_shader_parameter("screenPosition",game.editorCamera.position-gameViewportCont.position/game.editorCamera.zoom)
 	gameViewportCont.material.set_shader_parameter("rCameraZoom",1/game.editorCamera.zoom.x)
 
-	objectHovered = null
-	for object in game.objects.get_children():
-		if Rect2(object.position, object.size).has_point(mouseWorldPosition):
-			objectHovered = object
+	if !objectDragged:
+		objectHovered = null
+		for object in game.objects.get_children():
+			if mode == MODE.SELECT or (mode == MODE.KEY and object is KeyBulk) or (mode == MODE.DOOR and object is Door):
+				if Rect2(object.position, object.size).has_point(mouseWorldPosition):
+					objectHovered = object
 
 func _gui_input(event:InputEvent) -> void:
 	if event is InputEventMouse:
@@ -57,19 +61,32 @@ func _gui_input(event:InputEvent) -> void:
 				MOUSE_BUTTON_WHEEL_DOWN: zoomCamera(0.8)
 		# modes
 		if isLeftUnclick(event) or isRightUnclick(event):
-			if objectDragged and dragMode == DRAG_MODE.SIZE:
+			if objectDragged and dragMode in [DRAG_MODE.SIZE_FDIAG, DRAG_MODE.SIZE_BDIAG, DRAG_MODE.SIZE_VERT, DRAG_MODE.SIZE_HORIZ]:
 				focusDialog.focus(objectDragged)
-
 			changes.bufferSave()
 			objectDragged = null
+		# set mouse cursor
+		if objectDragged:
+			match dragMode:
+				DRAG_MODE.POSITION: DisplayServer.cursor_set_shape(DisplayServer.CURSOR_DRAG)
+				DRAG_MODE.SIZE_FDIAG, DRAG_MODE.SIZE_BDIAG:
+					var diffSign:Vector2 = sign(Vector2(mouseTilePosition*32) - dragPivot)
+					match diffSign:
+						Vector2(-1,-1), Vector2(0,0), Vector2(1,1): DisplayServer.cursor_set_shape(DisplayServer.CURSOR_FDIAGSIZE)
+						Vector2(-1,1), Vector2(1,-1): DisplayServer.cursor_set_shape(DisplayServer.CURSOR_BDIAGSIZE)
+						Vector2(-1,0), Vector2(1,0): DisplayServer.cursor_set_shape(DisplayServer.CURSOR_HSIZE)
+						Vector2(0,-1), Vector2(0,1): DisplayServer.cursor_set_shape(DisplayServer.CURSOR_VSIZE)
+				DRAG_MODE.SIZE_VERT: DisplayServer.cursor_set_shape(DisplayServer.CURSOR_VSIZE)
+				DRAG_MODE.SIZE_HORIZ: DisplayServer.cursor_set_shape(DisplayServer.CURSOR_HSIZE)
+		else: DisplayServer.cursor_set_shape(DisplayServer.CURSOR_ARROW)
+		# door size dragging
+		if objectHovered and objectHovered.receiveMouseInput(event): return
+		# other
 		match mode:
 			MODE.SELECT:
 				if isLeftClick(event): # if youre hovering something and you leftclick, focus it
-					if objectHovered is KeyBulk or objectHovered is Door:
-						focusDialog.focus(objectHovered)
-						objectDragged = objectHovered
-						dragOffset = objectDragged.position - Vector2(mouseTilePosition*Vector2i(32,32))
-						dragMode = DRAG_MODE.POSITION
+					if objectHovered is GameObject:
+						startPositionDrag(objectHovered)
 					else: focusDialog.defocus()
 				if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
 					dragObject()
@@ -84,10 +101,7 @@ func _gui_input(event:InputEvent) -> void:
 			MODE.KEY:
 				if isLeftClick(event): # if youre hovering a key and you leftclick, focus it
 					if objectHovered is KeyBulk:
-						focusDialog.focus(objectHovered)
-						objectDragged = objectHovered
-						dragOffset = objectDragged.position - Vector2(mouseTilePosition*Vector2i(32,32))
-						dragMode = DRAG_MODE.POSITION
+						startPositionDrag(objectHovered)
 					else: focusDialog.defocus()
 				if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
 					if !dragObject():
@@ -105,16 +119,10 @@ func _gui_input(event:InputEvent) -> void:
 			MODE.DOOR:
 				if isLeftClick(event):
 					if objectHovered is Door:
-						focusDialog.focus(objectHovered)
-						objectDragged = objectHovered
-						dragOffset = objectDragged.position - Vector2(mouseTilePosition*Vector2i(32,32))
-						dragMode = DRAG_MODE.POSITION
+						startPositionDrag(objectHovered)
 					else:
 						if objectHovered is not Door and game.levelBounds.has_point(mouseWorldPosition):
-							focusDialog.defocus()
-							objectDragged = game.doors[changes.addChange(Changes.CreateDoorChange.new(game,mouseTilePosition*Vector2i(32,32))).id]
-							dragMode = DRAG_MODE.SIZE
-							dragPivot = objectDragged.position
+							startSizeDrag(game.doors[changes.addChange(Changes.CreateDoorChange.new(game,mouseTilePosition*32)).id])
 							if !Input.is_key_pressed(KEY_CTRL):
 								modes.setMode(MODE.SELECT)
 				if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
@@ -125,32 +133,57 @@ func _gui_input(event:InputEvent) -> void:
 						objectHovered = null
 						objectDragged = null
 
+func startPositionDrag(object:GameObject) -> void:
+	focusDialog.focus(object)
+	objectDragged = object
+	dragOffset = object.position - Vector2(mouseTilePosition*32)
+	dragMode = DRAG_MODE.POSITION
+	previousDragPosition = mouseTilePosition*32
+
+func startSizeDrag(object:GameObject, pivot:SIZE_DRAG_PIVOT=SIZE_DRAG_PIVOT.BOTTOM_RIGHT) -> void:
+	focusDialog.defocus()
+	objectDragged = object
+	match pivot:
+		SIZE_DRAG_PIVOT.BOTTOM_RIGHT: dragPivot = objectDragged.position; dragMode = DRAG_MODE.SIZE_FDIAG
+		SIZE_DRAG_PIVOT.TOP_LEFT: dragPivot = objectDragged.position+objectDragged.size-Vector2(32,32); dragMode = DRAG_MODE.SIZE_FDIAG
+		SIZE_DRAG_PIVOT.TOP_RIGHT: dragPivot = objectDragged.position+Vector2(0,objectDragged.size.y-32); dragMode = DRAG_MODE.SIZE_BDIAG
+		SIZE_DRAG_PIVOT.BOTTOM_LEFT: dragPivot = objectDragged.position+Vector2(objectDragged.size.x-32,0); dragMode = DRAG_MODE.SIZE_BDIAG
+		SIZE_DRAG_PIVOT.BOTTOM: dragPivot = objectDragged.position; dragMode = DRAG_MODE.SIZE_VERT
+		SIZE_DRAG_PIVOT.TOP: dragPivot = objectDragged.position+Vector2(0,objectDragged.size.y-32); dragMode = DRAG_MODE.SIZE_VERT
+		SIZE_DRAG_PIVOT.RIGHT: dragPivot = objectDragged.position; dragMode = DRAG_MODE.SIZE_HORIZ
+		SIZE_DRAG_PIVOT.LEFT: dragPivot = objectDragged.position+Vector2(objectDragged.size.x-32,0); dragMode = DRAG_MODE.SIZE_HORIZ
+	previousDragPosition = mouseTilePosition*32
+
+
 func dragObject() -> bool: # returns whether or not an object is being dragged, for laziness
 	if !objectDragged: return false
-	if mouseTilePosition*32 == Vector2i(objectDragged.position): return true
+	if mouseTilePosition*32 == previousDragPosition: return true
+	previousDragPosition = mouseTilePosition*32
 	var dragPosition:Vector2 = mouseTilePosition*32
-	if !game.levelBounds.has_point(mouseWorldPosition):
-		dragPosition = dragPosition.clamp(game.levelBounds.position, game.levelBounds.end-Vector2i(32,32))
 	match dragMode:
 		DRAG_MODE.POSITION:
+			if !game.levelBounds.encloses(Rect2i(mouseTilePosition*32+Vector2i(dragOffset),objectDragged.size)):
+				dragPosition = dragPosition.clamp(game.levelBounds.position-Vector2i(dragOffset), game.levelBounds.end-Vector2i(objectDragged.size+dragOffset))
 			changes.addChange(Changes.PropertyChange.new(game,objectDragged,&"position",dragPosition + dragOffset))
-		DRAG_MODE.SIZE:
+		DRAG_MODE.SIZE_FDIAG, DRAG_MODE.SIZE_BDIAG, DRAG_MODE.SIZE_VERT, DRAG_MODE.SIZE_HORIZ:
+			if !game.levelBounds.encloses(Rect2i(mouseTilePosition*32,objectDragged.size)):
+				dragPosition = dragPosition.clamp(game.levelBounds.position, game.levelBounds.end-Vector2i(32,32))
 			var toPosition:Vector2 = dragPivot
-			var toSize:Vector2
-			if dragPosition.x < dragPivot.x:
-				# dragging to the left
-				toPosition.x = dragPosition.x
-				toSize.x = dragPivot.x - dragPosition.x + 32
-				# dragging to the right
-			else: toSize.x = dragPosition.x - dragPivot.x + 32
-			if dragPosition.y < dragPivot.y:
-				# dragging to the top
-				toPosition.y = dragPosition.y
-				toSize.y = dragPivot.y - dragPosition.y + 32
-				# dragging to the bottom
-			else: toSize.y = dragPosition.y - dragPivot.y + 32
-			toSize.x = max(toSize.x, 32)
-			toSize.y = max(toSize.y, 32)
+			var toSize:Vector2 = objectDragged.size
+			if dragMode != DRAG_MODE.SIZE_VERT:
+				if dragPosition.x <= dragPivot.x:
+					# dragging to the left
+					toPosition.x = dragPosition.x
+					toSize.x = dragPivot.x - dragPosition.x + 32
+					# dragging to the right
+				else: toSize.x = dragPosition.x - dragPivot.x + 32
+			if dragMode != DRAG_MODE.SIZE_HORIZ:
+				if dragPosition.y <= dragPivot.y:
+					# dragging to the top
+					toPosition.y = dragPosition.y
+					toSize.y = dragPivot.y - dragPosition.y + 32
+					# dragging to the bottom
+				else: toSize.y = dragPosition.y - dragPivot.y + 32
 			changes.addChange(Changes.PropertyChange.new(game,objectDragged,&"position",toPosition))
 			changes.addChange(Changes.PropertyChange.new(game,objectDragged,&"size",toSize))
 	return true

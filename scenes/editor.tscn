@@ -150,6 +150,7 @@ unique_name_in_owner = true
 script = ExtResource("11_3vi5u")
 
 [node name="c2" type="PanelContainer" parent="c"]
+z_index = 2
 layout_mode = 2
 
 [node name="c" type="MarginContainer" parent="c/c2"]

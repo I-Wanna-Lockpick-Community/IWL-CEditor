@@ -4,4 +4,3 @@
 
 [resource]
 shader = ExtResource("1_nyw6s")
-shader_parameter/size = Vector2(32, 32)

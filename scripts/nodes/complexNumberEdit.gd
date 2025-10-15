@@ -5,11 +5,11 @@ class_name ComplexNumberEdit
 @onready var realEdit:NumberEdit = %realEdit
 @onready var imaginaryEdit:NumberEdit = %imaginaryEdit
 
-signal valueSet(value:Number)
+signal valueSet(value:Complex)
 
-var value:Number
+var value:Complex
 
-func setValue(_value:Number,manual:bool=false) -> void:
+func setValue(_value:Complex,manual:bool=false) -> void:
 	value = _value
 	realEdit.setValue(value.r, true)
 	imaginaryEdit.setValue(value.i, true)
@@ -20,10 +20,10 @@ func setValue(_value:Number,manual:bool=false) -> void:
 	if !manual: valueSet.emit(value)
 
 func _realSet(r:int) -> void:
-	setValue(Number.new(r,value.i))
+	setValue(Complex.new(r,value.i))
 
 func _imaginarySet(i:int) -> void:
-	setValue(Number.new(value.r,i))
+	setValue(Complex.new(value.r,i))
 
 func rotate() -> void:
-	setValue(Number.new(-value.i,value.r))
+	setValue(Complex.new(-value.i,value.r))
