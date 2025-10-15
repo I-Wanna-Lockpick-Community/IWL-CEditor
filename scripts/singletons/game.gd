@@ -247,6 +247,7 @@ const GLITCH_MATERIAL:ShaderMaterial = preload("res://resources/glitchDrawMateri
 const PIXELATED_MATERIAL:ShaderMaterial = preload("res://resources/pixelatedDrawMaterial.tres")
 
 const FKEYX:Font = preload("res://resources/fonts/fKeyX.tres")
+const FTALK:Font = preload("res://resources/fonts/fTalk.fnt")
 
 func _process(delta:float) -> void:
 	goldIndexFloat += delta*6 # 0.1 per frame, 60fps

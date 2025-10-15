@@ -58,7 +58,6 @@ func _process(_delta) -> void:
 
 func _gui_input(event:InputEvent) -> void:
 	if event is InputEventMouse:
-		if focusDialog.focused and focusDialog.receiveMouseInput(event): return
 		# move camera
 		if event is InputEventMouseMotion and Input.is_mouse_button_pressed(MOUSE_BUTTON_MIDDLE):
 			game.editorCamera.position -= event.relative / game.editorCamera.zoom
@@ -93,7 +92,7 @@ func _gui_input(event:InputEvent) -> void:
 			MODE.SELECT:
 				if isLeftClick(event): # if youre hovering something and you leftclick, focus it
 					if componentHovered:
-						focusDialog.focusComponent(componentHovered)
+						focusDialog.focusComponent(componentHovered,objectHovered)
 					else: focusDialog.defocusComponent()
 					if objectHovered is GameObject:
 						startPositionDrag(objectHovered)
@@ -127,7 +126,7 @@ func _gui_input(event:InputEvent) -> void:
 			MODE.DOOR:
 				if isLeftClick(event):
 					if componentHovered:
-						focusDialog.focusComponent(componentHovered)
+						focusDialog.focusComponent(componentHovered,objectHovered)
 					else: focusDialog.defocusComponent()
 					if objectHovered is Door:
 						startPositionDrag(objectHovered)

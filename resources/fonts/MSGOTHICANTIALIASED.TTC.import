@@ -3,12 +3,12 @@
 importer="font_data_dynamic"
 type="FontFile"
 uid="uid://decv0mh6qkyvk"
-path="res://.godot/imported/MSGOTHICALIASED.TTC-c26ddd53bb216685b2cea5fe9541c48f.fontdata"
+path="res://.godot/imported/MSGOTHICANTIALIASED.TTC-af80d3471c0b9bcd56fbefdc4518f361.fontdata"
 
 [deps]
 
-source_file="res://resources/fonts/MSGOTHICALIASED.TTC"
-dest_files=["res://.godot/imported/MSGOTHICALIASED.TTC-c26ddd53bb216685b2cea5fe9541c48f.fontdata"]
+source_file="res://resources/fonts/MSGOTHICANTIALIASED.TTC"
+dest_files=["res://.godot/imported/MSGOTHICANTIALIASED.TTC-af80d3471c0b9bcd56fbefdc4518f361.fontdata"]
 
 [params]
 

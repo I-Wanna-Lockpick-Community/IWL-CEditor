@@ -9,3 +9,5 @@ var size:Vector2
 @onready var editor:Editor = get_node("/root/editor")
 
 func getDrawPosition() -> Vector2: return position
+
+func changedValue(_property:StringName, _value:Variant) -> void: pass

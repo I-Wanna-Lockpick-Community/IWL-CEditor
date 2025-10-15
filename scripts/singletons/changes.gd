@@ -236,6 +236,10 @@ class DeleteLockChange extends Change:
 	var id:int
 	var doorId:int
 	var color:Game.COLOR
+	var type:Game.LOCK
+	var configuration:Lock.CONFIGURATION
+	var sizeType:Lock.SIZE_TYPE
+	var count:C
 
 	func _init(_game:Game,lock:Lock) -> void:
 		game = _game
@@ -243,6 +247,10 @@ class DeleteLockChange extends Change:
 		id = lock.id
 		doorId = lock.doorId
 		color = lock.color
+		type = lock.type
+		configuration = lock.configuration
+		sizeType = lock.sizeType
+		count = lock.count
 		do()
 
 	func do() -> void:
@@ -257,6 +265,10 @@ class DeleteLockChange extends Change:
 		lock.id = id
 		lock.doorId = doorId
 		lock.color = color
+		lock.type = type
+		lock.configuration = configuration
+		lock.sizeType = sizeType
+		lock.count = count
 		game.locks[id] = lock
 		game.doors[doorId].add_child(lock)
 
@@ -293,5 +305,6 @@ class PropertyChange extends Change:
 		if value is C or value is Q: component.set(property, value.copy())
 		else: component.set(property, value)
 		if property == &"size" and component is GameObject: component.shape.shape.size = value
+		component.changedValue(property,value)
 		component.queue_redraw()
 		if game.editor.focusDialog.focused == component: game.editor.focusDialog.focus(component, false)

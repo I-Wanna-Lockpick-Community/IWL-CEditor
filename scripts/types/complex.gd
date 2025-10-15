@@ -25,3 +25,6 @@ func eq(realOrComplex:Variant, imaginary:=Q.new(0)) -> bool:
 	else: return r.eq(realOrComplex) and i.eq(imaginary)
 
 func sign() -> int: return r.sign() + i.sign()
+
+func isNonzeroReal() -> bool: return r.neq(0) and i.eq(0)
+func isNonzeroImag() -> bool: return r.eq(0) and i.neq(0)

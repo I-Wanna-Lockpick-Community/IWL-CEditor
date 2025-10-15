@@ -25,6 +25,7 @@ func focus(object:GameObject, new:bool=true) -> void:
 		if !componentFocused:
 			%doorColorSelector.setSelect(focused.colorSpend)
 			%doorNumberEdit.setValue(focused.copies, true)
+			%spend.button_pressed = true
 		if new: interact(%doorNumberEdit.realEdit)
 
 func defocus() -> void:
@@ -34,10 +35,12 @@ func defocus() -> void:
 	deinteract()
 	defocusComponent()
 
-func focusComponent(component:GameComponent, _new:bool=true) -> void:
+func focusComponent(component:GameComponent, parent:GameObject, _new:bool=true) -> void:
 	componentFocused = component
 	if component is Lock:
 		%doorColorSelector.setSelect(componentFocused.color)
+		%doorNumberEdit.setValue(componentFocused.count, true)
+		%locks.get_child(parent.locks.find(componentFocused)).button_pressed = true
 
 func defocusComponent() -> void:
 	if !componentFocused: return
@@ -55,12 +58,6 @@ func deinteract() -> void:
 	interacted.bufferedNegative = false
 	interacted.setValue(interacted.value,true)
 	interacted = null
-
-func receiveMouseInput(event:InputEventMouse) -> bool:
-	if event is InputEventMouseButton and event.is_pressed():
-		if event.button_index == MOUSE_BUTTON_WHEEL_UP or event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
-			return true
-	return false
 
 func receiveKey(event:InputEvent) -> bool:
 	if focused is KeyBulk:
@@ -123,8 +120,9 @@ func _doorColorSelected(color:Game.COLOR):
 
 func _doorNumberSet(value:C):
 	if focused is not Door: return
-	editor.changes.addChange(Changes.PropertyChange.new(editor.game,focused,&"copies",value))
+	if componentFocused: editor.changes.addChange(Changes.PropertyChange.new(editor.game,componentFocused,&"count",value))
+	else: editor.changes.addChange(Changes.PropertyChange.new(editor.game,focused,&"copies",value))
 	editor.changes.bufferSave()
 
-func _doorTypeSelected(_type:Game.LOCK):
-	pass # Replace with function body.
+func _lockTypeSelected(_type:Game.LOCK):
+	if focused is not Door: return
