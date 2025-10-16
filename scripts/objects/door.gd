@@ -40,8 +40,6 @@ func _ready() -> void:
 	RenderingServer.canvas_item_set_parent(drawMain,get_canvas_item())
 	RenderingServer.canvas_item_set_parent(drawGlitch,get_canvas_item())
 	RenderingServer.canvas_item_set_parent(drawCopies,get_canvas_item())
-	locks.append(editor.game.locks[editor.changes.addChange(Changes.CreateLockChange.new(editor.game,Vector2i.ZERO,id)).id])
-	editor.game.connect(&"goldIndexChanged",queue_redraw)
 
 func _draw() -> void:
 	RenderingServer.canvas_item_clear(drawScaled)
@@ -78,32 +76,22 @@ func _draw() -> void:
 
 func receiveMouseInput(event:InputEventMouse) -> bool:
 	# resizing
-	if editor.objectDragged: return false
+	if editor.componentDragged: return false
 	var dragCornerSize:Vector2 = Vector2(8,8)/editor.game.editorCamera.zoom
-	if Rect2(position+size-dragCornerSize,dragCornerSize).has_point(editor.mouseWorldPosition): # bottom right
-		DisplayServer.cursor_set_shape(DisplayServer.CURSOR_FDIAGSIZE)
-		if Editor.isLeftClick(event): editor.startSizeDrag(self,Editor.SIZE_DRAG_PIVOT.BOTTOM_RIGHT); return true
-	elif Rect2(position,dragCornerSize).has_point(editor.mouseWorldPosition): # top left
-		DisplayServer.cursor_set_shape(DisplayServer.CURSOR_FDIAGSIZE)
-		if Editor.isLeftClick(event): editor.startSizeDrag(self,Editor.SIZE_DRAG_PIVOT.TOP_LEFT); return true
-	elif Rect2(position+Vector2(size.x-dragCornerSize.x,0),dragCornerSize).has_point(editor.mouseWorldPosition): # top right
-		DisplayServer.cursor_set_shape(DisplayServer.CURSOR_BDIAGSIZE)
-		if Editor.isLeftClick(event): editor.startSizeDrag(self,Editor.SIZE_DRAG_PIVOT.TOP_RIGHT); return true
-	elif Rect2(position+Vector2(0,size.y-dragCornerSize.y),dragCornerSize).has_point(editor.mouseWorldPosition): # bottom left
-		DisplayServer.cursor_set_shape(DisplayServer.CURSOR_BDIAGSIZE)
-		if Editor.isLeftClick(event): editor.startSizeDrag(self,Editor.SIZE_DRAG_PIVOT.BOTTOM_LEFT); return true
-	elif Rect2(position,Vector2(size.x,dragCornerSize.y)).has_point(editor.mouseWorldPosition): # top
-		DisplayServer.cursor_set_shape(DisplayServer.CURSOR_VSIZE)
-		if Editor.isLeftClick(event): editor.startSizeDrag(self,Editor.SIZE_DRAG_PIVOT.TOP); return true
-	elif Rect2(position+Vector2(0,size.y-dragCornerSize.y),size-Vector2(0,dragCornerSize.y)).has_point(editor.mouseWorldPosition): # bottom
-		DisplayServer.cursor_set_shape(DisplayServer.CURSOR_VSIZE)
-		if Editor.isLeftClick(event): editor.startSizeDrag(self,Editor.SIZE_DRAG_PIVOT.BOTTOM); return true
-	elif Rect2(position,Vector2(dragCornerSize.x,size.y)).has_point(editor.mouseWorldPosition): # left
-		DisplayServer.cursor_set_shape(DisplayServer.CURSOR_HSIZE)
-		if Editor.isLeftClick(event): editor.startSizeDrag(self,Editor.SIZE_DRAG_PIVOT.LEFT); return true
-	elif Rect2(position+Vector2(size.x-dragCornerSize.x,0),size-Vector2(dragCornerSize.x,0)).has_point(editor.mouseWorldPosition): # right
-		DisplayServer.cursor_set_shape(DisplayServer.CURSOR_HSIZE)
-		if Editor.isLeftClick(event): editor.startSizeDrag(self,Editor.SIZE_DRAG_PIVOT.RIGHT); return true
+	var diffSign:Vector2 = Editor.rectSign(Rect2(position+dragCornerSize,size-dragCornerSize*2), editor.mouseWorldPosition)
+	var dragPivot:Editor.SIZE_DRAG_PIVOT = Editor.SIZE_DRAG_PIVOT.NONE
+	match diffSign:
+		Vector2(-1,-1): dragPivot = Editor.SIZE_DRAG_PIVOT.TOP_LEFT;	DisplayServer.cursor_set_shape(DisplayServer.CURSOR_FDIAGSIZE)
+		Vector2(0,-1): dragPivot = Editor.SIZE_DRAG_PIVOT.TOP;			DisplayServer.cursor_set_shape(DisplayServer.CURSOR_VSIZE)
+		Vector2(1,-1): dragPivot = Editor.SIZE_DRAG_PIVOT.TOP_RIGHT;	DisplayServer.cursor_set_shape(DisplayServer.CURSOR_BDIAGSIZE)
+		Vector2(-1,0): dragPivot = Editor.SIZE_DRAG_PIVOT.LEFT;			DisplayServer.cursor_set_shape(DisplayServer.CURSOR_HSIZE)
+		Vector2(1,0): dragPivot = Editor.SIZE_DRAG_PIVOT.RIGHT;			DisplayServer.cursor_set_shape(DisplayServer.CURSOR_HSIZE)
+		Vector2(-1,1): dragPivot = Editor.SIZE_DRAG_PIVOT.BOTTOM_LEFT;	DisplayServer.cursor_set_shape(DisplayServer.CURSOR_BDIAGSIZE)
+		Vector2(0,1): dragPivot = Editor.SIZE_DRAG_PIVOT.BOTTOM;		DisplayServer.cursor_set_shape(DisplayServer.CURSOR_VSIZE)
+		Vector2(1,1): dragPivot = Editor.SIZE_DRAG_PIVOT.BOTTOM_RIGHT;	DisplayServer.cursor_set_shape(DisplayServer.CURSOR_FDIAGSIZE)
+	if dragPivot != Editor.SIZE_DRAG_PIVOT.NONE and Editor.isLeftClick(event):
+		editor.startSizeDrag(self, dragPivot)
+		return true
 	return false
 
 func changedValue(property:StringName, _value:Variant) -> void:

@@ -2,6 +2,7 @@ extends HFlowContainer
 class_name LockSelector
 
 @onready var editor:Editor = get_node("/root/editor")
+@onready var addLock:Button = %addLock
 
 var selected:int
 var buttons:Array[LockSelectorButton] = []
@@ -16,7 +17,7 @@ func _ready() -> void:
 func _select(button:Button):
 	if button is LockSelectorButton:
 		selected = button.index
-		if !manuallySetting: editor.focusDialog.focusComponent(door.locks[selected],door,false)
+		if !manuallySetting: editor.focusDialog.focusComponent(door.locks[selected],false)
 
 func setup(_door:Door) -> void:
 	door = _door
@@ -26,10 +27,29 @@ func setup(_door:Door) -> void:
 		var button:LockSelectorButton = LockSelectorButton.new(len(buttons), self, lock)
 		buttons.append(button)
 		add_child(button)
-		button.button_group = buttonGroup
+	remove_child(addLock)
+	add_child(addLock)
 
 func redrawButtons() -> void:
 	for button in buttons: button.queue_redraw()
+
+func _addLock():
+	var lock:Lock = editor.game.locks[editor.changes.addChange(Changes.CreateLockChange.new(editor.game,Vector2i.ZERO,door.id)).id]
+	if len(door.locks) == 1: editor.focusDialog._doorTypeSelected(Door.DOOR_TYPE.SIMPLE)
+	else: editor.focusDialog._doorTypeSelected(Door.DOOR_TYPE.COMBO)
+	var button:LockSelectorButton = LockSelectorButton.new(len(buttons), self, lock)
+	buttons.append(button)
+	add_child(button)
+	remove_child(addLock)
+	add_child(addLock)
+
+func _removeLock(lock:Lock):
+	editor.changes.addChange(Changes.DeleteLockChange.new(editor.game,lock))
+	if len(door.locks) == 1: editor.focusDialog._doorTypeSelected(Door.DOOR_TYPE.SIMPLE)
+	else: editor.focusDialog._doorTypeSelected(Door.DOOR_TYPE.COMBO)
+	var button:Button = buttons.pop_at(lock.index)
+	button.deleted = true
+	button.queue_free()
 
 class LockSelectorButton extends Button:
 	@onready var editor:Editor = get_node("/root/editor")
@@ -39,6 +59,7 @@ class LockSelectorButton extends Button:
 	var index:int
 	var selector:LockSelector
 	var lock:Lock
+	var deleted:bool=false
 
 	var drawMain:RID
 
@@ -58,7 +79,7 @@ class LockSelectorButton extends Button:
 
 	func _draw() -> void:
 		RenderingServer.canvas_item_clear(drawMain)
-		if !lock: return
+		if deleted: return
 		var rect:Rect2 = Rect2(position+Vector2.ONE, size-Vector2(2,2))
 		var texture:Texture2D
 		match lock.color:

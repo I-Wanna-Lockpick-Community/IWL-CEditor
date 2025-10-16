@@ -38,13 +38,14 @@ func defocus() -> void:
 	deinteract()
 	defocusComponent()
 
-func focusComponent(component:GameComponent, parent:GameObject, new:bool=true) -> void:
+func focusComponent(component:GameComponent, new:bool=true) -> void:
+	if focused != component.parent: focus(component.parent)
 	componentFocused = component
 	if component is Lock:
 		%doorColorSelector.setSelect(componentFocused.color)
 		%doorNumberEdit.setValue(componentFocused.count, true)
 		%lockSelector.manuallySetting = true
-		if new: %lockSelector.buttons[parent.locks.find(componentFocused)].button_pressed = true
+		if new: %lockSelector.buttons[component.parent.locks.find(componentFocused)].button_pressed = true
 		%lockSelector.manuallySetting = false
 
 func defocusComponent() -> void:
@@ -85,7 +86,7 @@ func receiveKey(event:InputEvent) -> bool:
 		match event.keycode:
 			KEY_C: editor.quickSet.startQuick(QuickSet.QUICK.COLOR, focused)
 			KEY_DELETE:
-				if componentFocused: editor.changes.addChange(Changes.DeleteLockChange.new(editor.game,componentFocused))
+				if componentFocused: %lockSelector._removeLock(componentFocused)
 				else: editor.changes.addChange(Changes.DeleteDoorChange.new(editor.game,focused))
 				editor.changes.bufferSave()
 			_: return false
@@ -140,6 +141,8 @@ func _lockTypeSelected(_type:Game.LOCK):
 func _doorTypeSelected(type:Door.DOOR_TYPE):
 	if focused is not Door: return
 	editor.changes.addChange(Changes.PropertyChange.new(editor.game,focused,&"type",type))
+	if type == Door.DOOR_TYPE.SIMPLE:
+		focused.locks[0].simpleDoorUpdate()
 
 func _spendSelected():
 	defocusComponent()

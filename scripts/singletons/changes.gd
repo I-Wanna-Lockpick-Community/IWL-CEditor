@@ -105,7 +105,7 @@ class CreateKeyChange extends Change:
 
 	func undo() -> void:
 		game.editor.objectHovered = null
-		game.editor.objectDragged = null
+		game.editor.componentDragged = null
 		game.editor.focusDialog.defocus()
 		game.keys[id].queue_free()
 		game.keys.erase(id)
@@ -130,7 +130,7 @@ class DeleteKeyChange extends Change:
 
 	func do() -> void:
 		game.editor.objectHovered = null
-		game.editor.objectDragged = null
+		game.editor.componentDragged = null
 		game.editor.focusDialog.defocus()
 		game.keys[id].queue_free()
 		game.keys.erase(id)
@@ -166,7 +166,7 @@ class CreateDoorChange extends Change:
 
 	func undo() -> void:
 		game.editor.objectHovered = null
-		game.editor.objectDragged = null
+		game.editor.componentDragged = null
 		game.editor.focusDialog.defocus()
 		game.doors[id].queue_free()
 		game.doors.erase(id)
@@ -191,7 +191,7 @@ class DeleteDoorChange extends Change:
 
 	func do() -> void:
 		game.editor.objectHovered = null
-		game.editor.objectDragged = null
+		game.editor.componentDragged = null
 		game.editor.focusDialog.defocus()
 		game.doors[id].queue_free()
 		game.doors.erase(id)
@@ -222,17 +222,19 @@ class CreateLockChange extends Change:
 		do()
 	
 	func do() -> void:
-		var lock:Lock = Lock.new(game.doors[doorId],len(game.doors[doorId].locks))
+		var door:Door = game.doors[doorId]
+		var lock:Lock = Lock.new(door,len(door.locks))
 		lock.position = position
 		lock.id = id
 		lock.doorId = doorId
 		index = lock.index
 		game.locks[id] = lock
-		game.doors[doorId].add_child(lock)
+		door.locks.append(lock)
+		door.add_child(lock)
 
 	func undo() -> void:
 		game.editor.objectHovered = null
-		game.editor.objectDragged = null
+		game.editor.componentDragged = null
 		game.editor.focusDialog.defocusComponent()
 		game.doors[doorId].locks.pop_at(index).queue_free()
 		game.locks.erase(id)
@@ -263,14 +265,15 @@ class DeleteLockChange extends Change:
 
 	func do() -> void:
 		game.editor.objectHovered = null
-		game.editor.objectDragged = null
+		game.editor.componentDragged = null
 		game.editor.focusDialog.defocusComponent()
 		game.doors[doorId].locks.pop_at(index).queue_free()
 		game.locks[id].queue_free()
 		game.locks.erase(id)
 	
 	func undo() -> void:
-		var lock:Lock = Lock.new(game.doors[doorId],index)
+		var door:Door = game.doors[doorId]
+		var lock:Lock = Lock.new(door,index)
 		lock.position = position
 		lock.id = id
 		lock.doorId = doorId
@@ -280,7 +283,8 @@ class DeleteLockChange extends Change:
 		lock.sizeType = sizeType
 		lock.count = count
 		game.locks[id] = lock
-		game.doors[doorId].add_child(lock)
+		door.locks.append(lock)
+		door.add_child(lock)
 
 class PropertyChange extends Change:
 	var id:int

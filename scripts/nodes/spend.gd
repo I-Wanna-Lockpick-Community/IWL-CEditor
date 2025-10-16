@@ -12,8 +12,8 @@ func _ready() -> void:
 
 func _draw() -> void:
 	var door:GameObject = editor.focusDialog.focused
-	if door is not Door: return
 	RenderingServer.canvas_item_clear(drawMain)
+	if door is not Door: return
 	var rect:Rect2 = Rect2(position+Vector2.ONE, size-Vector2(2,2))
 	var texture:Texture2D
 	match door.colorSpend:

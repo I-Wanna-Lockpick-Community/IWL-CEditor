@@ -166,6 +166,7 @@ func getDrawPosition() -> Vector2: return position + parent.position - getOffset
 
 func simpleDoorUpdate() -> void:
 	# resize and set configuration
+	position = Vector2.ZERO
 	configuration = CONFIGURATION.NONE
 	match type:
 		Game.LOCK.NORMAL, Game.LOCK.EXACT:
@@ -206,6 +207,26 @@ func simpleDoorUpdate() -> void:
 		_: sizeType = SIZE_TYPE.ANY; size = parent.size - Vector2(14,14)
 	getSizeFromSizeType()
 	queue_redraw()
+
+func receiveMouseInput(event:InputEventMouse) -> bool:
+	# resizing
+	if editor.componentDragged: return false
+	var dragCornerSize:Vector2 = Vector2(8,8)/editor.game.editorCamera.zoom
+	var diffSign:Vector2 = Editor.rectSign(Rect2(position+dragCornerSize-getOffset(),size-dragCornerSize*2), editor.mouseWorldPosition-parent.position)
+	var dragPivot:Editor.SIZE_DRAG_PIVOT = Editor.SIZE_DRAG_PIVOT.NONE
+	match diffSign:
+		Vector2(-1,-1): dragPivot = Editor.SIZE_DRAG_PIVOT.TOP_LEFT;	DisplayServer.cursor_set_shape(DisplayServer.CURSOR_FDIAGSIZE)
+		Vector2(0,-1): dragPivot = Editor.SIZE_DRAG_PIVOT.TOP;			DisplayServer.cursor_set_shape(DisplayServer.CURSOR_VSIZE)
+		Vector2(1,-1): dragPivot = Editor.SIZE_DRAG_PIVOT.TOP_RIGHT;	DisplayServer.cursor_set_shape(DisplayServer.CURSOR_BDIAGSIZE)
+		Vector2(-1,0): dragPivot = Editor.SIZE_DRAG_PIVOT.LEFT;			DisplayServer.cursor_set_shape(DisplayServer.CURSOR_HSIZE)
+		Vector2(1,0): dragPivot = Editor.SIZE_DRAG_PIVOT.RIGHT;			DisplayServer.cursor_set_shape(DisplayServer.CURSOR_HSIZE)
+		Vector2(-1,1): dragPivot = Editor.SIZE_DRAG_PIVOT.BOTTOM_LEFT;	DisplayServer.cursor_set_shape(DisplayServer.CURSOR_BDIAGSIZE)
+		Vector2(0,1): dragPivot = Editor.SIZE_DRAG_PIVOT.BOTTOM;		DisplayServer.cursor_set_shape(DisplayServer.CURSOR_VSIZE)
+		Vector2(1,1): dragPivot = Editor.SIZE_DRAG_PIVOT.BOTTOM_RIGHT;	DisplayServer.cursor_set_shape(DisplayServer.CURSOR_FDIAGSIZE)
+	if dragPivot != Editor.SIZE_DRAG_PIVOT.NONE and Editor.isLeftClick(event):
+		editor.startSizeDrag(self, dragPivot)
+		return true
+	return false
 
 func changedValue(property:StringName, _value:Variant) -> void:
 	if property == &"count" and parent.type == Door.DOOR_TYPE.SIMPLE:
