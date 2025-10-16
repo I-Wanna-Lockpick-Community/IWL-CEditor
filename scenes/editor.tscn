@@ -55,6 +55,7 @@ shader_parameter/OUTOFBOUNDS_COLOR = Color(0.20990813, 0.20990813, 0.2099081, 1)
 shader_parameter/levelSize = Vector2(800, 608)
 shader_parameter/screenPosition = Vector2(0, 0)
 shader_parameter/mousePosition = Vector2(0, 0)
+shader_parameter/tileSize = Vector2(32, 32)
 
 [node name="editor" type="Control"]
 layout_mode = 3
@@ -118,7 +119,7 @@ button_group = SubResource("ButtonGroup_wm3ai")
 icon = ExtResource("6_sdh1e")
 script = ExtResource("5_3vi5u")
 defaultHotkey = 66
-pressedHotkey = 4194326
+pressedHotkey = 4194325
 metadata/_custom_type_script = "uid://buv3n70m06kje"
 
 [node name="door" type="Button" parent="c/c/c/modes"]
@@ -129,7 +130,7 @@ button_group = SubResource("ButtonGroup_wm3ai")
 icon = ExtResource("7_2w0at")
 script = ExtResource("5_3vi5u")
 defaultHotkey = 68
-pressedHotkey = 4194326
+pressedHotkey = 4194325
 metadata/_custom_type_script = "uid://buv3n70m06kje"
 
 [node name="gameViewportCont" type="SubViewportContainer" parent="c"]

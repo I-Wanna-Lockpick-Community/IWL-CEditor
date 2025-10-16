@@ -41,6 +41,7 @@ func _ready() -> void:
 	RenderingServer.canvas_item_set_parent(drawGlitch,get_canvas_item())
 	RenderingServer.canvas_item_set_parent(drawCopies,get_canvas_item())
 	locks.append(editor.game.locks[editor.changes.addChange(Changes.CreateLockChange.new(editor.game,Vector2i.ZERO,id)).id])
+	editor.game.connect(&"goldIndexChanged",queue_redraw)
 
 func _draw() -> void:
 	RenderingServer.canvas_item_clear(drawScaled)

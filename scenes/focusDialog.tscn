@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=3 uid="uid://8bth374yqwpe"]
+[gd_scene load_steps=19 format=3 uid="uid://8bth374yqwpe"]
 
 [ext_resource type="Theme" uid="uid://bvfthh0vm4fbp" path="res://assets/ui/uiTheme.tres" id="1_eqegh"]
 [ext_resource type="Script" uid="uid://dm8t82nhqkdlc" path="res://scripts/singletons/focusDialog.gd" id="2_k8bto"]
@@ -13,12 +13,13 @@
 [ext_resource type="Texture2D" uid="uid://ulo77sni12v" path="res://assets/ui/doorType/combo.png" id="11_jwt4y"]
 [ext_resource type="Texture2D" uid="uid://bowkgmjrwugjj" path="res://assets/ui/doorType/gate.png" id="12_qi8n2"]
 [ext_resource type="Texture2D" uid="uid://d2tw3epi1grlq" path="res://assets/ui/doorType/spend.png" id="13_jwt4y"]
-[ext_resource type="Texture2D" uid="uid://c1u7jxeikb20e" path="res://assets/ui/lockSelect/normal.png" id="14_qi8n2"]
+[ext_resource type="Script" uid="uid://d07pxhp1r6xex" path="res://scripts/nodes/lockSelector.gd" id="14_31m74"]
+[ext_resource type="Script" uid="uid://dbmpg02ass72r" path="res://scripts/nodes/spend.gd" id="14_e2stj"]
 [ext_resource type="Script" uid="uid://cxlnmn0e36ba" path="res://scripts/nodes/lockTypeSelector.gd" id="15_vfuuy"]
 
 [sub_resource type="ButtonGroup" id="ButtonGroup_oii3e"]
 
-[sub_resource type="ButtonGroup" id="ButtonGroup_qi8n2"]
+[sub_resource type="ButtonGroup" id="ButtonGroup_e2stj"]
 
 [node name="focusDialog" type="Control"]
 layout_mode = 3
@@ -119,11 +120,12 @@ layout_mode = 2
 [node name="c" type="HBoxContainer" parent="doorDialog/c/door/c"]
 layout_mode = 2
 
-[node name="c" type="HBoxContainer" parent="doorDialog/c/door/c/c"]
+[node name="doorTypes" type="HBoxContainer" parent="doorDialog/c/door/c/c"]
+unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 4
 
-[node name="simple" type="Button" parent="doorDialog/c/door/c/c/c"]
+[node name="simple" type="Button" parent="doorDialog/c/door/c/c/doorTypes"]
 layout_mode = 2
 theme_type_variation = &"RadioButton"
 toggle_mode = true
@@ -131,30 +133,31 @@ button_pressed = true
 button_group = SubResource("ButtonGroup_oii3e")
 icon = ExtResource("10_oii3e")
 
-[node name="combo" type="Button" parent="doorDialog/c/door/c/c/c"]
+[node name="combo" type="Button" parent="doorDialog/c/door/c/c/doorTypes"]
 layout_mode = 2
 theme_type_variation = &"RadioButton"
 toggle_mode = true
 button_group = SubResource("ButtonGroup_oii3e")
 icon = ExtResource("11_jwt4y")
 
-[node name="gate" type="Button" parent="doorDialog/c/door/c/c/c"]
+[node name="gate" type="Button" parent="doorDialog/c/door/c/c/doorTypes"]
 layout_mode = 2
 theme_type_variation = &"RadioButton"
 toggle_mode = true
 button_group = SubResource("ButtonGroup_oii3e")
 icon = ExtResource("12_qi8n2")
 
-[node name="sep" type="VSeparator" parent="doorDialog/c/door/c/c/c"]
+[node name="sep" type="VSeparator" parent="doorDialog/c/door/c/c/doorTypes"]
 layout_mode = 2
 
-[node name="spend" type="Button" parent="doorDialog/c/door/c/c/c"]
+[node name="spend" type="Button" parent="doorDialog/c/door/c/c/doorTypes"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"RadioButton"
 toggle_mode = true
-button_group = SubResource("ButtonGroup_qi8n2")
+button_group = SubResource("ButtonGroup_e2stj")
 icon = ExtResource("13_jwt4y")
+script = ExtResource("14_e2stj")
 
 [node name="scroll" type="ScrollContainer" parent="doorDialog/c/door/c/c"]
 layout_mode = 2
@@ -162,71 +165,21 @@ size_flags_horizontal = 3
 mouse_filter = 0
 mouse_force_pass_scroll_events = false
 
-[node name="locks" type="HFlowContainer" parent="doorDialog/c/door/c/c/scroll"]
+[node name="MarginContainer" type="CenterContainer" parent="doorDialog/c/door/c/c/scroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="lockSelector" type="HFlowContainer" parent="doorDialog/c/door/c/c/scroll/MarginContainer"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(48, 0)
+custom_minimum_size = Vector2(48, 28)
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/h_separation = 0
 theme_override_constants/v_separation = 0
-alignment = 1
 last_wrap_alignment = 1
-
-[node name="lock" type="Button" parent="doorDialog/c/door/c/c/scroll/locks"]
-layout_mode = 2
-theme_type_variation = &"SelectorButton"
-toggle_mode = true
-button_group = SubResource("ButtonGroup_qi8n2")
-icon = ExtResource("14_qi8n2")
-
-[node name="lock2" type="Button" parent="doorDialog/c/door/c/c/scroll/locks"]
-layout_mode = 2
-theme_type_variation = &"SelectorButton"
-toggle_mode = true
-button_group = SubResource("ButtonGroup_qi8n2")
-icon = ExtResource("14_qi8n2")
-
-[node name="lock3" type="Button" parent="doorDialog/c/door/c/c/scroll/locks"]
-layout_mode = 2
-theme_type_variation = &"SelectorButton"
-toggle_mode = true
-button_group = SubResource("ButtonGroup_qi8n2")
-icon = ExtResource("14_qi8n2")
-
-[node name="lock4" type="Button" parent="doorDialog/c/door/c/c/scroll/locks"]
-layout_mode = 2
-theme_type_variation = &"SelectorButton"
-toggle_mode = true
-button_group = SubResource("ButtonGroup_qi8n2")
-icon = ExtResource("14_qi8n2")
-
-[node name="lock5" type="Button" parent="doorDialog/c/door/c/c/scroll/locks"]
-layout_mode = 2
-theme_type_variation = &"SelectorButton"
-toggle_mode = true
-button_group = SubResource("ButtonGroup_qi8n2")
-icon = ExtResource("14_qi8n2")
-
-[node name="lock6" type="Button" parent="doorDialog/c/door/c/c/scroll/locks"]
-layout_mode = 2
-theme_type_variation = &"SelectorButton"
-toggle_mode = true
-button_group = SubResource("ButtonGroup_qi8n2")
-icon = ExtResource("14_qi8n2")
-
-[node name="lock7" type="Button" parent="doorDialog/c/door/c/c/scroll/locks"]
-layout_mode = 2
-theme_type_variation = &"SelectorButton"
-toggle_mode = true
-button_group = SubResource("ButtonGroup_qi8n2")
-icon = ExtResource("14_qi8n2")
-
-[node name="lock8" type="Button" parent="doorDialog/c/door/c/c/scroll/locks"]
-layout_mode = 2
-theme_type_variation = &"SelectorButton"
-toggle_mode = true
-button_group = SubResource("ButtonGroup_qi8n2")
-icon = ExtResource("14_qi8n2")
+script = ExtResource("14_31m74")
+buttonGroup = SubResource("ButtonGroup_e2stj")
 
 [node name="lock" type="PanelContainer" parent="doorDialog/c"]
 layout_mode = 2
@@ -278,6 +231,10 @@ default_color = Color(0.8352941, 0.8352941, 0.8352941, 1)
 [connection signal="select" from="keyDialog/c/c/c/keyTypeSelector" to="." method="_keyTypeSelected"]
 [connection signal="valueSet" from="keyDialog/c/c/c/keyCountEdit" to="." method="_keyCountSet"]
 [connection signal="toggled" from="keyDialog/keepWorldScale/keyInfiniteToggle" to="." method="_keyInfiniteToggled"]
+[connection signal="pressed" from="doorDialog/c/door/c/c/doorTypes/simple" to="." method="_doorTypeSelected" binds= [0]]
+[connection signal="pressed" from="doorDialog/c/door/c/c/doorTypes/combo" to="." method="_doorTypeSelected" binds= [1]]
+[connection signal="pressed" from="doorDialog/c/door/c/c/doorTypes/gate" to="." method="_doorTypeSelected" binds= [2]]
+[connection signal="pressed" from="doorDialog/c/door/c/c/doorTypes/spend" to="." method="_spendSelected"]
 [connection signal="select" from="doorDialog/c/lock/c/c/doorColorSelector" to="." method="_doorColorSelected"]
 [connection signal="select" from="doorDialog/c/lock/c/c/c/lockTypeSelector" to="." method="_lockTypeSelected"]
 [connection signal="valueSet" from="doorDialog/c/lock/c/c/doorNumberEdit" to="." method="_doorNumberSet"]

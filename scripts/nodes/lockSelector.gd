@@ -1,0 +1,75 @@
+extends HFlowContainer
+class_name LockSelector
+
+@onready var editor:Editor = get_node("/root/editor")
+
+var selected:int
+var buttons:Array[LockSelectorButton] = []
+var door:Door
+
+var manuallySetting:bool = false # dont send signal (hacky)
+@export var buttonGroup:ButtonGroup
+
+func _ready() -> void:
+	buttonGroup.connect("pressed", _select)
+
+func _select(button:Button):
+	if button is LockSelectorButton:
+		selected = button.index
+		if !manuallySetting: editor.focusDialog.focusComponent(door.locks[selected],door,false)
+
+func setup(_door:Door) -> void:
+	door = _door
+	for button in buttons: button.queue_free()
+	buttons = []
+	for lock in door.locks:
+		var button:LockSelectorButton = LockSelectorButton.new(len(buttons), self, lock)
+		buttons.append(button)
+		add_child(button)
+		button.button_group = buttonGroup
+
+func redrawButtons() -> void:
+	for button in buttons: button.queue_redraw()
+
+class LockSelectorButton extends Button:
+	@onready var editor:Editor = get_node("/root/editor")
+
+	const LOCK_NORMAL:Texture2D = preload("res://assets/ui/lockSelect/normal.png")
+
+	var index:int
+	var selector:LockSelector
+	var lock:Lock
+
+	var drawMain:RID
+
+	func _init(_index:int,_selector:LockSelector, _lock:Lock) -> void:
+		index = _index
+		selector = _selector
+		lock = _lock
+		button_group = selector.buttonGroup
+		toggle_mode = true
+		z_index = 1
+		theme_type_variation = &"SelectorButton"
+	
+	func _ready() -> void:
+		drawMain = RenderingServer.canvas_item_create()
+		RenderingServer.canvas_item_set_parent(drawMain,selector.get_canvas_item())
+		editor.game.connect(&"goldIndexChanged",queue_redraw)
+
+	func _draw() -> void:
+		RenderingServer.canvas_item_clear(drawMain)
+		if !lock: return
+		var rect:Rect2 = Rect2(position+Vector2.ONE, size-Vector2(2,2))
+		var texture:Texture2D
+		match lock.color:
+			Game.COLOR.MASTER: texture = editor.game.masterTex()
+			Game.COLOR.PURE: texture = editor.game.pureTex()
+			Game.COLOR.STONE: texture = editor.game.stoneTex()
+			Game.COLOR.DYNAMITE: texture = editor.game.dynamiteTex()
+			Game.COLOR.QUICKSILVER: texture = editor.game.quicksilverTex()
+		if texture:
+			RenderingServer.canvas_item_add_texture_rect(drawMain,rect,texture)
+		else:
+			RenderingServer.canvas_item_add_rect(drawMain,rect,editor.game.mainTone[lock.color])
+		match lock.type:
+			Game.LOCK.NORMAL: icon = LOCK_NORMAL

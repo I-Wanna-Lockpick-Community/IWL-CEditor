@@ -6,7 +6,7 @@ var focused:GameObject # the object that is currently focused
 var componentFocused:GameComponent # you can focus both a door and a lock at the same time so
 var interacted:NumberEdit # the number edit that is currently interacted
 
-func focus(object:GameObject, new:bool=true) -> void:
+func focus(object:GameObject, new:bool=object!=focused) -> void:
 	focused = object
 	editor.game.objects.remove_child(focused)
 	editor.game.objects.add_child(focused)
@@ -22,11 +22,14 @@ func focus(object:GameObject, new:bool=true) -> void:
 	elif object is Door:
 		%keyDialog.visible = false
 		%doorDialog.visible = true
+		%doorTypes.get_child(object.type).button_pressed = true
 		if !componentFocused:
 			%doorColorSelector.setSelect(focused.colorSpend)
 			%doorNumberEdit.setValue(focused.copies, true)
 			%spend.button_pressed = true
-		if new: interact(%doorNumberEdit.realEdit)
+		if new:
+			interact(%doorNumberEdit.realEdit)
+			%lockSelector.setup(object)
 
 func defocus() -> void:
 	if !focused: return
@@ -35,12 +38,14 @@ func defocus() -> void:
 	deinteract()
 	defocusComponent()
 
-func focusComponent(component:GameComponent, parent:GameObject, _new:bool=true) -> void:
+func focusComponent(component:GameComponent, parent:GameObject, new:bool=true) -> void:
 	componentFocused = component
 	if component is Lock:
 		%doorColorSelector.setSelect(componentFocused.color)
 		%doorNumberEdit.setValue(componentFocused.count, true)
-		%locks.get_child(parent.locks.find(componentFocused)).button_pressed = true
+		%lockSelector.manuallySetting = true
+		if new: %lockSelector.buttons[parent.locks.find(componentFocused)].button_pressed = true
+		%lockSelector.manuallySetting = false
 
 func defocusComponent() -> void:
 	if !componentFocused: return
@@ -80,7 +85,8 @@ func receiveKey(event:InputEvent) -> bool:
 		match event.keycode:
 			KEY_C: editor.quickSet.startQuick(QuickSet.QUICK.COLOR, focused)
 			KEY_DELETE:
-				editor.changes.addChange(Changes.DeleteDoorChange.new(editor.game,focused))
+				if componentFocused: editor.changes.addChange(Changes.DeleteLockChange.new(editor.game,componentFocused))
+				else: editor.changes.addChange(Changes.DeleteDoorChange.new(editor.game,focused))
 				editor.changes.bufferSave()
 			_: return false
 	return true
@@ -114,8 +120,12 @@ func _keyInfiniteToggled(value:bool):
 
 func _doorColorSelected(color:Game.COLOR):
 	if focused is not Door: return
-	if componentFocused: editor.changes.addChange(Changes.PropertyChange.new(editor.game,componentFocused,&"color",color))
-	else: editor.changes.addChange(Changes.PropertyChange.new(editor.game,focused,&"colorSpend",color))
+	if componentFocused:
+		editor.changes.addChange(Changes.PropertyChange.new(editor.game,componentFocused,&"color",color))
+		%lockSelector.redrawButtons()
+	else:
+		editor.changes.addChange(Changes.PropertyChange.new(editor.game,focused,&"colorSpend",color))
+		%spend.queue_redraw()
 	editor.changes.bufferSave()
 
 func _doorNumberSet(value:C):
@@ -126,3 +136,11 @@ func _doorNumberSet(value:C):
 
 func _lockTypeSelected(_type:Game.LOCK):
 	if focused is not Door: return
+
+func _doorTypeSelected(type:Door.DOOR_TYPE):
+	if focused is not Door: return
+	editor.changes.addChange(Changes.PropertyChange.new(editor.game,focused,&"type",type))
+
+func _spendSelected():
+	defocusComponent()
+	focus(focused)

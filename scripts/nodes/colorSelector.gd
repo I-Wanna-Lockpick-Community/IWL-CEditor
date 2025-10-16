@@ -24,10 +24,9 @@ class ColorSelectorButton extends SelectorButton:
 			RenderingServer.canvas_item_set_instance_shader_parameter(drawMain,&"scaled",false)
 		RenderingServer.canvas_item_set_parent(drawMain,selector.get_canvas_item())
 		await get_tree().process_frame
-		connect(&"item_rect_changed",updateDraw)
-		if Game.isAnimated(value): editor.game.connect(&"goldIndexChanged",updateDraw)
+		if Game.isAnimated(value): editor.game.connect(&"goldIndexChanged",queue_redraw)
 	
-	func updateDraw() -> void:
+	func _draw() -> void:
 		RenderingServer.canvas_item_clear(drawMain)
 		var rect:Rect2 = Rect2(position+Vector2.ONE, size-Vector2(2,2))
 		var texture:Texture2D

@@ -177,6 +177,7 @@ class DeleteDoorChange extends Change:
 	var size:Vector2
 	var colorSpend:Game.COLOR
 	var copies:C
+	var type:Door.DOOR_TYPE
 
 	func _init(_game:Game,door:Door) -> void:
 		game = _game
@@ -185,6 +186,7 @@ class DeleteDoorChange extends Change:
 		size = door.size
 		colorSpend = door.colorSpend
 		copies = door.copies
+		type = door.type
 		do()
 
 	func do() -> void:
@@ -201,6 +203,7 @@ class DeleteDoorChange extends Change:
 		door.size = size
 		door.colorSpend = colorSpend
 		door.copies = copies
+		door.type = type
 		game.doors[id] = door
 		game.objects.add_child(door)
 
@@ -208,6 +211,7 @@ class CreateLockChange extends Change:
 	var position:Vector2i
 	var id:int
 	var doorId:int
+	var index:int
 
 	func _init(_game:Game,_position:Vector2i, _doorId:int) -> void:
 		game = _game
@@ -218,17 +222,19 @@ class CreateLockChange extends Change:
 		do()
 	
 	func do() -> void:
-		var lock:Lock = Lock.new(game.doors[doorId])
+		var lock:Lock = Lock.new(game.doors[doorId],len(game.doors[doorId].locks))
 		lock.position = position
 		lock.id = id
 		lock.doorId = doorId
+		index = lock.index
 		game.locks[id] = lock
 		game.doors[doorId].add_child(lock)
 
 	func undo() -> void:
 		game.editor.objectHovered = null
 		game.editor.objectDragged = null
-		game.locks[id].queue_free()
+		game.editor.focusDialog.defocusComponent()
+		game.doors[doorId].locks.pop_at(index).queue_free()
 		game.locks.erase(id)
 
 class DeleteLockChange extends Change:
@@ -240,6 +246,7 @@ class DeleteLockChange extends Change:
 	var configuration:Lock.CONFIGURATION
 	var sizeType:Lock.SIZE_TYPE
 	var count:C
+	var index:int
 
 	func _init(_game:Game,lock:Lock) -> void:
 		game = _game
@@ -251,16 +258,19 @@ class DeleteLockChange extends Change:
 		configuration = lock.configuration
 		sizeType = lock.sizeType
 		count = lock.count
+		index = lock.index
 		do()
 
 	func do() -> void:
 		game.editor.objectHovered = null
 		game.editor.objectDragged = null
+		game.editor.focusDialog.defocusComponent()
+		game.doors[doorId].locks.pop_at(index).queue_free()
 		game.locks[id].queue_free()
 		game.locks.erase(id)
 	
 	func undo() -> void:
-		var lock:Lock = Lock.new(game.doors[doorId])
+		var lock:Lock = Lock.new(game.doors[doorId],index)
 		lock.position = position
 		lock.id = id
 		lock.doorId = doorId
