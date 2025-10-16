@@ -198,7 +198,6 @@ func dragObject() -> bool: # returns whether or not an object is being dragged, 
 	match dragMode:
 		DRAG_MODE.POSITION:
 			if !game.levelBounds.encloses(Rect2i(mouseTilePosition+Vector2i(dragOffset+parentPosition),componentSize)):
-				print("clamped")
 				dragPosition = dragPosition.clamp(game.levelBounds.position-Vector2i(dragOffset+parentPosition), game.levelBounds.end-Vector2i(componentSize+dragOffset+parentPosition))
 			changes.addChange(Changes.PropertyChange.new(game,componentDragged,&"position",dragPosition + dragOffset))
 		DRAG_MODE.SIZE_FDIAG, DRAG_MODE.SIZE_BDIAG, DRAG_MODE.SIZE_VERT, DRAG_MODE.SIZE_HORIZ:
@@ -219,7 +218,6 @@ func dragObject() -> bool: # returns whether or not an object is being dragged, 
 			var toRect:Rect2 = dragPivotRect.expand(dragPosition)
 			changes.addChange(Changes.PropertyChange.new(game,componentDragged,&"position",toRect.position-parentPosition))
 			changes.addChange(Changes.PropertyChange.new(game,componentDragged,&"size",toRect.size))
-			print(toRect)
 	return true
 
 func _input(event:InputEvent) -> void:

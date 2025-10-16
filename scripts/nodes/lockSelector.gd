@@ -45,8 +45,7 @@ func _addLock():
 
 func _removeLock(lock:Lock):
 	editor.changes.addChange(Changes.DeleteLockChange.new(editor.game,lock))
-	if len(door.locks) == 1: editor.focusDialog._doorTypeSelected(Door.DOOR_TYPE.SIMPLE)
-	else: editor.focusDialog._doorTypeSelected(Door.DOOR_TYPE.COMBO)
+	editor.focusDialog._doorTypeSelected(Door.DOOR_TYPE.COMBO)
 	var button:Button = buttons.pop_at(lock.index)
 	button.deleted = true
 	button.queue_free()
