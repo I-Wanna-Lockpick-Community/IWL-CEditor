@@ -1,6 +1,8 @@
 extends PanelContainer
 class_name NumberEdit
 
+enum PURPOSE {SINGLE, REAL, IMAGINARY}
+
 @onready var editor:Editor = get_node("/root/editor")
 var nextEdit:NumberEdit
 
@@ -10,6 +12,7 @@ var newlyInteracted:bool = false
 
 var value:Q = Q.new(0)
 var bufferedNegative:bool = false # since -0 cant exist, activate it the next time the value isnt negative
+var purpose:PURPOSE = PURPOSE.SINGLE
 
 func _gui_input(event:InputEvent) -> void:
 	if Editor.isLeftClick(event): editor.focusDialog.interact(self)
@@ -27,8 +30,9 @@ func setValue(_value:Q, manual:bool=false) -> void:
 func receiveKey(key:InputEventKey):
 	var number:int = -1
 	match key.keycode:
-		KEY_TAB: editor.focusDialog.interact(nextEdit)
-		KEY_EQUAL: if Input.is_key_pressed(KEY_SHIFT): editor.focusDialog.interact(nextEdit)
+		KEY_TAB: editor.focusDialog.tabbed(self)
+		KEY_EQUAL: if purpose != PURPOSE.SINGLE and Input.is_key_pressed(KEY_SHIFT):
+			editor.focusDialog.interact((get_parent().imaginaryEdit if purpose == PURPOSE.REAL else get_parent().realEdit))
 		KEY_0: number = 0
 		KEY_1: number = 1
 		KEY_2: number = 2

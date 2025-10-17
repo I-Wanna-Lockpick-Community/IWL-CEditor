@@ -21,14 +21,19 @@ func _select(button:Button):
 
 func setup(_door:Door) -> void:
 	door = _door
-	for button in buttons: button.queue_free()
+	for button in buttons:
+		button.deleted = true
+		button._draw()
+		button.queue_free()
 	buttons = []
+	remove_child(addLock)
 	for lock in door.locks:
 		var button:LockSelectorButton = LockSelectorButton.new(len(buttons), self, lock)
 		buttons.append(button)
 		add_child(button)
-	remove_child(addLock)
 	add_child(addLock)
+	await get_tree().process_frame
+	redrawButtons()
 
 func redrawButtons() -> void:
 	for button in buttons: button.queue_redraw()
@@ -42,12 +47,14 @@ func _addLock():
 	add_child(button)
 	remove_child(addLock)
 	add_child(addLock)
+	button.button_pressed = true
 
 func _removeLock(lock:Lock):
 	editor.changes.addChange(Changes.DeleteLockChange.new(editor.game,lock))
 	editor.focusDialog._doorTypeSelected(Door.DOOR_TYPE.COMBO)
 	var button:Button = buttons.pop_at(lock.index)
 	button.deleted = true
+	button._draw()
 	button.queue_free()
 
 class LockSelectorButton extends Button:

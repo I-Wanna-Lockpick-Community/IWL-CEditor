@@ -30,6 +30,7 @@ func focus(object:GameObject, new:bool=object!=focused) -> void:
 		if new:
 			interact(%doorNumberEdit.realEdit)
 			%lockSelector.setup(object)
+			if object.type == Door.DOOR_TYPE.SIMPLE: focusComponent(object.locks[0])
 
 func defocus() -> void:
 	if !focused: return
@@ -64,6 +65,15 @@ func deinteract() -> void:
 	interacted.bufferedNegative = false
 	interacted.setValue(interacted.value,true)
 	interacted = null
+
+func tabbed(numberEdit:NumberEdit) -> void:
+	if numberEdit.purpose == NumberEdit.PURPOSE.REAL: interact(numberEdit.get_parent().imaginaryEdit)
+	if numberEdit.purpose == NumberEdit.PURPOSE.IMAGINARY:
+		if componentFocused is Lock:
+			if componentFocused.index == len(focused.locks) - 1: defocusComponent(); focus(focused)
+			else: %lockSelector.buttons[componentFocused.index + 1].button_pressed = true
+		elif focused is Door: if len(focused.locks) > 0: %lockSelector.buttons[0].button_pressed = true
+		interact(numberEdit.get_parent().realEdit) 
 
 func receiveKey(event:InputEvent) -> bool:
 	if focused is KeyBulk:

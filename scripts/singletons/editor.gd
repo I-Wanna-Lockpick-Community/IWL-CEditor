@@ -75,9 +75,7 @@ func _gui_input(event:InputEvent) -> void:
 		if isLeftUnclick(event) or isRightUnclick(event):
 			if componentDragged and sizeDragging():
 				if componentDragged is GameObject: focusDialog.focus(componentDragged)
-				else:
-					focusDialog.focusComponent(componentDragged)
-					if componentDragged is Lock: focusDialog._doorTypeSelected(Door.DOOR_TYPE.COMBO) # if youre resizing the lock then the door is a combo
+				else: focusDialog.focusComponent(componentDragged)
 			changes.bufferSave()
 			componentDragged = null
 		# set mouse cursor
@@ -96,8 +94,8 @@ func _gui_input(event:InputEvent) -> void:
 				DRAG_MODE.SIZE_HORIZ: DisplayServer.cursor_set_shape(DisplayServer.CURSOR_HSIZE)
 		else: DisplayServer.cursor_set_shape(DisplayServer.CURSOR_ARROW)
 		# size dragging
-		if focusDialog.componentFocused:
-			if componentHovered == focusDialog.componentFocused and focusDialog.componentFocused.receiveMouseInput(event): return
+		if focusDialog.componentFocused and focusDialog.focused.type != Door.DOOR_TYPE.SIMPLE:
+			if focusDialog.componentFocused.receiveMouseInput(event): return
 		elif objectHovered:
 			if objectHovered.receiveMouseInput(event): return
 		# other
@@ -107,7 +105,7 @@ func _gui_input(event:InputEvent) -> void:
 					if componentHovered:
 						focusDialog.focusComponent(componentHovered)
 					else: focusDialog.defocusComponent()
-					if componentHovered: startPositionDrag(componentHovered)
+					if componentHovered is Lock and componentHovered.parent.type != Door.DOOR_TYPE.SIMPLE: startPositionDrag(componentHovered)
 					elif objectHovered: startPositionDrag(objectHovered)
 					else: focusDialog.defocus()
 				if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
@@ -168,20 +166,22 @@ func startPositionDrag(component:GameComponent) -> void:
 func startSizeDrag(component:GameComponent, pivot:SIZE_DRAG_PIVOT=SIZE_DRAG_PIVOT.BOTTOM_RIGHT) -> void:
 	focusDialog.defocus()
 	componentDragged = component
-	var rectPos:Vector2
+	var rectPos:Vector2 = Vector2.ZERO
 	var minSize:Vector2
 	if component is Door: minSize = Vector2(32,32)
 	elif component is Lock: minSize = Vector2(18,18)
-	match pivot:
-		SIZE_DRAG_PIVOT.BOTTOM_RIGHT: rectPos = componentDragged.position; dragMode = DRAG_MODE.SIZE_FDIAG
-		SIZE_DRAG_PIVOT.TOP_LEFT: rectPos = componentDragged.position+componentDragged.size-minSize; dragMode = DRAG_MODE.SIZE_FDIAG
-		SIZE_DRAG_PIVOT.TOP_RIGHT: rectPos = componentDragged.position+Vector2(0,componentDragged.size.y-minSize.y); dragMode = DRAG_MODE.SIZE_BDIAG
-		SIZE_DRAG_PIVOT.BOTTOM_LEFT: rectPos = componentDragged.position+Vector2(componentDragged.size.x-minSize.x,0); dragMode = DRAG_MODE.SIZE_BDIAG
-		SIZE_DRAG_PIVOT.BOTTOM: rectPos = componentDragged.position; dragMode = DRAG_MODE.SIZE_VERT
-		SIZE_DRAG_PIVOT.TOP: rectPos = componentDragged.position+Vector2(0,componentDragged.size.y-minSize.y); dragMode = DRAG_MODE.SIZE_VERT
-		SIZE_DRAG_PIVOT.RIGHT: rectPos = componentDragged.position; dragMode = DRAG_MODE.SIZE_HORIZ
-		SIZE_DRAG_PIVOT.LEFT: rectPos = componentDragged.position+Vector2(componentDragged.size.x-minSize.x,0); dragMode = DRAG_MODE.SIZE_HORIZ
 	if component is not GameObject: rectPos += component.parent.position
+	match pivot:
+		SIZE_DRAG_PIVOT.BOTTOM_RIGHT: rectPos += componentDragged.position; dragMode = DRAG_MODE.SIZE_FDIAG
+		SIZE_DRAG_PIVOT.TOP_LEFT: rectPos += componentDragged.position+componentDragged.size-minSize; dragMode = DRAG_MODE.SIZE_FDIAG
+		SIZE_DRAG_PIVOT.TOP_RIGHT: rectPos += componentDragged.position+Vector2(0,componentDragged.size.y-minSize.y); dragMode = DRAG_MODE.SIZE_BDIAG
+		SIZE_DRAG_PIVOT.BOTTOM_LEFT: rectPos += componentDragged.position+Vector2(componentDragged.size.x-minSize.x,0); dragMode = DRAG_MODE.SIZE_BDIAG
+		SIZE_DRAG_PIVOT.BOTTOM: rectPos += componentDragged.position; dragMode = DRAG_MODE.SIZE_VERT
+		SIZE_DRAG_PIVOT.TOP: rectPos += componentDragged.position+Vector2(0,componentDragged.size.y-minSize.y); dragMode = DRAG_MODE.SIZE_VERT
+		SIZE_DRAG_PIVOT.RIGHT: rectPos += componentDragged.position; dragMode = DRAG_MODE.SIZE_HORIZ
+		SIZE_DRAG_PIVOT.LEFT: rectPos += componentDragged.position+Vector2(componentDragged.size.x-minSize.x,0); dragMode = DRAG_MODE.SIZE_HORIZ
+	if dragMode == DRAG_MODE.SIZE_VERT:  minSize.x = componentDragged.size.x;
+	if dragMode == DRAG_MODE.SIZE_HORIZ:  minSize.y = componentDragged.size.y;
 	dragPivotRect = Rect2(rectPos, minSize)
 	previousDragPosition = mouseTilePosition
 
@@ -208,10 +208,6 @@ func dragObject() -> bool: # returns whether or not an object is being dragged, 
 			if mouseWorldPosition.y > dragPivotRect.position.y:
 				dragPosition.y += tileSize.y
 				if componentDragged is Lock: dragPosition.y += componentDragged.getOffset().y*2
-			
-			# to ignore the other axis
-			if dragMode == DRAG_MODE.SIZE_VERT: dragPosition.x = componentDragged.position.x+componentSize.x
-			elif dragMode == DRAG_MODE.SIZE_HORIZ: dragPosition.y = componentDragged.position.y+componentSize.y
 			# clamp to level bounds
 			if !game.levelBounds.encloses(Rect2i(mouseTilePosition,componentSize)):
 				dragPosition = dragPosition.clamp(game.levelBounds.position, game.levelBounds.end)

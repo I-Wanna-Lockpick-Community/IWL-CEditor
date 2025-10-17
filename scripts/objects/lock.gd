@@ -26,11 +26,11 @@ const PREDEFINED_LOCK_SPRITE_NORMAL:Array[Texture2D] = [
 	preload("res://assets/game/lock/predefined/24Anormal.png"), preload("res://assets/game/lock/predefined/24Aexact.png")
 ]
 const PREDEFINED_LOCK_SPRITE_IMAGINARY:Array[Texture2D] = [
-	preload("res://assets/game/lock/predefined/1Aexact.png"), preload("res://assets/game/lock/predefined/1Aexacti.png"),
-	preload("res://assets/game/lock/predefined/2Hexact.png"), preload("res://assets/game/lock/predefined/2Hexacti.png"),
-	preload("res://assets/game/lock/predefined/2Vexact.png"), preload("res://assets/game/lock/predefined/2Vexacti.png"),
-	preload("res://assets/game/lock/predefined/3Hexact.png"), preload("res://assets/game/lock/predefined/3Hexacti.png"),
-	preload("res://assets/game/lock/predefined/3Vexact.png"), preload("res://assets/game/lock/predefined/3Vexacti.png"),
+	preload("res://assets/game/lock/predefined/1Aimaginary.png"), preload("res://assets/game/lock/predefined/1Aexacti.png"),
+	preload("res://assets/game/lock/predefined/2Himaginary.png"), preload("res://assets/game/lock/predefined/2Hexacti.png"),
+	preload("res://assets/game/lock/predefined/2Vimaginary.png"), preload("res://assets/game/lock/predefined/2Vexacti.png"),
+	preload("res://assets/game/lock/predefined/3Himaginary.png"), preload("res://assets/game/lock/predefined/3Hexacti.png"),
+	preload("res://assets/game/lock/predefined/3Vimaginary.png"), preload("res://assets/game/lock/predefined/3Vexacti.png"),
 ]
 func getPredefinedLockSprite() -> Texture2D:
 	if count.isNonzeroImag(): return PREDEFINED_LOCK_SPRITE_IMAGINARY[configuration*2+int(type==Game.LOCK.EXACT)]
@@ -211,6 +211,7 @@ func simpleDoorUpdate() -> void:
 func receiveMouseInput(event:InputEventMouse) -> bool:
 	# resizing
 	if editor.componentDragged: return false
+	if !Rect2(position-getOffset(),size).has_point(editor.mouseWorldPosition - parent.position) : return false
 	var dragCornerSize:Vector2 = Vector2(8,8)/editor.game.editorCamera.zoom
 	var diffSign:Vector2 = Editor.rectSign(Rect2(position+dragCornerSize-getOffset(),size-dragCornerSize*2), editor.mouseWorldPosition-parent.position)
 	var dragPivot:Editor.SIZE_DRAG_PIVOT = Editor.SIZE_DRAG_PIVOT.NONE

@@ -15,7 +15,9 @@ func setValue(_value:C,manual:bool=false) -> void:
 	imaginaryEdit.setValue(value.i, true)
 
 	realEdit.nextEdit = imaginaryEdit
+	realEdit.purpose = NumberEdit.PURPOSE.REAL
 	imaginaryEdit.nextEdit = realEdit
+	imaginaryEdit.purpose = NumberEdit.PURPOSE.IMAGINARY
 
 	if !manual: valueSet.emit(value)
 
