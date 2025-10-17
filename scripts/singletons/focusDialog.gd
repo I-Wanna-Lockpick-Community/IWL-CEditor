@@ -2,6 +2,7 @@ extends Control
 class_name FocusDialog
 
 @onready var editor:Editor = get_node("/root/editor")
+@onready var lockConfigurationSelector:ConfigurationSelector = %lockConfigurationSelector
 var focused:GameObject # the object that is currently focused
 var componentFocused:GameComponent # you can focus both a door and a lock at the same time so
 var interacted:NumberEdit # the number edit that is currently interacted
@@ -10,7 +11,7 @@ func focus(object:GameObject, new:bool=object!=focused) -> void:
 	focused = object
 	editor.game.objects.remove_child(focused)
 	editor.game.objects.add_child(focused)
-	if object is KeyBulk:
+	if focused is KeyBulk:
 		%keyDialog.visible = true
 		%doorDialog.visible = false
 		%keyColorSelector.setSelect(focused.color)
@@ -19,18 +20,19 @@ func focus(object:GameObject, new:bool=object!=focused) -> void:
 		%keyCountEdit.setValue(focused.count, true)
 		%keyInfiniteToggle.button_pressed = focused.infinite
 		if new: interact(%keyCountEdit.realEdit)
-	elif object is Door:
+	elif focused is Door:
 		%keyDialog.visible = false
 		%doorDialog.visible = true
-		%doorTypes.get_child(object.type).button_pressed = true
+		%doorTypes.get_child(focused.type).button_pressed = true
+		%lockConfigurationSelector.visible = focused.type != Door.TYPE.SIMPLE
 		if !componentFocused:
 			%doorColorSelector.setSelect(focused.colorSpend)
 			%doorNumberEdit.setValue(focused.copies, true)
 			%spend.button_pressed = true
 		if new:
 			interact(%doorNumberEdit.realEdit)
-			%lockSelector.setup(object)
-			if object.type == Door.DOOR_TYPE.SIMPLE: focusComponent(object.locks[0])
+			%lockSelector.setup(focused)
+			if focused.type == Door.TYPE.SIMPLE: focusComponent(focused.locks[0])
 
 func defocus() -> void:
 	if !focused: return
@@ -39,15 +41,14 @@ func defocus() -> void:
 	deinteract()
 	defocusComponent()
 
-func focusComponent(component:GameComponent, new:bool=true) -> void:
+func focusComponent(component:GameComponent, _new:bool=true) -> void:
 	if focused != component.parent: focus(component.parent)
 	componentFocused = component
 	if component is Lock:
 		%doorColorSelector.setSelect(componentFocused.color)
 		%doorNumberEdit.setValue(componentFocused.count, true)
-		%lockSelector.manuallySetting = true
-		if new: %lockSelector.buttons[component.parent.locks.find(componentFocused)].button_pressed = true
-		%lockSelector.manuallySetting = false
+		%lockSelector.setSelect(componentFocused.index)
+		if _new: print(component.index)
 
 func defocusComponent() -> void:
 	if !componentFocused: return
@@ -141,19 +142,32 @@ func _doorColorSelected(color:Game.COLOR):
 
 func _doorNumberSet(value:C):
 	if focused is not Door: return
-	if componentFocused: editor.changes.addChange(Changes.PropertyChange.new(editor.game,componentFocused,&"count",value))
+	if componentFocused:
+		editor.changes.addChange(Changes.PropertyChange.new(editor.game,componentFocused,&"count",value))
+		if focused.type == Door.TYPE.SIMPLE: componentFocused._simpleDoorUpdate()
+		else: componentFocused._comboDoorCountChanged()
 	else: editor.changes.addChange(Changes.PropertyChange.new(editor.game,focused,&"copies",value))
 	editor.changes.bufferSave()
 
 func _lockTypeSelected(_type:Game.LOCK):
 	if focused is not Door: return
 
-func _doorTypeSelected(type:Door.DOOR_TYPE):
+func _doorTypeSelected(type:Door.TYPE):
 	if focused is not Door: return
 	editor.changes.addChange(Changes.PropertyChange.new(editor.game,focused,&"type",type))
-	if type == Door.DOOR_TYPE.SIMPLE:
-		focused.locks[0].simpleDoorUpdate()
+	if type == Door.TYPE.SIMPLE:
+		focused.locks[0]._simpleDoorUpdate()
 
 func _spendSelected():
 	defocusComponent()
 	focus(focused)
+
+func _LockConfigurationSelected(option:ConfigurationSelector.OPTION):
+	if componentFocused is not Lock: return
+	match option:
+		ConfigurationSelector.OPTION.AnyS: componentFocused._comboDoorSizetypeChanged(Lock.SIZE_TYPE.AnyS)
+		ConfigurationSelector.OPTION.AnyH: componentFocused._comboDoorSizetypeChanged(Lock.SIZE_TYPE.AnyH)
+		ConfigurationSelector.OPTION.AnyV: componentFocused._comboDoorSizetypeChanged(Lock.SIZE_TYPE.AnyV)
+		ConfigurationSelector.OPTION.AnyM: componentFocused._comboDoorSizetypeChanged(Lock.SIZE_TYPE.AnyM)
+		ConfigurationSelector.OPTION.AnyL: componentFocused._comboDoorSizetypeChanged(Lock.SIZE_TYPE.AnyL)
+		ConfigurationSelector.OPTION.AnyXL: componentFocused._comboDoorSizetypeChanged(Lock.SIZE_TYPE.AnyXL)

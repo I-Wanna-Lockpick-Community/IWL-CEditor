@@ -1,7 +1,7 @@
 extends GameObject
 class_name Door
 
-enum DOOR_TYPE {SIMPLE, COMBO, GATE}
+enum TYPE {SIMPLE, COMBO, GATE}
 
 const FRAME:Texture2D = preload("res://assets/game/door/frame.png")
 const SPEND_HIGH:Texture2D = preload("res://assets/game/door/spendHigh.png")
@@ -15,7 +15,7 @@ const TILE:RenderingServer.NinePatchAxisMode = RenderingServer.NinePatchAxisMode
 var id:int
 var colorSpend:Game.COLOR = Game.COLOR.WHITE
 var copies:C = C.new(1)
-var type:DOOR_TYPE = DOOR_TYPE.SIMPLE
+var type:TYPE = TYPE.SIMPLE
 
 var drawScaled:RID
 var drawMain:RID
@@ -93,7 +93,3 @@ func receiveMouseInput(event:InputEventMouse) -> bool:
 		editor.startSizeDrag(self, dragPivot)
 		return true
 	return false
-
-func changedValue(property:StringName, _value:Variant) -> void:
-	if property == &"size" and type == DOOR_TYPE.SIMPLE:
-		locks[0].simpleDoorUpdate()

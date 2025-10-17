@@ -14,6 +14,13 @@ var manuallySetting:bool = false # dont send signal (hacky)
 func _ready() -> void:
 	buttonGroup.connect("pressed", _select)
 
+func setSelect(index:int) -> void:
+	manuallySetting = true
+	buttons[selected].button_pressed = false
+	buttons[index].button_pressed = true
+	manuallySetting = false
+	selected = index
+
 func _select(button:Button):
 	if button is LockSelectorButton:
 		selected = button.index
@@ -32,16 +39,14 @@ func setup(_door:Door) -> void:
 		buttons.append(button)
 		add_child(button)
 	add_child(addLock)
-	await get_tree().process_frame
-	redrawButtons()
 
 func redrawButtons() -> void:
 	for button in buttons: button.queue_redraw()
 
 func _addLock():
 	var lock:Lock = editor.game.locks[editor.changes.addChange(Changes.CreateLockChange.new(editor.game,Vector2i.ZERO,door.id)).id]
-	if len(door.locks) == 1: editor.focusDialog._doorTypeSelected(Door.DOOR_TYPE.SIMPLE)
-	else: editor.focusDialog._doorTypeSelected(Door.DOOR_TYPE.COMBO)
+	if len(door.locks) == 1: editor.focusDialog._doorTypeSelected(Door.TYPE.SIMPLE)
+	else: editor.focusDialog._doorTypeSelected(Door.TYPE.COMBO)
 	var button:LockSelectorButton = LockSelectorButton.new(len(buttons), self, lock)
 	buttons.append(button)
 	add_child(button)
@@ -51,7 +56,7 @@ func _addLock():
 
 func _removeLock(lock:Lock):
 	editor.changes.addChange(Changes.DeleteLockChange.new(editor.game,lock))
-	editor.focusDialog._doorTypeSelected(Door.DOOR_TYPE.COMBO)
+	editor.focusDialog._doorTypeSelected(Door.TYPE.COMBO)
 	var button:Button = buttons.pop_at(lock.index)
 	button.deleted = true
 	button._draw()
@@ -82,6 +87,7 @@ class LockSelectorButton extends Button:
 		drawMain = RenderingServer.canvas_item_create()
 		RenderingServer.canvas_item_set_parent(drawMain,selector.get_canvas_item())
 		editor.game.connect(&"goldIndexChanged",queue_redraw)
+		connect(&"item_rect_changed",queue_redraw) # control positioning jank
 
 	func _draw() -> void:
 		RenderingServer.canvas_item_clear(drawMain)

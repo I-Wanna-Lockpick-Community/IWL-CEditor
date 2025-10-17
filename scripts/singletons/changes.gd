@@ -177,7 +177,7 @@ class DeleteDoorChange extends Change:
 	var size:Vector2
 	var colorSpend:Game.COLOR
 	var copies:C
-	var type:Door.DOOR_TYPE
+	var type:Door.TYPE
 
 	func _init(_game:Game,door:Door) -> void:
 		game = _game
@@ -229,7 +229,9 @@ class CreateLockChange extends Change:
 		lock.doorId = doorId
 		index = lock.index
 		game.locks[id] = lock
-		door.locks.append(lock)
+		door.locks.insert(index, lock)
+		for lockIndex in range(index+1, len(game.doors[doorId].locks)):
+			game.doors[doorId].locks[lockIndex].index += 1
 		door.add_child(lock)
 
 	func undo() -> void:
@@ -237,11 +239,14 @@ class CreateLockChange extends Change:
 		game.editor.componentDragged = null
 		game.editor.focusDialog.defocusComponent()
 		game.doors[doorId].locks.pop_at(index).queue_free()
+		for lockIndex in range(index, len(game.doors[doorId].locks)):
+			game.doors[doorId].locks[lockIndex].index -= 1
 		game.locks.erase(id)
 
 class DeleteLockChange extends Change:
 	var position:Vector2i
 	var id:int
+	var size:Vector2
 	var doorId:int
 	var color:Game.COLOR
 	var type:Game.LOCK
@@ -254,6 +259,7 @@ class DeleteLockChange extends Change:
 		game = _game
 		position = lock.position
 		id = lock.id
+		size = lock.size
 		doorId = lock.doorId
 		color = lock.color
 		type = lock.type
@@ -268,6 +274,8 @@ class DeleteLockChange extends Change:
 		game.editor.componentDragged = null
 		game.editor.focusDialog.defocusComponent()
 		game.doors[doorId].locks.pop_at(index).queue_free()
+		for lockIndex in range(index, len(game.doors[doorId].locks)):
+			game.doors[doorId].locks[lockIndex].index -= 1
 		game.locks[id].queue_free()
 		game.locks.erase(id)
 	
@@ -276,6 +284,7 @@ class DeleteLockChange extends Change:
 		var lock:Lock = Lock.new(door,index)
 		lock.position = position
 		lock.id = id
+		lock.size = size
 		lock.doorId = doorId
 		lock.color = color
 		lock.type = type
@@ -283,7 +292,9 @@ class DeleteLockChange extends Change:
 		lock.sizeType = sizeType
 		lock.count = count
 		game.locks[id] = lock
-		door.locks.append(lock)
+		door.locks.insert(index, lock)
+		for lockIndex in range(index+1, len(game.doors[doorId].locks)):
+			game.doors[doorId].locks[lockIndex].index += 1
 		door.add_child(lock)
 
 class PropertyChange extends Change:
@@ -319,6 +330,5 @@ class PropertyChange extends Change:
 		if value is C or value is Q: component.set(property, value.copy())
 		else: component.set(property, value)
 		if property == &"size" and component is GameObject: component.shape.shape.size = value
-		component.changedValue(property,value)
 		component.queue_redraw()
 		if game.editor.focusDialog.focused == component: game.editor.focusDialog.focus(component, false)

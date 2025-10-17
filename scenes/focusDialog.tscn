@@ -1,4 +1,4 @@
-[gd_scene load_steps=20 format=3 uid="uid://8bth374yqwpe"]
+[gd_scene load_steps=21 format=3 uid="uid://8bth374yqwpe"]
 
 [ext_resource type="Theme" uid="uid://bvfthh0vm4fbp" path="res://assets/ui/uiTheme.tres" id="1_eqegh"]
 [ext_resource type="Script" uid="uid://dm8t82nhqkdlc" path="res://scripts/singletons/focusDialog.gd" id="2_k8bto"]
@@ -17,6 +17,7 @@
 [ext_resource type="Script" uid="uid://dbmpg02ass72r" path="res://scripts/nodes/spend.gd" id="14_e2stj"]
 [ext_resource type="Script" uid="uid://cxlnmn0e36ba" path="res://scripts/nodes/lockTypeSelector.gd" id="15_vfuuy"]
 [ext_resource type="Texture2D" uid="uid://blvpkkuy4f0td" path="res://assets/ui/lockSelect/new.png" id="16_e2stj"]
+[ext_resource type="Script" uid="uid://c71qe58ht0isn" path="res://scripts/nodes/configurationSelector.gd" id="17_cu8b0"]
 
 [sub_resource type="ButtonGroup" id="ButtonGroup_oii3e"]
 
@@ -195,6 +196,13 @@ layout_mode = 2
 layout_mode = 2
 theme_override_constants/separation = 2
 
+[node name="lockConfigurationSelector" type="HBoxContainer" parent="doorDialog/c/lock/c/c"]
+unique_name_in_owner = true
+layout_mode = 2
+alignment = 1
+script = ExtResource("17_cu8b0")
+metadata/_custom_type_script = "uid://c71qe58ht0isn"
+
 [node name="doorColorSelector" type="GridContainer" parent="doorDialog/c/lock/c/c"]
 unique_name_in_owner = true
 layout_mode = 2
@@ -238,6 +246,7 @@ default_color = Color(0.8352941, 0.8352941, 0.8352941, 1)
 [connection signal="pressed" from="doorDialog/c/door/c/c/doorTypes/gate" to="." method="_doorTypeSelected" binds= [2]]
 [connection signal="pressed" from="doorDialog/c/door/c/c/doorTypes/spend" to="." method="_spendSelected"]
 [connection signal="pressed" from="doorDialog/c/door/c/c/scroll/lockSelector/addLock" to="doorDialog/c/door/c/c/scroll/lockSelector" method="_addLock"]
+[connection signal="select" from="doorDialog/c/lock/c/c/lockConfigurationSelector" to="." method="_LockConfigurationSelected"]
 [connection signal="select" from="doorDialog/c/lock/c/c/doorColorSelector" to="." method="_doorColorSelected"]
 [connection signal="select" from="doorDialog/c/lock/c/c/c/lockTypeSelector" to="." method="_lockTypeSelected"]
 [connection signal="valueSet" from="doorDialog/c/lock/c/c/doorNumberEdit" to="." method="_doorNumberSet"]

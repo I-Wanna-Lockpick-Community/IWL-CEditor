@@ -94,7 +94,7 @@ func _gui_input(event:InputEvent) -> void:
 				DRAG_MODE.SIZE_HORIZ: DisplayServer.cursor_set_shape(DisplayServer.CURSOR_HSIZE)
 		else: DisplayServer.cursor_set_shape(DisplayServer.CURSOR_ARROW)
 		# size dragging
-		if focusDialog.componentFocused and focusDialog.focused.type != Door.DOOR_TYPE.SIMPLE:
+		if focusDialog.componentFocused and focusDialog.focused.type != Door.TYPE.SIMPLE:
 			if focusDialog.componentFocused.receiveMouseInput(event): return
 		elif objectHovered:
 			if objectHovered.receiveMouseInput(event): return
@@ -105,7 +105,7 @@ func _gui_input(event:InputEvent) -> void:
 					if componentHovered:
 						focusDialog.focusComponent(componentHovered)
 					else: focusDialog.defocusComponent()
-					if componentHovered is Lock and componentHovered.parent.type != Door.DOOR_TYPE.SIMPLE: startPositionDrag(componentHovered)
+					if componentHovered is Lock and componentHovered.parent.type != Door.TYPE.SIMPLE: startPositionDrag(componentHovered)
 					elif objectHovered: startPositionDrag(objectHovered)
 					else: focusDialog.defocus()
 				if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
@@ -214,6 +214,8 @@ func dragObject() -> bool: # returns whether or not an object is being dragged, 
 			var toRect:Rect2 = dragPivotRect.expand(dragPosition)
 			changes.addChange(Changes.PropertyChange.new(game,componentDragged,&"position",toRect.position-parentPosition))
 			changes.addChange(Changes.PropertyChange.new(game,componentDragged,&"size",toRect.size))
+			if componentDragged is Door and componentDragged.type == Door.TYPE.SIMPLE: componentDragged.locks[0]._simpleDoorUpdate()
+			if componentDragged is Lock: componentDragged._comboDoorSizeChanged()
 	return true
 
 func _input(event:InputEvent) -> void:

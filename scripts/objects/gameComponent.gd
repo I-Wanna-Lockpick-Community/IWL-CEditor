@@ -10,6 +10,4 @@ var size:Vector2
 
 func getDrawPosition() -> Vector2: return position
 
-func changedValue(_property:StringName, _value:Variant) -> void: pass
-
 func receiveMouseInput(_event:InputEventMouse) -> bool: return false

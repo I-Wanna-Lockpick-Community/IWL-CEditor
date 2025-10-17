@@ -71,15 +71,6 @@ func getOffset() -> Vector2:
 		SIZE_TYPE.AnyM: return Vector2(3, 3)
 		_: return Vector2(-7, -7)
 
-func getSizeFromSizeType():
-	match sizeType:
-		SIZE_TYPE.AnyS: size = Vector2(18,18)
-		SIZE_TYPE.AnyH: size = Vector2(50,18)
-		SIZE_TYPE.AnyV: size = Vector2(18,50)
-		SIZE_TYPE.AnyM: size = Vector2(38,38)
-		SIZE_TYPE.AnyL: size = Vector2(50,50)
-		SIZE_TYPE.AnyXL: size = Vector2(82,82)
-
 var id:int
 var parent:Door
 var doorId:int
@@ -142,11 +133,11 @@ func _draw() -> void:
 	# configuration
 	if configuration == CONFIGURATION.NONE:
 		var string:String = str(count)
-		var lockOffsetX:float = 0
-		var showLock:bool = size != Vector2(18,18)
-		var vertical:bool = size.x == 18
-		if showLock and !vertical: lockOffsetX = 14
 		if string == "1": string = ""
+		var lockOffsetX:float = 0
+		var showLock:bool = size != Vector2(18,18) || string == ""
+		var vertical:bool = size.x == 18 && size.y != 18 && string != ""
+		if showLock and !vertical: lockOffsetX = 14
 		var strWidth:float = Game.FTALK.get_string_size(string,HORIZONTAL_ALIGNMENT_LEFT,-1,12).x + lockOffsetX
 		var startX:int = round((size.x - strWidth)/2);
 		var startY:int = round((size.y+14)/2);
@@ -164,49 +155,79 @@ func _draw() -> void:
 
 func getDrawPosition() -> Vector2: return position + parent.position - getOffset()
 
-func simpleDoorUpdate() -> void:
+func _simpleDoorUpdate() -> void:
 	# resize and set configuration
-	position = Vector2.ZERO
-	configuration = CONFIGURATION.NONE
+	var newConfiguration:CONFIGURATION = CONFIGURATION.NONE
 	match type:
 		Game.LOCK.NORMAL, Game.LOCK.EXACT:
 			if count.isNonzeroReal():
 				match parent.size:
 					Vector2(32,32):
-						if count.r.eq(1): configuration = CONFIGURATION.spr1A
+						if count.r.eq(1): newConfiguration = CONFIGURATION.spr1A
 					Vector2(64,32):
-						if count.r.eq(2): configuration = CONFIGURATION.spr2H
-						elif count.r.eq(3): configuration = CONFIGURATION.spr3H
+						if count.r.eq(2): newConfiguration = CONFIGURATION.spr2H
+						elif count.r.eq(3): newConfiguration = CONFIGURATION.spr3H
 					Vector2(32,64):
-						if count.r.eq(2): configuration = CONFIGURATION.spr2V
-						elif count.r.eq(3): configuration = CONFIGURATION.spr3V
+						if count.r.eq(2): newConfiguration = CONFIGURATION.spr2V
+						elif count.r.eq(3): newConfiguration = CONFIGURATION.spr3V
 					Vector2(64,64):
-						if count.r.eq(4): configuration = CONFIGURATION.spr4B
-						elif count.r.eq(5): configuration = CONFIGURATION.spr5B
-						elif count.r.eq(6): configuration = CONFIGURATION.spr6B
-						elif count.r.eq(8): configuration = CONFIGURATION.spr8A
-						elif count.r.eq(12): configuration = CONFIGURATION.spr12A
+						if count.r.eq(4): newConfiguration = CONFIGURATION.spr4B
+						elif count.r.eq(5): newConfiguration = CONFIGURATION.spr5B
+						elif count.r.eq(6): newConfiguration = CONFIGURATION.spr6B
+						elif count.r.eq(8): newConfiguration = CONFIGURATION.spr8A
+						elif count.r.eq(12): newConfiguration = CONFIGURATION.spr12A
 					Vector2(96,96):
-						if count.r.eq(24): configuration = CONFIGURATION.spr24A
+						if count.r.eq(24): newConfiguration = CONFIGURATION.spr24A
 			elif count.isNonzeroImag():
 				match parent.size:
 					Vector2(32,32):
-						if count.i.eq(1): configuration = CONFIGURATION.spr1A
+						if count.i.eq(1): newConfiguration = CONFIGURATION.spr1A
 					Vector2(64,32):
-						if count.i.eq(2): configuration = CONFIGURATION.spr2H
-						elif count.i.eq(3): configuration = CONFIGURATION.spr3H
+						if count.i.eq(2): newConfiguration = CONFIGURATION.spr2H
+						elif count.i.eq(3): newConfiguration = CONFIGURATION.spr3H
 					Vector2(32,64):
-						if count.i.eq(2): configuration = CONFIGURATION.spr2V
-						elif count.i.eq(3): configuration = CONFIGURATION.spr3V
+						if count.i.eq(2): newConfiguration = CONFIGURATION.spr2V
+						elif count.i.eq(3): newConfiguration = CONFIGURATION.spr3V
+	var newSizeType:SIZE_TYPE
 	match parent.size:
-		Vector2(32,32): sizeType = SIZE_TYPE.AnyS
-		Vector2(64,32): sizeType = SIZE_TYPE.AnyH
-		Vector2(32,64): sizeType = SIZE_TYPE.AnyV
-		Vector2(64,64): sizeType = SIZE_TYPE.AnyL
-		Vector2(96,96): sizeType = SIZE_TYPE.AnyXL
-		_: sizeType = SIZE_TYPE.ANY; size = parent.size - Vector2(14,14)
-	getSizeFromSizeType()
+		Vector2(32,32): newSizeType = SIZE_TYPE.AnyS
+		Vector2(64,32): newSizeType = SIZE_TYPE.AnyH
+		Vector2(32,64): newSizeType = SIZE_TYPE.AnyV
+		Vector2(64,64): newSizeType = SIZE_TYPE.AnyL
+		Vector2(96,96): newSizeType = SIZE_TYPE.AnyXL
+		_: newSizeType = SIZE_TYPE.ANY
+	editor.changes.addChange(Changes.PropertyChange.new(editor.game,self,&"position",Vector2.ZERO))
+	editor.changes.addChange(Changes.PropertyChange.new(editor.game,self,&"configuration",newConfiguration))
+	editor.changes.addChange(Changes.PropertyChange.new(editor.game,self,&"sizeType",newSizeType))
+	editor.changes.addChange(Changes.PropertyChange.new(editor.game,self,&"size",parent.size - Vector2(14,14)))
 	queue_redraw()
+
+func _comboDoorSizetypeChanged(newSizeType:SIZE_TYPE) -> void:
+	editor.changes.addChange(Changes.PropertyChange.new(editor.game,self,&"sizeType",newSizeType))
+	var newSize:Vector2
+	match sizeType:
+		SIZE_TYPE.AnyS: newSize = Vector2(18,18)
+		SIZE_TYPE.AnyH: newSize = Vector2(50,18)
+		SIZE_TYPE.AnyV: newSize = Vector2(18,50)
+		SIZE_TYPE.AnyM: newSize = Vector2(38,38)
+		SIZE_TYPE.AnyL: newSize = Vector2(50,50)
+		SIZE_TYPE.AnyXL: newSize = Vector2(82,82)
+	if newSize: editor.changes.addChange(Changes.PropertyChange.new(editor.game,self,&"size",newSize))
+	queue_redraw()
+
+func _comboDoorSizeChanged() -> void:
+	var newSizeType:SIZE_TYPE = SIZE_TYPE.ANY
+	match size:
+		Vector2(18,18): newSizeType = SIZE_TYPE.AnyS
+		Vector2(50,18): newSizeType = SIZE_TYPE.AnyH
+		Vector2(18,50): newSizeType = SIZE_TYPE.AnyV
+		Vector2(38,38): newSizeType = SIZE_TYPE.AnyM
+		Vector2(50,50): newSizeType = SIZE_TYPE.AnyL
+		Vector2(82,82): newSizeType = SIZE_TYPE.AnyXL
+	editor.focusDialog.lockConfigurationSelector.setSelect(newSizeType+ConfigurationSelector.OPTION.AnyS)
+	editor.changes.addChange(Changes.PropertyChange.new(editor.game,self,&"sizeType",newSizeType))
+	editor.changes.addChange(Changes.PropertyChange.new(editor.game,self,&"configuration",CONFIGURATION.NONE))
+	
 
 func receiveMouseInput(event:InputEventMouse) -> bool:
 	# resizing
@@ -228,7 +249,3 @@ func receiveMouseInput(event:InputEventMouse) -> bool:
 		editor.startSizeDrag(self, dragPivot)
 		return true
 	return false
-
-func changedValue(property:StringName, _value:Variant) -> void:
-	if property == &"count" and parent.type == Door.DOOR_TYPE.SIMPLE:
-		simpleDoorUpdate()
