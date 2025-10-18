@@ -94,7 +94,15 @@ func getOffset() -> Vector2:
 		SIZE_TYPE.AnyM: return Vector2(3, 3)
 		_: return Vector2(-7, -7)
 
-var id:int
+const CREATE_PARAMETERS:Array[StringName] = [
+	&"position", &"doorId"
+]
+const EDITOR_PROPERTIES:Array[StringName] = [
+	&"id", &"position", &"size",
+	&"doorId", &"color", &"type", &"configuration", &"sizeType", &"count",
+	&"index" # implciit
+]
+
 var parent:Door
 var doorId:int
 var color:Game.COLOR = Game.COLOR.WHITE

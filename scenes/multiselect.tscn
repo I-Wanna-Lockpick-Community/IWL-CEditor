@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://c1kt2qxw6ooqf"]
+
+[ext_resource type="Theme" uid="uid://bvfthh0vm4fbp" path="res://assets/ui/uiTheme.tres" id="1_vk6bw"]
+
+[node name="multiselect" type="Panel"]
+mouse_filter = 2
+theme = ExtResource("1_vk6bw")
+theme_type_variation = &"MultiselectPanel"

@@ -25,7 +25,7 @@ func draw() -> void:
 	if editor.componentHovered:
 		drawOutline(editor.componentHovered,Color("#00a2ff88"))
 	if editor.focusDialog.componentFocused:
-		drawOutline(editor.focusDialog.componentFocused,Color("#00a2ffff"))
+		drawOutline(editor.focusDialog.componentFocused,Color("#00a2ff"))
 
 func drawOutline(component:GameComponent,color:Color=Color.WHITE) -> void:
 	var pos:Vector2 = component.getDrawPosition()

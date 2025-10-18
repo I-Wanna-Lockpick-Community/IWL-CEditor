@@ -85,235 +85,123 @@ class TileChange extends Change:
 	func _to_string() -> String:
 		return "<TileChange:"+str(position.x)+","+str(position.y)+">"
 
-class CreateKeyChange extends Change:
-	var position:Vector2i
+class CreateComponentChange extends Change:
+	var type:Variant
+	var prop:Dictionary[StringName, Variant] = {}
+	var dictionary:Dictionary
 	var id:int
 
-	func _init(_game:Game,_position:Vector2i) -> void:
+	func _init(_game:Game,_type:Variant,parameters:Dictionary[StringName, Variant]) -> void:
 		game = _game
-		position = _position
-		id = game.objIdIter
-		game.objIdIter += 1
+		type = _type
+		
+		if type == Lock: id = game.lockIdIter; game.lockIdIter += 1
+		else: id = game.objIdIter; game.objIdIter += 1
+
+		for property in type.CREATE_PARAMETERS:
+			prop[property] = parameters[property]
+		
+		match type:
+			KeyBulk: dictionary = game.keys
+			Door: dictionary = game.doors
+			Lock: dictionary = game.locks
 		do()
 	
 	func do() -> void:
-		var key:KeyBulk = preload("res://scenes/objects/keyBulk.tscn").instantiate()
-		key.position = position
-		key.id = id
-		game.keys[id] = key
-		game.objects.add_child(key)
+		var component:Variant
+		var parent:Variant = game.objects
+		match type:
+			KeyBulk: component = preload("res://scenes/objects/keyBulk.tscn").instantiate()
+			Door: component = preload("res://scenes/objects/door.tscn").instantiate()
+			Lock:
+				parent = game.doors[prop[&"doorId"]]
+				prop[&"index"] = len(parent.locks)
+				component = Lock.new(parent,prop[&"index"])
+		
+		for property in component.CREATE_PARAMETERS:
+			component.set(property, prop[property])
+		dictionary[id] = component
+		
+		if type == Lock:
+			parent.locks.insert(prop[&"index"], component)
+			for lockIndex in range(prop[&"index"]+1, len(game.doors[prop[&"doorId"]].locks)):
+				game.doors[prop[&"doorId"]].locks[lockIndex].index += 1
+		
+		parent.add_child(component)
 
 	func undo() -> void:
 		game.editor.objectHovered = null
 		game.editor.componentDragged = null
-		game.editor.focusDialog.defocus()
-		game.keys[id].queue_free()
-		game.keys.erase(id)
+
+		if dictionary[id] is GameObject: game.editor.focusDialog.defocus()
+		else: game.editor.focusDialog.defocusComponent()
+
+		if type == Lock:
+			game.doors[prop[&"doorId"]].locks.pop_at(prop[&"index"])
+			for lockIndex in range(prop[&"index"], len(game.doors[prop[&"doorId"]].locks)):
+				game.doors[prop[&"doorId"]].locks[lockIndex].index -= 1
+		
+		dictionary[id].queue_free()
+		dictionary.erase(id)
 	
 	func _to_string() -> String:
-		return "<CreateKeyChange:"+str(id)+">"
+		return "<CreateComponentChange:"+str(id)+">"
 
-class DeleteKeyChange extends Change:
-	var position:Vector2i
-	var id:int
-	var color:Game.COLOR
-	var type:Game.KEY
-	var count:C
-	var infinite:bool
+class DeleteComponentChange extends Change:
+	var type:Variant
+	var prop:Dictionary[StringName, Variant] = {}
+	var dictionary:Dictionary
 
-	func _init(_game:Game,key:KeyBulk) -> void:
+	func _init(_game:Game,component:GameComponent,_type:Variant) -> void:
+		type = _type
 		game = _game
-		position = key.position
-		id = key.id
-		color = key.color
-		type = key.type
-		count = key.count
-		infinite = key.infinite
-		do()
-
-	func do() -> void:
-		game.editor.objectHovered = null
-		game.editor.componentDragged = null
-		game.editor.focusDialog.defocus()
-		game.keys[id].queue_free()
-		game.keys.erase(id)
-	
-	func undo() -> void:
-		var key:KeyBulk = preload("res://scenes/objects/keyBulk.tscn").instantiate()
-		key.position = position
-		key.id = id
-		key.color = color
-		key.type = type
-		key.count = count.copy()
-		key.infinite = infinite
-		game.keys[id] = key
-		game.objects.add_child(key)
-	
-	func _to_string() -> String:
-		return "<DeleteKeyChange:"+str(id)+">"
-
-class CreateDoorChange extends Change:
-	var position:Vector2i
-	var id:int
-
-	func _init(_game:Game,_position:Vector2i) -> void:
-		game = _game
-		position = _position
-		id = game.objIdIter
-		game.objIdIter += 1
-		do()
-	
-	func do() -> void:
-		var door:Door = preload("res://scenes/objects/door.tscn").instantiate()
-		door.position = position
-		door.id = id
-		game.doors[id] = door
-		game.objects.add_child(door)
-
-	func undo() -> void:
-		game.editor.objectHovered = null
-		game.editor.componentDragged = null
-		game.editor.focusDialog.defocus()
-		game.doors[id].queue_free()
-		game.doors.erase(id)
-	
-	func _to_string() -> String:
-		return "<CreateDoorChange:"+str(id)+">"
-
-class DeleteDoorChange extends Change:
-	var position:Vector2i
-	var id:int
-	var size:Vector2
-	var colorSpend:Game.COLOR
-	var copies:C
-	var type:Door.TYPE
-
-	func _init(_game:Game,door:Door) -> void:
-		game = _game
-		position = door.position
-		id = door.id
-		size = door.size
-		colorSpend = door.colorSpend
-		copies = door.copies
-		type = door.type
+		for property in component.EDITOR_PROPERTIES:
+			prop[property] = component.get(property)
+		
+		match type:
+			KeyBulk: dictionary = game.keys
+			Door: dictionary = game.doors
+			Lock: dictionary = game.locks
 		do()
 
 	func do() -> void:
 		game.editor.objectHovered = null
 		game.editor.componentDragged = null
-		game.editor.focusDialog.defocus()
-		game.doors[id].queue_free()
-		game.doors.erase(id)
+
+		if dictionary[prop[&"id"]] is GameObject: game.editor.focusDialog.defocus()
+		else: game.editor.focusDialog.defocusComponent()
+
+		if type == Lock:
+			game.doors[prop[&"doorId"]].locks.pop_at(prop[&"index"])
+			for lockIndex in range(prop[&"index"], len(game.doors[prop[&"doorId"]].locks)):
+				game.doors[prop[&"doorId"]].locks[lockIndex].index -= 1
+		
+		dictionary[prop[&"id"]].queue_free()
+		dictionary.erase(prop[&"id"])
 	
 	func undo() -> void:
-		var door:Door = preload("res://scenes/objects/door.tscn").instantiate()
-		door.position = position
-		door.id = id
-		door.size = size
-		door.colorSpend = colorSpend
-		door.copies = copies
-		door.type = type
-		game.doors[id] = door
-		game.objects.add_child(door)
+		var component:Variant
+		var parent:Variant = game.objects
+		match type:
+			KeyBulk: component = preload("res://scenes/objects/keyBulk.tscn").instantiate()
+			Door: component = preload("res://scenes/objects/door.tscn").instantiate()
+			Lock:
+				parent = game.doors[prop[&"doorId"]]
+				component = Lock.new(parent,prop[&"index"])
+		
+		for property in component.EDITOR_PROPERTIES:
+			component.set(property, prop[property])
+		dictionary[prop[&"id"]] = component
+		
+		if type == Lock:
+				parent.locks.insert(prop[&"index"], component)
+				for lockIndex in range(prop[&"index"]+1, len(parent.locks)):
+					parent.locks[lockIndex].index += 1
+		
+		parent.add_child(component)
 	
 	func _to_string() -> String:
-		return "<DeleteDoorChange:"+str(id)+">"
-
-class CreateLockChange extends Change:
-	var position:Vector2i
-	var id:int
-	var doorId:int
-	var index:int
-
-	func _init(_game:Game,_position:Vector2i, _doorId:int) -> void:
-		game = _game
-		position = _position
-		id = game.lockIdIter
-		game.lockIdIter += 1
-		doorId = _doorId
-		do()
-	
-	func do() -> void:
-		var door:Door = game.doors[doorId]
-		var lock:Lock = Lock.new(door,len(door.locks))
-		lock.position = position
-		lock.id = id
-		lock.doorId = doorId
-		index = lock.index
-		game.locks[id] = lock
-		door.locks.insert(index, lock)
-		for lockIndex in range(index+1, len(game.doors[doorId].locks)):
-			game.doors[doorId].locks[lockIndex].index += 1
-		door.add_child(lock)
-
-	func undo() -> void:
-		game.editor.objectHovered = null
-		game.editor.componentDragged = null
-		game.editor.focusDialog.defocusComponent()
-		game.doors[doorId].locks.pop_at(index).queue_free()
-		for lockIndex in range(index, len(game.doors[doorId].locks)):
-			game.doors[doorId].locks[lockIndex].index -= 1
-		game.locks.erase(id)
-	
-	func _to_string() -> String:
-		return "<CreateLockChange:"+str(id)+">"
-
-class DeleteLockChange extends Change:
-	var position:Vector2i
-	var id:int
-	var size:Vector2
-	var doorId:int
-	var color:Game.COLOR
-	var type:Lock.TYPE
-	var configuration:Lock.CONFIGURATION
-	var sizeType:Lock.SIZE_TYPE
-	var count:C
-	var index:int
-
-	func _init(_game:Game,lock:Lock) -> void:
-		game = _game
-		position = lock.position
-		id = lock.id
-		size = lock.size
-		doorId = lock.doorId
-		color = lock.color
-		type = lock.type
-		configuration = lock.configuration
-		sizeType = lock.sizeType
-		count = lock.count
-		index = lock.index
-		do()
-
-	func do() -> void:
-		game.editor.objectHovered = null
-		game.editor.componentDragged = null
-		game.editor.focusDialog.defocusComponent()
-		game.doors[doorId].locks.pop_at(index).queue_free()
-		for lockIndex in range(index, len(game.doors[doorId].locks)):
-			game.doors[doorId].locks[lockIndex].index -= 1
-		game.locks[id].queue_free()
-		game.locks.erase(id)
-	
-	func undo() -> void:
-		var door:Door = game.doors[doorId]
-		var lock:Lock = Lock.new(door,index)
-		lock.position = position
-		lock.id = id
-		lock.size = size
-		lock.doorId = doorId
-		lock.color = color
-		lock.type = type
-		lock.configuration = configuration
-		lock.sizeType = sizeType
-		lock.count = count
-		game.locks[id] = lock
-		door.locks.insert(index, lock)
-		for lockIndex in range(index+1, len(game.doors[doorId].locks)):
-			game.doors[doorId].locks[lockIndex].index += 1
-		door.add_child(lock)
-	
-	func _to_string() -> String:
-		return "<DeleteLockChange:"+str(id)+">"
+		return "<DeleteComponentChange:"+str(prop[&"id"])+">"
 
 class PropertyChange extends Change:
 	var id:int

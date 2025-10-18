@@ -48,7 +48,14 @@ const INFINITE_SYMBOL:Texture2D = preload("res://assets/game/key/symbols/infinit
 
 const FKEYBULK:Font = preload("res://resources/fonts/fKeyBulk.tres")
 
-var id:int
+const CREATE_PARAMETERS:Array[StringName] = [
+	&"position"
+]
+const EDITOR_PROPERTIES:Array[StringName] = [
+	&"id", &"position", &"size",
+	&"color", &"type", &"count", &"infinite"
+]
+
 var color:Game.COLOR = Game.COLOR.WHITE
 var type:Game.KEY = Game.KEY.NORMAL
 var count:C = C.new(1)

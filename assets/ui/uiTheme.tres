@@ -1,4 +1,4 @@
-[gd_resource type="Theme" load_steps=13 format=3 uid="uid://bvfthh0vm4fbp"]
+[gd_resource type="Theme" load_steps=14 format=3 uid="uid://bvfthh0vm4fbp"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_wu0u2"]
 bg_color = Color(0.25323758, 0.2532376, 0.2532375, 1)
@@ -11,6 +11,14 @@ corner_radius_top_left = 2
 corner_radius_top_right = 2
 corner_radius_bottom_right = 2
 corner_radius_bottom_left = 2
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ffcy4"]
+bg_color = Color(0, 0.5506986, 0.871841, 0.53333336)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.5317305, 0.7837394, 1, 1)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_kty0u"]
 content_margin_left = 1.0
@@ -122,6 +130,8 @@ MarginContainer/constants/margin_bottom = 4
 MarginContainer/constants/margin_left = 4
 MarginContainer/constants/margin_right = 4
 MarginContainer/constants/margin_top = 4
+MultiselectPanel/base_type = &"Panel"
+MultiselectPanel/styles/panel = SubResource("StyleBoxFlat_ffcy4")
 NumberEditPanelContainer/base_type = &"PanelContainer"
 NumberEditPanelContainer/styles/panel = SubResource("StyleBoxFlat_kty0u")
 NumberEditPanelContainerNewlyInteracted/base_type = &"PanelContainer"

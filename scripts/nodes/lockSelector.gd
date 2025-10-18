@@ -48,7 +48,7 @@ func redrawButton(index:int) -> void:
 	buttons[index].queue_redraw()
 
 func _addLock():
-	var lock:Lock = editor.game.locks[editor.changes.addChange(Changes.CreateLockChange.new(editor.game,Vector2i.ZERO,door.id)).id]
+	var lock:Lock = editor.game.locks[editor.changes.addChange(Changes.CreateComponentChange.new(editor.game,Lock,{&"position":Vector2i.ZERO,&"doorId":door.id})).id]
 	if len(door.locks) == 1: editor.focusDialog._doorTypeSelected(Door.TYPE.SIMPLE)
 	else: editor.focusDialog._doorTypeSelected(Door.TYPE.COMBO)
 	colorLink.visible = door.type == Door.TYPE.SIMPLE
@@ -62,7 +62,7 @@ func _addLock():
 	button.button_pressed = true
 
 func _removeLock(lock:Lock):
-	editor.changes.addChange(Changes.DeleteLockChange.new(editor.game,lock))
+	editor.changes.addChange(Changes.DeleteComponentChange.new(editor.game,lock,Lock))
 	editor.focusDialog._doorTypeSelected(Door.TYPE.COMBO)
 	colorLink.visible = false
 	var button:Button = buttons.pop_at(lock.index)

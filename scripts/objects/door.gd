@@ -13,7 +13,14 @@ const TEXTURE_RECT:Rect2 = Rect2(Vector2.ZERO,Vector2(64,64)) # size of all the 
 const CORNER_SIZE:Vector2 = Vector2(9,9) # size of door ninepatch corners
 const TILE:RenderingServer.NinePatchAxisMode = RenderingServer.NinePatchAxisMode.NINE_PATCH_TILE # just to save characters
 
-var id:int
+const CREATE_PARAMETERS:Array[StringName] = [
+	&"position"
+]
+const EDITOR_PROPERTIES:Array[StringName] = [
+	&"id", &"position", &"size",
+	&"colorSpend", &"copies", &"type"
+]
+
 var colorSpend:Game.COLOR = Game.COLOR.WHITE
 var copies:C = C.new(1)
 var type:TYPE = TYPE.SIMPLE
@@ -71,7 +78,7 @@ func _draw() -> void:
 		RenderingServer.canvas_item_add_nine_patch(drawMain,rect,TEXTURE_RECT,SPEND_MAIN,CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,Game.mainTone[colorSpend])
 		RenderingServer.canvas_item_add_nine_patch(drawMain,rect,TEXTURE_RECT,SPEND_DARK,CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,Game.darkTone[colorSpend])
 	# frame
-	if type == TYPE.SIMPLE and locks[0].count.sign() < 0: RenderingServer.canvas_item_add_nine_patch(drawMain,rect,TEXTURE_RECT,FRAME_NEGATIVE,CORNER_SIZE,CORNER_SIZE)
+	if len(locks) > 0 and type == TYPE.SIMPLE and locks[0].count.sign() < 0: RenderingServer.canvas_item_add_nine_patch(drawMain,rect,TEXTURE_RECT,FRAME_NEGATIVE,CORNER_SIZE,CORNER_SIZE)
 	else: RenderingServer.canvas_item_add_nine_patch(drawMain,rect,TEXTURE_RECT,FRAME,CORNER_SIZE,CORNER_SIZE)
 	# copies
 	if !copies.eq(1): TextDraw.outlinedCentered(Game.FKEYX,drawCopies,"×"+str(copies),COPIES_COLOR,COPIES_OUTLINE_COLOR,25,Vector2(size.x/2,1))

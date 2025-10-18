@@ -4,6 +4,7 @@ class_name GameComponent
 
 enum COMPONENT {KEY, DOOR, LOCK}
 
+var id:int
 var size:Vector2
 
 @onready var editor:Editor = get_node("/root/editor")

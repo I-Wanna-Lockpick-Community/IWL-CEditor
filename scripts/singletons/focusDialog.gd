@@ -97,6 +97,7 @@ func tabbed(numberEdit:PanelContainer) -> void:
 				if len(focused.locks) > 0: %lockSelector.buttons[len(focused.locks)-1].button_pressed = true
 				interact(%doorAxialNumberEdit)
 			NumberEdit.PURPOSE.AXIAL:
+				if !componentFocused: return
 				if componentFocused.index == 0: _spendSelected(); interact(%doorComplexNumberEdit.imaginaryEdit)
 				else:
 					%lockSelector.buttons[componentFocused.index - 1].button_pressed = true
@@ -108,6 +109,7 @@ func tabbed(numberEdit:PanelContainer) -> void:
 				if len(focused.locks) > 0: %lockSelector.buttons[0].button_pressed = true
 				interact(%doorAxialNumberEdit)
 			NumberEdit.PURPOSE.AXIAL:
+				if !componentFocused: return
 				if componentFocused.index == len(focused.locks) - 1: _spendSelected(); interact(%doorComplexNumberEdit.realEdit)
 				else:
 					%lockSelector.buttons[componentFocused.index + 1].button_pressed = true
@@ -125,7 +127,7 @@ func receiveKey(event:InputEvent) -> bool:
 			KEY_C: editor.quickSet.startQuick(QuickSet.QUICK.COLOR, focused)
 			KEY_U: _keyTypeSelected(Game.KEY.CURSE if focused.type != Game.KEY.CURSE else Game.KEY.UNCURSE)
 			KEY_DELETE:
-				editor.changes.addChange(Changes.DeleteKeyChange.new(editor.game,focused))
+				editor.changes.addChange(Changes.DeleteComponentChange.new(editor.game,focused,KeyBulk))
 				editor.changes.bufferSave()
 			KEY_Y: _keyInfiniteToggled(!focused.infinite)
 			_: return false
@@ -145,7 +147,7 @@ func receiveKey(event:InputEvent) -> bool:
 					%lockSelector._removeLock(componentFocused)
 					if len(focused.locks) != 0: focusComponent(focused.locks[len(focused.locks)-1])
 					else: focus(focused)
-				else: editor.changes.addChange(Changes.DeleteDoorChange.new(editor.game,focused))
+				else: editor.changes.addChange(Changes.DeleteComponentChange.new(editor.game,focused,Door))
 				editor.changes.bufferSave()
 			_: return false
 	return true
