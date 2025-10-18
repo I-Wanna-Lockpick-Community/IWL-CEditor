@@ -1,4 +1,4 @@
-[gd_scene load_steps=23 format=3 uid="uid://djnt51xv7wn52"]
+[gd_scene load_steps=24 format=3 uid="uid://djnt51xv7wn52"]
 
 [ext_resource type="Theme" uid="uid://bvfthh0vm4fbp" path="res://assets/ui/uiTheme.tres" id="1_j8y2p"]
 [ext_resource type="Script" uid="uid://2wjcj6frwpjo" path="res://scripts/singletons/editor.gd" id="2_o435n"]
@@ -10,6 +10,7 @@
 [ext_resource type="Texture2D" uid="uid://ckk7i2y24ysor" path="res://assets/ui/modes/door.png" id="7_2w0at"]
 [ext_resource type="PackedScene" uid="uid://2hd65vn44me7" path="res://scenes/game.tscn" id="8_5tdu1"]
 [ext_resource type="Shader" uid="uid://befrul0j4yc02" path="res://resources/level.gdshader" id="8_o435n"]
+[ext_resource type="Texture2D" uid="uid://b4tmgbs01eh7i" path="res://assets/ui/modes/paste.png" id="9_0u1f5"]
 [ext_resource type="Script" uid="uid://bstn8if8s6o5j" path="res://scripts/singletons/game.gd" id="11_3vi5u"]
 [ext_resource type="FontFile" uid="uid://cjub6sxbu8elx" path="res://resources/fonts/RobotoMono-SemiBold.ttf" id="12_2w0at"]
 [ext_resource type="PackedScene" uid="uid://8bth374yqwpe" path="res://scenes/focusDialog.tscn" id="12_74j0u"]
@@ -66,7 +67,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-focus_mode = 2
+focus_mode = 1
 theme = ExtResource("1_j8y2p")
 script = ExtResource("2_o435n")
 
@@ -101,7 +102,7 @@ button_pressed = true
 button_group = SubResource("ButtonGroup_wm3ai")
 icon = ExtResource("4_78fwb")
 script = ExtResource("5_3vi5u")
-defaultHotkey = 4194305
+defaultHotkey = "Esc"
 metadata/_custom_type_script = "uid://buv3n70m06kje"
 
 [node name="tile" type="Button" parent="c/c/c/modes"]
@@ -111,7 +112,7 @@ toggle_mode = true
 button_group = SubResource("ButtonGroup_wm3ai")
 icon = ExtResource("5_74j0u")
 script = ExtResource("5_3vi5u")
-defaultHotkey = 84
+defaultHotkey = "T"
 metadata/_custom_type_script = "uid://buv3n70m06kje"
 
 [node name="key" type="Button" parent="c/c/c/modes"]
@@ -121,8 +122,8 @@ toggle_mode = true
 button_group = SubResource("ButtonGroup_wm3ai")
 icon = ExtResource("6_sdh1e")
 script = ExtResource("5_3vi5u")
-defaultHotkey = 66
-pressedHotkey = 4194325
+defaultHotkey = "B"
+pressedHotkey = "Shift"
 metadata/_custom_type_script = "uid://buv3n70m06kje"
 
 [node name="door" type="Button" parent="c/c/c/modes"]
@@ -132,8 +133,19 @@ toggle_mode = true
 button_group = SubResource("ButtonGroup_wm3ai")
 icon = ExtResource("7_2w0at")
 script = ExtResource("5_3vi5u")
-defaultHotkey = 68
-pressedHotkey = 4194325
+defaultHotkey = "D"
+pressedHotkey = "Shift"
+metadata/_custom_type_script = "uid://buv3n70m06kje"
+
+[node name="paste" type="Button" parent="c/c/c/modes"]
+layout_mode = 2
+theme_type_variation = &"RadioButton"
+toggle_mode = true
+button_group = SubResource("ButtonGroup_wm3ai")
+icon = ExtResource("9_0u1f5")
+script = ExtResource("5_3vi5u")
+defaultHotkey = "Ctrl+V"
+pressedHotkey = "Shift"
 metadata/_custom_type_script = "uid://buv3n70m06kje"
 
 [node name="gameViewportCont" type="SubViewportContainer" parent="c"]
@@ -191,3 +203,4 @@ script = ExtResource("12_78fwb")
 [connection signal="pressed" from="c/c/c/modes/tile" to="c/c/c/modes" method="_setMode" binds= [1]]
 [connection signal="pressed" from="c/c/c/modes/key" to="c/c/c/modes" method="_setMode" binds= [2]]
 [connection signal="pressed" from="c/c/c/modes/door" to="c/c/c/modes" method="_setMode" binds= [3]]
+[connection signal="pressed" from="c/c/c/modes/paste" to="c/c/c/modes" method="_setMode" binds= [4]]

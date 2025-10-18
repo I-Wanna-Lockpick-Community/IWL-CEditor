@@ -89,6 +89,7 @@ func deinteract() -> void:
 	interacted = null
 
 func tabbed(numberEdit:PanelContainer) -> void:
+	editor.grab_focus()
 	if Input.is_key_pressed(KEY_SHIFT):
 		match numberEdit.purpose:
 			NumberEdit.PURPOSE.IMAGINARY: interact(numberEdit.get_parent().realEdit)

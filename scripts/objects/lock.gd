@@ -1,5 +1,6 @@
 extends GameComponent
 class_name Lock
+const Type:Variant = Lock
 
 const TYPES:int = 5
 enum TYPE {NORMAL, BLANK, BLAST, ALL, EXACT}

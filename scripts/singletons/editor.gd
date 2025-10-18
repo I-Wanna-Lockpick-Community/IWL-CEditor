@@ -32,7 +32,6 @@ var previousDragPosition:Vector2i # to check whether or not a drag would do anyt
 var tileSize:Vector2i = Vector2i(32,32)
 
 func _process(_delta) -> void:
-	grab_focus()
 	queue_redraw()
 	var scaleFactor:float = (targetCameraZoom/game.editorCamera.zoom.x)**0.2
 	if abs(scaleFactor - 1) < 0.0001:
@@ -157,6 +156,11 @@ func _gui_input(event:InputEvent) -> void:
 					if objectHovered is Door:
 						changes.addChange(Changes.DeleteComponentChange.new(game,objectHovered,Door))
 						changes.bufferSave()
+			MODE.PASTE:
+				if isLeftClick(event):
+					multiselect.paste()
+					if !Input.is_key_pressed(KEY_SHIFT):
+						modes.setMode(MODE.SELECT)
 
 func startPositionDrag(component:GameComponent) -> void:
 	if component is GameObject: focusDialog.focus(component)
@@ -233,6 +237,8 @@ func _input(event:InputEvent) -> void:
 			KEY_D: modes.setMode(MODE.DOOR)
 			KEY_Z: if Input.is_key_pressed(KEY_CTRL): changes.undo()
 			KEY_Y: if Input.is_key_pressed(KEY_CTRL): changes.redo()
+			KEY_C: if Input.is_key_pressed(KEY_CTRL): multiselect.copySelection()
+			KEY_V: if Input.is_key_pressed(KEY_CTRL): modes.setMode(MODE.PASTE)
 			KEY_M:
 				if focusDialog.componentFocused: startPositionDrag(focusDialog.componentFocused)
 				elif focusDialog.focused: startPositionDrag(focusDialog.focused)
@@ -240,6 +246,7 @@ func _input(event:InputEvent) -> void:
 				targetCameraZoom = 1
 				zoomPoint = game.levelBounds.get_center()
 				game.editorCamera.position = zoomPoint - gameViewportCont.size / (game.editorCamera.zoom*2)
+			KEY_DELETE: multiselect.delete()
 
 func zoomCamera(factor:float) -> void:
 	targetCameraZoom *= factor

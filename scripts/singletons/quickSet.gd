@@ -98,6 +98,7 @@ func receiveKey(event:InputEventKey) -> void:
 			KEY_TAB, KEY_ENTER:
 				if matched != -1: apply()
 				quick = QUICK.NONE
+				editor.grab_focus()
 			KEY_ESCAPE: quick = QUICK.NONE
 	evaluateQuick()
 	updateText()

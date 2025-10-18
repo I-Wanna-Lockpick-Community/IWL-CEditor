@@ -1,5 +1,6 @@
 extends GameObject
 class_name Door
+const Type:Variant = Door
 
 enum TYPE {SIMPLE, COMBO, GATE}
 

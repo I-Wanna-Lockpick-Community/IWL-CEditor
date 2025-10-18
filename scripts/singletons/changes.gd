@@ -46,6 +46,9 @@ func redo() -> void:
 		change.do()
 		stackPosition += 1
 
+static func copy(value:Variant) -> Variant:
+	if value is C || value is Q: return value.copy()
+	else: return value
 
 class Change extends RefCounted:
 	var game:Game
@@ -99,7 +102,7 @@ class CreateComponentChange extends Change:
 		else: id = game.objIdIter; game.objIdIter += 1
 
 		for property in type.CREATE_PARAMETERS:
-			prop[property] = parameters[property]
+			prop[property] = Changes.copy(parameters[property])
 		
 		match type:
 			KeyBulk: dictionary = game.keys
@@ -118,8 +121,9 @@ class CreateComponentChange extends Change:
 				prop[&"index"] = len(parent.locks)
 				component = Lock.new(parent,prop[&"index"])
 		
+		component.id = id
 		for property in component.CREATE_PARAMETERS:
-			component.set(property, prop[property])
+			component.set(property, Changes.copy(prop[property]))
 		dictionary[id] = component
 		
 		if type == Lock:
@@ -156,7 +160,7 @@ class DeleteComponentChange extends Change:
 		type = _type
 		game = _game
 		for property in component.EDITOR_PROPERTIES:
-			prop[property] = component.get(property)
+			prop[property] = Changes.copy(component.get(property))
 		
 		match type:
 			KeyBulk: dictionary = game.keys
@@ -190,7 +194,7 @@ class DeleteComponentChange extends Change:
 				component = Lock.new(parent,prop[&"index"])
 		
 		for property in component.EDITOR_PROPERTIES:
-			component.set(property, prop[property])
+			component.set(property, Changes.copy(prop[property]))
 		dictionary[prop[&"id"]] = component
 		
 		if type == Lock:

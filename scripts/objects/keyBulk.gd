@@ -1,5 +1,6 @@
 extends GameObject
 class_name KeyBulk
+const Type:Variant = KeyBulk
 
 const FILL:Array[Texture2D] = [
 	preload("res://assets/game/key/normal/fill.png"),
