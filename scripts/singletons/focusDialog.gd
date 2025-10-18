@@ -59,7 +59,7 @@ func defocusComponent() -> void:
 
 func interact(edit:NumberEdit) -> void:
 	deinteract()
-	edit.theme_type_variation = &"NumberEditPanelContainerSelected"
+	edit.theme_type_variation = &"NumberEditPanelContainerNewlyInteracted"
 	interacted = edit
 	edit.newlyInteracted = true
 
@@ -71,13 +71,22 @@ func deinteract() -> void:
 	interacted = null
 
 func tabbed(numberEdit:NumberEdit) -> void:
-	if numberEdit.purpose == NumberEdit.PURPOSE.REAL: interact(numberEdit.get_parent().imaginaryEdit)
-	if numberEdit.purpose == NumberEdit.PURPOSE.IMAGINARY:
-		if componentFocused is Lock:
-			if componentFocused.index == len(focused.locks) - 1: defocusComponent(); focus(focused)
-			else: %lockSelector.buttons[componentFocused.index + 1].button_pressed = true
-		elif focused is Door: if len(focused.locks) > 0: %lockSelector.buttons[0].button_pressed = true
-		interact(numberEdit.get_parent().realEdit) 
+	if Input.is_key_pressed(KEY_SHIFT):
+		if numberEdit.purpose == NumberEdit.PURPOSE.IMAGINARY: interact(numberEdit.get_parent().realEdit)
+		elif numberEdit.purpose == NumberEdit.PURPOSE.REAL:
+			if componentFocused is Lock:
+				if componentFocused.index == 0: defocusComponent(); focus(focused)
+				else: %lockSelector.buttons[componentFocused.index - 1].button_pressed = true
+			elif focused is Door: if len(focused.locks) > 0: %lockSelector.buttons[len(focused.locks) - 1].button_pressed = true
+			interact(numberEdit.get_parent().imaginaryEdit)
+	else:
+		if numberEdit.purpose == NumberEdit.PURPOSE.REAL: interact(numberEdit.get_parent().imaginaryEdit)
+		elif numberEdit.purpose == NumberEdit.PURPOSE.IMAGINARY:
+			if componentFocused is Lock:
+				if componentFocused.index == len(focused.locks) - 1: defocusComponent(); focus(focused)
+				else: %lockSelector.buttons[componentFocused.index + 1].button_pressed = true
+			elif focused is Door: if len(focused.locks) > 0: %lockSelector.buttons[0].button_pressed = true
+			interact(numberEdit.get_parent().realEdit)
 
 func receiveKey(event:InputEvent) -> bool:
 	if focused is KeyBulk:

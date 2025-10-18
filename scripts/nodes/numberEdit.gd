@@ -27,6 +27,9 @@ func setValue(_value:Q, manual:bool=false) -> void:
 	else: %drawText.text = str(value.n)
 	if !manual: valueSet.emit(value.n)
 
+func increment() -> void: setValue(value.plus(1))
+func decrement() -> void: setValue(value.minus(1))
+
 func receiveKey(key:InputEventKey):
 	var number:int = -1
 	match key.keycode:
@@ -47,17 +50,24 @@ func receiveKey(key:InputEventKey):
 			if value.n == 0: bufferedNegative = !bufferedNegative
 			setValue(value.times(-1))
 		KEY_BACKSPACE:
-			newlyInteracted = false
-			if Input.is_key_pressed(KEY_CTRL): setValue(Q.new(0))
+			theme_type_variation = &"NumberEditPanelContainerSelected"
+			if Input.is_key_pressed(KEY_CTRL) or newlyInteracted: setValue(Q.new(0))
 			else:
 				if value.n > -10 and value.n < 0: bufferedNegative = true
 				if value.n == 0: bufferedNegative = false
 				@warning_ignore("integer_division") setValue(Q.new(value.n/10))
+			newlyInteracted = false
 		KEY_I: if get_parent() is ComplexNumberEdit: get_parent().rotate()
+		KEY_UP: increment()
+		KEY_DOWN: decrement()
+		KEY_LEFT, KEY_RIGHT:
+			newlyInteracted = false
+			theme_type_variation = &"NumberEditPanelContainerSelected"
 		_: return false
 	if number != -1:
 		if newlyInteracted: setValue(Q.new(0),true)
 		newlyInteracted = false
+		theme_type_variation = &"NumberEditPanelContainerSelected"
 		if value.n < 0 || bufferedNegative: setValue(Q.new(value.n*10-number))
 		else: setValue(Q.new(value.n*10+number))
 	return true
