@@ -41,7 +41,7 @@ enum MATCH_RULE {EQUALS, FROM_START}
 const INPUT_CHAR_LIMIT = 12 # that should be enough characters for whatever; increase if necessary
 
 var quick:QUICK = QUICK.NONE
-var object:GameComponent # the component whose properties that we are setting
+var component:GameComponent # the component whose properties that we are setting
 
 var input:String
 var matched:int = -1
@@ -53,7 +53,8 @@ func updateText() -> void:
 	if quick  == QUICK.NONE: text = ""; return
 	match quick:
 		QUICK.COLOR:
-			if object is Door: string += "SPEND COLOR: "
+			if component is Door and (component.type == Door.TYPE.COMBO or !editor.focusDialog.colorLink.button_pressed): string += "SPEND COLOR: "
+			elif component is Lock and (component.parent.type == Door.TYPE.COMBO or !editor.focusDialog.colorLink.button_pressed): string += "LOCK COLOR: "
 			else: string += "COLOR: "
 	if completeMatch:
 		string += input
@@ -64,9 +65,9 @@ func updateText() -> void:
 		string += " // " + Game.COLOR.keys()[matched] + " " + matchComment
 	text = string
 
-func startQuick(_quick:QUICK, _object:GameComponent) -> void:
+func startQuick(_quick:QUICK, _component:GameComponent) -> void:
 	quick = _quick
-	object = _object
+	component = _component
 	matched = -1
 	input = ""
 	updateText()
@@ -104,8 +105,8 @@ func receiveKey(event:InputEventKey) -> void:
 func apply() -> void:
 	match quick:
 		QUICK.COLOR:
-			if object is KeyBulk: editor.focusDialog._keyColorSelected(matched)
-			if object is Door: editor.focusDialog._doorColorSpendSelected(matched)
+			if component is KeyBulk: editor.focusDialog._keyColorSelected(matched)
+			if component is Door or component is Lock: editor.focusDialog._doorColorSelected(matched)
 
 func matchesId(values:int) -> bool: return input.is_valid_int() and input.to_int() >= 0 and input.to_int() < values
 

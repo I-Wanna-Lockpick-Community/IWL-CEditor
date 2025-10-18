@@ -2,12 +2,14 @@ extends Control
 class_name FocusDialog
 
 @onready var editor:Editor = get_node("/root/editor")
-@onready var lockConfigurationSelector:ConfigurationSelector = %lockConfigurationSelector
+@onready var colorLink:Button = %colorLink
+
 var focused:GameObject # the object that is currently focused
 var componentFocused:GameComponent # you can focus both a door and a lock at the same time so
-var interacted:NumberEdit # the number edit that is currently interacted
+var interacted:PanelContainer # the number edit that is currently interacted
 
-func focus(object:GameObject, new:bool=object!=focused) -> void:
+func focus(object:GameObject) -> void:
+	var new:bool = object != focused
 	focused = object
 	editor.game.objects.remove_child(focused)
 	editor.game.objects.add_child(focused)
@@ -24,14 +26,19 @@ func focus(object:GameObject, new:bool=object!=focused) -> void:
 		%keyDialog.visible = false
 		%doorDialog.visible = true
 		%doorTypes.get_child(focused.type).button_pressed = true
+		%lockSelector.colorLink.visible = focused.type == Door.TYPE.SIMPLE
+		%spend.queue_redraw()
 		if !componentFocused:
 			%lockConfigurationSelector.visible = false
 			%lockSettings.visible = false
+			%doorAxialNumberEdit.visible = false
+			%doorComplexNumberEdit.visible = true
 			%doorColorSelector.setSelect(focused.colorSpend)
-			%doorNumberEdit.setValue(focused.copies, true)
+			%doorComplexNumberEdit.setValue(focused.copies, true)
 			%spend.button_pressed = true
+			%blastLockSettings.visible = false
 		if new:
-			interact(%doorNumberEdit.realEdit)
+			interact(%doorComplexNumberEdit.realEdit)
 			%lockSelector.setup(focused)
 			if focused.type == Door.TYPE.SIMPLE: focusComponent(focused.locks[0])
 
@@ -42,22 +49,32 @@ func defocus() -> void:
 	deinteract()
 	defocusComponent()
 
-func focusComponent(component:GameComponent, _new:bool=true) -> void:
+func focusComponent(component:GameComponent) -> void:
+	var new:bool = component != componentFocused
 	if focused != component.parent: focus(component.parent)
 	componentFocused = component
 	if component is Lock:
 		%doorColorSelector.setSelect(componentFocused.color)
-		%doorNumberEdit.setValue(componentFocused.count, true)
+		%doorAxialNumberEdit.setValue(componentFocused.count, true)
 		%lockSelector.setSelect(componentFocused.index)
+		%lockTypeSelector.setSelect(componentFocused.type)
 		%lockConfigurationSelector.visible = focused.type != Door.TYPE.SIMPLE
 		%lockConfigurationSelector.setup(componentFocused)
 		%lockSettings.visible = true
+		%doorAxialNumberEdit.visible = componentFocused.type == Lock.TYPE.NORMAL or componentFocused.type == Lock.TYPE.EXACT
+		%doorComplexNumberEdit.visible = false
+		%blastLockSettings.visible = componentFocused.type == Lock.TYPE.BLAST
+		%blastLockSign.button_pressed = component.count.sign() < 0
+		%blastLockAxis.button_pressed = component.count.isNonzeroImag()
+		%lockSelector.redrawButton(component.index)
+		if new:
+			interact(%doorAxialNumberEdit)
 
 func defocusComponent() -> void:
 	if !componentFocused: return
 	componentFocused = null;
 
-func interact(edit:NumberEdit) -> void:
+func interact(edit:PanelContainer) -> void:
 	deinteract()
 	edit.theme_type_variation = &"NumberEditPanelContainerNewlyInteracted"
 	interacted = edit
@@ -66,27 +83,34 @@ func interact(edit:NumberEdit) -> void:
 func deinteract() -> void:
 	if !interacted: return
 	interacted.theme_type_variation = &"NumberEditPanelContainer"
-	interacted.bufferedNegative = false
+	if interacted is NumberEdit: interacted.bufferedNegative = false
+	elif interacted is AxialNumberEdit: interacted.bufferedSign = C.new(1)
 	interacted.setValue(interacted.value,true)
 	interacted = null
 
-func tabbed(numberEdit:NumberEdit) -> void:
+func tabbed(numberEdit:PanelContainer) -> void:
 	if Input.is_key_pressed(KEY_SHIFT):
-		if numberEdit.purpose == NumberEdit.PURPOSE.IMAGINARY: interact(numberEdit.get_parent().realEdit)
-		elif numberEdit.purpose == NumberEdit.PURPOSE.REAL:
-			if componentFocused is Lock:
-				if componentFocused.index == 0: defocusComponent(); focus(focused)
-				else: %lockSelector.buttons[componentFocused.index - 1].button_pressed = true
-			elif focused is Door: if len(focused.locks) > 0: %lockSelector.buttons[len(focused.locks) - 1].button_pressed = true
-			interact(numberEdit.get_parent().imaginaryEdit)
+		match numberEdit.purpose:
+			NumberEdit.PURPOSE.IMAGINARY: interact(numberEdit.get_parent().realEdit)
+			NumberEdit.PURPOSE.REAL:
+				assert(focused is Door)
+				if len(focused.locks) > 0: %lockSelector.buttons[len(focused.locks)-1].button_pressed = true
+				interact(%doorAxialNumberEdit)
+			NumberEdit.PURPOSE.AXIAL:
+				if componentFocused.index == 0: _spendSelected(); interact(%doorComplexNumberEdit.imaginaryEdit)
+				else:
+					%lockSelector.buttons[componentFocused.index - 1].button_pressed = true
 	else:
-		if numberEdit.purpose == NumberEdit.PURPOSE.REAL: interact(numberEdit.get_parent().imaginaryEdit)
-		elif numberEdit.purpose == NumberEdit.PURPOSE.IMAGINARY:
-			if componentFocused is Lock:
-				if componentFocused.index == len(focused.locks) - 1: defocusComponent(); focus(focused)
-				else: %lockSelector.buttons[componentFocused.index + 1].button_pressed = true
-			elif focused is Door: if len(focused.locks) > 0: %lockSelector.buttons[0].button_pressed = true
-			interact(numberEdit.get_parent().realEdit)
+		match numberEdit.purpose:
+			NumberEdit.PURPOSE.REAL: interact(numberEdit.get_parent().imaginaryEdit)
+			NumberEdit.PURPOSE.IMAGINARY:
+				assert(focused is Door)
+				if len(focused.locks) > 0: %lockSelector.buttons[0].button_pressed = true
+				interact(%doorAxialNumberEdit)
+			NumberEdit.PURPOSE.AXIAL:
+				if componentFocused.index == len(focused.locks) - 1: _spendSelected(); interact(%doorComplexNumberEdit.realEdit)
+				else:
+					%lockSelector.buttons[componentFocused.index + 1].button_pressed = true
 
 func receiveKey(event:InputEvent) -> bool:
 	if focused is KeyBulk:
@@ -107,7 +131,15 @@ func receiveKey(event:InputEvent) -> bool:
 			_: return false
 	elif focused is Door:
 		match event.keycode:
-			KEY_C: editor.quickSet.startQuick(QuickSet.QUICK.COLOR, focused)
+			KEY_N: _lockTypeSelected(Lock.TYPE.NORMAL)
+			KEY_B: _lockTypeSelected(Lock.TYPE.BLANK)
+			KEY_X: _lockTypeSelected(Lock.TYPE.BLAST)
+			KEY_A: _lockTypeSelected(Lock.TYPE.ALL)
+			KEY_E: _lockTypeSelected(Lock.TYPE.EXACT)
+			KEY_C:
+				if componentFocused: editor.quickSet.startQuick(QuickSet.QUICK.COLOR, componentFocused)
+				else: editor.quickSet.startQuick(QuickSet.QUICK.COLOR, focused)
+			KEY_L: if Input.is_key_pressed(KEY_CTRL): %lockSelector._addLock()
 			KEY_DELETE:
 				if componentFocused:
 					%lockSelector._removeLock(componentFocused)
@@ -149,39 +181,46 @@ func _doorColorSelected(color:Game.COLOR):
 	if focused is not Door: return
 	if componentFocused:
 		editor.changes.addChange(Changes.PropertyChange.new(editor.game,componentFocused,&"color",color))
-		%lockSelector.redrawButtons()
-	else:
+	elif %lockSelector.colorLink.button_pressed and focused.type == Door.TYPE.SIMPLE:
+		editor.changes.addChange(Changes.PropertyChange.new(editor.game,focused.locks[0],&"color",color))
+	if !componentFocused or (%lockSelector.colorLink.button_pressed and focused.type == Door.TYPE.SIMPLE):
 		editor.changes.addChange(Changes.PropertyChange.new(editor.game,focused,&"colorSpend",color))
-		%spend.queue_redraw()
 	editor.changes.bufferSave()
 
-func _doorNumberSet(value:C):
+func _doorComplexNumberSet(value:C):
 	if focused is not Door: return
-	if componentFocused:
-		editor.changes.addChange(Changes.PropertyChange.new(editor.game,componentFocused,&"count",value))
-		if focused.type == Door.TYPE.SIMPLE: componentFocused._simpleDoorUpdate()
-		else: componentFocused._setAutoConfiguration()
-		%lockConfigurationSelector.setup(componentFocused)
-	else: editor.changes.addChange(Changes.PropertyChange.new(editor.game,focused,&"copies",value))
+	editor.changes.addChange(Changes.PropertyChange.new(editor.game,focused,&"copies",value))
 	editor.changes.bufferSave()
 
-func _lockTypeSelected(_type:Game.LOCK):
-	if focused is not Door: return
+func _doorAxialNumberSet(value:C):
+	if componentFocused is not Lock: return
+	editor.changes.addChange(Changes.PropertyChange.new(editor.game,componentFocused,&"count",value))
+	focused.queue_redraw()
+	if focused.type == Door.TYPE.SIMPLE:
+		componentFocused._simpleDoorUpdate()
+	else: componentFocused._setAutoConfiguration()
+	editor.changes.bufferSave()
+
+func _lockTypeSelected(type:Lock.TYPE):
+	if componentFocused is not Lock: return
+	componentFocused._setType(type)
 
 func _doorTypeSelected(type:Door.TYPE):
 	if focused is not Door: return
 	editor.changes.addChange(Changes.PropertyChange.new(editor.game,focused,&"type",type))
+	%lockSelector.colorLink.visible = focused.type == Door.TYPE.SIMPLE
 	if type == Door.TYPE.SIMPLE:
 		focused.locks[0]._simpleDoorUpdate()
 		%lockConfigurationSelector.visible = false
 	else:
 		%lockConfigurationSelector.visible = componentFocused is Lock
+	editor.changes.bufferSave()
 
 func _spendSelected():
 	defocusComponent()
 	focus(focused)
 
-func _LockConfigurationSelected(option:ConfigurationSelector.OPTION):
+func _lockConfigurationSelected(option:ConfigurationSelector.OPTION):
 	if componentFocused is not Lock: return
 	match option:
 		ConfigurationSelector.OPTION.SpecificA:
@@ -196,3 +235,10 @@ func _LockConfigurationSelected(option:ConfigurationSelector.OPTION):
 		ConfigurationSelector.OPTION.AnyM: componentFocused._comboDoorConfigurationChanged(Lock.SIZE_TYPE.AnyM)
 		ConfigurationSelector.OPTION.AnyL: componentFocused._comboDoorConfigurationChanged(Lock.SIZE_TYPE.AnyL)
 		ConfigurationSelector.OPTION.AnyXL: componentFocused._comboDoorConfigurationChanged(Lock.SIZE_TYPE.AnyXL)
+	editor.changes.bufferSave()
+
+func _blastLockSet():
+	if componentFocused is not Lock: return
+	editor.changes.addChange(Changes.PropertyChange.new(editor.game,componentFocused,&"count",(C.new(0,1) if %blastLockAxis.button_pressed else C.new(1)).times(-1 if %blastLockSign.button_pressed else 1)))
+	focused.queue_redraw()
+	editor.changes.bufferSave()

@@ -4,6 +4,7 @@ class_name Door
 enum TYPE {SIMPLE, COMBO, GATE}
 
 const FRAME:Texture2D = preload("res://assets/game/door/frame.png")
+const FRAME_NEGATIVE:Texture2D = preload("res://assets/game/door/frameNegative.png")
 const SPEND_HIGH:Texture2D = preload("res://assets/game/door/spendHigh.png")
 const SPEND_MAIN:Texture2D = preload("res://assets/game/door/spendMain.png")
 const SPEND_DARK:Texture2D = preload("res://assets/game/door/spendDark.png")
@@ -40,6 +41,7 @@ func _ready() -> void:
 	RenderingServer.canvas_item_set_parent(drawMain,get_canvas_item())
 	RenderingServer.canvas_item_set_parent(drawGlitch,get_canvas_item())
 	RenderingServer.canvas_item_set_parent(drawCopies,get_canvas_item())
+	editor.game.connect(&"goldIndexChanged",queue_redraw)
 
 func _draw() -> void:
 	RenderingServer.canvas_item_clear(drawScaled)
@@ -69,7 +71,8 @@ func _draw() -> void:
 		RenderingServer.canvas_item_add_nine_patch(drawMain,rect,TEXTURE_RECT,SPEND_MAIN,CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,Game.mainTone[colorSpend])
 		RenderingServer.canvas_item_add_nine_patch(drawMain,rect,TEXTURE_RECT,SPEND_DARK,CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,Game.darkTone[colorSpend])
 	# frame
-	RenderingServer.canvas_item_add_nine_patch(drawMain,rect,TEXTURE_RECT,FRAME,CORNER_SIZE,CORNER_SIZE)
+	if type == TYPE.SIMPLE and locks[0].count.sign() < 0: RenderingServer.canvas_item_add_nine_patch(drawMain,rect,TEXTURE_RECT,FRAME_NEGATIVE,CORNER_SIZE,CORNER_SIZE)
+	else: RenderingServer.canvas_item_add_nine_patch(drawMain,rect,TEXTURE_RECT,FRAME,CORNER_SIZE,CORNER_SIZE)
 	# copies
 	if !copies.eq(1): TextDraw.outlinedCentered(Game.FKEYX,drawCopies,"×"+str(copies),COPIES_COLOR,COPIES_OUTLINE_COLOR,25,Vector2(size.x/2,1))
 	# locks

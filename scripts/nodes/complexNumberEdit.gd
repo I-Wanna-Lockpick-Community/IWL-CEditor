@@ -28,4 +28,4 @@ func _imaginarySet(i:int) -> void:
 	setValue(C.new(value.r,i))
 
 func rotate() -> void:
-	setValue(C.new(value.i.times(-1),value.r))
+	setValue(value.times(C.new(0,-1 if Input.is_key_pressed(KEY_SHIFT) else 1)))

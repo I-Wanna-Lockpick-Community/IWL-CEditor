@@ -1,6 +1,8 @@
 extends GameComponent
 class_name Lock
 
+const TYPES:int = 5
+enum TYPE {NORMAL, BLANK, BLAST, ALL, EXACT}
 enum SIZE_TYPE {AnyS, AnyH, AnyV, AnyM, AnyL, AnyXL, ANY}
 enum CONFIGURATION {spr1A, spr2H, spr2V, spr3H, spr3V, spr4A, spr4B, spr5A, spr5B, spr6A, spr6B, spr8A, spr12A, spr24A, NONE}
 
@@ -8,21 +10,21 @@ func getAvailableConfigurations() -> Array[Array]:
 	# returns Array[Array[SIZE_TYPE, CONFIGURATION]]
 	# SpecificA/H first, then SpecificB/V
 	var available:Array[Array] = []
-	if type != Game.LOCK.NORMAL and type != Game.LOCK.EXACT: return available
+	if type != TYPE.NORMAL and type != TYPE.EXACT: return available
 	if count.isNonzeroReal():
-		if count.r.eq(1): available.append([SIZE_TYPE.AnyS, CONFIGURATION.spr1A])
-		elif count.r.eq(2): available.append([SIZE_TYPE.AnyH, CONFIGURATION.spr2H]); available.append([SIZE_TYPE.AnyV, CONFIGURATION.spr2V])
-		elif count.r.eq(3): available.append([SIZE_TYPE.AnyH, CONFIGURATION.spr3H]); available.append([SIZE_TYPE.AnyV, CONFIGURATION.spr3V])
-		elif count.r.eq(4): available.append([SIZE_TYPE.AnyM, CONFIGURATION.spr4A]); available.append([SIZE_TYPE.AnyL, CONFIGURATION.spr4B])
-		elif count.r.eq(5): available.append([SIZE_TYPE.AnyM, CONFIGURATION.spr5A]); available.append([SIZE_TYPE.AnyL, CONFIGURATION.spr5B])
-		elif count.r.eq(6): available.append([SIZE_TYPE.AnyM, CONFIGURATION.spr6A]); available.append([SIZE_TYPE.AnyL, CONFIGURATION.spr6B])
-		elif count.r.eq(8): available.append([SIZE_TYPE.AnyL, CONFIGURATION.spr8A])
-		elif count.r.eq(12): available.append([SIZE_TYPE.AnyL, CONFIGURATION.spr12A])
-		elif count.r.eq(24): available.append([SIZE_TYPE.AnyXL, CONFIGURATION.spr24A])
+		if count.r.abs().eq(1): available.append([SIZE_TYPE.AnyS, CONFIGURATION.spr1A])
+		elif count.r.abs().eq(2): available.append([SIZE_TYPE.AnyH, CONFIGURATION.spr2H]); available.append([SIZE_TYPE.AnyV, CONFIGURATION.spr2V])
+		elif count.r.abs().eq(3): available.append([SIZE_TYPE.AnyH, CONFIGURATION.spr3H]); available.append([SIZE_TYPE.AnyV, CONFIGURATION.spr3V])
+		elif count.r.abs().eq(4): available.append([SIZE_TYPE.AnyM, CONFIGURATION.spr4A]); available.append([SIZE_TYPE.AnyL, CONFIGURATION.spr4B])
+		elif count.r.abs().eq(5): available.append([SIZE_TYPE.AnyM, CONFIGURATION.spr5A]); available.append([SIZE_TYPE.AnyL, CONFIGURATION.spr5B])
+		elif count.r.abs().eq(6): available.append([SIZE_TYPE.AnyM, CONFIGURATION.spr6A]); available.append([SIZE_TYPE.AnyL, CONFIGURATION.spr6B])
+		elif count.r.abs().eq(8): available.append([SIZE_TYPE.AnyL, CONFIGURATION.spr8A])
+		elif count.r.abs().eq(12): available.append([SIZE_TYPE.AnyL, CONFIGURATION.spr12A])
+		elif count.r.abs().eq(24): available.append([SIZE_TYPE.AnyXL, CONFIGURATION.spr24A])
 	elif count.isNonzeroImag():
-		if count.i.eq(1): available.append([SIZE_TYPE.AnyS, CONFIGURATION.spr1A])
-		elif count.i.eq(2): available.append([SIZE_TYPE.AnyH, CONFIGURATION.spr2H]); available.append([SIZE_TYPE.AnyV, CONFIGURATION.spr2V])
-		elif count.i.eq(3): available.append([SIZE_TYPE.AnyH, CONFIGURATION.spr3H]); available.append([SIZE_TYPE.AnyV, CONFIGURATION.spr3V])
+		if count.i.abs().eq(1): available.append([SIZE_TYPE.AnyS, CONFIGURATION.spr1A])
+		elif count.i.abs().eq(2): available.append([SIZE_TYPE.AnyH, CONFIGURATION.spr2H]); available.append([SIZE_TYPE.AnyV, CONFIGURATION.spr2V])
+		elif count.i.abs().eq(3): available.append([SIZE_TYPE.AnyH, CONFIGURATION.spr3H]); available.append([SIZE_TYPE.AnyV, CONFIGURATION.spr3V])
 	return available
 
 const ANY_RECT:Rect2 = Rect2(Vector2.ZERO,Vector2(50,50)) # rect of ANY
@@ -54,19 +56,19 @@ const PREDEFINED_LOCK_SPRITE_IMAGINARY:Array[Texture2D] = [
 	preload("res://assets/game/lock/predefined/3Vimaginary.png"), preload("res://assets/game/lock/predefined/3Vexacti.png"),
 ]
 func getPredefinedLockSprite() -> Texture2D:
-	if count.isNonzeroImag(): return PREDEFINED_LOCK_SPRITE_IMAGINARY[configuration*2+int(type==Game.LOCK.EXACT)]
-	else: return PREDEFINED_LOCK_SPRITE_NORMAL[configuration*2+int(type==Game.LOCK.EXACT)]
+	if count.isNonzeroImag(): return PREDEFINED_LOCK_SPRITE_IMAGINARY[configuration*2+int(type==TYPE.EXACT)]
+	else: return PREDEFINED_LOCK_SPRITE_NORMAL[configuration*2+int(type==TYPE.EXACT)]
 
 const LOCK_FRAME:Array[Texture2D] = [
-	preload("res://assets/game/lock/frame/AnySnormal.png"),
-	preload("res://assets/game/lock/frame/AnyHnormal.png"),
-	preload("res://assets/game/lock/frame/AnyVnormal.png"),
-	preload("res://assets/game/lock/frame/AnyMnormal.png"),
-	preload("res://assets/game/lock/frame/AnyLnormal.png"),
-	preload("res://assets/game/lock/frame/AnyXLnormal.png"),
-	preload("res://assets/game/lock/frame/ANYnormal.png"),
+	preload("res://assets/game/lock/frame/AnySnormal.png"), preload("res://assets/game/lock/frame/AnySnegative.png"),
+	preload("res://assets/game/lock/frame/AnyHnormal.png"), preload("res://assets/game/lock/frame/AnyHnegative.png"),
+	preload("res://assets/game/lock/frame/AnyVnormal.png"), preload("res://assets/game/lock/frame/AnyVnegative.png"),
+	preload("res://assets/game/lock/frame/AnyMnormal.png"), preload("res://assets/game/lock/frame/AnyMnegative.png"),
+	preload("res://assets/game/lock/frame/AnyLnormal.png"), preload("res://assets/game/lock/frame/AnyLnegative.png"),
+	preload("res://assets/game/lock/frame/AnyXLnormal.png"), preload("res://assets/game/lock/frame/AnyXLnegative.png"),
+	preload("res://assets/game/lock/frame/ANYnormal.png"), preload("res://assets/game/lock/frame/ANYnegative.png"),
 ]
-func getLockFrameSprite() -> Texture2D: return LOCK_FRAME[sizeType]
+func getLockFrameSprite() -> Texture2D: return LOCK_FRAME[sizeType*2+int(count.sign()<0)]
 
 const LOCK_FILL:Array[Texture2D] = [
 	preload("res://assets/game/lock/fill/AnySnormal.png"),
@@ -96,7 +98,7 @@ var id:int
 var parent:Door
 var doorId:int
 var color:Game.COLOR = Game.COLOR.WHITE
-var type:Game.LOCK = Game.LOCK.NORMAL
+var type:TYPE = TYPE.NORMAL
 var configuration:CONFIGURATION = CONFIGURATION.spr1A
 var sizeType:SIZE_TYPE = SIZE_TYPE.AnyS
 var count:C = C.new(1)
@@ -106,8 +108,9 @@ var drawGlitch:RID
 var drawScaled:RID
 var drawMain:RID
 
-const COLOR:Color = Color("#2c2014")
-const NEGATIVE_COLOR:Color = Color("#ebdfd3")
+func getConfigurationColor() -> Color:
+	if count.sign() < 0: return Color("#ebdfd3")
+	else: return Color("#2c2014")
 
 func _init(_parent:Door, _index:int) -> void:
 	parent = _parent
@@ -153,26 +156,52 @@ func _draw() -> void:
 	else: RenderingServer.canvas_item_add_texture_rect(drawMain,rect,getLockFrameSprite())
 	# configuration
 	if configuration == CONFIGURATION.NONE:
-		var string:String = str(count)
-		if string == "1": string = ""
-		var lockOffsetX:float = 0
-		var showLock:bool = size != Vector2(18,18) || string == ""
-		var vertical:bool = size.x == 18 && size.y != 18 && string != ""
-		if showLock and !vertical: lockOffsetX = 14
-		var strWidth:float = Game.FTALK.get_string_size(string,HORIZONTAL_ALIGNMENT_LEFT,-1,12).x + lockOffsetX
-		var startX:int = round((size.x - strWidth)/2);
-		var startY:int = round((size.y+14)/2);
-		if showLock and vertical: startY -= 8;
-		@warning_ignore("integer_division")
-		if showLock:
-			var lockRect:Rect2
-			if vertical:
-				var lockStartX:int = round((size.x - lockOffsetX)/2);
-				lockRect = Rect2(Vector2(lockStartX+lockOffsetX/2,size.y/2+11)-SYMBOL_SIZE/2-getOffset(),Vector2(32,32))
-			else: lockRect = Rect2(Vector2(startX+lockOffsetX/2,size.y/2)-SYMBOL_SIZE/2-getOffset(),Vector2(32,32))
-			RenderingServer.canvas_item_add_texture_rect(drawMain,lockRect,SYMBOL_NORMAL,false,COLOR)
-		Game.FTALK.draw_string(drawMain,Vector2(startX+lockOffsetX,startY)-getOffset(),string,HORIZONTAL_ALIGNMENT_LEFT,-1,12,COLOR)
-	else: RenderingServer.canvas_item_add_texture_rect(drawMain,rect,getPredefinedLockSprite(),false,COLOR)
+		match type:
+			TYPE.NORMAL,TYPE.EXACT:
+				var string:String = str(count.abs())
+				if string == "1": string = ""
+				if count.isNonzeroImag() && type == TYPE.NORMAL: string += "i"
+				var lockOffsetX:float = 0
+				var showLock:bool = type == TYPE.EXACT || (!count.isNonzeroImag() && (size != Vector2(18,18) || string == ""))
+				if type == TYPE.EXACT and !showLock: string = "=" + string
+				var vertical:bool = size.x == 18 && size.y != 18 && string != ""
+
+				var symbolLast:bool = type == TYPE.EXACT and count.isNonzeroImag() and !vertical
+				if showLock and !vertical:
+					if type == TYPE.EXACT:
+						if symbolLast: lockOffsetX = 6
+						else: lockOffsetX = 12
+					else: lockOffsetX = 14
+
+				var strWidth:float = Game.FTALK.get_string_size(string,HORIZONTAL_ALIGNMENT_LEFT,-1,12).x + lockOffsetX
+
+				var startX:int = round((size.x - strWidth)/2);
+				var startY:int = round((size.y+14)/2);
+				if showLock and vertical: startY -= 8;
+				@warning_ignore("integer_division")
+				if showLock:
+					var lockRect:Rect2
+					if vertical:
+						var lockStartX:int = round((size.x - lockOffsetX)/2);
+						lockRect = Rect2(Vector2(lockStartX+lockOffsetX/2,size.y/2+11)-SYMBOL_SIZE/2-getOffset(),Vector2(32,32))
+					elif symbolLast: lockRect = Rect2(Vector2(startX+strWidth-lockOffsetX/2,size.y/2)-SYMBOL_SIZE/2-getOffset(),Vector2(32,32))
+					else: lockRect = Rect2(Vector2(startX+lockOffsetX/2,size.y/2)-SYMBOL_SIZE/2-getOffset(),Vector2(32,32))
+					var lockSymbol:Texture2D
+					if type == TYPE.NORMAL: lockSymbol = SYMBOL_NORMAL
+					elif count.isNonzeroImag(): lockSymbol = SYMBOL_EXACTI
+					else: lockSymbol = SYMBOL_EXACT
+					RenderingServer.canvas_item_add_texture_rect(drawMain,lockRect,lockSymbol,false,getConfigurationColor())
+				if symbolLast: Game.FTALK.draw_string(drawMain,Vector2(startX,startY)-getOffset(),string,HORIZONTAL_ALIGNMENT_LEFT,-1,12,getConfigurationColor())
+				else: Game.FTALK.draw_string(drawMain,Vector2(startX+lockOffsetX,startY)-getOffset(),string,HORIZONTAL_ALIGNMENT_LEFT,-1,12,getConfigurationColor())
+			TYPE.BLANK: pass # nothing really
+			TYPE.BLAST:
+				var symbolRect:Rect2 = Rect2(Vector2((size-SYMBOL_SIZE)/2)-getOffset(),SYMBOL_SIZE)
+				if count.isNonzeroReal(): RenderingServer.canvas_item_add_texture_rect(drawMain,symbolRect,SYMBOL_BLAST,false,getConfigurationColor())
+				else: RenderingServer.canvas_item_add_texture_rect(drawMain,symbolRect,SYMBOL_BLASTI,false,getConfigurationColor())
+			TYPE.ALL:
+				var symbolRect:Rect2 = Rect2(Vector2((size-SYMBOL_SIZE)/2)-getOffset(),SYMBOL_SIZE)
+				RenderingServer.canvas_item_add_texture_rect(drawMain,symbolRect,SYMBOL_ALL,false,getConfigurationColor())
+	else: RenderingServer.canvas_item_add_texture_rect(drawMain,rect,getPredefinedLockSprite(),false,getConfigurationColor())
 
 func getDrawPosition() -> Vector2: return position + parent.position - getOffset()
 
@@ -215,7 +244,6 @@ func _comboDoorSizeChanged() -> void:
 		Vector2(38,38): newSizeType = SIZE_TYPE.AnyM
 		Vector2(50,50): newSizeType = SIZE_TYPE.AnyL
 		Vector2(82,82): newSizeType = SIZE_TYPE.AnyXL
-	editor.focusDialog.lockConfigurationSelector.setSelect(newSizeType+ConfigurationSelector.OPTION.AnyS)
 	editor.changes.addChange(Changes.PropertyChange.new(editor.game,self,&"sizeType",newSizeType))
 	editor.changes.addChange(Changes.PropertyChange.new(editor.game,self,&"configuration",CONFIGURATION.NONE))
 	_setAutoConfiguration()
@@ -227,6 +255,13 @@ func _setAutoConfiguration() -> void:
 			newConfiguration = option[1]
 			break
 	editor.changes.addChange(Changes.PropertyChange.new(editor.game,self,&"configuration",newConfiguration))
+
+func _setType(newType:TYPE):
+	editor.changes.addChange(Changes.PropertyChange.new(editor.game,self,&"type",newType))
+	if type == TYPE.BLANK:
+		editor.changes.addChange(Changes.PropertyChange.new(editor.game,self,&"count",C.new(1)))
+		parent.queue_redraw()
+	_setAutoConfiguration()
 
 func receiveMouseInput(event:InputEventMouse) -> bool:
 	# resizing

@@ -3,6 +3,7 @@ class_name LockSelector
 
 @onready var editor:Editor = get_node("/root/editor")
 @onready var addLock:Button = %addLock
+@onready var colorLink:Button = %colorLink
 
 var selected:int
 var buttons:Array[LockSelectorButton] = []
@@ -23,7 +24,7 @@ func setSelect(index:int) -> void:
 func _select(button:Button):
 	if button is LockSelectorButton:
 		selected = button.index
-		if !manuallySetting: editor.focusDialog.focusComponent(door.locks[selected],false)
+		if !manuallySetting: editor.focusDialog.focusComponent(door.locks[selected])
 
 func setup(_door:Door) -> void:
 	door = _door
@@ -33,29 +34,37 @@ func setup(_door:Door) -> void:
 		button.queue_free()
 	buttons = []
 	remove_child(addLock)
+	remove_child(colorLink)
 	for lock in door.locks:
 		var button:LockSelectorButton = LockSelectorButton.new(len(buttons), self, lock)
 		buttons.append(button)
 		add_child(button)
 	add_child(addLock)
+	add_child(colorLink)
+	colorLink.visible = door.type == Door.TYPE.SIMPLE
 
-func redrawButtons() -> void:
-	for button in buttons: button.queue_redraw()
+func redrawButtons() -> void: for button in buttons: button.queue_redraw()
+func redrawButton(index:int) -> void:
+	buttons[index].queue_redraw()
 
 func _addLock():
 	var lock:Lock = editor.game.locks[editor.changes.addChange(Changes.CreateLockChange.new(editor.game,Vector2i.ZERO,door.id)).id]
 	if len(door.locks) == 1: editor.focusDialog._doorTypeSelected(Door.TYPE.SIMPLE)
 	else: editor.focusDialog._doorTypeSelected(Door.TYPE.COMBO)
+	colorLink.visible = door.type == Door.TYPE.SIMPLE
 	var button:LockSelectorButton = LockSelectorButton.new(len(buttons), self, lock)
 	buttons.append(button)
 	add_child(button)
 	remove_child(addLock)
+	remove_child(colorLink)
 	add_child(addLock)
+	add_child(colorLink)
 	button.button_pressed = true
 
 func _removeLock(lock:Lock):
 	editor.changes.addChange(Changes.DeleteLockChange.new(editor.game,lock))
 	editor.focusDialog._doorTypeSelected(Door.TYPE.COMBO)
+	colorLink.visible = false
 	var button:Button = buttons.pop_at(lock.index)
 	button.deleted = true
 	button._draw()
@@ -64,7 +73,13 @@ func _removeLock(lock:Lock):
 class LockSelectorButton extends Button:
 	@onready var editor:Editor = get_node("/root/editor")
 
-	const LOCK_NORMAL:Texture2D = preload("res://assets/ui/lockSelect/normal.png")
+	const ICONS:Array[Texture2D] = [
+		preload("res://assets/ui/lockSelect/normal.png"), preload("res://assets/ui/lockSelect/imaginary.png"),
+		preload("res://assets/ui/lockSelect/blank.png"), preload("res://assets/ui/lockSelect/blank.png"),
+		preload("res://assets/ui/lockSelect/blast.png"), preload("res://assets/ui/lockSelect/blasti.png"),
+		preload("res://assets/ui/lockSelect/all.png"), preload("res://assets/ui/lockSelect/all.png"),
+		preload("res://assets/ui/lockSelect/exact.png"), preload("res://assets/ui/lockSelect/exacti.png"),
+	]
 
 	var index:int
 	var selector:LockSelector
@@ -103,5 +118,4 @@ class LockSelectorButton extends Button:
 			RenderingServer.canvas_item_add_texture_rect(drawMain,rect,texture)
 		else:
 			RenderingServer.canvas_item_add_rect(drawMain,rect,editor.game.mainTone[lock.color])
-		match lock.type:
-			Game.LOCK.NORMAL: icon = LOCK_NORMAL
+		icon = ICONS[lock.type*2 + int(lock.count.isNonzeroImag())]

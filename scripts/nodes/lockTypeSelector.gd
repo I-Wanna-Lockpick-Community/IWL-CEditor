@@ -10,8 +10,8 @@ const ICONS:Array[Texture2D] = [
 ]
 
 func _ready() -> void:
-	columns = Game.LOCKTYPES
-	options = range(Game.LOCKTYPES)
+	columns = Lock.TYPES
+	options = range(Lock.TYPES)
 	defaultValue = Game.KEY.NORMAL
 	buttonType = LockTypeSelectorButton
 	super()

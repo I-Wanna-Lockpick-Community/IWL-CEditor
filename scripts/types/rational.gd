@@ -19,6 +19,11 @@ func lt(number) -> bool: return n < Q.new(number).n
 
 func sign() -> int: return sign(n)
 
+func abs() -> Q: return Q.new(abs(n))
+
 func plus(number) -> Q: return Q.new(n+Q.new(number).n)
 func minus(number) -> Q: return Q.new(n-Q.new(number).n)
 func times(number) -> Q: return Q.new(n*Q.new(number).n)
+
+func divint(number:int) -> Q:
+	@warning_ignore("integer_division") return Q.new(n/number)

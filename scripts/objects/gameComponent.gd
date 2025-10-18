@@ -2,7 +2,7 @@ extends Node2D
 class_name GameComponent
 # game objects and also door locks
 
-enum TYPES {KEY, DOOR, LOCK}
+enum COMPONENT {KEY, DOOR, LOCK}
 
 var size:Vector2
 

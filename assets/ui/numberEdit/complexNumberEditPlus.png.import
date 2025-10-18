@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dy5pu0dl7us8k"
-path="res://.godot/imported/complexNumberEditI.png-7233687f34c4287db031118e1c178943.ctex"
+uid="uid://ciyd5ja4gu1u1"
+path="res://.godot/imported/complexNumberEditPlus.png-bb52caf9323bbd29464d48c3456d2419.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/ui/complexNumberEditI.png"
-dest_files=["res://.godot/imported/complexNumberEditI.png-7233687f34c4287db031118e1c178943.ctex"]
+source_file="res://assets/ui/numberEdit/complexNumberEditPlus.png"
+dest_files=["res://.godot/imported/complexNumberEditPlus.png-bb52caf9323bbd29464d48c3456d2419.ctex"]
 
 [params]
 

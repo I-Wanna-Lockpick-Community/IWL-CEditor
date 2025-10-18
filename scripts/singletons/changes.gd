@@ -83,7 +83,7 @@ class TileChange extends Change:
 		else: game.tiles.erase_cell(position)
 
 	func _to_string() -> String:
-		return "<TileChange>"
+		return "<TileChange:"+str(position.x)+","+str(position.y)+">"
 
 class CreateKeyChange extends Change:
 	var position:Vector2i
@@ -109,6 +109,9 @@ class CreateKeyChange extends Change:
 		game.editor.focusDialog.defocus()
 		game.keys[id].queue_free()
 		game.keys.erase(id)
+	
+	func _to_string() -> String:
+		return "<CreateKeyChange:"+str(id)+">"
 
 class DeleteKeyChange extends Change:
 	var position:Vector2i
@@ -145,6 +148,9 @@ class DeleteKeyChange extends Change:
 		key.infinite = infinite
 		game.keys[id] = key
 		game.objects.add_child(key)
+	
+	func _to_string() -> String:
+		return "<DeleteKeyChange:"+str(id)+">"
 
 class CreateDoorChange extends Change:
 	var position:Vector2i
@@ -170,6 +176,9 @@ class CreateDoorChange extends Change:
 		game.editor.focusDialog.defocus()
 		game.doors[id].queue_free()
 		game.doors.erase(id)
+	
+	func _to_string() -> String:
+		return "<CreateDoorChange:"+str(id)+">"
 
 class DeleteDoorChange extends Change:
 	var position:Vector2i
@@ -206,6 +215,9 @@ class DeleteDoorChange extends Change:
 		door.type = type
 		game.doors[id] = door
 		game.objects.add_child(door)
+	
+	func _to_string() -> String:
+		return "<DeleteDoorChange:"+str(id)+">"
 
 class CreateLockChange extends Change:
 	var position:Vector2i
@@ -242,6 +254,9 @@ class CreateLockChange extends Change:
 		for lockIndex in range(index, len(game.doors[doorId].locks)):
 			game.doors[doorId].locks[lockIndex].index -= 1
 		game.locks.erase(id)
+	
+	func _to_string() -> String:
+		return "<CreateLockChange:"+str(id)+">"
 
 class DeleteLockChange extends Change:
 	var position:Vector2i
@@ -249,7 +264,7 @@ class DeleteLockChange extends Change:
 	var size:Vector2
 	var doorId:int
 	var color:Game.COLOR
-	var type:Game.LOCK
+	var type:Lock.TYPE
 	var configuration:Lock.CONFIGURATION
 	var sizeType:Lock.SIZE_TYPE
 	var count:C
@@ -296,13 +311,16 @@ class DeleteLockChange extends Change:
 		for lockIndex in range(index+1, len(game.doors[doorId].locks)):
 			game.doors[doorId].locks[lockIndex].index += 1
 		door.add_child(lock)
+	
+	func _to_string() -> String:
+		return "<DeleteLockChange:"+str(id)+">"
 
 class PropertyChange extends Change:
 	var id:int
 	var property:StringName
 	var before:Variant
 	var after:Variant
-	var componentType:GameComponent.TYPES
+	var componentType:GameComponent.COMPONENT
 	
 	func _init(_game:Game,component:GameComponent,_property:StringName,_after:Variant) -> void:
 		game = _game
@@ -310,9 +328,9 @@ class PropertyChange extends Change:
 		property = _property
 		before = component.get(property)
 		after = _after
-		if component is KeyBulk: componentType = GameComponent.TYPES.KEY
-		elif component is Door: componentType = GameComponent.TYPES.DOOR
-		elif component is Lock: componentType = GameComponent.TYPES.LOCK
+		if component is KeyBulk: componentType = GameComponent.COMPONENT.KEY
+		elif component is Door: componentType = GameComponent.COMPONENT.DOOR
+		elif component is Lock: componentType = GameComponent.COMPONENT.LOCK
 		if before == after:
 			cancelled = true
 			return
@@ -324,11 +342,15 @@ class PropertyChange extends Change:
 	func changeValue(value:Variant) -> void:
 		var component:GameComponent
 		match componentType:
-			GameComponent.TYPES.KEY: component = game.keys[id]
-			GameComponent.TYPES.DOOR: component = game.doors[id]
-			GameComponent.TYPES.LOCK: component = game.locks[id]
+			GameComponent.COMPONENT.KEY: component = game.keys[id]
+			GameComponent.COMPONENT.DOOR: component = game.doors[id]
+			GameComponent.COMPONENT.LOCK: component = game.locks[id]
 		if value is C or value is Q: component.set(property, value.copy())
 		else: component.set(property, value)
 		if property == &"size" and component is GameObject: component.shape.shape.size = value
 		component.queue_redraw()
-		if game.editor.focusDialog.focused == component: game.editor.focusDialog.focus(component, false)
+		if game.editor.focusDialog.focused == component: game.editor.focusDialog.focus(component)
+		elif game.editor.focusDialog.componentFocused == component: game.editor.focusDialog.focusComponent(component)
+	
+	func _to_string() -> String:
+		return "<PropetyChange:"+str(id)+"."+str(property)+"->"+str(after)+">"
