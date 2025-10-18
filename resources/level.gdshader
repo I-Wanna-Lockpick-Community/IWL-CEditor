@@ -22,8 +22,9 @@ void fragment() {
 	vec2 XY = FRAGCOORD.xy*RCAMERA_ZOOM + screenPosition;
 	if (XY.x < 0.0 || XY.y < 0.0 || XY.x > levelSize.x || XY.y > levelSize.y) {
 		// draw level bounds
-		COLOR.rgb = OUTOFBOUNDS_COLOR;
-	} else if (mod(XY.x,tileSize.x) < RCAMERA_ZOOM || mod(XY.y,tileSize.y) < RCAMERA_ZOOM) {
+		COLOR.rgb = lerpColor(COLOR.rgb, OUTOFBOUNDS_COLOR, 0.5);
+	}
+	if (mod(XY.x,tileSize.x) < RCAMERA_ZOOM || mod(XY.y,tileSize.y) < RCAMERA_ZOOM) {
 		// draw grid
 		float gridAlpha = 0.35;
 		if (mod(XY.x,32) < RCAMERA_ZOOM || mod(XY.y,32) < RCAMERA_ZOOM) {

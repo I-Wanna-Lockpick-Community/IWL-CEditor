@@ -93,11 +93,13 @@ func _gui_input(event:InputEvent) -> void:
 				DRAG_MODE.SIZE_VERT: DisplayServer.cursor_set_shape(DisplayServer.CURSOR_VSIZE)
 				DRAG_MODE.SIZE_HORIZ: DisplayServer.cursor_set_shape(DisplayServer.CURSOR_HSIZE)
 		else: DisplayServer.cursor_set_shape(DisplayServer.CURSOR_ARROW)
-		# size dragging
+		# size drag handles
 		if focusDialog.componentFocused and focusDialog.focused.type != Door.TYPE.SIMPLE:
 			if focusDialog.componentFocused.receiveMouseInput(event): return
 		elif objectHovered:
 			if objectHovered.receiveMouseInput(event): return
+		# dragging
+		if componentDragged and dragComponent(): return
 		# other
 		match mode:
 			MODE.SELECT:
@@ -108,8 +110,6 @@ func _gui_input(event:InputEvent) -> void:
 					if componentHovered is Lock and componentHovered.parent.type != Door.TYPE.SIMPLE: startPositionDrag(componentHovered)
 					elif objectHovered: startPositionDrag(objectHovered)
 					else: focusDialog.defocus()
-				if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
-					dragObject()
 			MODE.TILE:
 				if game.levelBounds.has_point(mouseWorldPosition):
 					if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
@@ -124,12 +124,11 @@ func _gui_input(event:InputEvent) -> void:
 						startPositionDrag(objectHovered)
 					else: focusDialog.defocus()
 				if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
-					if !dragObject():
-						if objectHovered is not KeyBulk and game.levelBounds.has_point(mouseWorldPosition):
-							changes.addChange(Changes.CreateKeyChange.new(game,mouseTilePosition))
-							focusDialog.defocus()
-							if !Input.is_key_pressed(KEY_SHIFT):
-								modes.setMode(MODE.SELECT)
+					if objectHovered is not KeyBulk and game.levelBounds.has_point(mouseWorldPosition):
+						changes.addChange(Changes.CreateKeyChange.new(game,mouseTilePosition))
+						focusDialog.defocus()
+						if !Input.is_key_pressed(KEY_SHIFT):
+							modes.setMode(MODE.SELECT)
 				if Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT):
 					if objectHovered is KeyBulk:
 						changes.addChange(Changes.DeleteKeyChange.new(game,objectHovered))
@@ -148,8 +147,6 @@ func _gui_input(event:InputEvent) -> void:
 							changes.addChange(Changes.CreateLockChange.new(game,Vector2i.ZERO,door.id))
 							if !Input.is_key_pressed(KEY_SHIFT):
 								modes.setMode(MODE.SELECT)
-				if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
-					dragObject()
 				if Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT):
 					if objectHovered is Door:
 						changes.addChange(Changes.DeleteDoorChange.new(game,objectHovered))
@@ -185,20 +182,17 @@ func startSizeDrag(component:GameComponent, pivot:SIZE_DRAG_PIVOT=SIZE_DRAG_PIVO
 	dragPivotRect = Rect2(rectPos, minSize)
 	previousDragPosition = mouseTilePosition
 
-
-func dragObject() -> bool: # returns whether or not an object is being dragged, for laziness
+func dragComponent() -> bool: # returns whether or not an object is being dragged, for laziness
 	if !componentDragged: return false
 	if mouseTilePosition == previousDragPosition: return true
 	previousDragPosition = mouseTilePosition
 	var dragPosition:Vector2 = mouseTilePosition
 	var parentPosition:Vector2 = Vector2.ZERO
-	var componentSize:Vector2 = componentDragged.size
 	if componentDragged is not GameObject: parentPosition = componentDragged.parent.position
-	if componentDragged is Lock: componentSize -= componentDragged.getOffset()*2
 	match dragMode:
 		DRAG_MODE.POSITION:
-			if !game.levelBounds.encloses(Rect2i(mouseTilePosition+Vector2i(dragOffset+parentPosition),componentSize)):
-				dragPosition = dragPosition.clamp(game.levelBounds.position-Vector2i(dragOffset+parentPosition), game.levelBounds.end-Vector2i(componentSize+dragOffset+parentPosition))
+			if componentDragged is not Lock and !game.levelBounds.has_point(dragPosition+dragOffset):
+				dragPosition = dragPosition.clamp(game.levelBounds.position-Vector2i(dragOffset+parentPosition), game.levelBounds.end-Vector2i(dragOffset)-tileSize)
 			changes.addChange(Changes.PropertyChange.new(game,componentDragged,&"position",dragPosition + dragOffset))
 		DRAG_MODE.SIZE_FDIAG, DRAG_MODE.SIZE_BDIAG, DRAG_MODE.SIZE_VERT, DRAG_MODE.SIZE_HORIZ:
 			# since mousetileposition rounds down, dragging down or right should go one tile farther
@@ -209,8 +203,8 @@ func dragObject() -> bool: # returns whether or not an object is being dragged, 
 				dragPosition.y += tileSize.y
 				if componentDragged is Lock: dragPosition.y += componentDragged.getOffset().y*2
 			# clamp to level bounds
-			if !game.levelBounds.encloses(Rect2i(mouseTilePosition,componentSize)):
-				dragPosition = dragPosition.clamp(game.levelBounds.position, game.levelBounds.end)
+			if componentDragged is not Lock and (mouseTilePosition.x < game.levelBounds.position.x or mouseTilePosition.y < game.levelBounds.position.y):
+				dragPosition = dragPosition.clamp(game.levelBounds.position,dragPosition)
 			var toRect:Rect2 = dragPivotRect.expand(dragPosition)
 			changes.addChange(Changes.PropertyChange.new(game,componentDragged,&"position",toRect.position-parentPosition))
 			changes.addChange(Changes.PropertyChange.new(game,componentDragged,&"size",toRect.size))
@@ -233,6 +227,9 @@ func _input(event:InputEvent) -> void:
 			KEY_D: modes.setMode(MODE.DOOR)
 			KEY_Z: if Input.is_key_pressed(KEY_CTRL): changes.undo()
 			KEY_Y: if Input.is_key_pressed(KEY_CTRL): changes.redo()
+			KEY_M:
+				if focusDialog.componentFocused: startPositionDrag(focusDialog.componentFocused)
+				elif focusDialog.focused: startPositionDrag(focusDialog.focused)
 			KEY_SPACE:
 				targetCameraZoom = 1
 				zoomPoint = game.levelBounds.get_center()
