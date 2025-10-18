@@ -28,7 +28,6 @@ func _ready() -> void:
 
 func setSelect(value:Variant) -> void:
 	manuallySetting = true
-	buttons[selected].button_pressed = false
 	buttons[value].button_pressed = true
 	manuallySetting = false
 	selected = value

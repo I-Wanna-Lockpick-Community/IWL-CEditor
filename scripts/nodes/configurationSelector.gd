@@ -43,7 +43,6 @@ func _ready() -> void:
 
 func setSelect(option:OPTION) -> void:
 	manuallySetting = true
-	buttons[selected].button_pressed = false
 	buttons[option].button_pressed = true
 	manuallySetting = false
 	selected = option

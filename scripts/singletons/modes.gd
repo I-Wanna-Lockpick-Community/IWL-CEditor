@@ -7,6 +7,5 @@ func _setMode(mode:int) -> void:
 	editor.mode = mode as Editor.MODE
 
 func setMode(mode:Editor.MODE) -> void:
-	get_child(editor.mode).button_pressed = false
 	get_child(mode).button_pressed = true
 	editor.mode = mode

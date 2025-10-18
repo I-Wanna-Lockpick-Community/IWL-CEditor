@@ -162,6 +162,7 @@ icon = ExtResource("13_jwt4y")
 script = ExtResource("14_e2stj")
 
 [node name="scroll" type="ScrollContainer" parent="doorDialog/c/door/c/c"]
+custom_minimum_size = Vector2(0, 32)
 layout_mode = 2
 size_flags_horizontal = 3
 mouse_filter = 0
@@ -169,7 +170,7 @@ mouse_force_pass_scroll_events = false
 
 [node name="lockSelector" type="HFlowContainer" parent="doorDialog/c/door/c/c/scroll"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(48, 28)
+custom_minimum_size = Vector2(48, 0)
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/h_separation = 0

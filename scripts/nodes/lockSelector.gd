@@ -16,7 +16,6 @@ func _ready() -> void:
 
 func setSelect(index:int) -> void:
 	manuallySetting = true
-	buttons[selected].button_pressed = false
 	buttons[index].button_pressed = true
 	manuallySetting = false
 	selected = index

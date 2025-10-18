@@ -100,7 +100,10 @@ func receiveKey(event:InputEvent) -> bool:
 		match event.keycode:
 			KEY_C: editor.quickSet.startQuick(QuickSet.QUICK.COLOR, focused)
 			KEY_DELETE:
-				if componentFocused: %lockSelector._removeLock(componentFocused)
+				if componentFocused:
+					%lockSelector._removeLock(componentFocused)
+					if len(focused.locks) != 0: focusComponent(focused.locks[len(focused.locks)-1])
+					else: focus(focused)
 				else: editor.changes.addChange(Changes.DeleteDoorChange.new(editor.game,focused))
 				editor.changes.bufferSave()
 			_: return false
