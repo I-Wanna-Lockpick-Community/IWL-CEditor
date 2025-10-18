@@ -4,6 +4,27 @@ class_name Lock
 enum SIZE_TYPE {AnyS, AnyH, AnyV, AnyM, AnyL, AnyXL, ANY}
 enum CONFIGURATION {spr1A, spr2H, spr2V, spr3H, spr3V, spr4A, spr4B, spr5A, spr5B, spr6A, spr6B, spr8A, spr12A, spr24A, NONE}
 
+func getAvailableConfigurations() -> Array[Array]:
+	# returns Array[Array[SIZE_TYPE, CONFIGURATION]]
+	# SpecificA/H first, then SpecificB/V
+	var available:Array[Array] = []
+	if type != Game.LOCK.NORMAL and type != Game.LOCK.EXACT: return available
+	if count.isNonzeroReal():
+		if count.r.eq(1): available.append([SIZE_TYPE.AnyS, CONFIGURATION.spr1A])
+		elif count.r.eq(2): available.append([SIZE_TYPE.AnyH, CONFIGURATION.spr2H]); available.append([SIZE_TYPE.AnyV, CONFIGURATION.spr2V])
+		elif count.r.eq(3): available.append([SIZE_TYPE.AnyH, CONFIGURATION.spr3H]); available.append([SIZE_TYPE.AnyV, CONFIGURATION.spr3V])
+		elif count.r.eq(4): available.append([SIZE_TYPE.AnyM, CONFIGURATION.spr4A]); available.append([SIZE_TYPE.AnyL, CONFIGURATION.spr4B])
+		elif count.r.eq(5): available.append([SIZE_TYPE.AnyM, CONFIGURATION.spr5A]); available.append([SIZE_TYPE.AnyL, CONFIGURATION.spr5B])
+		elif count.r.eq(6): available.append([SIZE_TYPE.AnyM, CONFIGURATION.spr6A]); available.append([SIZE_TYPE.AnyL, CONFIGURATION.spr6B])
+		elif count.r.eq(8): available.append([SIZE_TYPE.AnyL, CONFIGURATION.spr8A])
+		elif count.r.eq(12): available.append([SIZE_TYPE.AnyL, CONFIGURATION.spr12A])
+		elif count.r.eq(24): available.append([SIZE_TYPE.AnyXL, CONFIGURATION.spr24A])
+	elif count.isNonzeroImag():
+		if count.i.eq(1): available.append([SIZE_TYPE.AnyS, CONFIGURATION.spr1A])
+		elif count.i.eq(2): available.append([SIZE_TYPE.AnyH, CONFIGURATION.spr2H]); available.append([SIZE_TYPE.AnyV, CONFIGURATION.spr2V])
+		elif count.i.eq(3): available.append([SIZE_TYPE.AnyH, CONFIGURATION.spr3H]); available.append([SIZE_TYPE.AnyV, CONFIGURATION.spr3V])
+	return available
+
 const ANY_RECT:Rect2 = Rect2(Vector2.ZERO,Vector2(50,50)) # rect of ANY
 const CORNER_SIZE:Vector2 = Vector2(2,2) # size of ANY's corners
 const TILE:RenderingServer.NinePatchAxisMode = RenderingServer.NinePatchAxisMode.NINE_PATCH_TILE # just to save characters
@@ -156,38 +177,7 @@ func _draw() -> void:
 func getDrawPosition() -> Vector2: return position + parent.position - getOffset()
 
 func _simpleDoorUpdate() -> void:
-	# resize and set configuration
-	var newConfiguration:CONFIGURATION = CONFIGURATION.NONE
-	match type:
-		Game.LOCK.NORMAL, Game.LOCK.EXACT:
-			if count.isNonzeroReal():
-				match parent.size:
-					Vector2(32,32):
-						if count.r.eq(1): newConfiguration = CONFIGURATION.spr1A
-					Vector2(64,32):
-						if count.r.eq(2): newConfiguration = CONFIGURATION.spr2H
-						elif count.r.eq(3): newConfiguration = CONFIGURATION.spr3H
-					Vector2(32,64):
-						if count.r.eq(2): newConfiguration = CONFIGURATION.spr2V
-						elif count.r.eq(3): newConfiguration = CONFIGURATION.spr3V
-					Vector2(64,64):
-						if count.r.eq(4): newConfiguration = CONFIGURATION.spr4B
-						elif count.r.eq(5): newConfiguration = CONFIGURATION.spr5B
-						elif count.r.eq(6): newConfiguration = CONFIGURATION.spr6B
-						elif count.r.eq(8): newConfiguration = CONFIGURATION.spr8A
-						elif count.r.eq(12): newConfiguration = CONFIGURATION.spr12A
-					Vector2(96,96):
-						if count.r.eq(24): newConfiguration = CONFIGURATION.spr24A
-			elif count.isNonzeroImag():
-				match parent.size:
-					Vector2(32,32):
-						if count.i.eq(1): newConfiguration = CONFIGURATION.spr1A
-					Vector2(64,32):
-						if count.i.eq(2): newConfiguration = CONFIGURATION.spr2H
-						elif count.i.eq(3): newConfiguration = CONFIGURATION.spr3H
-					Vector2(32,64):
-						if count.i.eq(2): newConfiguration = CONFIGURATION.spr2V
-						elif count.i.eq(3): newConfiguration = CONFIGURATION.spr3V
+	# resize and set configuration	
 	var newSizeType:SIZE_TYPE
 	match parent.size:
 		Vector2(32,32): newSizeType = SIZE_TYPE.AnyS
@@ -197,13 +187,14 @@ func _simpleDoorUpdate() -> void:
 		Vector2(96,96): newSizeType = SIZE_TYPE.AnyXL
 		_: newSizeType = SIZE_TYPE.ANY
 	editor.changes.addChange(Changes.PropertyChange.new(editor.game,self,&"position",Vector2.ZERO))
-	editor.changes.addChange(Changes.PropertyChange.new(editor.game,self,&"configuration",newConfiguration))
 	editor.changes.addChange(Changes.PropertyChange.new(editor.game,self,&"sizeType",newSizeType))
 	editor.changes.addChange(Changes.PropertyChange.new(editor.game,self,&"size",parent.size - Vector2(14,14)))
+	_setAutoConfiguration()
 	queue_redraw()
 
-func _comboDoorSizetypeChanged(newSizeType:SIZE_TYPE) -> void:
+func _comboDoorConfigurationChanged(newSizeType:SIZE_TYPE,newConfiguration:CONFIGURATION=CONFIGURATION.NONE) -> void:
 	editor.changes.addChange(Changes.PropertyChange.new(editor.game,self,&"sizeType",newSizeType))
+	editor.changes.addChange(Changes.PropertyChange.new(editor.game,self,&"configuration",newConfiguration))
 	var newSize:Vector2
 	match sizeType:
 		SIZE_TYPE.AnyS: newSize = Vector2(18,18)
@@ -227,7 +218,15 @@ func _comboDoorSizeChanged() -> void:
 	editor.focusDialog.lockConfigurationSelector.setSelect(newSizeType+ConfigurationSelector.OPTION.AnyS)
 	editor.changes.addChange(Changes.PropertyChange.new(editor.game,self,&"sizeType",newSizeType))
 	editor.changes.addChange(Changes.PropertyChange.new(editor.game,self,&"configuration",CONFIGURATION.NONE))
+	_setAutoConfiguration()
 	
+func _setAutoConfiguration() -> void:
+	var newConfiguration:CONFIGURATION = CONFIGURATION.NONE
+	for option in getAvailableConfigurations():
+		if sizeType == option[0]:
+			newConfiguration = option[1]
+			break
+	editor.changes.addChange(Changes.PropertyChange.new(editor.game,self,&"configuration",newConfiguration))
 
 func receiveMouseInput(event:InputEventMouse) -> bool:
 	# resizing

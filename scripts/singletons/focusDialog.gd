@@ -24,8 +24,9 @@ func focus(object:GameObject, new:bool=object!=focused) -> void:
 		%keyDialog.visible = false
 		%doorDialog.visible = true
 		%doorTypes.get_child(focused.type).button_pressed = true
-		%lockConfigurationSelector.visible = focused.type != Door.TYPE.SIMPLE
 		if !componentFocused:
+			%lockConfigurationSelector.visible = false
+			%lockSettings.visible = false
 			%doorColorSelector.setSelect(focused.colorSpend)
 			%doorNumberEdit.setValue(focused.copies, true)
 			%spend.button_pressed = true
@@ -48,7 +49,9 @@ func focusComponent(component:GameComponent, _new:bool=true) -> void:
 		%doorColorSelector.setSelect(componentFocused.color)
 		%doorNumberEdit.setValue(componentFocused.count, true)
 		%lockSelector.setSelect(componentFocused.index)
-		if _new: print(component.index)
+		%lockConfigurationSelector.visible = focused.type != Door.TYPE.SIMPLE
+		%lockConfigurationSelector.setup(componentFocused)
+		%lockSettings.visible = true
 
 func defocusComponent() -> void:
 	if !componentFocused: return
@@ -145,7 +148,8 @@ func _doorNumberSet(value:C):
 	if componentFocused:
 		editor.changes.addChange(Changes.PropertyChange.new(editor.game,componentFocused,&"count",value))
 		if focused.type == Door.TYPE.SIMPLE: componentFocused._simpleDoorUpdate()
-		else: componentFocused._comboDoorCountChanged()
+		else: componentFocused._setAutoConfiguration()
+		%lockConfigurationSelector.setup(componentFocused)
 	else: editor.changes.addChange(Changes.PropertyChange.new(editor.game,focused,&"copies",value))
 	editor.changes.bufferSave()
 
@@ -157,6 +161,9 @@ func _doorTypeSelected(type:Door.TYPE):
 	editor.changes.addChange(Changes.PropertyChange.new(editor.game,focused,&"type",type))
 	if type == Door.TYPE.SIMPLE:
 		focused.locks[0]._simpleDoorUpdate()
+		%lockConfigurationSelector.visible = false
+	else:
+		%lockConfigurationSelector.visible = componentFocused is Lock
 
 func _spendSelected():
 	defocusComponent()
@@ -165,9 +172,15 @@ func _spendSelected():
 func _LockConfigurationSelected(option:ConfigurationSelector.OPTION):
 	if componentFocused is not Lock: return
 	match option:
-		ConfigurationSelector.OPTION.AnyS: componentFocused._comboDoorSizetypeChanged(Lock.SIZE_TYPE.AnyS)
-		ConfigurationSelector.OPTION.AnyH: componentFocused._comboDoorSizetypeChanged(Lock.SIZE_TYPE.AnyH)
-		ConfigurationSelector.OPTION.AnyV: componentFocused._comboDoorSizetypeChanged(Lock.SIZE_TYPE.AnyV)
-		ConfigurationSelector.OPTION.AnyM: componentFocused._comboDoorSizetypeChanged(Lock.SIZE_TYPE.AnyM)
-		ConfigurationSelector.OPTION.AnyL: componentFocused._comboDoorSizetypeChanged(Lock.SIZE_TYPE.AnyL)
-		ConfigurationSelector.OPTION.AnyXL: componentFocused._comboDoorSizetypeChanged(Lock.SIZE_TYPE.AnyXL)
+		ConfigurationSelector.OPTION.SpecificA:
+			var configuration:Array = componentFocused.getAvailableConfigurations()[0]
+			componentFocused._comboDoorConfigurationChanged(configuration[0], configuration[1])
+		ConfigurationSelector.OPTION.SpecificB:
+			var configuration:Array = componentFocused.getAvailableConfigurations()[1]
+			componentFocused._comboDoorConfigurationChanged(configuration[0], configuration[1])
+		ConfigurationSelector.OPTION.AnyS: componentFocused._comboDoorConfigurationChanged(Lock.SIZE_TYPE.AnyS)
+		ConfigurationSelector.OPTION.AnyH: componentFocused._comboDoorConfigurationChanged(Lock.SIZE_TYPE.AnyH)
+		ConfigurationSelector.OPTION.AnyV: componentFocused._comboDoorConfigurationChanged(Lock.SIZE_TYPE.AnyV)
+		ConfigurationSelector.OPTION.AnyM: componentFocused._comboDoorConfigurationChanged(Lock.SIZE_TYPE.AnyM)
+		ConfigurationSelector.OPTION.AnyL: componentFocused._comboDoorConfigurationChanged(Lock.SIZE_TYPE.AnyL)
+		ConfigurationSelector.OPTION.AnyXL: componentFocused._comboDoorConfigurationChanged(Lock.SIZE_TYPE.AnyXL)

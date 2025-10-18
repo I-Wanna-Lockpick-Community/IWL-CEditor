@@ -209,16 +209,17 @@ layout_mode = 2
 script = ExtResource("3_wmate")
 metadata/_custom_type_script = "uid://c70juj2p5s6yd"
 
-[node name="c" type="HBoxContainer" parent="doorDialog/c/lock/c/c"]
+[node name="lockSettings" type="HBoxContainer" parent="doorDialog/c/lock/c/c"]
+unique_name_in_owner = true
 layout_mode = 2
 
-[node name="lockTypeSelector" type="GridContainer" parent="doorDialog/c/lock/c/c/c"]
+[node name="lockTypeSelector" type="GridContainer" parent="doorDialog/c/lock/c/c/lockSettings"]
 unique_name_in_owner = true
 layout_mode = 2
 script = ExtResource("15_vfuuy")
 metadata/_custom_type_script = "uid://cxlnmn0e36ba"
 
-[node name="sep" type="VSeparator" parent="doorDialog/c/lock/c/c/c"]
+[node name="sep" type="VSeparator" parent="doorDialog/c/lock/c/c/lockSettings"]
 layout_mode = 2
 theme_type_variation = &"VSeperatorHigh"
 
@@ -248,5 +249,5 @@ default_color = Color(0.8352941, 0.8352941, 0.8352941, 1)
 [connection signal="pressed" from="doorDialog/c/door/c/c/scroll/lockSelector/addLock" to="doorDialog/c/door/c/c/scroll/lockSelector" method="_addLock"]
 [connection signal="select" from="doorDialog/c/lock/c/c/lockConfigurationSelector" to="." method="_LockConfigurationSelected"]
 [connection signal="select" from="doorDialog/c/lock/c/c/doorColorSelector" to="." method="_doorColorSelected"]
-[connection signal="select" from="doorDialog/c/lock/c/c/c/lockTypeSelector" to="." method="_lockTypeSelected"]
+[connection signal="select" from="doorDialog/c/lock/c/c/lockSettings/lockTypeSelector" to="." method="_lockTypeSelected"]
 [connection signal="valueSet" from="doorDialog/c/lock/c/c/doorNumberEdit" to="." method="_doorNumberSet"]
