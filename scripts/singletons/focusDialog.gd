@@ -227,6 +227,10 @@ func _doorTypeSelected(type:Door.TYPE):
 	editor.changes.addChange(Changes.PropertyChange.new(editor.game,focused,&"type",type))
 	%lockSelector.colorLink.visible = focused.type == Door.TYPE.SIMPLE
 	if type == Door.TYPE.SIMPLE:
+		if len(focused.locks) == 0: %lockSelector._addLock()
+		elif len(focused.locks) > 1:
+			for lock in focused.locks.slice(1):
+				%lockSelector._removeLock(lock)
 		focused.locks[0]._simpleDoorUpdate()
 		%lockConfigurationSelector.visible = false
 	else:
