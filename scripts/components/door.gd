@@ -9,6 +9,7 @@ const FRAME_NEGATIVE:Texture2D = preload("res://assets/game/door/frameNegative.p
 const SPEND_HIGH:Texture2D = preload("res://assets/game/door/spendHigh.png")
 const SPEND_MAIN:Texture2D = preload("res://assets/game/door/spendMain.png")
 const SPEND_DARK:Texture2D = preload("res://assets/game/door/spendDark.png")
+const GATE_FILL:Texture2D = preload("res://assets/game/door/gateFill.png")
 
 const TEXTURE_RECT:Rect2 = Rect2(Vector2.ZERO,Vector2(64,64)) # size of all the door textures
 const CORNER_SIZE:Vector2 = Vector2(9,9) # size of door ninepatch corners
@@ -61,26 +62,29 @@ func _draw() -> void:
 	# fill
 	var texture:Texture2D
 	var tileTexture:bool = false
-	match colorSpend:
-		Game.COLOR.MASTER: texture = editor.game.masterTex()
-		Game.COLOR.PURE: texture = editor.game.pureTex()
-		Game.COLOR.STONE: texture = editor.game.stoneTex()
-		Game.COLOR.DYNAMITE: texture = editor.game.dynamiteTex(); tileTexture = true
-		Game.COLOR.QUICKSILVER: texture = editor.game.quicksilverTex()
-	if texture:
-		if tileTexture: RenderingServer.canvas_item_add_texture_rect(drawMain,rect,texture,true)
-		else: RenderingServer.canvas_item_add_texture_rect(drawScaled,rect,texture)
-	elif colorSpend == Game.COLOR.GLITCH:
-		RenderingServer.canvas_item_add_nine_patch(drawGlitch,rect,TEXTURE_RECT,SPEND_HIGH,CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,Game.highTone[Game.COLOR.GLITCH])
-		RenderingServer.canvas_item_add_nine_patch(drawGlitch,rect,TEXTURE_RECT,SPEND_MAIN,CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,Game.mainTone[Game.COLOR.GLITCH])
-		RenderingServer.canvas_item_add_nine_patch(drawGlitch,rect,TEXTURE_RECT,SPEND_DARK,CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,Game.darkTone[Game.COLOR.GLITCH])
+	if type == TYPE.GATE:
+		RenderingServer.canvas_item_add_texture_rect(drawMain,rect,GATE_FILL,true)
 	else:
-		RenderingServer.canvas_item_add_nine_patch(drawMain,rect,TEXTURE_RECT,SPEND_HIGH,CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,Game.highTone[colorSpend])
-		RenderingServer.canvas_item_add_nine_patch(drawMain,rect,TEXTURE_RECT,SPEND_MAIN,CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,Game.mainTone[colorSpend])
-		RenderingServer.canvas_item_add_nine_patch(drawMain,rect,TEXTURE_RECT,SPEND_DARK,CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,Game.darkTone[colorSpend])
-	# frame
-	if len(locks) > 0 and type == TYPE.SIMPLE and locks[0].count.sign() < 0: RenderingServer.canvas_item_add_nine_patch(drawMain,rect,TEXTURE_RECT,FRAME_NEGATIVE,CORNER_SIZE,CORNER_SIZE)
-	else: RenderingServer.canvas_item_add_nine_patch(drawMain,rect,TEXTURE_RECT,FRAME,CORNER_SIZE,CORNER_SIZE)
+		match colorSpend:
+			Game.COLOR.MASTER: texture = editor.game.masterTex()
+			Game.COLOR.PURE: texture = editor.game.pureTex()
+			Game.COLOR.STONE: texture = editor.game.stoneTex()
+			Game.COLOR.DYNAMITE: texture = editor.game.dynamiteTex(); tileTexture = true
+			Game.COLOR.QUICKSILVER: texture = editor.game.quicksilverTex()
+		if texture:
+			if tileTexture: RenderingServer.canvas_item_add_texture_rect(drawMain,rect,texture,true)
+			else: RenderingServer.canvas_item_add_texture_rect(drawScaled,rect,texture)
+		elif colorSpend == Game.COLOR.GLITCH:
+			RenderingServer.canvas_item_add_nine_patch(drawGlitch,rect,TEXTURE_RECT,SPEND_HIGH,CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,Game.highTone[Game.COLOR.GLITCH])
+			RenderingServer.canvas_item_add_nine_patch(drawGlitch,rect,TEXTURE_RECT,SPEND_MAIN,CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,Game.mainTone[Game.COLOR.GLITCH])
+			RenderingServer.canvas_item_add_nine_patch(drawGlitch,rect,TEXTURE_RECT,SPEND_DARK,CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,Game.darkTone[Game.COLOR.GLITCH])
+		else:
+			RenderingServer.canvas_item_add_nine_patch(drawMain,rect,TEXTURE_RECT,SPEND_HIGH,CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,Game.highTone[colorSpend])
+			RenderingServer.canvas_item_add_nine_patch(drawMain,rect,TEXTURE_RECT,SPEND_MAIN,CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,Game.mainTone[colorSpend])
+			RenderingServer.canvas_item_add_nine_patch(drawMain,rect,TEXTURE_RECT,SPEND_DARK,CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,Game.darkTone[colorSpend])
+		# frame
+		if len(locks) > 0 and type == TYPE.SIMPLE and locks[0].count.sign() < 0: RenderingServer.canvas_item_add_nine_patch(drawMain,rect,TEXTURE_RECT,FRAME_NEGATIVE,CORNER_SIZE,CORNER_SIZE)
+		else: RenderingServer.canvas_item_add_nine_patch(drawMain,rect,TEXTURE_RECT,FRAME,CORNER_SIZE,CORNER_SIZE)
 	# copies
 	if !copies.eq(1): TextDraw.outlinedCentered(Game.FKEYX,drawCopies,"×"+str(copies),COPIES_COLOR,COPIES_OUTLINE_COLOR,25,Vector2(size.x/2,1))
 	# locks

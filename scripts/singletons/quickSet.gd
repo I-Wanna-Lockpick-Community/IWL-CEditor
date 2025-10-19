@@ -54,7 +54,7 @@ func updateText() -> void:
 	match quick:
 		QUICK.COLOR:
 			if component is Door and (component.type == Door.TYPE.COMBO or !editor.focusDialog.colorLink.button_pressed): string += "SPEND COLOR: "
-			elif component is Lock and (component.parent.type == Door.TYPE.COMBO or !editor.focusDialog.colorLink.button_pressed): string += "LOCK COLOR: "
+			elif component is Lock and (component.parent.type != Door.TYPE.SIMPLE or !editor.focusDialog.colorLink.button_pressed): string += "LOCK COLOR: "
 			else: string += "COLOR: "
 	if completeMatch:
 		string += input

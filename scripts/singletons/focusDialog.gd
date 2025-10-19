@@ -34,7 +34,8 @@ func focus(object:GameObject) -> void:
 			%lockConfigurationSelector.visible = false
 			%lockSettings.visible = false
 			%doorAxialNumberEdit.visible = false
-			%doorComplexNumberEdit.visible = true
+			%doorComplexNumberEdit.visible = focused.type != Door.TYPE.GATE
+			%doorColorSelector.visible = focused.type != Door.TYPE.GATE # a mod will probably add something so i wont turn off the menu completely
 			%doorColorSelector.setSelect(focused.colorSpend)
 			%doorComplexNumberEdit.setValue(focused.copies, true)
 			%spend.button_pressed = true
@@ -60,6 +61,7 @@ func focusComponent(component:GameComponent) -> void:
 	if focused != component.parent: focus(component.parent)
 	componentFocused = component
 	if component is Lock:
+		%doorColorSelector.visible = true
 		%doorColorSelector.setSelect(componentFocused.color)
 		%doorAxialNumberEdit.setValue(componentFocused.count, true)
 		%lockSelector.setSelect(componentFocused.index)
@@ -228,8 +230,11 @@ func _doorTypeSelected(type:Door.TYPE):
 		focused.locks[0]._simpleDoorUpdate()
 		%lockConfigurationSelector.visible = false
 	else:
+		if type == Door.TYPE.GATE:
+			editor.changes.addChange(Changes.PropertyChange.new(editor.game,focused,&"color",Game.COLOR.WHITE))
 		%lockConfigurationSelector.visible = componentFocused is Lock
 	editor.changes.bufferSave()
+	%spend.queue_redraw()
 
 func _spendSelected():
 	defocusComponent()
