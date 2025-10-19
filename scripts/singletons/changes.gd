@@ -93,6 +93,7 @@ class CreateComponentChange extends Change:
 	var prop:Dictionary[StringName, Variant] = {}
 	var dictionary:Dictionary
 	var id:int
+	var result:GameComponent
 
 	func _init(_game:Game,_type:Variant,parameters:Dictionary[StringName, Variant]) -> void:
 		game = _game
@@ -131,6 +132,7 @@ class CreateComponentChange extends Change:
 			for lockIndex in range(prop[&"index"]+1, len(game.doors[prop[&"doorId"]].locks)):
 				game.doors[prop[&"doorId"]].locks[lockIndex].index += 1
 		
+		result = component
 		parent.add_child(component)
 
 	func undo() -> void:

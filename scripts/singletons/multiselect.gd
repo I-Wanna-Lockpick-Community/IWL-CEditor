@@ -8,7 +8,6 @@ enum STATE {SELECTING, HOLDING, DRAGGING}
 
 var state:STATE = STATE.HOLDING
 var pivot:Vector2
-var worldPivot:Vector2
 var selected:Array[Select] = []
 var dragPosition:Vector2
 
@@ -16,6 +15,8 @@ var drawTiles:RID
 var drawOutline:RID # just a highlight for now but ill figure it out maybe
 
 var clipboard:Array[Copy] = []
+
+var selectRect:Rect2
 
 func _ready() -> void:
 	drawTiles = RenderingServer.canvas_item_create()
@@ -31,12 +32,17 @@ func startSelect() -> void:
 	visible = true
 	selected = []
 	pivot = get_global_mouse_position()
-	worldPivot = editor.screenspaceToWorldspace(pivot)
 	continueSelect()
 
 func hold() -> void:
 	state = STATE.HOLDING
 	visible = false
+	if len(selected) > 0:
+		selectRect = Rect2(selected[0].position,selected[0].size)
+		for select in selected:
+			selectRect = selectRect.expand(select.position).expand(select.position+select.size)
+	else:
+		selectRect = Rect2(Vector2.ZERO, Vector2.ZERO)
 
 func drag() -> void:
 	state = STATE.DRAGGING
@@ -100,8 +106,9 @@ func copySelection() -> void:
 	clipboard = []
 	for select in selected:
 		if select is TileSelect: clipboard.append(TileCopy.new(select))
-		elif select is ObjectSelect: clipboard.append(ObjectCopy.new(select))
-	print(clipboard)
+		elif select is ObjectSelect:
+			if select.object is Door: clipboard.append(DoorCopy.new(select))
+			else: clipboard.append(ObjectCopy.new(select))
 
 func paste() -> void:
 	for copy in clipboard: copy.paste()
@@ -134,15 +141,13 @@ class TileSelect extends Select:
 	const TEXTURE:Texture2D = preload("res://assets/ui/multiselect/tile.png")
 	
 	func _init(_editor:Editor, _position:Vector2) -> void:
-		super(_editor,_position)
+		super(_editor,Vector2i(_position/32)*32)
 		size = Vector2(32,32)
 	
 	func startDrag() -> void:
 		editor.changes.addChange(Changes.TileChange.new(editor.game,position/32,false))
 	func endDrag() -> void:
 		if editor.game.levelBounds.has_point(position): editor.changes.addChange(Changes.TileChange.new(editor.game,position/32,true))
-
-	func getDrawPosition() -> Vector2: return Vector2i(position/32)*32
 
 	func delete() -> void: editor.changes.addChange(Changes.TileChange.new(editor.game,position/32,false))
 
@@ -170,25 +175,66 @@ class Copy extends RefCounted:
 	# a copy of a single thing
 	var editor:Editor
 
-	func paste() -> void: pass
-
 class TileCopy extends Copy: # definitely rethink this at some point
 	var position:Vector2
 
 	func _init(select:TileSelect) -> void:
 		editor = select.editor
-		position = select.position - editor.multiselect.worldPivot + Vector2(32,32)
+		position = select.position - editor.multiselect.selectRect.position
 	
 	func paste() -> void:
 		if editor.game.levelBounds.has_point(Vector2i(position)+editor.mouseTilePosition): editor.changes.addChange(Changes.TileChange.new(editor.game,(Vector2i(position)+editor.mouseTilePosition)/32,true))
 
 class ObjectCopy extends Copy:
 	var properties:Dictionary[StringName, Variant]
+	var type:Variant
 
 	func _init(select:ObjectSelect) -> void:
 		editor = select.editor
+		type = select.object.Type
 
 		for property in select.object.EDITOR_PROPERTIES:
 			properties[property] = select.object.get(property)
 		
-		properties[&"position"] -= editor.multiselect.worldPivot
+		properties[&"position"] -= editor.multiselect.selectRect.position
+	
+	func paste() -> GameComponent:
+		if editor.game.levelBounds.has_point(Vector2i(properties[&"position"])+editor.mouseTilePosition):
+			var object:GameObject = editor.changes.addChange(Changes.CreateComponentChange.new(editor.game,type,{&"position":properties[&"position"]+Vector2(editor.mouseTilePosition)})).result
+			for property in object.EDITOR_PROPERTIES:
+				if property != &"id" and property not in object.CREATE_PARAMETERS:
+					editor.changes.addChange(Changes.PropertyChange.new(editor.game,object,property,properties[property]))
+			return object
+		return null
+
+class DoorCopy extends ObjectCopy:
+	var locks:Array[LockCopy]
+
+	func _init(select:ObjectSelect) -> void:
+		super(select)
+		for lock in select.object.locks:
+			locks.append(LockCopy.new(editor,lock))
+	
+	func paste() -> Door:
+		var object:GameObject = super()
+		if object:
+			for lock in locks:
+				lock.paste(object)
+		return object
+			 
+class LockCopy extends Copy:
+	var properties:Dictionary[StringName, Variant]
+
+	func _init(_editor,lock:Lock) -> void:
+		editor = _editor
+		for property in Lock.EDITOR_PROPERTIES:
+			properties[property] = lock.get(property)
+
+	func paste(door:Door) -> Lock:
+		var lock:Lock = editor.changes.addChange(Changes.CreateComponentChange.new(editor.game,Lock,
+			{&"position":properties[&"position"], &"doorId":door.id}
+		)).result
+		for property in lock.EDITOR_PROPERTIES:
+			if property != &"id" and property not in lock.CREATE_PARAMETERS:
+				editor.changes.addChange(Changes.PropertyChange.new(editor.game,lock,property,properties[property]))
+		return lock

@@ -147,7 +147,7 @@ func _gui_input(event:InputEvent) -> void:
 					elif objectHovered is Door: startPositionDrag(objectHovered)
 					else:
 						if objectHovered is not Door and game.levelBounds.has_point(mouseWorldPosition):
-							var door:Door = game.doors[changes.addChange(Changes.CreateComponentChange.new(game,Door,{&"position":mouseTilePosition})).id]
+							var door:Door = changes.addChange(Changes.CreateComponentChange.new(game,Door,{&"position":mouseTilePosition})).result
 							startSizeDrag(door)
 							changes.addChange(Changes.CreateComponentChange.new(game,Lock,{&"position":Vector2i.ZERO,&"doorId":door.id}))
 							if !Input.is_key_pressed(KEY_SHIFT):
@@ -239,6 +239,7 @@ func _input(event:InputEvent) -> void:
 			KEY_Y: if Input.is_key_pressed(KEY_CTRL): changes.redo()
 			KEY_C: if Input.is_key_pressed(KEY_CTRL): multiselect.copySelection()
 			KEY_V: if Input.is_key_pressed(KEY_CTRL): modes.setMode(MODE.PASTE)
+			KEY_X: if Input.is_key_pressed(KEY_CTRL): multiselect.copySelection(); multiselect.delete()
 			KEY_M:
 				if focusDialog.componentFocused: startPositionDrag(focusDialog.componentFocused)
 				elif focusDialog.focused: startPositionDrag(focusDialog.focused)
