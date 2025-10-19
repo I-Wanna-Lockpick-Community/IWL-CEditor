@@ -43,9 +43,8 @@ func _process(_delta) -> void:
 		game.editorCamera.zoom *= scaleFactor
 		game.editorCamera.position += (1-1/scaleFactor) * (worldspaceToScreenspace(zoomPoint)-gameViewportCont.position) / game.editorCamera.zoom
 	
-	if Input.is_key_pressed(KEY_CTRL):
-		if Input.is_key_pressed(KEY_ALT): tileSize = Vector2i(1,1)
-		else: tileSize = Vector2i(16,16)
+	if Input.is_key_pressed(KEY_ALT): tileSize = Vector2i(1,1)
+	elif Input.is_key_pressed(KEY_CTRL): tileSize = Vector2i(16,16)
 	else: tileSize = Vector2i(32,32)
 
 	mouseWorldPosition = screenspaceToWorldspace(get_global_mouse_position())
