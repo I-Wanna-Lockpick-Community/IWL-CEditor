@@ -268,6 +268,21 @@ theme_type_variation = &"SelectorButton"
 toggle_mode = true
 icon = ExtResource("23_h1xy2")
 
+[node name="otherDialog" type="Control" parent="."]
+unique_name_in_owner = true
+anchors_preset = 0
+
+[node name="c" type="PanelContainer" parent="otherDialog"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -20.0
+offset_right = 20.0
+offset_bottom = 40.0
+grow_horizontal = 2
+theme_type_variation = &"DialogPanelContainer"
+
 [node name="Polygon2D" type="Polygon2D" parent="."]
 rotation = 3.1415927
 color = Color(0.25490198, 0.25490198, 0.25490198, 1)

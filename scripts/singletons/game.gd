@@ -232,6 +232,7 @@ signal goldIndexChanged
 var keys:Dictionary[int,KeyBulk] = {}
 var doors:Dictionary[int,Door] = {}
 var locks:Dictionary[int,Lock] = {}
+var otherObjects:Dictionary[int,GameObject] = {}
 
 var levelBounds:Rect2i = Rect2i(0,0,800,608):
 	set(value):

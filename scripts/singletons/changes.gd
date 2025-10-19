@@ -89,13 +89,13 @@ class TileChange extends Change:
 		return "<TileChange:"+str(position.x)+","+str(position.y)+">"
 
 class CreateComponentChange extends Change:
-	var type:Variant
+	var type:GDScript
 	var prop:Dictionary[StringName, Variant] = {}
 	var dictionary:Dictionary
 	var id:int
 	var result:GameComponent
 
-	func _init(_game:Game,_type:Variant,parameters:Dictionary[StringName, Variant]) -> void:
+	func _init(_game:Game,_type:GDScript,parameters:Dictionary[StringName, Variant]) -> void:
 		game = _game
 		type = _type
 		
@@ -109,18 +109,19 @@ class CreateComponentChange extends Change:
 			KeyBulk: dictionary = game.keys
 			Door: dictionary = game.doors
 			Lock: dictionary = game.locks
+			_: dictionary = game.otherObjects
 		do()
 	
 	func do() -> void:
-		var component:Variant
-		var parent:Variant = game.objects
+		var component:GameComponent
+		var parent:Node = game.objects
 		match type:
-			KeyBulk: component = preload("res://scenes/objects/keyBulk.tscn").instantiate()
-			Door: component = preload("res://scenes/objects/door.tscn").instantiate()
 			Lock:
 				parent = game.doors[prop[&"doorId"]]
 				prop[&"index"] = len(parent.locks)
 				component = Lock.new(parent,prop[&"index"])
+			_: component = type.SCENE.instantiate()
+
 		
 		component.id = id
 		for property in component.CREATE_PARAMETERS:
@@ -154,12 +155,12 @@ class CreateComponentChange extends Change:
 		return "<CreateComponentChange:"+str(id)+">"
 
 class DeleteComponentChange extends Change:
-	var type:Variant
+	var type:GDScript
 	var prop:Dictionary[StringName, Variant] = {}
 	var dictionary:Dictionary
 
-	func _init(_game:Game,component:GameComponent,_type:Variant) -> void:
-		type = _type
+	func _init(_game:Game,component:GameComponent) -> void:
+		type = component.get_script()
 		game = _game
 		for property in component.EDITOR_PROPERTIES:
 			prop[property] = Changes.copy(component.get(property))
@@ -168,10 +169,11 @@ class DeleteComponentChange extends Change:
 			KeyBulk: dictionary = game.keys
 			Door: dictionary = game.doors
 			Lock: dictionary = game.locks
+			_: dictionary = game.otherObjects
 		
 		if type == Door:
 			for lock in component.locks:
-				game.editor.changes.addChange(DeleteComponentChange.new(game,lock,Lock))
+				game.editor.changes.addChange(DeleteComponentChange.new(game,lock))
 
 		do()
 
@@ -194,11 +196,10 @@ class DeleteComponentChange extends Change:
 		var component:Variant
 		var parent:Variant = game.objects
 		match type:
-			KeyBulk: component = preload("res://scenes/objects/keyBulk.tscn").instantiate()
-			Door: component = preload("res://scenes/objects/door.tscn").instantiate()
 			Lock:
 				parent = game.doors[prop[&"doorId"]]
 				component = Lock.new(parent,prop[&"index"])
+			_: component = type.SCENE.instantiate()
 		
 		for property in component.EDITOR_PROPERTIES:
 			component.set(property, Changes.copy(prop[property]))
@@ -219,7 +220,7 @@ class PropertyChange extends Change:
 	var property:StringName
 	var before:Variant
 	var after:Variant
-	var componentType:GameComponent.COMPONENT
+	var type:GDScript
 	
 	func _init(_game:Game,component:GameComponent,_property:StringName,_after:Variant) -> void:
 		game = _game
@@ -227,9 +228,7 @@ class PropertyChange extends Change:
 		property = _property
 		before = component.get(property)
 		after = _after
-		if component is KeyBulk: componentType = GameComponent.COMPONENT.KEY
-		elif component is Door: componentType = GameComponent.COMPONENT.DOOR
-		elif component is Lock: componentType = GameComponent.COMPONENT.LOCK
+		type = component.get_script()
 		if before == after:
 			cancelled = true
 			return
@@ -240,10 +239,11 @@ class PropertyChange extends Change:
 	
 	func changeValue(value:Variant) -> void:
 		var component:GameComponent
-		match componentType:
-			GameComponent.COMPONENT.KEY: component = game.keys[id]
-			GameComponent.COMPONENT.DOOR: component = game.doors[id]
-			GameComponent.COMPONENT.LOCK: component = game.locks[id]
+		match type:
+			KeyBulk: component = game.keys[id]
+			Door: component = game.doors[id]
+			Lock: component = game.locks[id]
+			_: component = game.otherObjects[id]
 		if value is C or value is Q: component.set(property, value.copy())
 		else: component.set(property, value)
 		if property == &"size" and component is GameObject: component.shape.shape.size = value

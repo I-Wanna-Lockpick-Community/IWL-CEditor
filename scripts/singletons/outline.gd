@@ -29,8 +29,6 @@ func draw() -> void:
 
 func drawOutline(component:GameComponent,color:Color=Color.WHITE) -> void:
 	var pos:Vector2 = component.getDrawPosition()
-	if component is KeyBulk:
-		RenderingServer.canvas_item_add_texture_rect(drawShader,Rect2(pos,component.size),component.outlineTex(),false,color)
 	if component is Door or component is Lock:
 		RenderingServer.canvas_item_add_polyline(drawNormal,[ # cant just rectangle with the drawshader since uv doesnt work with rectangles, and there isnt a rectangle outline either from what i can tell
 			pos,
@@ -39,6 +37,8 @@ func drawOutline(component:GameComponent,color:Color=Color.WHITE) -> void:
 			pos+Vector2(0,component.size.y+1/editor.game.editorCamera.zoom.x),
 			pos # bitch
 		],[color,color,color,color],2/editor.game.editorCamera.zoom.x)
+	else:
+		RenderingServer.canvas_item_add_texture_rect(drawShader,Rect2(pos,component.size),component.outlineTex(),false,color)
 
 func _process(_delta) -> void:
 	draw()

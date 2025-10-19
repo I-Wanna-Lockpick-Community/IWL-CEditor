@@ -1,0 +1,17 @@
+[gd_scene load_steps=3 format=3 uid="uid://dku0ravcgplpq"]
+
+[ext_resource type="Script" uid="uid://lqnann51ivxu" path="res://scripts/components/other/playerSpawn.gd" id="1_bgcfo"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_bgcfo"]
+size = Vector2(32, 32)
+
+[node name="playerSpawn" type="Node2D"]
+script = ExtResource("1_bgcfo")
+metadata/_custom_type_script = "uid://lqnann51ivxu"
+
+[node name="collision" type="Area2D" parent="."]
+
+[node name="shape" type="CollisionShape2D" parent="collision"]
+unique_name_in_owner = true
+position = Vector2(16, 16)
+shape = SubResource("RectangleShape2D_bgcfo")

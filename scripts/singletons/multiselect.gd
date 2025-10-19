@@ -172,7 +172,7 @@ class ObjectSelect extends Select:
 		object.position = startingPosition
 		editor.changes.addChange(Changes.PropertyChange.new(editor.game,object,&"position",position))
 	
-	func delete() -> void: editor.changes.addChange(Changes.DeleteComponentChange.new(editor.game,object,object.Type))
+	func delete() -> void: editor.changes.addChange(Changes.DeleteComponentChange.new(editor.game,object))
 
 class Copy extends RefCounted:
 	# a copy of a single thing
@@ -190,11 +190,11 @@ class TileCopy extends Copy: # definitely rethink this at some point
 
 class ObjectCopy extends Copy:
 	var properties:Dictionary[StringName, Variant]
-	var type:Variant
+	var type:GDScript
 
 	func _init(select:ObjectSelect) -> void:
 		editor = select.editor
-		type = select.object.Type
+		type = select.object.get_script()
 
 		for property in select.object.EDITOR_PROPERTIES:
 			properties[property] = select.object.get(property)

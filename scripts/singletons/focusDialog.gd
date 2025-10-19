@@ -16,6 +16,7 @@ func focus(object:GameObject) -> void:
 	if focused is KeyBulk:
 		%keyDialog.visible = true
 		%doorDialog.visible = false
+		%otherDialog.visible = false
 		%keyColorSelector.setSelect(focused.color)
 		%keyTypeSelector.setSelect(focused.type)
 		%keyCountEdit.visible = focused.type in [KeyBulk.TYPE.NORMAL,KeyBulk.TYPE.EXACT]
@@ -25,6 +26,7 @@ func focus(object:GameObject) -> void:
 	elif focused is Door:
 		%keyDialog.visible = false
 		%doorDialog.visible = true
+		%otherDialog.visible = false
 		%doorTypes.get_child(focused.type).button_pressed = true
 		%lockSelector.colorLink.visible = focused.type == Door.TYPE.SIMPLE
 		%spend.queue_redraw()
@@ -41,6 +43,10 @@ func focus(object:GameObject) -> void:
 			interact(%doorComplexNumberEdit.realEdit)
 			%lockSelector.setup(focused)
 			if focused.type == Door.TYPE.SIMPLE: focusComponent(focused.locks[0])
+	else:
+		%keyDialog.visible = false
+		%doorDialog.visible = false
+		%otherDialog.visible = true
 
 func defocus() -> void:
 	if !focused: return
@@ -128,7 +134,7 @@ func receiveKey(event:InputEvent) -> bool:
 			KEY_C: editor.quickSet.startQuick(QuickSet.QUICK.COLOR, focused)
 			KEY_U: _keyTypeSelected(KeyBulk.TYPE.CURSE if focused.type != KeyBulk.TYPE.CURSE else KeyBulk.TYPE.UNCURSE)
 			KEY_DELETE:
-				editor.changes.addChange(Changes.DeleteComponentChange.new(editor.game,focused,KeyBulk))
+				editor.changes.addChange(Changes.DeleteComponentChange.new(editor.game,focused))
 				editor.changes.bufferSave()
 			KEY_Y: _keyInfiniteToggled(!focused.infinite)
 			_: return false
@@ -148,7 +154,13 @@ func receiveKey(event:InputEvent) -> bool:
 					%lockSelector._removeLock(componentFocused)
 					if len(focused.locks) != 0: focusComponent(focused.locks[len(focused.locks)-1])
 					else: focus(focused)
-				else: editor.changes.addChange(Changes.DeleteComponentChange.new(editor.game,focused,Door))
+				else: editor.changes.addChange(Changes.DeleteComponentChange.new(editor.game,focused))
+				editor.changes.bufferSave()
+			_: return false
+	else:
+		match event.keycode:
+			KEY_DELETE:
+				editor.changes.addChange(Changes.DeleteComponentChange.new(editor.game,focused))
 				editor.changes.bufferSave()
 			_: return false
 	return true

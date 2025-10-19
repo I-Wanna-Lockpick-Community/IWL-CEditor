@@ -62,7 +62,7 @@ func _addLock():
 	button.button_pressed = true
 
 func _removeLock(lock:Lock):
-	editor.changes.addChange(Changes.DeleteComponentChange.new(editor.game,lock,Lock))
+	editor.changes.addChange(Changes.DeleteComponentChange.new(editor.game,lock))
 	editor.focusDialog._doorTypeSelected(Door.TYPE.COMBO)
 	colorLink.visible = false
 	var button:Button = buttons.pop_at(lock.index)

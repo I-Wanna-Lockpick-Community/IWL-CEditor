@@ -9,6 +9,7 @@ class_name Editor
 @onready var quickSet:QuickSet = %quickSet
 @onready var multiselect:Multiselect = %multiselect
 @onready var paste:Button = %paste
+@onready var otherObjects:OtherObjects = %otherObjects
 
 enum MODE {SELECT, TILE, KEY, DOOR, OTHER, PASTE}
 var mode:MODE = MODE.SELECT
@@ -58,7 +59,7 @@ func _process(_delta) -> void:
 	if !componentDragged:
 		objectHovered = null
 		for object in game.objects.get_children():
-			if mode == MODE.SELECT or (mode == MODE.KEY and object is KeyBulk) or (mode == MODE.DOOR and object is Door):
+			if mode == MODE.SELECT or (mode == MODE.KEY and object is KeyBulk) or (mode == MODE.DOOR and object is Door) or (mode == MODE.OTHER and object.get_script() == otherObjects.selected):
 				if Rect2(object.position, object.size).has_point(mouseWorldPosition):
 					objectHovered = object
 		if focusDialog.focused is Door:
@@ -85,18 +86,18 @@ func _gui_input(event:InputEvent) -> void:
 		# set mouse cursor
 		if componentDragged:
 			match dragMode:
-				DRAG_MODE.POSITION: DisplayServer.cursor_set_shape(DisplayServer.CURSOR_DRAG)
+				DRAG_MODE.POSITION: mouse_default_cursor_shape = CURSOR_DRAG
 				DRAG_MODE.SIZE_FDIAG, DRAG_MODE.SIZE_BDIAG:
 					pass
 					var diffSign:Vector2 = rectSign(dragPivotRect, Vector2(mouseTilePosition))
 					match diffSign:
-						Vector2(-1,-1), Vector2(0,0), Vector2(1,1): DisplayServer.cursor_set_shape(DisplayServer.CURSOR_FDIAGSIZE)
-						Vector2(-1,1), Vector2(1,-1): DisplayServer.cursor_set_shape(DisplayServer.CURSOR_BDIAGSIZE)
-						Vector2(-1,0), Vector2(1,0): DisplayServer.cursor_set_shape(DisplayServer.CURSOR_HSIZE)
-						Vector2(0,-1), Vector2(0,1): DisplayServer.cursor_set_shape(DisplayServer.CURSOR_VSIZE)
-				DRAG_MODE.SIZE_VERT: DisplayServer.cursor_set_shape(DisplayServer.CURSOR_VSIZE)
-				DRAG_MODE.SIZE_HORIZ: DisplayServer.cursor_set_shape(DisplayServer.CURSOR_HSIZE)
-		else: DisplayServer.cursor_set_shape(DisplayServer.CURSOR_ARROW)
+						Vector2(-1,-1), Vector2(0,0), Vector2(1,1): mouse_default_cursor_shape = CURSOR_FDIAGSIZE
+						Vector2(-1,1), Vector2(1,-1): mouse_default_cursor_shape = CURSOR_BDIAGSIZE
+						Vector2(-1,0), Vector2(1,0): mouse_default_cursor_shape = CURSOR_HSIZE
+						Vector2(0,-1), Vector2(0,1): mouse_default_cursor_shape = CURSOR_VSIZE
+				DRAG_MODE.SIZE_VERT: mouse_default_cursor_shape = CURSOR_VSIZE
+				DRAG_MODE.SIZE_HORIZ: mouse_default_cursor_shape = CURSOR_HSIZE
+		else: mouse_default_cursor_shape = CURSOR_ARROW
 		# multiselect
 		if %multiselect.receiveMouseInput(event): return
 		# size drag handles
@@ -133,13 +134,14 @@ func _gui_input(event:InputEvent) -> void:
 					else: focusDialog.defocus()
 				if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
 					if objectHovered is not KeyBulk and game.levelBounds.has_point(mouseWorldPosition):
-						changes.addChange(Changes.CreateComponentChange.new(game,KeyBulk,{&"position":mouseTilePosition}))
+						var key:KeyBulk = changes.addChange(Changes.CreateComponentChange.new(game,KeyBulk,{&"position":mouseTilePosition})).result
 						focusDialog.defocus()
 						if !Input.is_key_pressed(KEY_SHIFT):
 							modes.setMode(MODE.SELECT)
+							startPositionDrag(key)
 				if Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT):
 					if objectHovered is KeyBulk:
-						changes.addChange(Changes.DeleteComponentChange.new(game,objectHovered,KeyBulk))
+						changes.addChange(Changes.DeleteComponentChange.new(game,objectHovered))
 						changes.bufferSave()
 			MODE.DOOR:
 				if isLeftClick(event):
@@ -157,7 +159,23 @@ func _gui_input(event:InputEvent) -> void:
 								modes.setMode(MODE.SELECT)
 				if Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT):
 					if objectHovered is Door:
-						changes.addChange(Changes.DeleteComponentChange.new(game,objectHovered,Door))
+						changes.addChange(Changes.DeleteComponentChange.new(game,objectHovered))
+						changes.bufferSave()
+			MODE.OTHER:
+				if isLeftClick(event):
+					if objectHovered and objectHovered.get_script() == otherObjects.selected:
+						startPositionDrag(objectHovered)
+					else: focusDialog.defocus()
+				if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
+					if (!objectHovered or objectHovered.get_script() != otherObjects.selected) and game.levelBounds.has_point(mouseWorldPosition):
+						var object:GameObject = changes.addChange(Changes.CreateComponentChange.new(game,otherObjects.selected,{&"position":mouseTilePosition})).result
+						focusDialog.defocus()
+						if !Input.is_key_pressed(KEY_SHIFT):
+							modes.setMode(MODE.SELECT)
+							startPositionDrag(object)
+				if Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT):
+					if objectHovered and objectHovered.get_script() == otherObjects.selected:
+						changes.addChange(Changes.DeleteComponentChange.new(game,objectHovered))
 						changes.bufferSave()
 			MODE.PASTE:
 				if isLeftClick(event):
@@ -240,6 +258,7 @@ func _input(event:InputEvent) -> void:
 			KEY_B: modes.setMode(MODE.KEY)
 			KEY_D: modes.setMode(MODE.DOOR)
 			KEY_O: modes.setMode(MODE.OTHER)
+			KEY_S: otherObjects.objectSearch.grab_focus()
 			KEY_Z: if Input.is_key_pressed(KEY_CTRL): changes.undo()
 			KEY_Y: if Input.is_key_pressed(KEY_CTRL): changes.redo()
 			KEY_C: if Input.is_key_pressed(KEY_CTRL): multiselect.copySelection()

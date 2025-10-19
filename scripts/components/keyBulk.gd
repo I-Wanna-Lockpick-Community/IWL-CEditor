@@ -1,6 +1,6 @@
 extends GameObject
 class_name KeyBulk
-const Type:Variant = KeyBulk
+const SCENE:PackedScene = preload("res://scenes/objects/keyBulk.tscn")
 
 const TYPES:int = 9
 enum TYPE {NORMAL, EXACT, STAR, UNSTAR, SIGNFLIP, POSROTOR, NEGROTOR, CURSE, UNCURSE}

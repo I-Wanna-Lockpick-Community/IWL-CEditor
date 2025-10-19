@@ -1,6 +1,6 @@
 extends GameObject
 class_name Door
-const Type:Variant = Door
+const SCENE:PackedScene = preload("res://scenes/objects/door.tscn")
 
 enum TYPE {SIMPLE, COMBO, GATE}
 
@@ -92,14 +92,14 @@ func receiveMouseInput(event:InputEventMouse) -> bool:
 	var diffSign:Vector2 = Editor.rectSign(Rect2(position+dragCornerSize,size-dragCornerSize*2), editor.mouseWorldPosition)
 	var dragPivot:Editor.SIZE_DRAG_PIVOT = Editor.SIZE_DRAG_PIVOT.NONE
 	match diffSign:
-		Vector2(-1,-1): dragPivot = Editor.SIZE_DRAG_PIVOT.TOP_LEFT;	DisplayServer.cursor_set_shape(DisplayServer.CURSOR_FDIAGSIZE)
-		Vector2(0,-1): dragPivot = Editor.SIZE_DRAG_PIVOT.TOP;			DisplayServer.cursor_set_shape(DisplayServer.CURSOR_VSIZE)
-		Vector2(1,-1): dragPivot = Editor.SIZE_DRAG_PIVOT.TOP_RIGHT;	DisplayServer.cursor_set_shape(DisplayServer.CURSOR_BDIAGSIZE)
-		Vector2(-1,0): dragPivot = Editor.SIZE_DRAG_PIVOT.LEFT;			DisplayServer.cursor_set_shape(DisplayServer.CURSOR_HSIZE)
-		Vector2(1,0): dragPivot = Editor.SIZE_DRAG_PIVOT.RIGHT;			DisplayServer.cursor_set_shape(DisplayServer.CURSOR_HSIZE)
-		Vector2(-1,1): dragPivot = Editor.SIZE_DRAG_PIVOT.BOTTOM_LEFT;	DisplayServer.cursor_set_shape(DisplayServer.CURSOR_BDIAGSIZE)
-		Vector2(0,1): dragPivot = Editor.SIZE_DRAG_PIVOT.BOTTOM;		DisplayServer.cursor_set_shape(DisplayServer.CURSOR_VSIZE)
-		Vector2(1,1): dragPivot = Editor.SIZE_DRAG_PIVOT.BOTTOM_RIGHT;	DisplayServer.cursor_set_shape(DisplayServer.CURSOR_FDIAGSIZE)
+		Vector2(-1,-1): dragPivot = Editor.SIZE_DRAG_PIVOT.TOP_LEFT;	editor.mouse_default_cursor_shape = Control.CURSOR_FDIAGSIZE
+		Vector2(0,-1): dragPivot = Editor.SIZE_DRAG_PIVOT.TOP;			editor.mouse_default_cursor_shape = Control.CURSOR_VSIZE
+		Vector2(1,-1): dragPivot = Editor.SIZE_DRAG_PIVOT.TOP_RIGHT;	editor.mouse_default_cursor_shape = Control.CURSOR_BDIAGSIZE
+		Vector2(-1,0): dragPivot = Editor.SIZE_DRAG_PIVOT.LEFT;			editor.mouse_default_cursor_shape = Control.CURSOR_HSIZE
+		Vector2(1,0): dragPivot = Editor.SIZE_DRAG_PIVOT.RIGHT;			editor.mouse_default_cursor_shape = Control.CURSOR_HSIZE
+		Vector2(-1,1): dragPivot = Editor.SIZE_DRAG_PIVOT.BOTTOM_LEFT;	editor.mouse_default_cursor_shape = Control.CURSOR_BDIAGSIZE
+		Vector2(0,1): dragPivot = Editor.SIZE_DRAG_PIVOT.BOTTOM;		editor.mouse_default_cursor_shape = Control.CURSOR_VSIZE
+		Vector2(1,1): dragPivot = Editor.SIZE_DRAG_PIVOT.BOTTOM_RIGHT;	editor.mouse_default_cursor_shape = Control.CURSOR_FDIAGSIZE
 	if dragPivot != Editor.SIZE_DRAG_PIVOT.NONE and Editor.isLeftClick(event):
 		editor.startSizeDrag(self, dragPivot)
 		return true
