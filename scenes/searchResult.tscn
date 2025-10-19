@@ -1,0 +1,61 @@
+[gd_scene load_steps=8 format=3 uid="uid://y6pa4i2cormu"]
+
+[ext_resource type="Theme" uid="uid://bvfthh0vm4fbp" path="res://assets/ui/uiTheme.tres" id="1_8c2am"]
+[ext_resource type="Texture2D" uid="uid://di4cbwrveccbg" path="res://assets/game/otherObjects/playerSpawn.png" id="2_61t66"]
+[ext_resource type="Script" uid="uid://b71lnok6hnnk0" path="res://scripts/nodes/searchResult.gd" id="2_da2uf"]
+[ext_resource type="FontFile" uid="uid://c1cbi8by5johg" path="res://resources/fonts/fTalk.fnt" id="3_61t66"]
+[ext_resource type="FontFile" uid="uid://dus56bcgsl6op" path="res://resources/fonts/MSGOTHIC.TTC" id="4_12lhq"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_12lhq"]
+font = ExtResource("3_61t66")
+font_size = 14
+
+[sub_resource type="LabelSettings" id="LabelSettings_61t66"]
+font = ExtResource("4_12lhq")
+font_size = 10
+
+[node name="searchResult" type="PanelContainer"]
+offset_right = 32.0
+offset_bottom = 32.0
+theme = ExtResource("1_8c2am")
+script = ExtResource("2_da2uf")
+
+[node name="c" type="MarginContainer" parent="."]
+layout_mode = 2
+theme_override_constants/margin_left = 2
+theme_override_constants/margin_top = 2
+theme_override_constants/margin_right = 2
+theme_override_constants/margin_bottom = 2
+
+[node name="c" type="HBoxContainer" parent="c"]
+layout_mode = 2
+theme_override_constants/separation = 9
+
+[node name="icon" type="TextureRect" parent="c/c"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
+texture = ExtResource("2_61t66")
+stretch_mode = 2
+
+[node name="c" type="VBoxContainer" parent="c/c"]
+layout_mode = 2
+alignment = 1
+
+[node name="name" type="Label" parent="c/c/c"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Player Spawn"
+label_settings = SubResource("LabelSettings_12lhq")
+
+[node name="keywords" type="Label" parent="c/c/c"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Keywords: start, lily, kid"
+label_settings = SubResource("LabelSettings_61t66")
+
+[node name="button" type="Button" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"RadioButton"
+action_mode = 0

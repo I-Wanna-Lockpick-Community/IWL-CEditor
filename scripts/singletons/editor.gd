@@ -8,8 +8,9 @@ class_name Editor
 @onready var focusDialog:FocusDialog = %focusDialog
 @onready var quickSet:QuickSet = %quickSet
 @onready var multiselect:Multiselect = %multiselect
+@onready var paste:Button = %paste
 
-enum MODE {SELECT, TILE, KEY, DOOR, PASTE}
+enum MODE {SELECT, TILE, KEY, DOOR, OTHER, PASTE}
 var mode:MODE = MODE.SELECT
 
 var mouseWorldPosition:Vector2
@@ -41,7 +42,9 @@ func _process(_delta) -> void:
 		game.editorCamera.zoom *= scaleFactor
 		game.editorCamera.position += (1-1/scaleFactor) * (worldspaceToScreenspace(zoomPoint)-gameViewportCont.position) / game.editorCamera.zoom
 	
-	if Input.is_key_pressed(KEY_CTRL): tileSize = Vector2i(16,16)
+	if Input.is_key_pressed(KEY_CTRL):
+		if Input.is_key_pressed(KEY_ALT): tileSize = Vector2i(1,1)
+		else: tileSize = Vector2i(16,16)
 	else: tileSize = Vector2i(32,32)
 
 	mouseWorldPosition = screenspaceToWorldspace(get_global_mouse_position())
@@ -224,6 +227,7 @@ func dragComponent() -> bool: # returns whether or not an object is being dragge
 
 func _input(event:InputEvent) -> void:
 	if event is InputEventKey and event.is_pressed():
+		if %objectSearch.has_focus(): return
 		if quickSet.quick: quickSet.receiveKey(event); return
 		if focusDialog.focused and focusDialog.receiveKey(event): return
 		if focusDialog.interacted and focusDialog.interacted.receiveKey(event): return
@@ -235,10 +239,11 @@ func _input(event:InputEvent) -> void:
 			KEY_T: modes.setMode(MODE.TILE)
 			KEY_B: modes.setMode(MODE.KEY)
 			KEY_D: modes.setMode(MODE.DOOR)
+			KEY_O: modes.setMode(MODE.OTHER)
 			KEY_Z: if Input.is_key_pressed(KEY_CTRL): changes.undo()
 			KEY_Y: if Input.is_key_pressed(KEY_CTRL): changes.redo()
 			KEY_C: if Input.is_key_pressed(KEY_CTRL): multiselect.copySelection()
-			KEY_V: if Input.is_key_pressed(KEY_CTRL): modes.setMode(MODE.PASTE)
+			KEY_V: if Input.is_key_pressed(KEY_CTRL) and multiselect.clipboard != []: modes.setMode(MODE.PASTE)
 			KEY_X: if Input.is_key_pressed(KEY_CTRL): multiselect.copySelection(); multiselect.delete()
 			KEY_M:
 				if focusDialog.componentFocused: startPositionDrag(focusDialog.componentFocused)
@@ -248,6 +253,7 @@ func _input(event:InputEvent) -> void:
 				zoomPoint = game.levelBounds.get_center()
 				game.editorCamera.position = zoomPoint - gameViewportCont.size / (game.editorCamera.zoom*2)
 			KEY_DELETE: multiselect.delete()
+			KEY_TAB: grab_focus()
 
 func zoomCamera(factor:float) -> void:
 	targetCameraZoom *= factor

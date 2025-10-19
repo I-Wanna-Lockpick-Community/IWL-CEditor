@@ -12,14 +12,14 @@ const ICONS:Array[Texture2D] = [
 func _ready() -> void:
 	columns = Lock.TYPES
 	options = range(Lock.TYPES)
-	defaultValue = Game.KEY.NORMAL
+	defaultValue = KeyBulk.TYPE.NORMAL
 	buttonType = LockTypeSelectorButton
 	super()
 
 class LockTypeSelectorButton extends SelectorButton:
 	var drawMain:RID
 
-	func _init(_value:Game.KEY, _selector:LockTypeSelector):
+	func _init(_value:KeyBulk.TYPE, _selector:LockTypeSelector):
 		custom_minimum_size = Vector2(16,16)
 		z_index = 1
 		super(_value, _selector)

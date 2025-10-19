@@ -103,12 +103,15 @@ func draw() -> void:
 		RenderingServer.canvas_item_add_rect(drawOutline,Rect2(select.getDrawPosition(),select.size),Color.WHITE)
 
 func copySelection() -> void:
+	if len(selected) == 0: return
 	clipboard = []
 	for select in selected:
 		if select is TileSelect: clipboard.append(TileCopy.new(select))
 		elif select is ObjectSelect:
 			if select.object is Door: clipboard.append(DoorCopy.new(select))
 			else: clipboard.append(ObjectCopy.new(select))
+	# itll only be disabled at the start
+	editor.paste.disabled = false
 
 func paste() -> void:
 	for copy in clipboard: copy.paste()

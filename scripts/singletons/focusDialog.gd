@@ -18,7 +18,7 @@ func focus(object:GameObject) -> void:
 		%doorDialog.visible = false
 		%keyColorSelector.setSelect(focused.color)
 		%keyTypeSelector.setSelect(focused.type)
-		%keyCountEdit.visible = focused.type in [Game.KEY.NORMAL,Game.KEY.EXACT]
+		%keyCountEdit.visible = focused.type in [KeyBulk.TYPE.NORMAL,KeyBulk.TYPE.EXACT]
 		%keyCountEdit.setValue(focused.count, true)
 		%keyInfiniteToggle.button_pressed = focused.infinite
 		if new: interact(%keyCountEdit.realEdit)
@@ -118,15 +118,15 @@ func tabbed(numberEdit:PanelContainer) -> void:
 func receiveKey(event:InputEvent) -> bool:
 	if focused is KeyBulk:
 		match event.keycode:
-			KEY_N: _keyTypeSelected(Game.KEY.NORMAL)
-			KEY_E: _keyTypeSelected(Game.KEY.EXACT if focused.type != Game.KEY.EXACT else Game.KEY.NORMAL)
-			KEY_S: _keyTypeSelected(Game.KEY.STAR if focused.type != Game.KEY.STAR else Game.KEY.UNSTAR)
+			KEY_N: _keyTypeSelected(KeyBulk.TYPE.NORMAL)
+			KEY_E: _keyTypeSelected(KeyBulk.TYPE.EXACT if focused.type != KeyBulk.TYPE.EXACT else KeyBulk.TYPE.NORMAL)
+			KEY_S: _keyTypeSelected(KeyBulk.TYPE.STAR if focused.type != KeyBulk.TYPE.STAR else KeyBulk.TYPE.UNSTAR)
 			KEY_R:
-				if focused.type == Game.KEY.SIGNFLIP: _keyTypeSelected(Game.KEY.NEGROTOR)
-				elif focused.type == Game.KEY.POSROTOR: _keyTypeSelected(Game.KEY.SIGNFLIP)
-				else: _keyTypeSelected(Game.KEY.POSROTOR)
+				if focused.type == KeyBulk.TYPE.SIGNFLIP: _keyTypeSelected(KeyBulk.TYPE.NEGROTOR)
+				elif focused.type == KeyBulk.TYPE.POSROTOR: _keyTypeSelected(KeyBulk.TYPE.SIGNFLIP)
+				else: _keyTypeSelected(KeyBulk.TYPE.POSROTOR)
 			KEY_C: editor.quickSet.startQuick(QuickSet.QUICK.COLOR, focused)
-			KEY_U: _keyTypeSelected(Game.KEY.CURSE if focused.type != Game.KEY.CURSE else Game.KEY.UNCURSE)
+			KEY_U: _keyTypeSelected(KeyBulk.TYPE.CURSE if focused.type != KeyBulk.TYPE.CURSE else KeyBulk.TYPE.UNCURSE)
 			KEY_DELETE:
 				editor.changes.addChange(Changes.DeleteComponentChange.new(editor.game,focused,KeyBulk))
 				editor.changes.bufferSave()
@@ -165,7 +165,7 @@ func _keyColorSelected(color:Game.COLOR) -> void:
 	editor.changes.addChange(Changes.PropertyChange.new(editor.game,focused,&"color",color))
 	editor.changes.bufferSave()
 
-func _keyTypeSelected(type:Game.KEY) -> void:
+func _keyTypeSelected(type:KeyBulk.TYPE) -> void:
 	if focused is not KeyBulk: return
 	editor.changes.addChange(Changes.PropertyChange.new(editor.game,focused,&"type",type))
 	editor.changes.bufferSave()

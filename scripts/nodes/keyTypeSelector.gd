@@ -14,16 +14,16 @@ const ICONS:Array[Texture2D] = [
 ]
 
 func _ready() -> void:
-	columns = Game.KEYTYPES
-	options = range(Game.KEYTYPES)
-	defaultValue = Game.KEY.NORMAL
+	columns = KeyBulk.TYPES
+	options = range(KeyBulk.TYPES)
+	defaultValue = KeyBulk.TYPE.NORMAL
 	buttonType = KeyTypeSelectorButton
 	super()
 
 class KeyTypeSelectorButton extends SelectorButton:
 	var drawMain:RID
 
-	func _init(_value:Game.KEY, _selector:KeyTypeSelector):
+	func _init(_value:KeyBulk.TYPE, _selector:KeyTypeSelector):
 		custom_minimum_size = Vector2(16,16)
 		z_index = 1
 		super(_value, _selector)

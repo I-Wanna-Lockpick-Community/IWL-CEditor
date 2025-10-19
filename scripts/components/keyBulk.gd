@@ -2,6 +2,9 @@ extends GameObject
 class_name KeyBulk
 const Type:Variant = KeyBulk
 
+const TYPES:int = 9
+enum TYPE {NORMAL, EXACT, STAR, UNSTAR, SIGNFLIP, POSROTOR, NEGROTOR, CURSE, UNCURSE}
+
 const FILL:Array[Texture2D] = [
 	preload("res://assets/game/key/normal/fill.png"),
 	preload("res://assets/game/key/exact/fill.png"),
@@ -58,7 +61,7 @@ const EDITOR_PROPERTIES:Array[StringName] = [
 ]
 
 var color:Game.COLOR = Game.COLOR.WHITE
-var type:Game.KEY = Game.KEY.NORMAL
+var type:TYPE = TYPE.NORMAL
 var count:C = C.new(1)
 var infinite:bool = false
 
@@ -80,11 +83,11 @@ func _ready() -> void:
 
 func outlineTex() -> Texture2D:
 	match type:
-		Game.KEY.EXACT:
+		KeyBulk.TYPE.EXACT:
 			if color == Game.COLOR.MASTER: return preload("res://assets/game/key/master/outlineMaskExact.png")
 			else:  return preload("res://assets/game/key/exact/outlineMask.png")
-		Game.KEY.STAR: return preload("res://assets/game/key/star/outlineMask.png")
-		Game.KEY.UNSTAR: return preload("res://assets/game/key/unstar/outlineMask.png")
+		KeyBulk.TYPE.STAR: return preload("res://assets/game/key/star/outlineMask.png")
+		KeyBulk.TYPE.UNSTAR: return preload("res://assets/game/key/unstar/outlineMask.png")
 		_:
 			match color:
 				Game.COLOR.MASTER:
@@ -118,11 +121,11 @@ func _draw() -> void:
 		else: RenderingServer.canvas_item_add_texture_rect(drawMain,rect,getFrame())
 		RenderingServer.canvas_item_add_texture_rect(drawMain,rect,getFill(),false,Game.mainTone[color])
 	match type:
-		Game.KEY.NORMAL, Game.KEY.EXACT:
+		KeyBulk.TYPE.NORMAL, KeyBulk.TYPE.EXACT:
 			if !count.eq(1): TextDraw.outlined(FKEYBULK,drawSymbol,str(count),keycountColor(),keycountOutlineColor(),18,Vector2(2,31),4)
-		Game.KEY.SIGNFLIP: RenderingServer.canvas_item_add_texture_rect(drawSymbol,rect,SIGNFLIP_SYMBOL)
-		Game.KEY.POSROTOR, Game.KEY.CURSE: RenderingServer.canvas_item_add_texture_rect(drawSymbol,rect,POSROTOR_SYMBOL)
-		Game.KEY.NEGROTOR, Game.KEY.UNCURSE: RenderingServer.canvas_item_add_texture_rect(drawSymbol,rect,NEGROTOR_SYMBOL)
+		KeyBulk.TYPE.SIGNFLIP: RenderingServer.canvas_item_add_texture_rect(drawSymbol,rect,SIGNFLIP_SYMBOL)
+		KeyBulk.TYPE.POSROTOR, KeyBulk.TYPE.CURSE: RenderingServer.canvas_item_add_texture_rect(drawSymbol,rect,POSROTOR_SYMBOL)
+		KeyBulk.TYPE.NEGROTOR, KeyBulk.TYPE.UNCURSE: RenderingServer.canvas_item_add_texture_rect(drawSymbol,rect,NEGROTOR_SYMBOL)
 	if infinite: RenderingServer.canvas_item_add_texture_rect(drawSymbol,rect,INFINITE_SYMBOL)
 
 func keycountColor() -> Color: return Color("#363029") if count.sign() < 0 else Color("#ebe3dd")

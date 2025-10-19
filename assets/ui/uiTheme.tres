@@ -1,4 +1,6 @@
-[gd_resource type="Theme" load_steps=14 format=3 uid="uid://bvfthh0vm4fbp"]
+[gd_resource type="Theme" load_steps=18 format=3 uid="uid://bvfthh0vm4fbp"]
+
+[ext_resource type="FontFile" uid="uid://c1cbi8by5johg" path="res://resources/fonts/fTalk.fnt" id="1_ffcy4"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_wu0u2"]
 bg_color = Color(0.25323758, 0.2532376, 0.2532375, 1)
@@ -11,6 +13,32 @@ corner_radius_top_left = 2
 corner_radius_top_right = 2
 corner_radius_bottom_right = 2
 corner_radius_bottom_left = 2
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_jnf66"]
+content_margin_left = 2.0
+content_margin_top = 2.0
+content_margin_right = 2.0
+content_margin_bottom = 2.0
+bg_color = Color(0.6, 0.6, 0.6, 0)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0, 0.5137255, 0.99215686, 1)
+corner_detail = 5
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_jqhgt"]
+content_margin_left = 8.0
+content_margin_top = 2.0
+content_margin_right = 8.0
+content_margin_bottom = 2.0
+bg_color = Color(0.1, 0.1, 0.1, 0.6)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.5764706, 0.5764706, 0.5764706, 1)
+corner_detail = 5
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ffcy4"]
 bg_color = Color(0, 0.5506986, 0.871841, 0.53333336)
@@ -62,6 +90,12 @@ content_margin_right = 0.0
 content_margin_bottom = 0.0
 bg_color = Color(0.16206557, 0.1620656, 0.16206554, 1)
 corner_detail = 5
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_jqlop"]
+content_margin_left = 2.0
+content_margin_top = 2.0
+content_margin_right = 2.0
+content_margin_bottom = 2.0
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_51dj7"]
 
@@ -126,6 +160,10 @@ DialogPanelContainer/base_type = &"PanelContainer"
 DialogPanelContainer/styles/panel = SubResource("StyleBoxFlat_wu0u2")
 GridContainer/constants/h_separation = 0
 GridContainer/constants/v_separation = 0
+LineEdit/font_sizes/font_size = 12
+LineEdit/fonts/font = ExtResource("1_ffcy4")
+LineEdit/styles/focus = SubResource("StyleBoxFlat_jnf66")
+LineEdit/styles/normal = SubResource("StyleBoxFlat_jqhgt")
 MarginContainer/constants/margin_bottom = 4
 MarginContainer/constants/margin_left = 4
 MarginContainer/constants/margin_right = 4
@@ -140,6 +178,7 @@ NumberEditPanelContainerSelected/base_type = &"PanelContainer"
 NumberEditPanelContainerSelected/styles/panel = SubResource("StyleBoxFlat_8jef3")
 PanelContainer/styles/panel = SubResource("StyleBoxFlat_yev5y")
 RadioButton/base_type = &"Button"
+RadioButton/styles/disabled = SubResource("StyleBoxEmpty_jqlop")
 RadioButton/styles/focus = SubResource("StyleBoxEmpty_51dj7")
 RadioButton/styles/hover = SubResource("StyleBoxFlat_waqcv")
 RadioButton/styles/normal = SubResource("StyleBoxFlat_sy460")

@@ -10,6 +10,7 @@ func _ready() -> void:
 	connect("toggled", queue_redraw.unbind(1))
 
 func _draw() -> void:
+	if disabled: return
 	var strWidth:int = int(fTalk.get_string_size(getCurrentHotkey(),HORIZONTAL_ALIGNMENT_LEFT,-1,12).x)
 	draw_string(fTalk,Vector2((size.x-strWidth)/2,size.y+12),getCurrentHotkey(),HORIZONTAL_ALIGNMENT_LEFT,-1,12)
 

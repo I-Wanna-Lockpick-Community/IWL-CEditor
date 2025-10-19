@@ -24,12 +24,9 @@ void fragment() {
 		// draw level bounds
 		COLOR.rgb = lerpColor(COLOR.rgb, OUTOFBOUNDS_COLOR, 0.5);
 	}
-	if (mod(XY.x,tileSize.x) < RCAMERA_ZOOM || mod(XY.y,tileSize.y) < RCAMERA_ZOOM) {
-		// draw grid
-		float gridAlpha = 0.35;
-		if (mod(XY.x,32) < RCAMERA_ZOOM || mod(XY.y,32) < RCAMERA_ZOOM) {
-			gridAlpha = 1.0;
-		}
-		COLOR.rgb = lerpColor(COLOR.rgb,GRID_COLOR.rgb,GRID_COLOR.a*gridAlpha*(1.0-min(lengthSquared(mousePosition-XY)/1e4,1.0)));
-	}
+	float gridAlpha = 0.0;
+	if ((tileSize.x <= 8.0 && mod(XY.x,8.0) < RCAMERA_ZOOM) || (tileSize.y <= 8.0 && mod(XY.y,8.0) < RCAMERA_ZOOM)) gridAlpha = 0.3;
+	if ((tileSize.x <= 16.0 && mod(XY.x,16.0) < RCAMERA_ZOOM) || (tileSize.y <= 16.0 && mod(XY.y,16.0) < RCAMERA_ZOOM)) gridAlpha = 0.35;
+	if ((tileSize.x <= 32.0 && mod(XY.x,32.0) < RCAMERA_ZOOM) || (tileSize.y <= 32.0 && mod(XY.y,32.0) < RCAMERA_ZOOM)) gridAlpha = 1.0;
+	COLOR.rgb = lerpColor(COLOR.rgb,GRID_COLOR.rgb,GRID_COLOR.a*gridAlpha*(1.0-min(lengthSquared(mousePosition-XY)/1e4,1.0)));
 }

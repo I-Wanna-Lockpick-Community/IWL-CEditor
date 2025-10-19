@@ -1,8 +1,6 @@
 extends Node2D
 class_name Game
 
-const KEYTYPES:int = 9
-enum KEY {NORMAL, EXACT, STAR, UNSTAR, SIGNFLIP, POSROTOR, NEGROTOR, CURSE, UNCURSE}
 const KEYTYPE_TEXTURE_OFFSETS:Array[int] = [0,1,2,3,0,0,0,0,0]
 
 const COLORS:int = 22
@@ -17,7 +15,7 @@ const MASTER_TEXTURE:Array[Texture2D] = [
 	preload("res://assets/game/colorTexture/master3.png")
 ]
 func masterTex() -> Texture2D: return MASTER_TEXTURE[goldIndex%4]
-const MASTER_KEY_TEXTURE:Array[Texture2D] = [
+const MASTER_KEY_TEXTURE:Array[Texture2D] = [ # move this to keybulk probably
 	preload("res://assets/game/key/master/normal0.png"),
 	preload("res://assets/game/key/master/normal1.png"),
 	preload("res://assets/game/key/master/normal2.png"),
@@ -35,7 +33,7 @@ const MASTER_KEY_TEXTURE:Array[Texture2D] = [
 	preload("res://assets/game/key/master/unstar2.png"),
 	preload("res://assets/game/key/master/unstar3.png"),
 ]
-func masterKeyTex(type:KEY) -> Texture2D: return MASTER_KEY_TEXTURE[goldIndex%4 + KEYTYPE_TEXTURE_OFFSETS[type]*4]
+func masterKeyTex(type:KeyBulk.TYPE) -> Texture2D: return MASTER_KEY_TEXTURE[goldIndex%4 + KEYTYPE_TEXTURE_OFFSETS[type]*4]
 
 
 const PURE_TEXTURE:Array[Texture2D] = [
@@ -63,7 +61,7 @@ const PURE_KEY_TEXTURE:Array[Texture2D] = [
 	preload("res://assets/game/key/pure/unstar2.png"),
 	preload("res://assets/game/key/pure/unstar3.png"),
 ]
-func pureKeyTex(type:KEY) -> Texture2D: return PURE_KEY_TEXTURE[goldIndex%4 + KEYTYPE_TEXTURE_OFFSETS[type]*4]
+func pureKeyTex(type:KeyBulk.TYPE) -> Texture2D: return PURE_KEY_TEXTURE[goldIndex%4 + KEYTYPE_TEXTURE_OFFSETS[type]*4]
 
 
 func stoneTex() -> Texture2D: return preload("res://assets/game/colorTexture/stone.png")
@@ -73,7 +71,7 @@ const STONE_KEY_TEXTURE:Array[Texture2D] = [
 	preload("res://assets/game/key/stone/star.png"),
 	preload("res://assets/game/key/stone/unstar.png"),
 ]
-func stoneKeyTex(type:KEY) -> Texture2D: return STONE_KEY_TEXTURE[KEYTYPE_TEXTURE_OFFSETS[type]]
+func stoneKeyTex(type:KeyBulk.TYPE) -> Texture2D: return STONE_KEY_TEXTURE[KEYTYPE_TEXTURE_OFFSETS[type]]
 
 
 const DYNAMITE_TEXTURE:Array[Texture2D] = [
@@ -97,7 +95,7 @@ const DYNAMITE_KEY_TEXTURE:Array[Texture2D] = [
 	preload("res://assets/game/key/dynamite/star0.png"), preload("res://assets/game/key/dynamite/star1.png"), preload("res://assets/game/key/dynamite/star2.png"), preload("res://assets/game/key/dynamite/star3.png"), preload("res://assets/game/key/dynamite/star4.png"), preload("res://assets/game/key/dynamite/star5.png"), preload("res://assets/game/key/dynamite/star6.png"), preload("res://assets/game/key/dynamite/star7.png"), preload("res://assets/game/key/dynamite/star8.png"), preload("res://assets/game/key/dynamite/star9.png"), preload("res://assets/game/key/dynamite/star10.png"), preload("res://assets/game/key/dynamite/star11.png"),
 	preload("res://assets/game/key/dynamite/unstar0.png"), preload("res://assets/game/key/dynamite/unstar1.png"), preload("res://assets/game/key/dynamite/unstar2.png"), preload("res://assets/game/key/dynamite/unstar3.png"), preload("res://assets/game/key/dynamite/unstar4.png"), preload("res://assets/game/key/dynamite/unstar5.png"), preload("res://assets/game/key/dynamite/unstar6.png"), preload("res://assets/game/key/dynamite/unstar7.png"), preload("res://assets/game/key/dynamite/unstar8.png"), preload("res://assets/game/key/dynamite/unstar9.png"), preload("res://assets/game/key/dynamite/unstar10.png"), preload("res://assets/game/key/dynamite/unstar11.png")
 ]
-func dynamiteKeyTex(type:KEY) -> Texture2D: return DYNAMITE_KEY_TEXTURE[goldIndex + KEYTYPE_TEXTURE_OFFSETS[type]*12]
+func dynamiteKeyTex(type:KeyBulk.TYPE) -> Texture2D: return DYNAMITE_KEY_TEXTURE[goldIndex + KEYTYPE_TEXTURE_OFFSETS[type]*12]
 
 
 const QUICKSILVER_TEXTURE:Array[Texture2D] = [
@@ -114,7 +112,7 @@ const QUICKSILVER_KEY_TEXTURE:Array[Texture2D] = [
 	preload("res://assets/game/key/silver/normal3.png")
 	# awaiting
 ]
-func quicksilverKeyTex(_type:KEY) -> Texture2D: return QUICKSILVER_KEY_TEXTURE[goldIndex%4]
+func quicksilverKeyTex(_type:KeyBulk.TYPE) -> Texture2D: return QUICKSILVER_KEY_TEXTURE[goldIndex%4]
 
 
 const ICE_KEY_TEXTURE:Array[Texture2D] = [
@@ -123,7 +121,7 @@ const ICE_KEY_TEXTURE:Array[Texture2D] = [
 	preload("res://assets/game/key/ice/star.png"),
 	preload("res://assets/game/key/ice/unstar.png"),
 ]
-func iceKeyTex(type:KEY) -> Texture2D: return ICE_KEY_TEXTURE[KEYTYPE_TEXTURE_OFFSETS[type]]
+func iceKeyTex(type:KeyBulk.TYPE) -> Texture2D: return ICE_KEY_TEXTURE[KEYTYPE_TEXTURE_OFFSETS[type]]
 
 
 const MUD_KEY_TEXTURE:Array[Texture2D] = [
@@ -132,7 +130,7 @@ const MUD_KEY_TEXTURE:Array[Texture2D] = [
 	preload("res://assets/game/key/mud/star.png"),
 	preload("res://assets/game/key/mud/unstar.png"),
 ]
-func mudKeyTex(type:KEY) -> Texture2D: return MUD_KEY_TEXTURE[KEYTYPE_TEXTURE_OFFSETS[type]]
+func mudKeyTex(type:KeyBulk.TYPE) -> Texture2D: return MUD_KEY_TEXTURE[KEYTYPE_TEXTURE_OFFSETS[type]]
 
 
 const GRAFFITI_KEY_TEXTURE:Array[Texture2D] = [
@@ -141,7 +139,7 @@ const GRAFFITI_KEY_TEXTURE:Array[Texture2D] = [
 	preload("res://assets/game/key/graffiti/star.png"),
 	preload("res://assets/game/key/graffiti/unstar.png"),
 ]
-func graffitiKeyTex(type:KEY) -> Texture2D: return GRAFFITI_KEY_TEXTURE[KEYTYPE_TEXTURE_OFFSETS[type]]
+func graffitiKeyTex(type:KeyBulk.TYPE) -> Texture2D: return GRAFFITI_KEY_TEXTURE[KEYTYPE_TEXTURE_OFFSETS[type]]
 
 
 
