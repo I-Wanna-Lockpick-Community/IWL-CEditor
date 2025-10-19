@@ -168,6 +168,11 @@ class DeleteComponentChange extends Change:
 			KeyBulk: dictionary = game.keys
 			Door: dictionary = game.doors
 			Lock: dictionary = game.locks
+		
+		if type == Door:
+			for lock in component.locks:
+				game.editor.changes.addChange(DeleteComponentChange.new(game,lock,Lock))
+
 		do()
 
 	func do() -> void:
