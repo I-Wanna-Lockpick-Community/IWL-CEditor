@@ -17,15 +17,15 @@ func _process(delta:float) -> void:
 		%sprite.pause()
 		return
 
-	var hSpeed:float = 6
-	if !is_on_floor(): hSpeed = 3
+	var xSpeed:float = 6
+	if !is_on_floor(): xSpeed = 3
 	var moveDirection:float = Input.get_axis(&"left", &"right")
-	velocity.x = hSpeed*FPS*moveDirection
+	velocity.x = xSpeed*FPS*moveDirection
 
+	if is_on_floor(): canDoubleJump = true
 	if Input.is_action_just_pressed(&"jump"):
 		if is_on_floor():
 			velocity.y = -JUMP_SPEED*FPS
-			canDoubleJump = true
 		elif canDoubleJump:
 			velocity.y = -DOUBLE_JUMP_SPEED*FPS
 			canDoubleJump = false

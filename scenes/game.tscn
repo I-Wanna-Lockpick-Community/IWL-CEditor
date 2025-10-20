@@ -33,7 +33,16 @@ position = Vector2(-10, -10)
 anchor_mode = 0
 limit_enabled = false
 
-[node name="objectsParent" type="Node" parent="."]
+[node name="playCamera" type="Camera2D" parent="."]
+unique_name_in_owner = true
+enabled = false
+limit_left = 0
+limit_top = 0
+limit_right = 800
+limit_bottom = 608
+position_smoothing_enabled = true
+
+[node name="objectsParent" type="Node2D" parent="."]
 unique_name_in_owner = true
 
 [node name="outline" type="Node2D" parent="."]

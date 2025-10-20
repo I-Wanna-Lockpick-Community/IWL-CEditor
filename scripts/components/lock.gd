@@ -275,7 +275,7 @@ func receiveMouseInput(event:InputEventMouse) -> bool:
 	# resizing
 	if editor.componentDragged: return false
 	if !Rect2(position-getOffset(),size).has_point(editor.mouseWorldPosition - parent.position) : return false
-	var dragCornerSize:Vector2 = Vector2(8,8)/editor.game.editorCamera.zoom
+	var dragCornerSize:Vector2 = Vector2(8,8)/editor.cameraZoom
 	var diffSign:Vector2 = Editor.rectSign(Rect2(position+dragCornerSize-getOffset(),size-dragCornerSize*2), editor.mouseWorldPosition-parent.position)
 	var dragPivot:Editor.SIZE_DRAG_PIVOT = Editor.SIZE_DRAG_PIVOT.NONE
 	match diffSign:

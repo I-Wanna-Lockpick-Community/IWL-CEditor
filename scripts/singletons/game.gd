@@ -221,6 +221,7 @@ const darkTone:Array[Color] = [
 @onready var editor:Editor = get_node("/root/editor")
 @onready var tiles:TileMapLayer = %tiles
 @onready var editorCamera:Camera2D = %editorCamera
+@onready var playCamera:Camera2D = %playCamera
 @onready var objectsParent:Node = %objectsParent
 
 var objIdIter:int = 0 # for creating objects
@@ -236,6 +237,10 @@ var levelBounds:Rect2i = Rect2i(0,0,800,608):
 	set(value):
 		levelBounds = value
 		editor.gameViewportCont.material.set_shader_material("gameSize",levelBounds.size)
+		%playCamera.set_limit.left = levelBounds.position.x
+		%playCamera.set_limit.top = levelBounds.position.y
+		%playCamera.set_limit.right = levelBounds.end.x
+		%playCamera.set_limit.bottom = levelBounds.end.y
 
 const GLITCH_MATERIAL:ShaderMaterial = preload("res://resources/glitchDrawMaterial.tres")
 const PIXELATED_MATERIAL:ShaderMaterial = preload("res://resources/pixelatedDrawMaterial.tres")
@@ -246,7 +251,13 @@ const FTALK:Font = preload("res://resources/fonts/fTalk.fnt")
 var levelStart:PlayerSpawn
 var player:Player
 enum PLAY_STATE {EDIT, PLAY, PAUSED}
-var playState:PLAY_STATE = PLAY_STATE.EDIT
+var playState:PLAY_STATE = PLAY_STATE.EDIT:
+	set(value):
+		playState = value
+		editor.topBar._playStateChanged()
+		for object in objects.values(): object.queue_redraw()
+		%editorCamera.enabled = playState != PLAY_STATE.PLAY
+		%playCamera.enabled = playState == PLAY_STATE.PLAY
 
 func _process(delta:float) -> void:
 	goldIndexFloat += delta*6 # 0.1 per frame, 60fps
@@ -255,33 +266,29 @@ func _process(delta:float) -> void:
 		goldIndex = int(goldIndexFloat)
 		goldIndexChanged.emit()
 	RenderingServer.global_shader_parameter_set(&"NOISE_OFFSET", Vector2(randf_range(-1000, 1000), randf_range(-1000, 1000)))
-	RenderingServer.global_shader_parameter_set(&"RCAMERA_ZOOM", 1/editorCamera.zoom.x)
+	RenderingServer.global_shader_parameter_set(&"RCAMERA_ZOOM", 1/editor.cameraZoom)
+	if player:
+		%playCamera.position = player.position
 
 func playTest(spawn:PlayerSpawn) -> void:
-	if playState == PLAY_STATE.PAUSED:
-		playState = PLAY_STATE.PLAY
-		editor.topBar._playStateChanged()
-	else:
-		playState = PLAY_STATE.PLAY
-		editor.topBar._playStateChanged()
-		editor.focusDialog.defocus()
+	if playState == PLAY_STATE.EDIT:
 		player = preload("res://scenes/player.tscn").instantiate()
 		player.game = self
 		add_child(player)
 		player.position = spawn.position + Vector2(17, 23)
-
-	for object in objectsParent.get_children(): object.queue_redraw()
+	playState = PLAY_STATE.PLAY
+	
+	editor.multiselect.deselect()
+	editor.focusDialog.defocus()
+	editor.componentDragged = null
+	editor.changes.bufferSave()
 
 func pauseTest() -> void:
 	playState = PLAY_STATE.PAUSED
-	editor.topBar._playStateChanged()
-
-	for object in objectsParent.get_children(): object.queue_redraw()
 
 func stopTest() -> void:
 	playState = PLAY_STATE.EDIT
-	editor.topBar._playStateChanged()
 	player.queue_free()
 	player = null
 
-	for object in objectsParent.get_children(): object.queue_redraw()
+	

@@ -251,7 +251,9 @@ class PropertyChange extends Change:
 			_: component = game.objects[id]
 		if value is C or value is Q: component.set(property, value.copy())
 		else: component.set(property, value)
-		if property == &"size" and component is GameObject: component.shape.shape.size = value
+		if property == &"size" and component is GameObject:
+			component.shape.shape.size = value
+			component.shape.position = value/2
 		component.queue_redraw()
 		if game.editor.focusDialog.focused == component: game.editor.focusDialog.focus(component)
 		elif game.editor.focusDialog.componentFocused == component: game.editor.focusDialog.focusComponent(component)

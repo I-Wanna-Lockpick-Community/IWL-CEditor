@@ -34,6 +34,8 @@ var previousDragPosition:Vector2i # to check whether or not a drag would do anyt
 
 var tileSize:Vector2i = Vector2i(32,32)
 
+var cameraZoom:float = 1
+
 func _process(_delta) -> void:
 	queue_redraw()
 	var scaleFactor:float = (targetCameraZoom/game.editorCamera.zoom.x)**0.2
@@ -51,10 +53,11 @@ func _process(_delta) -> void:
 	mouseWorldPosition = screenspaceToWorldspace(get_global_mouse_position())
 	mouseTilePosition = Vector2i(mouseWorldPosition) / tileSize * tileSize
 	gameViewportCont.material.set_shader_parameter("mousePosition",mouseWorldPosition)
-	gameViewportCont.material.set_shader_parameter("screenPosition",game.editorCamera.position-gameViewportCont.position/game.editorCamera.zoom)
-	gameViewportCont.material.set_shader_parameter("rCameraZoom",1/game.editorCamera.zoom.x)
+	gameViewportCont.material.set_shader_parameter("screenPosition",screenspaceToWorldspace(Vector2.ZERO))
+	if game.playState == Game.PLAY_STATE.PLAY: cameraZoom = game.playCamera.zoom.x
+	else: cameraZoom = game.editorCamera.zoom.x
+	gameViewportCont.material.set_shader_parameter("rCameraZoom",1/cameraZoom)
 	gameViewportCont.material.set_shader_parameter("tileSize",tileSize)
-
 	componentHovered = null
 	if !componentDragged:
 		objectHovered = null
@@ -74,7 +77,7 @@ func _gui_input(event:InputEvent) -> void:
 		else:
 			# move camera
 			if event is InputEventMouseMotion and Input.is_mouse_button_pressed(MOUSE_BUTTON_MIDDLE):
-				game.editorCamera.position -= event.relative / game.editorCamera.zoom
+				game.editorCamera.position -= event.relative / cameraZoom
 			if event is InputEventMouseButton and event.is_pressed():
 				match event.button_index:
 					MOUSE_BUTTON_WHEEL_UP: zoomCamera(1.25)
@@ -253,6 +256,7 @@ func _input(event:InputEvent) -> void:
 			# IN PLAY
 			match event.keycode:
 				KEY_P: game.pauseTest()
+				KEY_O: game.stopTest()
 		else:
 			# IN EDIT
 			if %objectSearch.has_focus(): return
@@ -276,15 +280,19 @@ func _input(event:InputEvent) -> void:
 				KEY_X:
 					if Input.is_key_pressed(KEY_CTRL): multiselect.copySelection(); multiselect.delete()
 					else: modes.setMode(MODE.OTHER)
-				KEY_P: if !topBar.play.disabled: game.playTest(game.levelStart)
 				KEY_O: if game.playState != Game.PLAY_STATE.EDIT: game.stopTest()
 				KEY_M:
 					if focusDialog.componentFocused: startPositionDrag(focusDialog.componentFocused)
 					elif focusDialog.focused: startPositionDrag(focusDialog.focused)
-				KEY_SPACE:
+				KEY_H:
 					targetCameraZoom = 1
 					zoomPoint = game.levelBounds.get_center()
-					game.editorCamera.position = zoomPoint - gameViewportCont.size / (game.editorCamera.zoom*2)
+					game.editorCamera.position = zoomPoint - gameViewportCont.size / (cameraZoom*2)
+				KEY_SPACE:
+					if !topBar.play.disabled:
+						await get_tree().process_frame
+						await get_tree().process_frame # bullshit to make sure you dont jump at the start
+						game.playTest(game.levelStart)
 				KEY_DELETE: multiselect.delete()
 				KEY_TAB: grab_focus()
 
@@ -296,9 +304,11 @@ func zoomCamera(factor:float) -> void:
 	if targetCameraZoom > 1000: targetCameraZoom = 1000
 
 func worldspaceToScreenspace(vector:Vector2) -> Vector2:
-	return (vector - game.editorCamera.position)*game.editorCamera.zoom + gameViewportCont.position
+	if game.playState == Game.PLAY_STATE.PLAY: return (vector - game.playCamera.get_screen_center_position())*game.playCamera.zoom + gameViewportCont.position + gameViewportCont.size/2
+	else: return (vector - game.editorCamera.position)*game.editorCamera.zoom + gameViewportCont.position
 
 func screenspaceToWorldspace(vector:Vector2) -> Vector2:
+	if game.playState == Game.PLAY_STATE.PLAY: return (vector - gameViewportCont.position - gameViewportCont.size/2)/game.playCamera.zoom + game.playCamera.get_screen_center_position()
 	return (vector - gameViewportCont.position)/game.editorCamera.zoom + game.editorCamera.position
 
 static func isLeftClick(event:InputEvent) -> bool: return event is InputEventMouseButton and event.is_pressed() and event.button_index == MOUSE_BUTTON_LEFT

@@ -18,6 +18,7 @@ func _ready() -> void:
 func draw() -> void:
 	RenderingServer.canvas_item_clear(drawShader)
 	RenderingServer.canvas_item_clear(drawNormal)
+	if editor.game.playState == Game.PLAY_STATE.PLAY: return
 	if editor.focusDialog.focused:
 		drawOutline(editor.focusDialog.focused)
 	if editor.objectHovered:
@@ -32,11 +33,11 @@ func drawOutline(component:GameComponent,color:Color=Color.WHITE) -> void:
 	if component is Door or component is Lock:
 		RenderingServer.canvas_item_add_polyline(drawNormal,[ # cant just rectangle with the drawshader since uv doesnt work with rectangles, and there isnt a rectangle outline either from what i can tell
 			pos,
-			pos+Vector2(component.size.x+1/editor.game.editorCamera.zoom.x,0),
-			pos+component.size+Vector2.ONE/editor.game.editorCamera.zoom,
-			pos+Vector2(0,component.size.y+1/editor.game.editorCamera.zoom.x),
+			pos+Vector2(component.size.x+1/editor.cameraZoom,0),
+			pos+component.size+Vector2.ONE/editor.cameraZoom,
+			pos+Vector2(0,component.size.y+1/editor.cameraZoom),
 			pos # bitch
-		],[color,color,color,color],2/editor.game.editorCamera.zoom.x)
+		],[color,color,color,color],2/editor.cameraZoom)
 	else:
 		RenderingServer.canvas_item_add_texture_rect(drawShader,Rect2(pos,component.size),component.outlineTex(),false,color)
 

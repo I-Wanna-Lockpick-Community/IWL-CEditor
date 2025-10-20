@@ -226,7 +226,7 @@ theme_type_variation = &"RadioButton"
 disabled = true
 icon = ExtResource("13_wyx26")
 script = ExtResource("5_3vi5u")
-defaultHotkey = "P"
+defaultHotkey = "Space"
 metadata/_custom_type_script = "uid://buv3n70m06kje"
 
 [node name="pause" type="Button" parent="c/c/topBar/c/playControls"]
