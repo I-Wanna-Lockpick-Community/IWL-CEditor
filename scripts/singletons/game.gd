@@ -245,6 +245,9 @@ const PIXELATED_MATERIAL:ShaderMaterial = preload("res://resources/pixelatedDraw
 const FKEYX:Font = preload("res://resources/fonts/fKeyX.tres")
 const FTALK:Font = preload("res://resources/fonts/fTalk.fnt")
 
+var levelStart:PlayerSpawn
+var player:Player
+
 func _process(delta:float) -> void:
 	goldIndexFloat += delta*6 # 0.1 per frame, 60fps
 	if goldIndexFloat > 12: goldIndexFloat -= 12
@@ -253,3 +256,8 @@ func _process(delta:float) -> void:
 		goldIndexChanged.emit()
 	RenderingServer.global_shader_parameter_set(&"NOISE_OFFSET", Vector2(randf_range(-1000, 1000), randf_range(-1000, 1000)))
 	RenderingServer.global_shader_parameter_set(&"RCAMERA_ZOOM", 1/editorCamera.zoom.x)
+
+func playtest(spawn:PlayerSpawn) -> void:
+	player = preload("res://scenes/player.tscn").instantiate()
+	add_child(player)
+	player.position = spawn.position + Vector2(17, 23)

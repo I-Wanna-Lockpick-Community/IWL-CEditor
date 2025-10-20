@@ -13,10 +13,8 @@ func focus(object:GameObject) -> void:
 	focused = object
 	editor.game.objects.remove_child(focused)
 	editor.game.objects.add_child(focused)
+	showCorrectDialog()
 	if focused is KeyBulk:
-		%keyDialog.visible = true
-		%doorDialog.visible = false
-		%otherDialog.visible = false
 		%keyColorSelector.setSelect(focused.color)
 		%keyTypeSelector.setSelect(focused.type)
 		%keyCountEdit.visible = focused.type in [KeyBulk.TYPE.NORMAL,KeyBulk.TYPE.EXACT]
@@ -24,9 +22,6 @@ func focus(object:GameObject) -> void:
 		%keyInfiniteToggle.button_pressed = focused.infinite
 		if new: interact(%keyCountEdit.realEdit)
 	elif focused is Door:
-		%keyDialog.visible = false
-		%doorDialog.visible = true
-		%otherDialog.visible = false
 		%doorTypes.get_child(focused.type).button_pressed = true
 		%lockSelector.colorLink.visible = focused.type == Door.TYPE.SIMPLE
 		%spend.queue_redraw()
@@ -44,10 +39,14 @@ func focus(object:GameObject) -> void:
 			interact(%doorComplexNumberEdit.realEdit)
 			%lockSelector.setup(focused)
 			if focused.type == Door.TYPE.SIMPLE: focusComponent(focused.locks[0])
-	else:
-		%keyDialog.visible = false
-		%doorDialog.visible = false
-		%otherDialog.visible = true
+	elif focused is PlayerSpawn:
+		if editor.game.levelStart == focused: %levelStart.button_pressed = true
+		else: %savestate.button_pressed = true
+
+func showCorrectDialog() -> void:
+	%keyDialog.visible = focused is KeyBulk
+	%doorDialog.visible = focused is Door
+	%playerDialog.visible = focused is PlayerSpawn
 
 func defocus() -> void:
 	if !focused: return
@@ -184,17 +183,17 @@ func _keyTypeSelected(type:KeyBulk.TYPE) -> void:
 	editor.changes.addChange(Changes.PropertyChange.new(editor.game,focused,&"type",type))
 	editor.changes.bufferSave()
 
-func _keyCountSet(count:C):
+func _keyCountSet(count:C) -> void:
 	if focused is not KeyBulk: return
 	editor.changes.addChange(Changes.PropertyChange.new(editor.game,focused,&"count",count))
 	editor.changes.bufferSave()
 
-func _keyInfiniteToggled(value:bool):
+func _keyInfiniteToggled(value:bool) -> void:
 	if focused is not KeyBulk: return
 	editor.changes.addChange(Changes.PropertyChange.new(editor.game,focused,&"infinite",value))
 	editor.changes.bufferSave()
 
-func _doorColorSelected(color:Game.COLOR):
+func _doorColorSelected(color:Game.COLOR) -> void:
 	if focused is not Door: return
 	if componentFocused:
 		editor.changes.addChange(Changes.PropertyChange.new(editor.game,componentFocused,&"color",color))
@@ -204,12 +203,12 @@ func _doorColorSelected(color:Game.COLOR):
 		editor.changes.addChange(Changes.PropertyChange.new(editor.game,focused,&"colorSpend",color))
 	editor.changes.bufferSave()
 
-func _doorComplexNumberSet(value:C):
+func _doorComplexNumberSet(value:C) -> void:
 	if focused is not Door: return
 	editor.changes.addChange(Changes.PropertyChange.new(editor.game,focused,&"copies",value))
 	editor.changes.bufferSave()
 
-func _doorAxialNumberSet(value:C):
+func _doorAxialNumberSet(value:C) -> void:
 	if componentFocused is not Lock: return
 	editor.changes.addChange(Changes.PropertyChange.new(editor.game,componentFocused,&"count",value))
 	focused.queue_redraw()
@@ -218,11 +217,11 @@ func _doorAxialNumberSet(value:C):
 	else: componentFocused._setAutoConfiguration()
 	editor.changes.bufferSave()
 
-func _lockTypeSelected(type:Lock.TYPE):
+func _lockTypeSelected(type:Lock.TYPE) -> void:
 	if componentFocused is not Lock: return
 	componentFocused._setType(type)
 
-func _doorTypeSelected(type:Door.TYPE):
+func _doorTypeSelected(type:Door.TYPE) -> void:
 	if focused is not Door: return
 	editor.changes.addChange(Changes.PropertyChange.new(editor.game,focused,&"type",type))
 	%lockSelector.colorLink.visible = focused.type == Door.TYPE.SIMPLE
@@ -240,11 +239,11 @@ func _doorTypeSelected(type:Door.TYPE):
 	editor.changes.bufferSave()
 	%spend.queue_redraw()
 
-func _spendSelected():
+func _spendSelected() -> void:
 	defocusComponent()
 	focus(focused)
 
-func _lockConfigurationSelected(option:ConfigurationSelector.OPTION):
+func _lockConfigurationSelected(option:ConfigurationSelector.OPTION) -> void:
 	if componentFocused is not Lock: return
 	match option:
 		ConfigurationSelector.OPTION.SpecificA:
@@ -261,8 +260,24 @@ func _lockConfigurationSelected(option:ConfigurationSelector.OPTION):
 		ConfigurationSelector.OPTION.AnyXL: componentFocused._comboDoorConfigurationChanged(Lock.SIZE_TYPE.AnyXL)
 	editor.changes.bufferSave()
 
-func _blastLockSet():
+func _blastLockSet() -> void:
 	if componentFocused is not Lock: return
 	editor.changes.addChange(Changes.PropertyChange.new(editor.game,componentFocused,&"count",(C.new(0,1) if %blastLockAxis.button_pressed else C.new(1)).times(-1 if %blastLockSign.button_pressed else 1)))
 	focused.queue_redraw()
 	editor.changes.bufferSave()
+
+func _setLevelStart() -> void:
+	if focused is not PlayerSpawn: return
+	if editor.game.levelStart:
+		editor.game.levelStart.queue_redraw()
+	editor.game.levelStart = focused
+	focused.queue_redraw()
+
+func _setSavestate() -> void:
+	if focused is not PlayerSpawn: return
+	if editor.game.levelStart == focused:
+		editor.game.levelStart = null
+		focused.queue_redraw()
+
+func _playtest() -> void:
+	editor.game.playtest(focused)

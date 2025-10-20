@@ -1,6 +1,7 @@
-[gd_resource type="Theme" load_steps=18 format=3 uid="uid://bvfthh0vm4fbp"]
+[gd_resource type="Theme" load_steps=20 format=3 uid="uid://bvfthh0vm4fbp"]
 
-[ext_resource type="FontFile" uid="uid://c1cbi8by5johg" path="res://resources/fonts/fTalk.fnt" id="1_ffcy4"]
+[ext_resource type="FontFile" uid="uid://c1cbi8by5johg" path="res://resources/fonts/fTalk.fnt" id="1_vqwi6"]
+[ext_resource type="FontFile" uid="uid://cjub6sxbu8elx" path="res://resources/fonts/RobotoMono-SemiBold.ttf" id="2_luh82"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_wu0u2"]
 bg_color = Color(0.25323758, 0.2532376, 0.2532375, 1)
@@ -125,6 +126,15 @@ border_width_bottom = 2
 border_color = Color(1, 1, 1, 1)
 corner_detail = 5
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_vqwi6"]
+content_margin_left = 2.0
+content_margin_top = 2.0
+content_margin_right = 2.0
+content_margin_bottom = 2.0
+bg_color = Color(0.18120003, 0.18120006, 0.18120003, 1)
+border_color = Color(0.25490198, 0.25490198, 0.25490198, 1)
+corner_detail = 5
+
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_cf1xj"]
 content_margin_top = 0.0
 content_margin_right = 4.0
@@ -161,7 +171,7 @@ DialogPanelContainer/styles/panel = SubResource("StyleBoxFlat_wu0u2")
 GridContainer/constants/h_separation = 0
 GridContainer/constants/v_separation = 0
 LineEdit/font_sizes/font_size = 12
-LineEdit/fonts/font = ExtResource("1_ffcy4")
+LineEdit/fonts/font = ExtResource("1_vqwi6")
 LineEdit/styles/focus = SubResource("StyleBoxFlat_jnf66")
 LineEdit/styles/normal = SubResource("StyleBoxFlat_jqhgt")
 MarginContainer/constants/margin_bottom = 4
@@ -183,6 +193,14 @@ RadioButton/styles/focus = SubResource("StyleBoxEmpty_51dj7")
 RadioButton/styles/hover = SubResource("StyleBoxFlat_waqcv")
 RadioButton/styles/normal = SubResource("StyleBoxFlat_sy460")
 RadioButton/styles/pressed = SubResource("StyleBoxFlat_51dj7")
+RadioButtonText/base_type = &"Button"
+RadioButtonText/font_sizes/font_size = 12
+RadioButtonText/fonts/font = ExtResource("2_luh82")
+RadioButtonText/styles/disabled = SubResource("StyleBoxEmpty_jqlop")
+RadioButtonText/styles/focus = SubResource("StyleBoxEmpty_51dj7")
+RadioButtonText/styles/hover = SubResource("StyleBoxFlat_waqcv")
+RadioButtonText/styles/normal = SubResource("StyleBoxFlat_vqwi6")
+RadioButtonText/styles/pressed = SubResource("StyleBoxFlat_51dj7")
 SelectorButton/base_type = &"RadioButton"
 SelectorButton/styles/normal = SubResource("StyleBoxFlat_sy460")
 VScrollBar/styles/scroll = SubResource("StyleBoxFlat_cf1xj")

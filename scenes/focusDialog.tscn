@@ -1,6 +1,6 @@
-[gd_scene load_steps=26 format=3 uid="uid://8bth374yqwpe"]
+[gd_scene load_steps=28 format=3 uid="uid://8bth374yqwpe"]
 
-[ext_resource type="Theme" uid="uid://bvfthh0vm4fbp" path="res://assets/ui/uiTheme.tres" id="1_eqegh"]
+[ext_resource type="Theme" uid="uid://bvfthh0vm4fbp" path="res://resources/uiTheme.tres" id="1_eqegh"]
 [ext_resource type="Script" uid="uid://dm8t82nhqkdlc" path="res://scripts/singletons/focusDialog.gd" id="2_k8bto"]
 [ext_resource type="Script" uid="uid://c70juj2p5s6yd" path="res://scripts/nodes/colorSelector.gd" id="3_wmate"]
 [ext_resource type="Script" uid="uid://dgllodap6540" path="res://scripts/nodes/keyTypeSelector.gd" id="4_cb7cu"]
@@ -23,10 +23,13 @@
 [ext_resource type="Script" uid="uid://cqv0og8rnwrph" path="res://scripts/nodes/axialNumberEdit.gd" id="21_k4n5y"]
 [ext_resource type="Texture2D" uid="uid://dyhbxvexn1w26" path="res://assets/ui/blastLockSettings/negative.png" id="22_hh12n"]
 [ext_resource type="Texture2D" uid="uid://b38kvgugo2qsu" path="res://assets/ui/blastLockSettings/i.png" id="23_h1xy2"]
+[ext_resource type="Texture2D" uid="uid://ddautei1wlnil" path="res://assets/ui/otherObjects/playtest.png" id="24_7tfe2"]
 
 [sub_resource type="ButtonGroup" id="ButtonGroup_oii3e"]
 
 [sub_resource type="ButtonGroup" id="ButtonGroup_e2stj"]
+
+[sub_resource type="ButtonGroup" id="ButtonGroup_h1xy2"]
 
 [node name="focusDialog" type="Control"]
 layout_mode = 3
@@ -268,20 +271,49 @@ theme_type_variation = &"SelectorButton"
 toggle_mode = true
 icon = ExtResource("23_h1xy2")
 
-[node name="otherDialog" type="Control" parent="."]
+[node name="playerDialog" type="Control" parent="."]
 unique_name_in_owner = true
 anchors_preset = 0
 
-[node name="c" type="PanelContainer" parent="otherDialog"]
+[node name="c" type="PanelContainer" parent="playerDialog"]
 layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
-offset_left = -20.0
-offset_right = 20.0
-offset_bottom = 40.0
+offset_left = -14.0
+offset_right = 14.0
+offset_bottom = 28.0
 grow_horizontal = 2
 theme_type_variation = &"DialogPanelContainer"
+
+[node name="c" type="MarginContainer" parent="playerDialog/c"]
+layout_mode = 2
+
+[node name="c" type="HBoxContainer" parent="playerDialog/c/c"]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="playtest" type="Button" parent="playerDialog/c/c/c"]
+layout_mode = 2
+size_flags_vertical = 4
+theme_type_variation = &"RadioButton"
+icon = ExtResource("24_7tfe2")
+
+[node name="levelStart" type="Button" parent="playerDialog/c/c/c"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"RadioButtonText"
+toggle_mode = true
+button_group = SubResource("ButtonGroup_h1xy2")
+text = "Level Start"
+
+[node name="savestate" type="Button" parent="playerDialog/c/c/c"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"RadioButtonText"
+toggle_mode = true
+button_group = SubResource("ButtonGroup_h1xy2")
+text = "Test state"
 
 [node name="Polygon2D" type="Polygon2D" parent="."]
 rotation = 3.1415927
@@ -310,3 +342,6 @@ default_color = Color(0.8352941, 0.8352941, 0.8352941, 1)
 [connection signal="valueSet" from="doorDialog/c/lock/c/c/doorAxialNumberEdit" to="." method="_doorAxialNumberSet"]
 [connection signal="pressed" from="doorDialog/c/lock/c/c/blastLockSettings/blastLockSign" to="." method="_blastLockSet"]
 [connection signal="pressed" from="doorDialog/c/lock/c/c/blastLockSettings/blastLockAxis" to="." method="_blastLockSet"]
+[connection signal="pressed" from="playerDialog/c/c/c/playtest" to="." method="_playtest"]
+[connection signal="pressed" from="playerDialog/c/c/c/levelStart" to="." method="_setLevelStart"]
+[connection signal="pressed" from="playerDialog/c/c/c/savestate" to="." method="_setSavestate"]

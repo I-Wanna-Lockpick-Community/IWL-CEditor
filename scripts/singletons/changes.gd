@@ -110,8 +110,11 @@ class CreateComponentChange extends Change:
 			Door: dictionary = game.doors
 			Lock: dictionary = game.locks
 			_: dictionary = game.otherObjects
+		
 		do()
-	
+		if type == PlayerSpawn and !game.levelStart:
+			game.levelStart = result
+
 	func do() -> void:
 		var component:GameComponent
 		var parent:Node = game.objects
