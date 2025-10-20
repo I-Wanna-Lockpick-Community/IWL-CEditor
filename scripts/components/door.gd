@@ -108,3 +108,11 @@ func receiveMouseInput(event:InputEventMouse) -> bool:
 		editor.startSizeDrag(self, dragPivot)
 		return true
 	return false
+
+func _propertyChanged(property:StringName) -> void:
+	if property == &"size" or property == &"type":
+		shape.shape.size = size
+		shape.position = size/2
+		if type == TYPE.SIMPLE:
+			shape.shape.size -= Vector2(2,2)
+			shape.position += Vector2(1,1)
