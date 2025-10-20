@@ -11,8 +11,8 @@ var interacted:PanelContainer # the number edit that is currently interacted
 func focus(object:GameObject) -> void:
 	var new:bool = object != focused
 	focused = object
-	editor.game.objects.remove_child(focused)
-	editor.game.objects.add_child(focused)
+	editor.game.objectsParent.remove_child(focused)
+	editor.game.objectsParent.add_child(focused)
 	showCorrectDialog()
 	if focused is KeyBulk:
 		%keyColorSelector.setSelect(focused.color)
@@ -270,14 +270,14 @@ func _setLevelStart() -> void:
 	if focused is not PlayerSpawn: return
 	if editor.game.levelStart:
 		editor.game.levelStart.queue_redraw()
-	editor.game.levelStart = focused
+	editor.changes.addChange(Changes.GlobalObjectChange.new(editor.game,editor.game,&"levelStart",focused))
 	focused.queue_redraw()
 
 func _setSavestate() -> void:
 	if focused is not PlayerSpawn: return
 	if editor.game.levelStart == focused:
-		editor.game.levelStart = null
+		editor.changes.addChange(Changes.GlobalObjectChange.new(editor.game,editor.game,&"levelStart",null))
 		focused.queue_redraw()
 
-func _playtest() -> void:
-	editor.game.playtest(focused)
+func _playTest() -> void:
+	editor.game.playTest(focused)

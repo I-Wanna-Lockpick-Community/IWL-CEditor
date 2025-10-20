@@ -6,24 +6,24 @@
 [ext_resource type="Script" uid="uid://dgllodap6540" path="res://scripts/nodes/keyTypeSelector.gd" id="4_cb7cu"]
 [ext_resource type="PackedScene" uid="uid://tpxbw5vtj5nx" path="res://scenes/complexNumberEdit.tscn" id="5_qjvko"]
 [ext_resource type="Script" uid="uid://c5vkwqyqnu1o7" path="res://scripts/nodes/keepWorldScale.gd" id="6_fr1sg"]
-[ext_resource type="Texture2D" uid="uid://dl1koipaukdj" path="res://assets/ui/keyInfiniteToggle/normal.png" id="7_w3a3f"]
+[ext_resource type="Texture2D" uid="uid://dl1koipaukdj" path="res://assets/ui/focusDialog/keyInfiniteToggle/normal.png" id="7_w3a3f"]
 [ext_resource type="Texture2D" uid="uid://bulx3wvhsmgvx" path="res://assets/empty.png" id="8_w3a3f"]
-[ext_resource type="Texture2D" uid="uid://qd82dduwyvjj" path="res://assets/ui/keyInfiniteToggle/hover.png" id="9_4nd11"]
-[ext_resource type="Texture2D" uid="uid://dcaheb86npiio" path="res://assets/ui/doorType/simple.png" id="10_oii3e"]
-[ext_resource type="Texture2D" uid="uid://ulo77sni12v" path="res://assets/ui/doorType/combo.png" id="11_jwt4y"]
-[ext_resource type="Texture2D" uid="uid://bowkgmjrwugjj" path="res://assets/ui/doorType/gate.png" id="12_qi8n2"]
-[ext_resource type="Texture2D" uid="uid://d2tw3epi1grlq" path="res://assets/ui/doorType/spend.png" id="13_jwt4y"]
+[ext_resource type="Texture2D" uid="uid://qd82dduwyvjj" path="res://assets/ui/focusDialog/keyInfiniteToggle/hover.png" id="9_4nd11"]
+[ext_resource type="Texture2D" uid="uid://dcaheb86npiio" path="res://assets/ui/focusDialog/doorType/simple.png" id="10_oii3e"]
+[ext_resource type="Texture2D" uid="uid://ulo77sni12v" path="res://assets/ui/focusDialog/doorType/combo.png" id="11_jwt4y"]
+[ext_resource type="Texture2D" uid="uid://bowkgmjrwugjj" path="res://assets/ui/focusDialog/doorType/gate.png" id="12_qi8n2"]
+[ext_resource type="Texture2D" uid="uid://d2tw3epi1grlq" path="res://assets/ui/focusDialog/doorType/spend.png" id="13_jwt4y"]
 [ext_resource type="Script" uid="uid://d07pxhp1r6xex" path="res://scripts/nodes/lockSelector.gd" id="14_31m74"]
 [ext_resource type="Script" uid="uid://dbmpg02ass72r" path="res://scripts/nodes/spend.gd" id="14_e2stj"]
 [ext_resource type="Script" uid="uid://cxlnmn0e36ba" path="res://scripts/nodes/lockTypeSelector.gd" id="15_vfuuy"]
-[ext_resource type="Texture2D" uid="uid://blvpkkuy4f0td" path="res://assets/ui/lockSelect/new.png" id="16_e2stj"]
-[ext_resource type="Texture2D" uid="uid://blvji7kl64sbd" path="res://assets/ui/lockSelect/colorLink.png" id="17_5vlab"]
+[ext_resource type="Texture2D" uid="uid://blvpkkuy4f0td" path="res://assets/ui/focusDialog/lockSelect/new.png" id="16_e2stj"]
+[ext_resource type="Texture2D" uid="uid://blvji7kl64sbd" path="res://assets/ui/focusDialog/lockSelect/colorLink.png" id="17_5vlab"]
 [ext_resource type="Script" uid="uid://c71qe58ht0isn" path="res://scripts/nodes/configurationSelector.gd" id="17_cu8b0"]
 [ext_resource type="PackedScene" uid="uid://sm362bc2r4fm" path="res://scenes/numberEdit.tscn" id="20_gx4cd"]
 [ext_resource type="Script" uid="uid://cqv0og8rnwrph" path="res://scripts/nodes/axialNumberEdit.gd" id="21_k4n5y"]
-[ext_resource type="Texture2D" uid="uid://dyhbxvexn1w26" path="res://assets/ui/blastLockSettings/negative.png" id="22_hh12n"]
-[ext_resource type="Texture2D" uid="uid://b38kvgugo2qsu" path="res://assets/ui/blastLockSettings/i.png" id="23_h1xy2"]
-[ext_resource type="Texture2D" uid="uid://ddautei1wlnil" path="res://assets/ui/otherObjects/playtest.png" id="24_7tfe2"]
+[ext_resource type="Texture2D" uid="uid://dyhbxvexn1w26" path="res://assets/ui/focusDialog/blastLockSettings/negative.png" id="22_hh12n"]
+[ext_resource type="Texture2D" uid="uid://b38kvgugo2qsu" path="res://assets/ui/focusDialog/blastLockSettings/i.png" id="23_h1xy2"]
+[ext_resource type="Texture2D" uid="uid://ddautei1wlnil" path="res://assets/ui/focusDialog/otherObjects/playtest.png" id="24_7tfe2"]
 
 [sub_resource type="ButtonGroup" id="ButtonGroup_oii3e"]
 
@@ -293,7 +293,7 @@ layout_mode = 2
 layout_mode = 2
 theme_override_constants/separation = 2
 
-[node name="playtest" type="Button" parent="playerDialog/c/c/c"]
+[node name="playTest" type="Button" parent="playerDialog/c/c/c"]
 layout_mode = 2
 size_flags_vertical = 4
 theme_type_variation = &"RadioButton"
@@ -326,7 +326,6 @@ points = PackedVector2Array(-8, -1, -6, -1, 0, 5, 6, -1, 8, -1)
 width = 2.0
 default_color = Color(0.8352941, 0.8352941, 0.8352941, 1)
 
-[connection signal="select" from="keyDialog/c/c/c/keyColorSelector" to="." method="_keyColorSelected"]
 [connection signal="select" from="keyDialog/c/c/c/keyTypeSelector" to="." method="_keyTypeSelected"]
 [connection signal="valueSet" from="keyDialog/c/c/c/keyCountEdit" to="." method="_keyCountSet"]
 [connection signal="toggled" from="keyDialog/keepWorldScale/keyInfiniteToggle" to="." method="_keyInfiniteToggled"]
@@ -336,12 +335,11 @@ default_color = Color(0.8352941, 0.8352941, 0.8352941, 1)
 [connection signal="pressed" from="doorDialog/c/door/c/c/doorTypes/spend" to="." method="_spendSelected"]
 [connection signal="pressed" from="doorDialog/c/door/c/c/scroll/lockSelector/addLock" to="doorDialog/c/door/c/c/scroll/lockSelector" method="_addLock"]
 [connection signal="select" from="doorDialog/c/lock/c/c/lockConfigurationSelector" to="." method="_lockConfigurationSelected"]
-[connection signal="select" from="doorDialog/c/lock/c/c/doorColorSelector" to="." method="_doorColorSelected"]
 [connection signal="select" from="doorDialog/c/lock/c/c/lockSettings/lockTypeSelector" to="." method="_lockTypeSelected"]
 [connection signal="valueSet" from="doorDialog/c/lock/c/c/doorComplexNumberEdit" to="." method="_doorComplexNumberSet"]
 [connection signal="valueSet" from="doorDialog/c/lock/c/c/doorAxialNumberEdit" to="." method="_doorAxialNumberSet"]
 [connection signal="pressed" from="doorDialog/c/lock/c/c/blastLockSettings/blastLockSign" to="." method="_blastLockSet"]
 [connection signal="pressed" from="doorDialog/c/lock/c/c/blastLockSettings/blastLockAxis" to="." method="_blastLockSet"]
-[connection signal="pressed" from="playerDialog/c/c/c/playtest" to="." method="_playtest"]
+[connection signal="pressed" from="playerDialog/c/c/c/playTest" to="." method="_playTest"]
 [connection signal="pressed" from="playerDialog/c/c/c/levelStart" to="." method="_setLevelStart"]
 [connection signal="pressed" from="playerDialog/c/c/c/savestate" to="." method="_setSavestate"]

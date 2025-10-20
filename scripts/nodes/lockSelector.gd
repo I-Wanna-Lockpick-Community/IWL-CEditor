@@ -74,11 +74,11 @@ class LockSelectorButton extends Button:
 	@onready var editor:Editor = get_node("/root/editor")
 
 	const ICONS:Array[Texture2D] = [
-		preload("res://assets/ui/lockSelect/normal.png"), preload("res://assets/ui/lockSelect/imaginary.png"),
-		preload("res://assets/ui/lockSelect/blank.png"), preload("res://assets/ui/lockSelect/blank.png"),
-		preload("res://assets/ui/lockSelect/blast.png"), preload("res://assets/ui/lockSelect/blasti.png"),
-		preload("res://assets/ui/lockSelect/all.png"), preload("res://assets/ui/lockSelect/all.png"),
-		preload("res://assets/ui/lockSelect/exact.png"), preload("res://assets/ui/lockSelect/exacti.png"),
+		preload("res://assets/ui/focusDialog/lockSelect/normal.png"), preload("res://assets/ui/focusDialog/lockSelect/imaginary.png"),
+		preload("res://assets/ui/focusDialog/lockSelect/blank.png"), preload("res://assets/ui/focusDialog/lockSelect/blank.png"),
+		preload("res://assets/ui/focusDialog/lockSelect/blast.png"), preload("res://assets/ui/focusDialog/lockSelect/blasti.png"),
+		preload("res://assets/ui/focusDialog/lockSelect/all.png"), preload("res://assets/ui/focusDialog/lockSelect/all.png"),
+		preload("res://assets/ui/focusDialog/lockSelect/exact.png"), preload("res://assets/ui/focusDialog/lockSelect/exacti.png"),
 	]
 
 	var index:int

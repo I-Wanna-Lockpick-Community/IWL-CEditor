@@ -66,7 +66,7 @@ func continueSelect() -> void:
 		for y in range(floor(max(editor.game.levelBounds.position.y,worldRect.position.y)/32), ceil(min(worldRect.end.y,editor.game.levelBounds.end.y)/32)):
 			if editor.game.tiles.get_cell_source_id(Vector2i(x,y)) != -1: selected.append(TileSelect.new(editor,Vector2i(x,y)*32))
 	# objects
-	for object in editor.game.objects.get_children():
+	for object in editor.game.objectsParent.get_children():
 		if Rect2(object.position,object.size).intersects(worldRect):
 			selected.append(ObjectSelect.new(editor,object))
 	draw()
@@ -121,6 +121,11 @@ func delete() -> void:
 	selected = []
 	draw()
 	editor.changes.bufferSave()
+
+func deselect() -> void:
+	selected = []
+	draw()
+	hold()
 
 class Select extends RefCounted:
 	# a link to a single thing, selected

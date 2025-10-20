@@ -2,11 +2,11 @@ extends Selector
 class_name LockTypeSelector
 
 const ICONS:Array[Texture2D] = [
-	preload("res://assets/ui/lockType/normal.png"),
-	preload("res://assets/ui/lockType/blank.png"),
-	preload("res://assets/ui/lockType/blast.png"),
-	preload("res://assets/ui/lockType/all.png"),
-	preload("res://assets/ui/lockType/exact.png"),
+	preload("res://assets/ui/focusDialog/lockType/normal.png"),
+	preload("res://assets/ui/focusDialog/lockType/blank.png"),
+	preload("res://assets/ui/focusDialog/lockType/blast.png"),
+	preload("res://assets/ui/focusDialog/lockType/all.png"),
+	preload("res://assets/ui/focusDialog/lockType/exact.png"),
 ]
 
 func _ready() -> void:

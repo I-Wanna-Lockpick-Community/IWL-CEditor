@@ -33,7 +33,7 @@ position = Vector2(-10, -10)
 anchor_mode = 0
 limit_enabled = false
 
-[node name="objects" type="Node" parent="."]
+[node name="objectsParent" type="Node" parent="."]
 unique_name_in_owner = true
 
 [node name="outline" type="Node2D" parent="."]

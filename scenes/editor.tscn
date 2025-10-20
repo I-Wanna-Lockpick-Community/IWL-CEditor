@@ -1,8 +1,9 @@
-[gd_scene load_steps=27 format=3 uid="uid://djnt51xv7wn52"]
+[gd_scene load_steps=31 format=3 uid="uid://djnt51xv7wn52"]
 
 [ext_resource type="Theme" uid="uid://bvfthh0vm4fbp" path="res://resources/uiTheme.tres" id="1_j8y2p"]
 [ext_resource type="Script" uid="uid://2wjcj6frwpjo" path="res://scripts/singletons/editor.gd" id="2_o435n"]
-[ext_resource type="Script" uid="uid://ced7aml4sfanx" path="res://scripts/singletons/modes.gd" id="3_3vi5u"]
+[ext_resource type="Script" uid="uid://bt2qk0jhpuc53" path="res://scripts/singletons/topBar.gd" id="3_3vi5u"]
+[ext_resource type="Script" uid="uid://ced7aml4sfanx" path="res://scripts/singletons/modes.gd" id="4_4jiep"]
 [ext_resource type="Texture2D" uid="uid://brlbjt36syjq8" path="res://assets/ui/modes/select.png" id="4_78fwb"]
 [ext_resource type="Script" uid="uid://buv3n70m06kje" path="res://scripts/nodes/hotkeyButton.gd" id="5_3vi5u"]
 [ext_resource type="Texture2D" uid="uid://tcsqjcnuio0j" path="res://assets/ui/modes/tile.png" id="5_74j0u"]
@@ -20,7 +21,10 @@
 [ext_resource type="Script" uid="uid://csgec0mt1klfc" path="res://scripts/singletons/changes.gd" id="12_78fwb"]
 [ext_resource type="PackedScene" uid="uid://c1kt2qxw6ooqf" path="res://scenes/multiselect.tscn" id="12_q8l03"]
 [ext_resource type="Script" uid="uid://pssxp78klup" path="res://scripts/singletons/multiselect.gd" id="13_0u1f5"]
+[ext_resource type="Texture2D" uid="uid://dn5r7rhgoxtrt" path="res://assets/ui/playControls/play.png" id="13_wyx26"]
 [ext_resource type="Script" uid="uid://y6lb6luqyxy2" path="res://scripts/singletons/quickSet.gd" id="14_sdh1e"]
+[ext_resource type="Texture2D" uid="uid://lbuoq1o35ds2" path="res://assets/ui/playControls/pause.png" id="15_fce0a"]
+[ext_resource type="Texture2D" uid="uid://dnjchcne7ikhq" path="res://assets/ui/playControls/stop.png" id="16_m12ww"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_74j0u"]
 content_margin_left = 2.0
@@ -87,15 +91,21 @@ grow_vertical = 2
 z_index = 2
 layout_mode = 2
 
-[node name="c" type="MarginContainer" parent="c/c"]
-layout_mode = 2
-
-[node name="modes" type="HBoxContainer" parent="c/c/c"]
+[node name="topBar" type="MarginContainer" parent="c/c"]
 unique_name_in_owner = true
 layout_mode = 2
 script = ExtResource("3_3vi5u")
 
-[node name="select" type="Button" parent="c/c/c/modes"]
+[node name="c" type="HBoxContainer" parent="c/c/topBar"]
+layout_mode = 2
+
+[node name="modes" type="HBoxContainer" parent="c/c/topBar/c"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+script = ExtResource("4_4jiep")
+
+[node name="select" type="Button" parent="c/c/topBar/c/modes"]
 layout_mode = 2
 theme_type_variation = &"RadioButton"
 theme_override_styles/normal = SubResource("StyleBoxFlat_74j0u")
@@ -109,7 +119,7 @@ script = ExtResource("5_3vi5u")
 defaultHotkey = "Esc"
 metadata/_custom_type_script = "uid://buv3n70m06kje"
 
-[node name="tile" type="Button" parent="c/c/c/modes"]
+[node name="tile" type="Button" parent="c/c/topBar/c/modes"]
 layout_mode = 2
 theme_type_variation = &"RadioButton"
 toggle_mode = true
@@ -119,7 +129,7 @@ script = ExtResource("5_3vi5u")
 defaultHotkey = "T"
 metadata/_custom_type_script = "uid://buv3n70m06kje"
 
-[node name="key" type="Button" parent="c/c/c/modes"]
+[node name="key" type="Button" parent="c/c/topBar/c/modes"]
 layout_mode = 2
 theme_type_variation = &"RadioButton"
 toggle_mode = true
@@ -130,7 +140,7 @@ defaultHotkey = "B"
 pressedHotkey = "Shift"
 metadata/_custom_type_script = "uid://buv3n70m06kje"
 
-[node name="door" type="Button" parent="c/c/c/modes"]
+[node name="door" type="Button" parent="c/c/topBar/c/modes"]
 layout_mode = 2
 theme_type_variation = &"RadioButton"
 toggle_mode = true
@@ -141,22 +151,22 @@ defaultHotkey = "D"
 pressedHotkey = "Shift"
 metadata/_custom_type_script = "uid://buv3n70m06kje"
 
-[node name="otherObjects" type="HBoxContainer" parent="c/c/c/modes"]
+[node name="otherObjects" type="HBoxContainer" parent="c/c/topBar/c/modes"]
 unique_name_in_owner = true
 layout_mode = 2
 script = ExtResource("9_k1sck")
 
-[node name="spacer" type="Control" parent="c/c/c/modes/otherObjects"]
+[node name="spacer" type="Control" parent="c/c/topBar/c/modes/otherObjects"]
 custom_minimum_size = Vector2(8, 0)
 layout_mode = 2
 
-[node name="c" type="VBoxContainer" parent="c/c/c/modes/otherObjects"]
+[node name="c" type="VBoxContainer" parent="c/c/topBar/c/modes/otherObjects"]
 layout_mode = 2
 
-[node name="c" type="HBoxContainer" parent="c/c/c/modes/otherObjects/c"]
+[node name="c" type="HBoxContainer" parent="c/c/topBar/c/modes/otherObjects/c"]
 layout_mode = 2
 
-[node name="other" type="Button" parent="c/c/c/modes/otherObjects/c/c"]
+[node name="other" type="Button" parent="c/c/topBar/c/modes/otherObjects/c/c"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(36, 0)
 layout_mode = 2
@@ -165,11 +175,11 @@ toggle_mode = true
 button_group = SubResource("ButtonGroup_wm3ai")
 icon = ExtResource("10_aa8l6")
 script = ExtResource("5_3vi5u")
-defaultHotkey = "O"
+defaultHotkey = "X"
 pressedHotkey = "Shift"
 metadata/_custom_type_script = "uid://buv3n70m06kje"
 
-[node name="objectSearch" type="LineEdit" parent="c/c/c/modes/otherObjects/c/c"]
+[node name="objectSearch" type="LineEdit" parent="c/c/topBar/c/modes/otherObjects/c/c"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(220, 0)
 layout_mode = 2
@@ -177,21 +187,21 @@ placeholder_text = "[S]earch objects"
 right_icon = ExtResource("10_8g6du")
 caret_blink = true
 
-[node name="c2" type="Control" parent="c/c/c/modes/otherObjects/c"]
+[node name="c2" type="Control" parent="c/c/topBar/c/modes/otherObjects/c"]
 layout_mode = 2
 
-[node name="results" type="VBoxContainer" parent="c/c/c/modes/otherObjects/c/c2"]
+[node name="results" type="VBoxContainer" parent="c/c/topBar/c/modes/otherObjects/c/c2"]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 10
 anchor_right = 1.0
 grow_horizontal = 2
 
-[node name="spacer2" type="Control" parent="c/c/c/modes/otherObjects"]
+[node name="spacer2" type="Control" parent="c/c/topBar/c/modes/otherObjects"]
 custom_minimum_size = Vector2(8, 0)
 layout_mode = 2
 
-[node name="paste" type="Button" parent="c/c/c/modes"]
+[node name="paste" type="Button" parent="c/c/topBar/c/modes"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"RadioButton"
@@ -202,6 +212,41 @@ icon = ExtResource("9_0u1f5")
 script = ExtResource("5_3vi5u")
 defaultHotkey = "Ctrl+V"
 pressedHotkey = "Shift"
+metadata/_custom_type_script = "uid://buv3n70m06kje"
+
+[node name="playControls" type="HBoxContainer" parent="c/c/topBar/c"]
+layout_mode = 2
+size_flags_horizontal = 3
+alignment = 2
+
+[node name="play" type="Button" parent="c/c/topBar/c/playControls"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"RadioButton"
+disabled = true
+icon = ExtResource("13_wyx26")
+script = ExtResource("5_3vi5u")
+defaultHotkey = "P"
+metadata/_custom_type_script = "uid://buv3n70m06kje"
+
+[node name="pause" type="Button" parent="c/c/topBar/c/playControls"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_type_variation = &"RadioButton"
+icon = ExtResource("15_fce0a")
+script = ExtResource("5_3vi5u")
+defaultHotkey = "P"
+metadata/_custom_type_script = "uid://buv3n70m06kje"
+
+[node name="stop" type="Button" parent="c/c/topBar/c/playControls"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_type_variation = &"RadioButton"
+icon = ExtResource("16_m12ww")
+script = ExtResource("5_3vi5u")
+defaultHotkey = "O"
 metadata/_custom_type_script = "uid://buv3n70m06kje"
 
 [node name="gameViewportCont" type="SubViewportContainer" parent="c"]
@@ -215,7 +260,7 @@ stretch = true
 [node name="gameViewport" type="SubViewport" parent="c/gameViewportCont"]
 handle_input_locally = false
 canvas_item_default_texture_filter = 0
-size = Vector2i(2, 2)
+size = Vector2i(821, 629)
 render_target_update_mode = 4
 
 [node name="game" parent="c/gameViewportCont/gameViewport" instance=ExtResource("8_5tdu1")]
@@ -256,13 +301,16 @@ layout_mode = 0
 unique_name_in_owner = true
 script = ExtResource("12_78fwb")
 
-[connection signal="pressed" from="c/c/c/modes/select" to="c/c/c/modes" method="_setMode" binds= [0]]
-[connection signal="pressed" from="c/c/c/modes/tile" to="c/c/c/modes" method="_setMode" binds= [1]]
-[connection signal="pressed" from="c/c/c/modes/key" to="c/c/c/modes" method="_setMode" binds= [2]]
-[connection signal="pressed" from="c/c/c/modes/door" to="c/c/c/modes" method="_setMode" binds= [3]]
-[connection signal="pressed" from="c/c/c/modes/otherObjects/c/c/other" to="c/c/c/modes" method="_setMode" binds= [4]]
-[connection signal="focus_entered" from="c/c/c/modes/otherObjects/c/c/objectSearch" to="c/c/c/modes/otherObjects" method="_searchFocused"]
-[connection signal="focus_exited" from="c/c/c/modes/otherObjects/c/c/objectSearch" to="c/c/c/modes/otherObjects" method="_searchDefocused"]
-[connection signal="text_changed" from="c/c/c/modes/otherObjects/c/c/objectSearch" to="c/c/c/modes/otherObjects" method="_updateSearch" unbinds=1]
-[connection signal="text_submitted" from="c/c/c/modes/otherObjects/c/c/objectSearch" to="c/c/c/modes/otherObjects" method="_searchSubmitted" unbinds=1]
-[connection signal="pressed" from="c/c/c/modes/paste" to="c/c/c/modes" method="_setMode" binds= [5]]
+[connection signal="pressed" from="c/c/topBar/c/modes/select" to="c/c/topBar/c/modes" method="_setMode" binds= [0]]
+[connection signal="pressed" from="c/c/topBar/c/modes/tile" to="c/c/topBar/c/modes" method="_setMode" binds= [1]]
+[connection signal="pressed" from="c/c/topBar/c/modes/key" to="c/c/topBar/c/modes" method="_setMode" binds= [2]]
+[connection signal="pressed" from="c/c/topBar/c/modes/door" to="c/c/topBar/c/modes" method="_setMode" binds= [3]]
+[connection signal="pressed" from="c/c/topBar/c/modes/otherObjects/c/c/other" to="c/c/topBar/c/modes" method="_setMode" binds= [4]]
+[connection signal="focus_entered" from="c/c/topBar/c/modes/otherObjects/c/c/objectSearch" to="c/c/topBar/c/modes/otherObjects" method="_searchFocused"]
+[connection signal="focus_exited" from="c/c/topBar/c/modes/otherObjects/c/c/objectSearch" to="c/c/topBar/c/modes/otherObjects" method="_searchDefocused"]
+[connection signal="text_changed" from="c/c/topBar/c/modes/otherObjects/c/c/objectSearch" to="c/c/topBar/c/modes/otherObjects" method="_updateSearch" unbinds=1]
+[connection signal="text_submitted" from="c/c/topBar/c/modes/otherObjects/c/c/objectSearch" to="c/c/topBar/c/modes/otherObjects" method="_searchSubmitted" unbinds=1]
+[connection signal="pressed" from="c/c/topBar/c/modes/paste" to="c/c/topBar/c/modes" method="_setMode" binds= [5]]
+[connection signal="pressed" from="c/c/topBar/c/playControls/play" to="c/c/topBar" method="_play"]
+[connection signal="pressed" from="c/c/topBar/c/playControls/pause" to="c/c/topBar" method="_pause"]
+[connection signal="pressed" from="c/c/topBar/c/playControls/stop" to="c/c/topBar" method="_stop"]

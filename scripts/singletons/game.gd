@@ -221,7 +221,7 @@ const darkTone:Array[Color] = [
 @onready var editor:Editor = get_node("/root/editor")
 @onready var tiles:TileMapLayer = %tiles
 @onready var editorCamera:Camera2D = %editorCamera
-@onready var objects:Node = %objects
+@onready var objectsParent:Node = %objectsParent
 
 var objIdIter:int = 0 # for creating objects
 var lockIdIter:int = 0 # for creating locks
@@ -229,10 +229,8 @@ var goldIndex:int = 0 # youve seen this before
 var goldIndexFloat:float = 0
 signal goldIndexChanged
 
-var keys:Dictionary[int,KeyBulk] = {}
-var doors:Dictionary[int,Door] = {}
+var objects:Dictionary[int,GameObject] = {}
 var locks:Dictionary[int,Lock] = {}
-var otherObjects:Dictionary[int,GameObject] = {}
 
 var levelBounds:Rect2i = Rect2i(0,0,800,608):
 	set(value):
@@ -247,6 +245,8 @@ const FTALK:Font = preload("res://resources/fonts/fTalk.fnt")
 
 var levelStart:PlayerSpawn
 var player:Player
+enum PLAY_STATE {EDIT, PLAY, PAUSED}
+var playState:PLAY_STATE = PLAY_STATE.EDIT
 
 func _process(delta:float) -> void:
 	goldIndexFloat += delta*6 # 0.1 per frame, 60fps
@@ -257,7 +257,27 @@ func _process(delta:float) -> void:
 	RenderingServer.global_shader_parameter_set(&"NOISE_OFFSET", Vector2(randf_range(-1000, 1000), randf_range(-1000, 1000)))
 	RenderingServer.global_shader_parameter_set(&"RCAMERA_ZOOM", 1/editorCamera.zoom.x)
 
-func playtest(spawn:PlayerSpawn) -> void:
-	player = preload("res://scenes/player.tscn").instantiate()
-	add_child(player)
-	player.position = spawn.position + Vector2(17, 23)
+func playTest(spawn:PlayerSpawn) -> void:
+	if playState == PLAY_STATE.PAUSED:
+		playState = PLAY_STATE.PLAY
+		editor.topBar._playStateChanged()
+	else:
+		playState = PLAY_STATE.PLAY
+		editor.topBar._playStateChanged()
+		editor.focusDialog.defocus()
+		player = preload("res://scenes/player.tscn").instantiate()
+		player.game = self
+		add_child(player)
+		player.position = spawn.position + Vector2(17, 23)
+
+	for object in objectsParent.get_children(): object.queue_redraw()
+
+func pauseTest() -> void:
+	playState = PLAY_STATE.PAUSED
+	editor.topBar._playStateChanged()
+
+func stopTest() -> void:
+	playState = PLAY_STATE.EDIT
+	editor.topBar._playStateChanged()
+	player.queue_free()
+	player = null
