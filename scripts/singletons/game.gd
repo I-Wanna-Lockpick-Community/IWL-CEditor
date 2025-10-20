@@ -276,8 +276,12 @@ func pauseTest() -> void:
 	playState = PLAY_STATE.PAUSED
 	editor.topBar._playStateChanged()
 
+	for object in objectsParent.get_children(): object.queue_redraw()
+
 func stopTest() -> void:
 	playState = PLAY_STATE.EDIT
 	editor.topBar._playStateChanged()
 	player.queue_free()
 	player = null
+
+	for object in objectsParent.get_children(): object.queue_redraw()

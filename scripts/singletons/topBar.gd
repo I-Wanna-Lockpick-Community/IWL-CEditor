@@ -2,16 +2,19 @@ extends MarginContainer
 class_name TopBar
 
 @onready var editor:Editor = get_node("/root/editor")
+@onready var play:Button = %play
 
 func updatePlayButton() -> void:
-	%play.disabled = !editor.game.levelStart
+	play.disabled = !(editor.game.playState == Game.PLAY_STATE.PAUSED || editor.game.levelStart)
 
 func _playStateChanged() -> void:
 	%modes.visible = editor.game.playState != Game.PLAY_STATE.PLAY
 
-	%play.visible = editor.game.playState != Game.PLAY_STATE.PLAY
+	play.visible = editor.game.playState != Game.PLAY_STATE.PLAY
 	%pause.visible = editor.game.playState == Game.PLAY_STATE.PLAY
 	%stop.visible = editor.game.playState != Game.PLAY_STATE.EDIT
+
+	updatePlayButton()
 
 func _play() -> void: editor.game.playTest(editor.game.levelStart)
 func _pause() -> void: editor.game.pauseTest()

@@ -313,7 +313,7 @@ layout_mode = 2
 theme_type_variation = &"RadioButtonText"
 toggle_mode = true
 button_group = SubResource("ButtonGroup_h1xy2")
-text = "Test state"
+text = "Test State"
 
 [node name="Polygon2D" type="Polygon2D" parent="."]
 rotation = 3.1415927

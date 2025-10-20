@@ -276,7 +276,7 @@ func _input(event:InputEvent) -> void:
 				KEY_X:
 					if Input.is_key_pressed(KEY_CTRL): multiselect.copySelection(); multiselect.delete()
 					else: modes.setMode(MODE.OTHER)
-				KEY_P: if game.levelStart: game.playTest(game.levelStart)
+				KEY_P: if !topBar.play.disabled: game.playTest(game.levelStart)
 				KEY_O: if game.playState != Game.PLAY_STATE.EDIT: game.stopTest()
 				KEY_M:
 					if focusDialog.componentFocused: startPositionDrag(focusDialog.componentFocused)
