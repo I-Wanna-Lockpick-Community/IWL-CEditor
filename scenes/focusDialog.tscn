@@ -323,9 +323,9 @@ anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = -56.0
-offset_top = -44.0
-offset_right = 56.0
+offset_left = -88.0
+offset_top = -28.0
+offset_right = 88.0
 grow_horizontal = 2
 grow_vertical = 0
 theme_type_variation = &"DialogPanelContainer"
@@ -343,17 +343,24 @@ size_flags_horizontal = 4
 script = ExtResource("25_7tfe2")
 
 [node name="scroll" type="ScrollContainer" parent="keyCounterDialog/c/c/c"]
-custom_minimum_size = Vector2(100, 32)
+custom_minimum_size = Vector2(164, 16)
 layout_mode = 2
 mouse_filter = 0
 mouse_force_pass_scroll_events = false
 
 [node name="keyCounterHandler" type="HFlowContainer" parent="keyCounterDialog/c/c/c/scroll"]
-custom_minimum_size = Vector2(96, 0)
+unique_name_in_owner = true
+custom_minimum_size = Vector2(160, 0)
 layout_mode = 2
 script = ExtResource("25_1rcup")
 buttonGroup = SubResource("ButtonGroup_7tfe2")
 metadata/_custom_type_script = "uid://lbaubg2qq1s1"
+
+[node name="keyCounterColorSelector" type="GridContainer" parent="keyCounterDialog/c/c/c"]
+unique_name_in_owner = true
+layout_mode = 2
+script = ExtResource("3_wmate")
+metadata/_custom_type_script = "uid://c70juj2p5s6yd"
 
 [node name="speechBubbler" type="Node2D" parent="."]
 unique_name_in_owner = true
@@ -386,3 +393,4 @@ default_color = Color(0.8352941, 0.8352941, 0.8352941, 1)
 [connection signal="pressed" from="playerDialog/c/c/c/levelStart" to="." method="_setLevelStart"]
 [connection signal="pressed" from="playerDialog/c/c/c/savestate" to="." method="_setSavestate"]
 [connection signal="select" from="keyCounterDialog/c/c/c/keyCounterWidthSelector" to="." method="_keyCounterWidthSelected"]
+[connection signal="select" from="keyCounterDialog/c/c/c/keyCounterColorSelector" to="." method="_keyCounterColorSelected"]

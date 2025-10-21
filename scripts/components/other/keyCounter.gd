@@ -32,6 +32,7 @@ const EDITOR_PROPERTIES:Array[StringName] = [
 ]
 
 var drawMain:RID
+var drawGlitch:RID
 
 var colors:Array[Game.COLOR] = [Game.COLOR.WHITE]
 
@@ -39,13 +40,28 @@ func _init() -> void : size = Vector2(WIDTHS[0],63)
 
 func _ready() -> void:
 	drawMain = RenderingServer.canvas_item_create()
+	drawGlitch = RenderingServer.canvas_item_create()
+	RenderingServer.canvas_item_set_z_index(drawMain,2)
+	RenderingServer.canvas_item_set_z_index(drawGlitch,2)
+	RenderingServer.canvas_item_set_material(drawGlitch,Game.GLITCH_MATERIAL.get_rid())
 	RenderingServer.canvas_item_set_parent(drawMain,get_canvas_item())
+	RenderingServer.canvas_item_set_parent(drawGlitch,get_canvas_item())
+
+func _process(_delta:float) -> void: queue_redraw()
 
 func _draw() -> void:
 	RenderingServer.canvas_item_clear(drawMain)
+	RenderingServer.canvas_item_clear(drawGlitch)
 	var rect:Rect2 = Rect2(Vector2.ZERO, size)
 	var textureRect:Rect2 = Rect2(Vector2.ZERO, Vector2(size.x, 63))
 	RenderingServer.canvas_item_add_nine_patch(drawMain,rect,textureRect,getSprite(),TOP_LEFT,BOTTOM_RIGHT,TILE,TILE,true)
+	var yOffset:float = 12
+	for color in colors:
+		KeyBulk.drawKey(editor.game,drawMain,drawGlitch,Vector2(12,yOffset),color)
+		yOffset += 40
+
+func _colorsChanged() -> void:
+	editor.changes.addChange(Changes.PropertyChange.new(editor.game,self,&"size",Vector2(size.x,23+40*len(colors))))
 
 func receiveMouseInput(event:InputEventMouse) -> bool:
 	# resizing

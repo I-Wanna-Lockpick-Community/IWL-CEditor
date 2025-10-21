@@ -46,6 +46,9 @@ func focus(object:GameObject) -> void:
 		else: %savestate.button_pressed = true
 	elif focused is KeyCounter:
 		%keyCounterWidthSelector.setSelect(KeyCounter.WIDTHS.find(focused.size.x))
+		if new:
+			%keyCounterHandler.setup(focused)
+			%keyCounterHandler.setSelect(0)
 
 func showCorrectDialog() -> void:
 	%keyDialog.visible = focused is KeyBulk
@@ -293,4 +296,15 @@ func _playTest() -> void:
 func _keyCounterWidthSelected(width:int):
 	if focused is not KeyCounter: return
 	editor.changes.addChange(Changes.PropertyChange.new(editor.game,focused,&"size",Vector2(KeyCounter.WIDTHS[width],focused.size.y)))
-	focused.queue_redraw()
+	editor.changes.bufferSave()
+
+func _keyCounterColorSelected(color:Game.COLOR) -> void:
+	if focused is not KeyCounter: return
+	var index:int = %keyCounterHandler.selected
+	editor.changes.addChange(Changes.ArrayElementChange.new(editor.game,focused,&"colors",index,color))
+	editor.changes.bufferSave()
+	%keyCounterHandler.buttons[index].color = color
+	%keyCounterHandler.redrawButton(index)
+
+func keyCounterSelectColor() -> void:
+	%keyCounterColorSelector.setSelect(%keyCounterHandler.buttons[%keyCounterHandler.selected].color)

@@ -61,6 +61,7 @@ func _removeElement() -> void:
 	for i in range(selected, len(buttons)):
 		buttons[i].index -= 1
 	if len(buttons) == 0: remove.visible = false
+	else: setSelect(len(buttons)-1)
 
 func redrawButton(index:int) -> void:
 	buttons[index].queue_redraw()

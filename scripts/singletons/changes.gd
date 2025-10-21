@@ -48,6 +48,7 @@ func redo() -> void:
 
 static func copy(value:Variant) -> Variant:
 	if value is C || value is Q: return value.copy()
+	elif value is Array: return value.duplicate()
 	else: return value
 
 class Change extends RefCounted:
@@ -106,8 +107,6 @@ class CreateComponentChange extends Change:
 			prop[property] = Changes.copy(parameters[property])
 		
 		match type:
-			KeyBulk: dictionary = game.objects
-			Door: dictionary = game.objects
 			Lock: dictionary = game.locks
 			_: dictionary = game.objects
 		
@@ -169,8 +168,6 @@ class DeleteComponentChange extends Change:
 			prop[property] = Changes.copy(component.get(property))
 		
 		match type:
-			KeyBulk: dictionary = game.objects
-			Door: dictionary = game.objects
 			Lock: dictionary = game.locks
 			_: dictionary = game.objects
 		
@@ -231,26 +228,23 @@ class PropertyChange extends Change:
 		game = _game
 		id = component.id
 		property = _property
-		before = component.get(property)
-		after = _after
+		before = Changes.copy(component.get(property))
+		after = Changes.copy(_after)
 		type = component.get_script()
 		if before == after:
 			cancelled = true
 			return
 		do()
 
-	func do() -> void: changeValue(after)
-	func undo() -> void: changeValue(before)
+	func do() -> void: changeValue(Changes.copy(after))
+	func undo() -> void: changeValue(Changes.copy(before))
 	
 	func changeValue(value:Variant) -> void:
 		var component:GameComponent
 		match type:
-			KeyBulk: component = game.objects[id]
-			Door: component = game.objects[id]
 			Lock: component = game.locks[id]
 			_: component = game.objects[id]
-		if value is C or value is Q: component.set(property, value.copy())
-		else: component.set(property, value)
+		component.set(property, value)
 		component.propertyChanged(property)
 		component.queue_redraw()
 		if game.editor.focusDialog.focused == component: game.editor.focusDialog.focus(component)
@@ -289,3 +283,71 @@ class GlobalObjectChange extends Change:
 
 		if singleton == game and property == &"levelStart":
 			game.editor.topBar.updatePlayButton()
+
+class ArrayAppendChange extends Change:
+	# appends to array
+	var id:int
+	var array:StringName
+	var after:Variant
+	var dictionary:Dictionary
+
+
+	func _init(_game:Game,component:GameComponent,_array:StringName,_after:Variant) -> void:
+		game = _game
+		id = component.id
+		after = _after
+		array = _array
+		match component.get_script():
+			Lock: dictionary = game.locks
+			_: dictionary = game.objects
+		do()
+
+	func do() -> void: dictionary[id].get(array).append(after)
+	func undo() -> void: dictionary[id].get(array).pop_back()
+
+class ArrayElementChange extends Change:
+	# changes element of array
+	var id:int
+	var array:StringName
+	var index:int
+	var before:Variant
+	var after:Variant
+	var dictionary:Dictionary
+
+	func _init(_game:Game,component:GameComponent,_array:StringName,_index:int,_after:Variant) -> void:
+		game = _game
+		id = component.id
+		index = _index
+		array = _array
+		before = Changes.copy(component.get(array)[index])
+		after = Changes.copy(_after)
+		match component.get_script():
+			Lock: dictionary = game.locks
+			_: dictionary = game.objects
+		do()
+
+	func do() -> void: dictionary[id].get(array)[index] = Changes.copy(after)
+	func undo() -> void: dictionary[id].get(array)[index] = Changes.copy(before)
+
+class ArrayPopAtChange extends Change:
+	# pops at array index
+	var id:int
+	var array:StringName
+	var index:int
+	var before:Variant
+	var dictionary:Dictionary
+
+
+	func _init(_game:Game,component:GameComponent,_array:StringName,_index:int) -> void:
+		game = _game
+		id = component.id
+		array = _array
+		index = _index
+		before = Changes.copy(component.get(array)[index])
+		match component.get_script():
+			Lock: dictionary = game.locks
+			_: dictionary = game.objects
+		do()
+
+	func do() -> void: dictionary[id].get(array).pop_at(index)
+	func undo() -> void: dictionary[id].get(array).insert(index,Changes.copy(before))
