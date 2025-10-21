@@ -211,9 +211,9 @@ class DeleteComponentChange extends Change:
 		dictionary[prop[&"id"]] = component
 		
 		if type == Lock:
-				parent.locks.insert(prop[&"index"], component)
-				for lockIndex in range(prop[&"index"]+1, len(parent.locks)):
-					parent.locks[lockIndex].index += 1
+			parent.locks.insert(prop[&"index"], component)
+			for lockIndex in range(prop[&"index"]+1, len(parent.locks)):
+				parent.locks[lockIndex].index += 1
 		
 		parent.add_child(component)
 	
@@ -251,7 +251,7 @@ class PropertyChange extends Change:
 			_: component = game.objects[id]
 		if value is C or value is Q: component.set(property, value.copy())
 		else: component.set(property, value)
-		component._propertyChanged(property)
+		component.propertyChanged(property)
 		component.queue_redraw()
 		if game.editor.focusDialog.focused == component: game.editor.focusDialog.focus(component)
 		elif game.editor.focusDialog.componentFocused == component: game.editor.focusDialog.focusComponent(component)

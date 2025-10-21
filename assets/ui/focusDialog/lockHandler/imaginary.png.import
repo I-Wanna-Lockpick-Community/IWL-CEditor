@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://blvji7kl64sbd"
-path="res://.godot/imported/colorLink.png-185bc688a5bae7008e44d77f2eadc3ab.ctex"
+uid="uid://huah2lanhybh"
+path="res://.godot/imported/imaginary.png-4e642892131a8edc5748532575b61446.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/ui/focusDialog/lockSelect/colorLink.png"
-dest_files=["res://.godot/imported/colorLink.png-185bc688a5bae7008e44d77f2eadc3ab.ctex"]
+source_file="res://assets/ui/focusDialog/lockHandler/imaginary.png"
+dest_files=["res://.godot/imported/imaginary.png-4e642892131a8edc5748532575b61446.ctex"]
 
 [params]
 

@@ -205,6 +205,7 @@ func startSizeDrag(component:GameComponent, pivot:SIZE_DRAG_PIVOT=SIZE_DRAG_PIVO
 	var minSize:Vector2
 	if component is Door: minSize = Vector2(32,32)
 	elif component is Lock: minSize = Vector2(18,18)
+	elif component is KeyCounter: minSize = Vector2(107,63)
 	if component is not GameObject: rectPos += component.parent.position
 	match pivot:
 		SIZE_DRAG_PIVOT.BOTTOM_RIGHT: rectPos += componentDragged.position; dragMode = DRAG_MODE.SIZE_FDIAG
@@ -243,6 +244,16 @@ func dragComponent() -> bool: # returns whether or not an object is being dragge
 			# clamp to level bounds
 			if componentDragged is not Lock and (mouseTilePosition.x < game.levelBounds.position.x or mouseTilePosition.y < game.levelBounds.position.y):
 				dragPosition = dragPosition.clamp(game.levelBounds.position,dragPosition)
+			# keycounter has only a few possible widths
+			if componentDragged is KeyCounter:
+				dragPosition -= dragPivotRect.position
+				if dragPosition.x <= KeyCounter.WIDTHS[0] - KeyCounter.WIDTHS[2]: dragPosition.x = KeyCounter.WIDTHS[0] - KeyCounter.WIDTHS[2]
+				elif dragPosition.x <= KeyCounter.WIDTHS[0] - KeyCounter.WIDTHS[1]: dragPosition.x = KeyCounter.WIDTHS[0] - KeyCounter.WIDTHS[1]
+				elif dragPosition.x > KeyCounter.WIDTHS[2]: dragPosition.x = KeyCounter.WIDTHS[2]
+				elif dragPosition.x > KeyCounter.WIDTHS[1]: dragPosition.x = KeyCounter.WIDTHS[1]
+				else: dragPosition.x = 0
+				dragPosition.y = 0
+				dragPosition += dragPivotRect.position
 			var toRect:Rect2 = dragPivotRect.expand(dragPosition)
 			changes.addChange(Changes.PropertyChange.new(game,componentDragged,&"position",toRect.position-parentPosition))
 			changes.addChange(Changes.PropertyChange.new(game,componentDragged,&"size",toRect.size))

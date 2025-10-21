@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://ckrr5owrl35hw"
-path="res://.godot/imported/frameNegative.png-ca236a6ba6eaae50faa177b13bab7828.ctex"
+uid="uid://ojgl7814gnr2"
+path="res://.godot/imported/blank.png-0e9dc7f4a1fa131ea031a870328d08e7.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/game/key/exact/frameNegative.png"
-dest_files=["res://.godot/imported/frameNegative.png-ca236a6ba6eaae50faa177b13bab7828.ctex"]
+source_file="res://assets/ui/focusDialog/lockHandler/blank.png"
+dest_files=["res://.godot/imported/blank.png-0e9dc7f4a1fa131ea031a870328d08e7.ctex"]
 
 [params]
 

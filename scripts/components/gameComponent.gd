@@ -11,4 +11,4 @@ func getDrawPosition() -> Vector2: return position
 
 func receiveMouseInput(_event:InputEventMouse) -> bool: return false
 
-func _propertyChanged(_property:StringName) -> void: pass
+func propertyChanged(_property:StringName) -> void: pass

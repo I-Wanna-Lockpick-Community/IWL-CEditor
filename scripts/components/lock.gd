@@ -130,7 +130,6 @@ func _ready() -> void:
 	drawScaled = RenderingServer.canvas_item_create()
 	drawMain = RenderingServer.canvas_item_create()
 	RenderingServer.canvas_item_set_material(drawGlitch,Game.GLITCH_MATERIAL.get_rid())
-	RenderingServer.canvas_item_set_material(drawScaled,Game.PIXELATED_MATERIAL.get_rid())
 	RenderingServer.canvas_item_set_parent(drawGlitch,get_canvas_item())
 	RenderingServer.canvas_item_set_parent(drawScaled,get_canvas_item())
 	RenderingServer.canvas_item_set_parent(drawMain,get_canvas_item())
@@ -140,7 +139,6 @@ func _draw() -> void:
 	RenderingServer.canvas_item_clear(drawGlitch)
 	RenderingServer.canvas_item_clear(drawScaled)
 	RenderingServer.canvas_item_clear(drawMain)
-	RenderingServer.canvas_item_set_instance_shader_parameter(drawScaled, &"size", size)
 	var rect:Rect2 = Rect2(-getOffset(), size)
 	# fill
 	var texture:Texture2D
@@ -152,6 +150,9 @@ func _draw() -> void:
 		Game.COLOR.DYNAMITE: texture = editor.game.dynamiteTex(); tileTexture = true
 		Game.COLOR.QUICKSILVER: texture = editor.game.quicksilverTex()
 	if texture:
+		if !tileTexture:
+			RenderingServer.canvas_item_set_material(drawScaled,Game.PIXELATED_MATERIAL.get_rid())
+			RenderingServer.canvas_item_set_instance_shader_parameter(drawScaled, &"size", size)
 		RenderingServer.canvas_item_add_texture_rect(drawScaled,rect,texture,tileTexture)
 	elif color == Game.COLOR.GLITCH:
 		if sizeType == SIZE_TYPE.ANY: RenderingServer.canvas_item_add_nine_patch(drawGlitch,rect,ANY_RECT,getLockFillSprite(),CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,Game.mainTone[color])

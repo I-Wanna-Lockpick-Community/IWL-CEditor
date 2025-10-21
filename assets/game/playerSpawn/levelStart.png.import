@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cr2iosiigghtn"
-path="res://.godot/imported/all.png-678d588a35900807909e5869d32a4335.ctex"
+uid="uid://di4cbwrveccbg"
+path="res://.godot/imported/levelStart.png-fa01b0d37b7731a6d8ae960ab797b617.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/ui/focusDialog/lockSelect/all.png"
-dest_files=["res://.godot/imported/all.png-678d588a35900807909e5869d32a4335.ctex"]
+source_file="res://assets/game/playerSpawn/levelStart.png"
+dest_files=["res://.godot/imported/levelStart.png-fa01b0d37b7731a6d8ae960ab797b617.ctex"]
 
 [params]
 

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bub01ijcs4w3s"
-path="res://.godot/imported/playerSpawnSavestate.png-5a1f7ac9fd622fbce7dc3c5114cfb38c.ctex"
+uid="uid://dyu362gaku13q"
+path="res://.godot/imported/remove.png-20d3c9a81b4ac5bea6ad252fffd95521.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/game/otherObjects/playerSpawnSavestate.png"
-dest_files=["res://.godot/imported/playerSpawnSavestate.png-5a1f7ac9fd622fbce7dc3c5114cfb38c.ctex"]
+source_file="res://assets/ui/focusDialog/handler/remove.png"
+dest_files=["res://.godot/imported/remove.png-20d3c9a81b4ac5bea6ad252fffd95521.ctex"]
 
 [params]
 

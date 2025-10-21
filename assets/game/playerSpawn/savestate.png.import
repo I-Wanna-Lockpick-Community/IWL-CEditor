@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://be1lmkdw6n5go"
-path="res://.godot/imported/exact.png-bd05a19aaba4ac1dfd2f3fe31f518d32.ctex"
+uid="uid://bub01ijcs4w3s"
+path="res://.godot/imported/savestate.png-50f78eeaadaaf27b042e30e7da7c4976.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/ui/focusDialog/lockSelect/exact.png"
-dest_files=["res://.godot/imported/exact.png-bd05a19aaba4ac1dfd2f3fe31f518d32.ctex"]
+source_file="res://assets/game/playerSpawn/savestate.png"
+dest_files=["res://.godot/imported/savestate.png-50f78eeaadaaf27b042e30e7da7c4976.ctex"]
 
 [params]
 

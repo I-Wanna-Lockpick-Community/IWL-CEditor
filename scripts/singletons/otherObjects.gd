@@ -5,7 +5,7 @@ class_name OtherObjects
 @onready var objectSearch:LineEdit = %objectSearch
 
 var selected:GDScript = PlayerSpawn
-var objects:Array[GDScript] = [Goal, PlayerSpawn]
+var objects:Array[GDScript] = [Goal, KeyCounter, PlayerSpawn]
 var firstResult:GDScript
 
 func _searchFocused() -> void:
@@ -36,7 +36,7 @@ func _updateSearch() -> void:
 func matchesSearch(object:GDScript, search:String) -> bool:
 	if object.SEARCH_NAME.to_lower().find(search) != -1: return true
 	for keyword in object.SEARCH_KEYWORDS:
-		if keyword.find(search) != -1: return true
+		if keyword.to_lower().find(search) != -1: return true
 	return false
 
 func objectSelected(object:GDScript) -> void:

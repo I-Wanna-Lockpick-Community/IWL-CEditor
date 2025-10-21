@@ -11,7 +11,7 @@ const FILL:Array[Texture2D] = [
 	preload("res://assets/game/key/star/fill.png"),
 	preload("res://assets/game/key/unstar/fill.png")
 ]
-func getFill() -> Texture2D: return FILL[Game.KEYTYPE_TEXTURE_OFFSETS[type]]
+static func getFill(keyType:TYPE) -> Texture2D: return FILL[Game.KEYTYPE_TEXTURE_OFFSETS[keyType]]
 
 const FRAME:Array[Texture2D] = [
 	preload("res://assets/game/key/normal/frame.png"),
@@ -19,15 +19,7 @@ const FRAME:Array[Texture2D] = [
 	preload("res://assets/game/key/star/frame.png"),
 	preload("res://assets/game/key/unstar/frame.png")
 ]
-func getFrame() -> Texture2D: return FRAME[Game.KEYTYPE_TEXTURE_OFFSETS[type]]
-
-const FRAME_NEGATIVE:Array[Texture2D] = [
-	preload("res://assets/game/key/normal/frameNegative.png"),
-	preload("res://assets/game/key/exact/frameNegative.png"),
-	preload("res://assets/game/key/star/frame.png"),
-	preload("res://assets/game/key/unstar/frame.png")
-]
-func getFrameNegative() -> Texture2D: return FRAME_NEGATIVE[Game.KEYTYPE_TEXTURE_OFFSETS[type]]
+static func getFrame(keyType:TYPE) -> Texture2D: return FRAME[Game.KEYTYPE_TEXTURE_OFFSETS[keyType]]
 
 const FILL_GLITCH:Array[Texture2D] = [
 	preload("res://assets/game/key/normal/fillGlitch.png"),
@@ -35,7 +27,7 @@ const FILL_GLITCH:Array[Texture2D] = [
 	preload("res://assets/game/key/star/fillGlitch.png"),
 	preload("res://assets/game/key/unstar/fillGlitch.png")
 ]
-func getFillGlitch() -> Texture2D: return FILL_GLITCH[Game.KEYTYPE_TEXTURE_OFFSETS[type]]
+static func getFillGlitch(keyType:TYPE) -> Texture2D: return FILL_GLITCH[Game.KEYTYPE_TEXTURE_OFFSETS[keyType]]
 
 const FRAME_GLITCH:Array[Texture2D] = [
 	preload("res://assets/game/key/normal/frameGlitch.png"),
@@ -43,7 +35,7 @@ const FRAME_GLITCH:Array[Texture2D] = [
 	preload("res://assets/game/key/star/frameGlitch.png"),
 	preload("res://assets/game/key/unstar/frameGlitch.png")
 ]
-func getFrameGlitch() -> Texture2D: return FRAME_GLITCH[Game.KEYTYPE_TEXTURE_OFFSETS[type]]
+static func getFrameGlitch(keyType:TYPE) -> Texture2D: return FRAME_GLITCH[Game.KEYTYPE_TEXTURE_OFFSETS[keyType]]
 
 const SIGNFLIP_SYMBOL:Texture2D = preload("res://assets/game/key/symbols/signflip.png")
 const POSROTOR_SYMBOL:Texture2D = preload("res://assets/game/key/symbols/posrotor.png")
@@ -68,7 +60,7 @@ var infinite:bool = false
 var drawMain:RID
 var drawGlitch:RID
 var drawSymbol:RID
-func _init() -> void : size = Vector2(32,32)
+func _init() -> void: size = Vector2(32,32)
 
 func _ready() -> void:
 	drawMain = RenderingServer.canvas_item_create()
@@ -101,25 +93,7 @@ func _draw() -> void:
 	RenderingServer.canvas_item_clear(drawGlitch)
 	RenderingServer.canvas_item_clear(drawSymbol)
 	var rect:Rect2 = Rect2(Vector2.ZERO, size)
-	var texture:Texture2D
-	match color:
-		Game.COLOR.MASTER: texture = editor.game.masterKeyTex(type)
-		Game.COLOR.PURE: texture = editor.game.pureKeyTex(type)
-		Game.COLOR.STONE: texture = editor.game.stoneKeyTex(type)
-		Game.COLOR.DYNAMITE: texture = editor.game.dynamiteKeyTex(type)
-		Game.COLOR.QUICKSILVER: texture = editor.game.quicksilverKeyTex(type)
-		Game.COLOR.ICE: texture = editor.game.iceKeyTex(type)
-		Game.COLOR.MUD: texture = editor.game.mudKeyTex(type)
-		Game.COLOR.GRAFFITI: texture = editor.game.graffitiKeyTex(type)
-	if texture:
-		RenderingServer.canvas_item_add_texture_rect(drawMain,rect,texture)
-	elif color == Game.COLOR.GLITCH:
-		RenderingServer.canvas_item_add_texture_rect(drawGlitch,rect,getFrameGlitch())
-		RenderingServer.canvas_item_add_texture_rect(drawGlitch,rect,getFill(),false,Game.mainTone[color])
-	else:
-		if count.sign() < 0: RenderingServer.canvas_item_add_texture_rect(drawMain,rect,getFrameNegative())
-		else: RenderingServer.canvas_item_add_texture_rect(drawMain,rect,getFrame())
-		RenderingServer.canvas_item_add_texture_rect(drawMain,rect,getFill(),false,Game.mainTone[color])
+	drawKey(editor.game,drawMain,drawGlitch,Vector2.ZERO,color,type)
 	match type:
 		KeyBulk.TYPE.NORMAL, KeyBulk.TYPE.EXACT:
 			if !count.eq(1): TextDraw.outlined(FKEYBULK,drawSymbol,str(count),keycountColor(),keycountOutlineColor(),18,Vector2(2,31),4)
@@ -130,3 +104,25 @@ func _draw() -> void:
 
 func keycountColor() -> Color: return Color("#363029") if count.sign() < 0 else Color("#ebe3dd")
 func keycountOutlineColor() -> Color: return Color("#d6cfc9") if count.sign() < 0 else Color("#363029")
+
+static func drawKey(game:Game,keyDrawMain:RID,keyDrawGlitch:RID,keyOffset:Vector2,keyColor:Game.COLOR,keyType:TYPE=TYPE.NORMAL) -> void:
+	var texture:Texture2D
+	var rect:Rect2 = Rect2(keyOffset, Vector2(32,32))
+	match keyColor:
+		Game.COLOR.MASTER: texture = game.masterKeyTex(keyType)
+		Game.COLOR.PURE: texture = game.pureKeyTex(keyType)
+		Game.COLOR.STONE: texture = game.stoneKeyTex(keyType)
+		Game.COLOR.DYNAMITE: texture = game.dynamiteKeyTex(keyType)
+		Game.COLOR.QUICKSILVER: texture = game.quicksilverKeyTex(keyType)
+		Game.COLOR.ICE: texture = game.iceKeyTex(keyType)
+		Game.COLOR.MUD: texture = game.mudKeyTex(keyType)
+		Game.COLOR.GRAFFITI: texture = game.graffitiKeyTex(keyType)
+	if texture:
+		RenderingServer.canvas_item_add_texture_rect(keyDrawMain,rect,texture)
+	elif keyColor == Game.COLOR.GLITCH:
+		RenderingServer.canvas_item_add_texture_rect(keyDrawGlitch,rect,getFrameGlitch(keyType))
+		RenderingServer.canvas_item_add_texture_rect(keyDrawGlitch,rect,getFill(keyType),false,Game.mainTone[keyColor])
+	else:
+		RenderingServer.canvas_item_add_texture_rect(keyDrawMain,rect,getFrame(keyType))
+		RenderingServer.canvas_item_add_texture_rect(keyDrawMain,rect,getFill(keyType),false,Game.mainTone[keyColor])
+

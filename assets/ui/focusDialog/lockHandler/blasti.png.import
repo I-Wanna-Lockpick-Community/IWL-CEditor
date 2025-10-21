@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://huah2lanhybh"
-path="res://.godot/imported/imaginary.png-b96fda2b19566ab8b9a04323777a14b5.ctex"
+uid="uid://bw2tewfak30w3"
+path="res://.godot/imported/blasti.png-a1aa603169c80b2c39f7611b590d9523.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/ui/focusDialog/lockSelect/imaginary.png"
-dest_files=["res://.godot/imported/imaginary.png-b96fda2b19566ab8b9a04323777a14b5.ctex"]
+source_file="res://assets/ui/focusDialog/lockHandler/blasti.png"
+dest_files=["res://.godot/imported/blasti.png-a1aa603169c80b2c39f7611b590d9523.ctex"]
 
 [params]
 

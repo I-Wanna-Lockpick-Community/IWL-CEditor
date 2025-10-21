@@ -14,7 +14,7 @@
 [ext_resource type="Texture2D" uid="uid://b4tmgbs01eh7i" path="res://assets/ui/modes/paste.png" id="9_0u1f5"]
 [ext_resource type="Script" uid="uid://brsj7c2dial40" path="res://scripts/singletons/otherObjects.gd" id="9_k1sck"]
 [ext_resource type="Texture2D" uid="uid://b2ouh1fqa64em" path="res://assets/ui/modes/search.png" id="10_8g6du"]
-[ext_resource type="Texture2D" uid="uid://di4cbwrveccbg" path="res://assets/game/otherObjects/playerSpawn.png" id="10_aa8l6"]
+[ext_resource type="Texture2D" uid="uid://di4cbwrveccbg" path="res://assets/game/playerSpawn/levelStart.png" id="10_aa8l6"]
 [ext_resource type="Script" uid="uid://bstn8if8s6o5j" path="res://scripts/singletons/game.gd" id="11_3vi5u"]
 [ext_resource type="FontFile" uid="uid://cjub6sxbu8elx" path="res://resources/fonts/RobotoMono-SemiBold.ttf" id="12_2w0at"]
 [ext_resource type="PackedScene" uid="uid://8bth374yqwpe" path="res://scenes/focusDialog.tscn" id="12_74j0u"]
@@ -260,7 +260,7 @@ stretch = true
 [node name="gameViewport" type="SubViewport" parent="c/gameViewportCont"]
 handle_input_locally = false
 canvas_item_default_texture_filter = 0
-size = Vector2i(821, 629)
+size = Vector2i(2, 2)
 render_target_update_mode = 4
 
 [node name="game" parent="c/gameViewportCont/gameViewport" instance=ExtResource("8_5tdu1")]

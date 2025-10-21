@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bw2tewfak30w3"
-path="res://.godot/imported/blasti.png-2f3a50775ce4832ec6fa12dd6506fa9e.ctex"
+uid="uid://c0neb75is6e2d"
+path="res://.godot/imported/medium.png-774a2ea2ecee8a9e5716bc2d06d777de.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/ui/focusDialog/lockSelect/blasti.png"
-dest_files=["res://.godot/imported/blasti.png-2f3a50775ce4832ec6fa12dd6506fa9e.ctex"]
+source_file="res://assets/game/keyCounter/medium.png"
+dest_files=["res://.godot/imported/medium.png-774a2ea2ecee8a9e5716bc2d06d777de.ctex"]
 
 [params]
 

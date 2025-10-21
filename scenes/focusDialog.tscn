@@ -1,4 +1,4 @@
-[gd_scene load_steps=28 format=3 uid="uid://8bth374yqwpe"]
+[gd_scene load_steps=30 format=3 uid="uid://8bth374yqwpe"]
 
 [ext_resource type="Theme" uid="uid://bvfthh0vm4fbp" path="res://resources/uiTheme.tres" id="1_eqegh"]
 [ext_resource type="Script" uid="uid://dm8t82nhqkdlc" path="res://scripts/singletons/focusDialog.gd" id="2_k8bto"]
@@ -13,23 +13,26 @@
 [ext_resource type="Texture2D" uid="uid://ulo77sni12v" path="res://assets/ui/focusDialog/doorType/combo.png" id="11_jwt4y"]
 [ext_resource type="Texture2D" uid="uid://bowkgmjrwugjj" path="res://assets/ui/focusDialog/doorType/gate.png" id="12_qi8n2"]
 [ext_resource type="Texture2D" uid="uid://d2tw3epi1grlq" path="res://assets/ui/focusDialog/doorType/spend.png" id="13_jwt4y"]
-[ext_resource type="Script" uid="uid://d07pxhp1r6xex" path="res://scripts/nodes/lockSelector.gd" id="14_31m74"]
+[ext_resource type="Script" uid="uid://d07pxhp1r6xex" path="res://scripts/nodes/lockHandler.gd" id="14_31m74"]
 [ext_resource type="Script" uid="uid://dbmpg02ass72r" path="res://scripts/nodes/spend.gd" id="14_e2stj"]
 [ext_resource type="Script" uid="uid://cxlnmn0e36ba" path="res://scripts/nodes/lockTypeSelector.gd" id="15_vfuuy"]
-[ext_resource type="Texture2D" uid="uid://blvpkkuy4f0td" path="res://assets/ui/focusDialog/lockSelect/new.png" id="16_e2stj"]
-[ext_resource type="Texture2D" uid="uid://blvji7kl64sbd" path="res://assets/ui/focusDialog/lockSelect/colorLink.png" id="17_5vlab"]
+[ext_resource type="Texture2D" uid="uid://blvji7kl64sbd" path="res://assets/ui/focusDialog/lockHandler/colorLink.png" id="17_5vlab"]
 [ext_resource type="Script" uid="uid://c71qe58ht0isn" path="res://scripts/nodes/configurationSelector.gd" id="17_cu8b0"]
 [ext_resource type="PackedScene" uid="uid://sm362bc2r4fm" path="res://scenes/numberEdit.tscn" id="20_gx4cd"]
 [ext_resource type="Script" uid="uid://cqv0og8rnwrph" path="res://scripts/nodes/axialNumberEdit.gd" id="21_k4n5y"]
 [ext_resource type="Texture2D" uid="uid://dyhbxvexn1w26" path="res://assets/ui/focusDialog/blastLockSettings/negative.png" id="22_hh12n"]
 [ext_resource type="Texture2D" uid="uid://b38kvgugo2qsu" path="res://assets/ui/focusDialog/blastLockSettings/i.png" id="23_h1xy2"]
 [ext_resource type="Texture2D" uid="uid://ddautei1wlnil" path="res://assets/ui/focusDialog/otherObjects/playtest.png" id="24_7tfe2"]
+[ext_resource type="Script" uid="uid://lbaubg2qq1s1" path="res://scripts/nodes/keyCounterHandler.gd" id="25_1rcup"]
+[ext_resource type="Script" uid="uid://ckcofkmbukj5o" path="res://scripts/nodes/keyCounterWidthSelector.gd" id="25_7tfe2"]
 
 [sub_resource type="ButtonGroup" id="ButtonGroup_oii3e"]
 
 [sub_resource type="ButtonGroup" id="ButtonGroup_e2stj"]
 
 [sub_resource type="ButtonGroup" id="ButtonGroup_h1xy2"]
+
+[sub_resource type="ButtonGroup" id="ButtonGroup_7tfe2"]
 
 [node name="focusDialog" type="Control"]
 layout_mode = 3
@@ -106,6 +109,7 @@ stretch_mode = 0
 
 [node name="doorDialog" type="Control" parent="."]
 unique_name_in_owner = true
+visible = false
 anchors_preset = 0
 
 [node name="c" type="VBoxContainer" parent="doorDialog"]
@@ -176,24 +180,16 @@ size_flags_horizontal = 3
 mouse_filter = 0
 mouse_force_pass_scroll_events = false
 
-[node name="lockSelector" type="HFlowContainer" parent="doorDialog/c/door/c/c/scroll"]
+[node name="lockHandler" type="HFlowContainer" parent="doorDialog/c/door/c/c/scroll"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(48, 0)
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_constants/h_separation = 0
-theme_override_constants/v_separation = 0
 last_wrap_alignment = 1
 script = ExtResource("14_31m74")
 buttonGroup = SubResource("ButtonGroup_e2stj")
 
-[node name="addLock" type="Button" parent="doorDialog/c/door/c/c/scroll/lockSelector"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_type_variation = &"SelectorButton"
-icon = ExtResource("16_e2stj")
-
-[node name="colorLink" type="Button" parent="doorDialog/c/door/c/c/scroll/lockSelector"]
+[node name="colorLink" type="Button" parent="doorDialog/c/door/c/c/scroll/lockHandler"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"SelectorButton"
@@ -273,6 +269,7 @@ icon = ExtResource("23_h1xy2")
 
 [node name="playerDialog" type="Control" parent="."]
 unique_name_in_owner = true
+visible = false
 anchors_preset = 0
 
 [node name="c" type="PanelContainer" parent="playerDialog"]
@@ -315,17 +312,62 @@ toggle_mode = true
 button_group = SubResource("ButtonGroup_h1xy2")
 text = "Test State"
 
-[node name="Polygon2D" type="Polygon2D" parent="."]
-rotation = 3.1415927
+[node name="keyCounterDialog" type="Control" parent="."]
+unique_name_in_owner = true
+anchors_preset = 0
+
+[node name="c" type="PanelContainer" parent="keyCounterDialog"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -56.0
+offset_top = -44.0
+offset_right = 56.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_type_variation = &"DialogPanelContainer"
+
+[node name="c" type="MarginContainer" parent="keyCounterDialog/c"]
+layout_mode = 2
+
+[node name="c" type="VBoxContainer" parent="keyCounterDialog/c/c"]
+layout_mode = 2
+
+[node name="keyCounterWidthSelector" type="GridContainer" parent="keyCounterDialog/c/c/c"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+script = ExtResource("25_7tfe2")
+
+[node name="scroll" type="ScrollContainer" parent="keyCounterDialog/c/c/c"]
+custom_minimum_size = Vector2(100, 32)
+layout_mode = 2
+mouse_filter = 0
+mouse_force_pass_scroll_events = false
+
+[node name="keyCounterHandler" type="HFlowContainer" parent="keyCounterDialog/c/c/c/scroll"]
+custom_minimum_size = Vector2(96, 0)
+layout_mode = 2
+script = ExtResource("25_1rcup")
+buttonGroup = SubResource("ButtonGroup_7tfe2")
+metadata/_custom_type_script = "uid://lbaubg2qq1s1"
+
+[node name="speechBubbler" type="Node2D" parent="."]
+unique_name_in_owner = true
+
+[node name="Polygon2D" type="Polygon2D" parent="speechBubbler"]
 color = Color(0.25490198, 0.25490198, 0.25490198, 1)
 polygon = PackedVector2Array(0, 5, 8, -3, -8, -3)
 
-[node name="Line2D" type="Line2D" parent="."]
-rotation = 3.1415927
+[node name="Line2D" type="Line2D" parent="speechBubbler"]
 points = PackedVector2Array(-8, -1, -6, -1, 0, 5, 6, -1, 8, -1)
 width = 2.0
 default_color = Color(0.8352941, 0.8352941, 0.8352941, 1)
 
+[connection signal="select" from="keyDialog/c/c/c/keyColorSelector" to="." method="_keyColorSelected"]
 [connection signal="select" from="keyDialog/c/c/c/keyTypeSelector" to="." method="_keyTypeSelected"]
 [connection signal="valueSet" from="keyDialog/c/c/c/keyCountEdit" to="." method="_keyCountSet"]
 [connection signal="toggled" from="keyDialog/keepWorldScale/keyInfiniteToggle" to="." method="_keyInfiniteToggled"]
@@ -333,8 +375,8 @@ default_color = Color(0.8352941, 0.8352941, 0.8352941, 1)
 [connection signal="pressed" from="doorDialog/c/door/c/c/doorTypes/combo" to="." method="_doorTypeSelected" binds= [1]]
 [connection signal="pressed" from="doorDialog/c/door/c/c/doorTypes/gate" to="." method="_doorTypeSelected" binds= [2]]
 [connection signal="pressed" from="doorDialog/c/door/c/c/doorTypes/spend" to="." method="_spendSelected"]
-[connection signal="pressed" from="doorDialog/c/door/c/c/scroll/lockSelector/addLock" to="doorDialog/c/door/c/c/scroll/lockSelector" method="_addLock"]
 [connection signal="select" from="doorDialog/c/lock/c/c/lockConfigurationSelector" to="." method="_lockConfigurationSelected"]
+[connection signal="select" from="doorDialog/c/lock/c/c/doorColorSelector" to="." method="_doorColorSelected"]
 [connection signal="select" from="doorDialog/c/lock/c/c/lockSettings/lockTypeSelector" to="." method="_lockTypeSelected"]
 [connection signal="valueSet" from="doorDialog/c/lock/c/c/doorComplexNumberEdit" to="." method="_doorComplexNumberSet"]
 [connection signal="valueSet" from="doorDialog/c/lock/c/c/doorAxialNumberEdit" to="." method="_doorAxialNumberSet"]
@@ -343,3 +385,4 @@ default_color = Color(0.8352941, 0.8352941, 0.8352941, 1)
 [connection signal="pressed" from="playerDialog/c/c/c/playTest" to="." method="_playTest"]
 [connection signal="pressed" from="playerDialog/c/c/c/levelStart" to="." method="_setLevelStart"]
 [connection signal="pressed" from="playerDialog/c/c/c/savestate" to="." method="_setSavestate"]
+[connection signal="select" from="keyCounterDialog/c/c/c/keyCounterWidthSelector" to="." method="_keyCounterWidthSelected"]

@@ -44,7 +44,6 @@ func _ready() -> void:
 	drawMain = RenderingServer.canvas_item_create()
 	drawGlitch = RenderingServer.canvas_item_create()
 	drawCopies = RenderingServer.canvas_item_create()
-	RenderingServer.canvas_item_set_material(drawScaled,Game.PIXELATED_MATERIAL.get_rid())
 	RenderingServer.canvas_item_set_material(drawGlitch,Game.GLITCH_MATERIAL.get_rid())
 	RenderingServer.canvas_item_set_parent(drawScaled,get_canvas_item())
 	RenderingServer.canvas_item_set_parent(drawMain,get_canvas_item())
@@ -57,7 +56,6 @@ func _draw() -> void:
 	RenderingServer.canvas_item_clear(drawMain)
 	RenderingServer.canvas_item_clear(drawGlitch)
 	RenderingServer.canvas_item_clear(drawCopies)
-	RenderingServer.canvas_item_set_instance_shader_parameter(drawScaled, &"size", size)
 	var rect:Rect2 = Rect2(Vector2.ZERO, size)
 	# fill
 	var texture:Texture2D
@@ -72,8 +70,10 @@ func _draw() -> void:
 			Game.COLOR.DYNAMITE: texture = editor.game.dynamiteTex(); tileTexture = true
 			Game.COLOR.QUICKSILVER: texture = editor.game.quicksilverTex()
 		if texture:
-			if tileTexture: RenderingServer.canvas_item_add_texture_rect(drawMain,rect,texture,true)
-			else: RenderingServer.canvas_item_add_texture_rect(drawScaled,rect,texture)
+			if !tileTexture:
+				RenderingServer.canvas_item_set_material(drawScaled,Game.PIXELATED_MATERIAL.get_rid())
+				RenderingServer.canvas_item_set_instance_shader_parameter(drawScaled, &"size", size)
+			RenderingServer.canvas_item_add_texture_rect(drawScaled,rect,texture,tileTexture)
 		elif colorSpend == Game.COLOR.GLITCH:
 			RenderingServer.canvas_item_add_nine_patch(drawGlitch,rect,TEXTURE_RECT,SPEND_HIGH,CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,Game.highTone[Game.COLOR.GLITCH])
 			RenderingServer.canvas_item_add_nine_patch(drawGlitch,rect,TEXTURE_RECT,SPEND_MAIN,CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,Game.mainTone[Game.COLOR.GLITCH])
@@ -109,7 +109,7 @@ func receiveMouseInput(event:InputEventMouse) -> bool:
 		return true
 	return false
 
-func _propertyChanged(property:StringName) -> void:
+func propertyChanged(property:StringName) -> void:
 	if property == &"size" or property == &"type":
 		shape.shape.size = size
 		shape.position = size/2

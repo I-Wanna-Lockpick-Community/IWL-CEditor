@@ -1,0 +1,17 @@
+[gd_scene load_steps=3 format=3 uid="uid://dcqnwjdaa4no8"]
+
+[ext_resource type="Script" uid="uid://dfersmim7c45o" path="res://scripts/components/other/keyCounter.gd" id="1_oobvd"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_g85mp"]
+size = Vector2(32, 32)
+
+[node name="keyCounter" type="Node2D"]
+script = ExtResource("1_oobvd")
+metadata/_custom_type_script = "uid://dfersmim7c45o"
+
+[node name="collision" type="Area2D" parent="."]
+
+[node name="shape" type="CollisionShape2D" parent="collision"]
+unique_name_in_owner = true
+position = Vector2(16, 16)
+shape = SubResource("RectangleShape2D_g85mp")

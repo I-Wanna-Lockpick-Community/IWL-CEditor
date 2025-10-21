@@ -20,8 +20,7 @@ class ColorSelectorButton extends SelectorButton:
 	func _ready() -> void:
 		drawMain = RenderingServer.canvas_item_create()
 		if value == Game.COLOR.GLITCH:
-			RenderingServer.canvas_item_set_material(drawMain,Game.GLITCH_MATERIAL.get_rid())
-			RenderingServer.canvas_item_set_instance_shader_parameter(drawMain,&"scaled",false)
+			RenderingServer.canvas_item_set_material(drawMain,Game.UNSCALED_GLITCH_MATERIAL.get_rid())
 		RenderingServer.canvas_item_set_parent(drawMain,selector.get_canvas_item())
 		await get_tree().process_frame
 		if Game.isAnimated(value): editor.game.connect(&"goldIndexChanged",queue_redraw)

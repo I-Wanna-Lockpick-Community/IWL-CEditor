@@ -14,7 +14,7 @@ void fragment() {
 	modulate = COLOR;
 	vec4 base = texture(TEXTURE, UV);
 
-	vec2 uv = floor(UV/TEXTURE_PIXEL_SIZE)*TEXTURE_PIXEL_SIZE;
+	vec2 uv = UV;
 	// noise texture
 	vec3 blend = vec3(
 		texture(noise, uv * scale + (direction_r * NOISE_OFFSET)).r,

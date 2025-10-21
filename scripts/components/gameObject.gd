@@ -5,7 +5,7 @@ class_name GameObject
 @onready var shape:CollisionShape2D = %shape
 
 
-func _propertyChanged(property:StringName) -> void:
+func propertyChanged(property:StringName) -> void:
 	if property == &"size":
 		shape.shape.size = size
 		shape.position = size/2

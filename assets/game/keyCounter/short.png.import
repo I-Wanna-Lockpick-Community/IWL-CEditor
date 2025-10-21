@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cugfu2s5i5jpq"
-path="res://.godot/imported/goal.png-300a44738bd0746c6a78e4b032149067.ctex"
+uid="uid://bhflqwlwm4ild"
+path="res://.godot/imported/short.png-5e430f0fd5086959ea1a1044077d0179.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/game/otherObjects/goal.png"
-dest_files=["res://.godot/imported/goal.png-300a44738bd0746c6a78e4b032149067.ctex"]
+source_file="res://assets/game/keyCounter/short.png"
+dest_files=["res://.godot/imported/short.png-5e430f0fd5086959ea1a1044077d0179.ctex"]
 
 [params]
 

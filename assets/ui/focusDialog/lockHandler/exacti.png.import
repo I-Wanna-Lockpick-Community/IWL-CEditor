@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://7v3laxofkfcj"
-path="res://.godot/imported/exacti.png-f0e03f82d7d5e2b1007aacf11129048c.ctex"
+path="res://.godot/imported/exacti.png-f04d9a0b5abee8c563097669c7d133ae.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/ui/focusDialog/lockSelect/exacti.png"
-dest_files=["res://.godot/imported/exacti.png-f0e03f82d7d5e2b1007aacf11129048c.ctex"]
+source_file="res://assets/ui/focusDialog/lockHandler/exacti.png"
+dest_files=["res://.godot/imported/exacti.png-f04d9a0b5abee8c563097669c7d133ae.ctex"]
 
 [params]
 

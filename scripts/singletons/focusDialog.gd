@@ -8,6 +8,8 @@ var focused:GameObject # the object that is currently focused
 var componentFocused:GameComponent # you can focus both a door and a lock at the same time so
 var interacted:PanelContainer # the number edit that is currently interacted
 
+var above:bool = false # display above the object instead
+
 func focus(object:GameObject) -> void:
 	var new:bool = object != focused
 	focused = object
@@ -23,7 +25,7 @@ func focus(object:GameObject) -> void:
 		if new: interact(%keyCountEdit.realEdit)
 	elif focused is Door:
 		%doorTypes.get_child(focused.type).button_pressed = true
-		%lockSelector.colorLink.visible = focused.type == Door.TYPE.SIMPLE
+		%lockHandler.colorLink.visible = focused.type == Door.TYPE.SIMPLE
 		%spend.queue_redraw()
 		if !componentFocused:
 			%lockConfigurationSelector.visible = false
@@ -37,16 +39,21 @@ func focus(object:GameObject) -> void:
 			%blastLockSettings.visible = false
 		if new:
 			interact(%doorComplexNumberEdit.realEdit)
-			%lockSelector.setup(focused)
+			%lockHandler.setup(focused)
 			if focused.type == Door.TYPE.SIMPLE: focusComponent(focused.locks[0])
 	elif focused is PlayerSpawn:
 		if editor.game.levelStart == focused: %levelStart.button_pressed = true
 		else: %savestate.button_pressed = true
+	elif focused is KeyCounter:
+		%keyCounterWidthSelector.setSelect(KeyCounter.WIDTHS.find(focused.size.x))
 
 func showCorrectDialog() -> void:
 	%keyDialog.visible = focused is KeyBulk
 	%doorDialog.visible = focused is Door
 	%playerDialog.visible = focused is PlayerSpawn
+	%keyCounterDialog.visible = focused is KeyCounter
+	above = focused is KeyCounter
+	%speechBubbler.rotation_degrees = 0 if above else 180
 
 func defocus() -> void:
 	if !focused: return
@@ -63,7 +70,7 @@ func focusComponent(component:GameComponent) -> void:
 		%doorColorSelector.visible = true
 		%doorColorSelector.setSelect(componentFocused.color)
 		%doorAxialNumberEdit.setValue(componentFocused.count, true)
-		%lockSelector.setSelect(componentFocused.index)
+		%lockHandler.setSelect(componentFocused.index)
 		%lockTypeSelector.setSelect(componentFocused.type)
 		%lockConfigurationSelector.visible = focused.type != Door.TYPE.SIMPLE
 		%lockConfigurationSelector.setup(componentFocused)
@@ -73,7 +80,7 @@ func focusComponent(component:GameComponent) -> void:
 		%blastLockSettings.visible = componentFocused.type == Lock.TYPE.BLAST
 		%blastLockSign.button_pressed = component.count.sign() < 0
 		%blastLockAxis.button_pressed = component.count.isNonzeroImag()
-		%lockSelector.redrawButton(component.index)
+		%lockHandler.redrawButton(component.index)
 		if new:
 			interact(%doorAxialNumberEdit)
 
@@ -102,25 +109,25 @@ func tabbed(numberEdit:PanelContainer) -> void:
 			NumberEdit.PURPOSE.IMAGINARY: interact(numberEdit.get_parent().realEdit)
 			NumberEdit.PURPOSE.REAL:
 				assert(focused is Door)
-				if len(focused.locks) > 0: %lockSelector.buttons[len(focused.locks)-1].button_pressed = true
+				if len(focused.locks) > 0: %lockHandler.buttons[len(focused.locks)-1].button_pressed = true
 				interact(%doorAxialNumberEdit)
 			NumberEdit.PURPOSE.AXIAL:
 				if !componentFocused: return
 				if componentFocused.index == 0: _spendSelected(); interact(%doorComplexNumberEdit.imaginaryEdit)
 				else:
-					%lockSelector.buttons[componentFocused.index - 1].button_pressed = true
+					%lockHandler.buttons[componentFocused.index - 1].button_pressed = true
 	else:
 		match numberEdit.purpose:
 			NumberEdit.PURPOSE.REAL: interact(numberEdit.get_parent().imaginaryEdit)
 			NumberEdit.PURPOSE.IMAGINARY:
 				assert(focused is Door)
-				if len(focused.locks) > 0: %lockSelector.buttons[0].button_pressed = true
+				if len(focused.locks) > 0: %lockHandler.buttons[0].button_pressed = true
 				interact(%doorAxialNumberEdit)
 			NumberEdit.PURPOSE.AXIAL:
 				if !componentFocused: return
 				if componentFocused.index == len(focused.locks) - 1: _spendSelected(); interact(%doorComplexNumberEdit.realEdit)
 				else:
-					%lockSelector.buttons[componentFocused.index + 1].button_pressed = true
+					%lockHandler.buttons[componentFocused.index + 1].button_pressed = true
 
 func receiveKey(event:InputEvent) -> bool:
 	if focused is KeyBulk:
@@ -149,10 +156,10 @@ func receiveKey(event:InputEvent) -> bool:
 			KEY_C:
 				if componentFocused: editor.quickSet.startQuick(QuickSet.QUICK.COLOR, componentFocused)
 				else: editor.quickSet.startQuick(QuickSet.QUICK.COLOR, focused)
-			KEY_L: if Input.is_key_pressed(KEY_CTRL): %lockSelector._addLock()
+			KEY_L: if Input.is_key_pressed(KEY_CTRL): %lockHandler._addElement()
 			KEY_DELETE:
 				if componentFocused:
-					%lockSelector._removeLock(componentFocused)
+					%lockHandler._removeElement(componentFocused.index)
 					if len(focused.locks) != 0: focusComponent(focused.locks[len(focused.locks)-1])
 					else: focus(focused)
 				else: editor.changes.addChange(Changes.DeleteComponentChange.new(editor.game,focused))
@@ -169,7 +176,8 @@ func receiveKey(event:InputEvent) -> bool:
 func _process(_delta) -> void:
 	if focused:
 		visible = true
-		position = editor.worldspaceToScreenspace(focused.position + Vector2(focused.size.x/2,focused.size.y)) + Vector2(0,8)
+		if above: position = editor.worldspaceToScreenspace(focused.position + Vector2(focused.size.x/2,0)) + Vector2(0,-8)
+		else: position = editor.worldspaceToScreenspace(focused.position + Vector2(focused.size.x/2,focused.size.y)) + Vector2(0,8)
 	else:
 		visible = false
 
@@ -197,9 +205,9 @@ func _doorColorSelected(color:Game.COLOR) -> void:
 	if focused is not Door: return
 	if componentFocused:
 		editor.changes.addChange(Changes.PropertyChange.new(editor.game,componentFocused,&"color",color))
-	elif %lockSelector.colorLink.button_pressed and focused.type == Door.TYPE.SIMPLE:
+	elif %lockHandler.colorLink.button_pressed and focused.type == Door.TYPE.SIMPLE:
 		editor.changes.addChange(Changes.PropertyChange.new(editor.game,focused.locks[0],&"color",color))
-	if !componentFocused or (%lockSelector.colorLink.button_pressed and focused.type == Door.TYPE.SIMPLE):
+	if !componentFocused or (%lockHandler.colorLink.button_pressed and focused.type == Door.TYPE.SIMPLE):
 		editor.changes.addChange(Changes.PropertyChange.new(editor.game,focused,&"colorSpend",color))
 	editor.changes.bufferSave()
 
@@ -224,12 +232,12 @@ func _lockTypeSelected(type:Lock.TYPE) -> void:
 func _doorTypeSelected(type:Door.TYPE) -> void:
 	if focused is not Door: return
 	editor.changes.addChange(Changes.PropertyChange.new(editor.game,focused,&"type",type))
-	%lockSelector.colorLink.visible = focused.type == Door.TYPE.SIMPLE
+	%lockHandler.colorLink.visible = focused.type == Door.TYPE.SIMPLE
 	if type == Door.TYPE.SIMPLE:
-		if len(focused.locks) == 0: %lockSelector._addLock()
+		if len(focused.locks) == 0: %lockHandler._addElement()
 		elif len(focused.locks) > 1:
 			for lock in focused.locks.slice(1):
-				%lockSelector._removeLock(lock)
+				%lockHandler._removeElement(lock.index)
 		focused.locks[0]._simpleDoorUpdate()
 		%lockConfigurationSelector.visible = false
 	else:
@@ -281,3 +289,8 @@ func _setSavestate() -> void:
 
 func _playTest() -> void:
 	editor.game.playTest(focused)
+
+func _keyCounterWidthSelected(width:int):
+	if focused is not KeyCounter: return
+	editor.changes.addChange(Changes.PropertyChange.new(editor.game,focused,&"size",Vector2(KeyCounter.WIDTHS[width],focused.size.y)))
+	focused.queue_redraw()

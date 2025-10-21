@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://di4cbwrveccbg"
-path="res://.godot/imported/playerSpawn.png-ea73a405895429349a520a46b9eedd90.ctex"
+uid="uid://toca7aknce12"
+path="res://.godot/imported/outlineMask.png-7d07234d9b5b60f04d802c6863a12996.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/game/otherObjects/playerSpawn.png"
-dest_files=["res://.godot/imported/playerSpawn.png-ea73a405895429349a520a46b9eedd90.ctex"]
+source_file="res://assets/game/goal/outlineMask.png"
+dest_files=["res://.godot/imported/outlineMask.png-7d07234d9b5b60f04d802c6863a12996.ctex"]
 
 [params]
 

@@ -243,6 +243,7 @@ var levelBounds:Rect2i = Rect2i(0,0,800,608):
 		%playCamera.set_limit.bottom = levelBounds.end.y
 
 const GLITCH_MATERIAL:ShaderMaterial = preload("res://resources/glitchDrawMaterial.tres")
+const UNSCALED_GLITCH_MATERIAL:ShaderMaterial = preload("res://resources/unscaledGlitchDrawMaterial.tres") # to reduce shader parameters
 const PIXELATED_MATERIAL:ShaderMaterial = preload("res://resources/pixelatedDrawMaterial.tres")
 
 const FKEYX:Font = preload("res://resources/fonts/fKeyX.tres")

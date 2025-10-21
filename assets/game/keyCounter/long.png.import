@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://r8nw5yi4xusj"
-path="res://.godot/imported/frameNegative.png-6dfd4987a5beb97b98957b6c46435e7b.ctex"
+uid="uid://8pdi61pd0v44"
+path="res://.godot/imported/long.png-cbf5d4022c37dcd8233410110835ad3f.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/game/key/normal/frameNegative.png"
-dest_files=["res://.godot/imported/frameNegative.png-6dfd4987a5beb97b98957b6c46435e7b.ctex"]
+source_file="res://assets/game/keyCounter/long.png"
+dest_files=["res://.godot/imported/long.png-cbf5d4022c37dcd8233410110835ad3f.ctex"]
 
 [params]
 
