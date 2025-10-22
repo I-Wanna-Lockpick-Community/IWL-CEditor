@@ -246,7 +246,8 @@ const GLITCH_MATERIAL:ShaderMaterial = preload("res://resources/glitchDrawMateri
 const UNSCALED_GLITCH_MATERIAL:ShaderMaterial = preload("res://resources/unscaledGlitchDrawMaterial.tres") # to reduce shader parameters
 const PIXELATED_MATERIAL:ShaderMaterial = preload("res://resources/pixelatedDrawMaterial.tres")
 
-const FKEYX:Font = preload("res://resources/fonts/fKeyX.tres")
+const FKEYX:Font = preload("res://resources/fonts/fKeyX.fnt")
+const FKEYNUM:Font = preload("res://resources/fonts/fKeyNum.fnt")
 const FTALK:Font = preload("res://resources/fonts/fTalk.fnt")
 
 var levelStart:PlayerSpawn

@@ -12,6 +12,8 @@ const EDITOR_PROPERTIES:Array[StringName] = [
 	&"index" # implciit
 ]
 
+const TEXT_COLOR:Color = Color("#2c221c")
+
 var parent:KeyCounter
 var parentId:int
 var color:Game.COLOR = Game.COLOR.WHITE
@@ -37,5 +39,9 @@ func _draw() -> void:
 	RenderingServer.canvas_item_clear(drawGlitch)
 	RenderingServer.canvas_item_clear(drawMain)
 	KeyBulk.drawKey(editor.game,drawMain,drawGlitch,Vector2.ZERO,color)
+	Game.FKEYNUM.draw_string(drawMain,Vector2(38,14),"x",HORIZONTAL_ALIGNMENT_LEFT,-1,22,TEXT_COLOR)
+	Game.FKEYNUM.draw_string(drawMain,Vector2(58,14),"0",HORIZONTAL_ALIGNMENT_LEFT,-1,22,TEXT_COLOR)
 
 func getDrawPosition() -> Vector2: return position + parent.position
+
+func getHoverSize() -> Vector2: return Vector2(parent.size.x-24, 32)

@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://14n0wplwrru2"]
+
+[ext_resource type="Script" uid="uid://bkfqkqmgfbtem" path="res://devTools/gms_font_importer.gd" id="1_5l1cu"]
+
+[node name="FontMaker" type="Node"]
+script = ExtResource("1_5l1cu")
+font_name = "fKeyX"

@@ -71,6 +71,7 @@ func focusComponent(component:GameComponent) -> void:
 	if focused != component.parent: focus(component.parent)
 	componentFocused = component
 	if component is Lock:
+		print(component.index)
 		%doorColorSelector.visible = true
 		%doorColorSelector.setSelect(component.color)
 		%doorAxialNumberEdit.setValue(component.count, true)
@@ -168,7 +169,7 @@ func receiveKey(event:InputEvent) -> bool:
 			KEY_L: if Input.is_key_pressed(KEY_CTRL): %lockHandler._addElement()
 			KEY_DELETE:
 				if componentFocused:
-					%lockHandler._removeElement(componentFocused.index)
+					%lockHandler._removeElement()
 					if len(focused.locks) != 0: focusComponent(focused.locks[len(focused.locks)-1])
 					else: focus(focused)
 				else: editor.changes.addChange(Changes.DeleteComponentChange.new(editor.game,focused))

@@ -69,6 +69,10 @@ func _process(_delta) -> void:
 			for lock in focusDialog.focused.locks:
 				if Rect2(lock.getDrawPosition(), lock.size).has_point(mouseWorldPosition):
 					componentHovered = lock
+		elif focusDialog.focused is KeyCounter:
+			for element in focusDialog.focused.elements:
+				if Rect2(element.getDrawPosition(), element.getHoverSize()).has_point(mouseWorldPosition):
+					componentHovered = element
 
 func _gui_input(event:InputEvent) -> void:
 	if event is InputEventMouse:
@@ -122,6 +126,7 @@ func _gui_input(event:InputEvent) -> void:
 							focusDialog.focusComponent(componentHovered)
 						else: focusDialog.defocusComponent()
 						if componentHovered is Lock and componentHovered.parent.type != Door.TYPE.SIMPLE: startPositionDrag(componentHovered)
+						elif componentHovered is KeyCounterElement: startPositionDrag(componentHovered)
 						elif objectHovered: startPositionDrag(objectHovered)
 						else:
 							focusDialog.defocus()
@@ -170,7 +175,8 @@ func _gui_input(event:InputEvent) -> void:
 							changes.bufferSave()
 				MODE.OTHER:
 					if isLeftClick(event):
-						if objectHovered and objectHovered.get_script() == otherObjects.selected:
+						if componentHovered is KeyCounterElement and otherObjects.selected == KeyCounter: startPositionDrag(componentHovered)
+						elif objectHovered and objectHovered.get_script() == otherObjects.selected:
 							startPositionDrag(objectHovered)
 						else: focusDialog.defocus()
 					if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
@@ -224,16 +230,23 @@ func startSizeDrag(component:GameComponent, pivot:SIZE_DRAG_PIVOT=SIZE_DRAG_PIVO
 
 func dragComponent() -> bool: # returns whether or not an object is being dragged, for laziness
 	if !componentDragged: return false
-	if mouseTilePosition == previousDragPosition: return true
+	if mouseTilePosition == previousDragPosition and componentDragged is not KeyCounterElement: return true
 	previousDragPosition = mouseTilePosition
 	var dragPosition:Vector2 = mouseTilePosition
 	var parentPosition:Vector2 = Vector2.ZERO
 	if componentDragged is not GameObject: parentPosition = componentDragged.parent.position
 	match dragMode:
 		DRAG_MODE.POSITION:
-			if componentDragged is not Lock and !game.levelBounds.has_point(dragPosition+dragOffset):
-				dragPosition = dragPosition.clamp(game.levelBounds.position-Vector2i(dragOffset+parentPosition), game.levelBounds.end-Vector2i(dragOffset)-tileSize)
-			changes.addChange(Changes.PropertyChange.new(game,componentDragged,&"position",dragPosition + dragOffset))
+			if componentDragged is KeyCounterElement:
+				dragPosition = mouseWorldPosition - Vector2(0,20)
+				if componentDragged.index > 0 and (componentDragged.position+parentPosition).y - dragPosition.y >= 20:
+					componentDragged.parent._swapElements(componentDragged.index, componentDragged.index-1)
+				elif componentDragged.index < len(componentDragged.parent.elements) - 1 and (componentDragged.position+parentPosition).y - dragPosition.y <= -20:
+					componentDragged.parent._swapElements(componentDragged.index, componentDragged.index+1)
+			else:
+				if componentDragged is not Lock and !game.levelBounds.has_point(dragPosition+dragOffset):
+					dragPosition = dragPosition.clamp(game.levelBounds.position-Vector2i(dragOffset+parentPosition), game.levelBounds.end-Vector2i(dragOffset)-tileSize)
+				changes.addChange(Changes.PropertyChange.new(game,componentDragged,&"position",dragPosition + dragOffset))
 		DRAG_MODE.SIZE_FDIAG, DRAG_MODE.SIZE_BDIAG, DRAG_MODE.SIZE_VERT, DRAG_MODE.SIZE_HORIZ:
 			# since mousetileposition rounds down, dragging down or right should go one tile farther
 			if mouseWorldPosition.x > dragPivotRect.position.x:

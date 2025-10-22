@@ -74,3 +74,13 @@ func _elementsChanged() -> void:
 	for element in elements:
 		editor.changes.addChange(Changes.PropertyChange.new(editor.game,element,&"position",Vector2(12,12+index*40)))
 		index += 1
+
+func _swapElements(first:int, second:int) -> void: # TODO:DEJANK
+	var firstColor:Game.COLOR = elements[first].color
+	var secondColor:Game.COLOR = elements[second].color
+	editor.componentDragged = elements[second]
+	editor.focusDialog.componentFocused = elements[second]
+	editor.changes.addChange(Changes.PropertyChange.new(editor.game,elements[first],&"color",secondColor))
+	editor.changes.addChange(Changes.PropertyChange.new(editor.game,elements[second],&"color",firstColor))
+	elements[first].queue_redraw()
+	elements[second].queue_redraw()

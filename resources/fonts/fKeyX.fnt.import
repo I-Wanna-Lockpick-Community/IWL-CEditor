@@ -1,0 +1,17 @@
+[remap]
+
+importer="font_data_bmfont"
+type="FontFile"
+uid="uid://c1bqi7tvfxw55"
+path="res://.godot/imported/fKeyX.fnt-6fc54e03df6a59455a8d79cf562cd4c8.fontdata"
+
+[deps]
+
+source_file="res://resources/fonts/fKeyX.fnt"
+dest_files=["res://.godot/imported/fKeyX.fnt-6fc54e03df6a59455a8d79cf562cd4c8.fontdata"]
+
+[params]
+
+fallbacks=[]
+compress=true
+scaling_mode=2

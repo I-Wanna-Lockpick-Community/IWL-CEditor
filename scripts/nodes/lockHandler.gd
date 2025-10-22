@@ -19,6 +19,7 @@ func setup(_door:Door) -> void:
 	add_child(remove)
 	add_child(colorLink)
 	colorLink.visible = door.type == Door.TYPE.SIMPLE
+	remove.visible = len(buttons) > 0
 
 func _addElement() -> void:
 	var lock:Lock = editor.changes.addChange(Changes.CreateComponentChange.new(editor.game,Lock,{&"position":getFirstFreePosition(),&"parentId":door.id})).result

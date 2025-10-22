@@ -17,6 +17,7 @@ func setup(_keyCounter:KeyCounter) -> void:
 
 func _addElement() -> void:
 	var keyCounterElement:KeyCounterElement = editor.changes.addChange(Changes.CreateComponentChange.new(editor.game,KeyCounterElement,{&"position":Vector2(12,12+len(buttons)*40),&"parentId":keyCounter.id})).result
+	editor.changes.addChange(Changes.PropertyChange.new(editor.game,keyCounterElement,&"color",nextColor()))
 	var button:KeyCounterHandlerButton = KeyCounterHandlerButton.new(len(buttons), self, keyCounterElement)
 	addButton(button)
 	if len(buttons) == 1: remove.visible = false
@@ -30,6 +31,10 @@ func _removeElement() -> void:
 func _select(button:Button) -> void:
 	super(button)
 	if !manuallySetting: editor.focusDialog.focusComponent(keyCounter.elements[selected])
+
+func nextColor() -> Game.COLOR:
+	# make sure to change this when implementing mods
+	return keyCounter.elements[len(buttons)-1].color + 1 as Game.COLOR
 
 class KeyCounterHandlerButton extends HandlerButton:
 	
