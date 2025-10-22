@@ -71,7 +71,6 @@ func focusComponent(component:GameComponent) -> void:
 	if focused != component.parent: focus(component.parent)
 	componentFocused = component
 	if component is Lock:
-		print(component.index)
 		%doorColorSelector.visible = true
 		%doorColorSelector.setSelect(component.color)
 		%doorAxialNumberEdit.setValue(component.count, true)
@@ -152,8 +151,8 @@ func receiveKey(event:InputEvent) -> bool:
 			KEY_C: editor.quickSet.startQuick(QuickSet.QUICK.COLOR, focused)
 			KEY_U: _keyTypeSelected(KeyBulk.TYPE.CURSE if focused.type != KeyBulk.TYPE.CURSE else KeyBulk.TYPE.UNCURSE)
 			KEY_DELETE:
-				editor.changes.addChange(Changes.DeleteComponentChange.new(editor.game,focused))
-				editor.changes.bufferSave()
+				changes.addChange(Changes.DeleteComponentChange.new(editor.game,focused))
+				changes.bufferSave()
 			KEY_Y: _keyInfiniteToggled(!focused.infinite)
 			_: return false
 	elif focused is Door:
@@ -172,14 +171,14 @@ func receiveKey(event:InputEvent) -> bool:
 					%lockHandler._removeElement()
 					if len(focused.locks) != 0: focusComponent(focused.locks[len(focused.locks)-1])
 					else: focus(focused)
-				else: editor.changes.addChange(Changes.DeleteComponentChange.new(editor.game,focused))
-				editor.changes.bufferSave()
+				else: changes.addChange(Changes.DeleteComponentChange.new(editor.game,focused))
+				changes.bufferSave()
 			_: return false
 	else:
 		match event.keycode:
 			KEY_DELETE:
-				editor.changes.addChange(Changes.DeleteComponentChange.new(editor.game,focused))
-				editor.changes.bufferSave()
+				changes.addChange(Changes.DeleteComponentChange.new(editor.game,focused))
+				changes.bufferSave()
 			_: return false
 	return true
 
@@ -193,47 +192,47 @@ func _process(_delta) -> void:
 
 func _keyColorSelected(color:Game.COLOR) -> void:
 	if focused is not KeyBulk: return
-	editor.changes.addChange(Changes.PropertyChange.new(editor.game,focused,&"color",color))
-	editor.changes.bufferSave()
+	changes.addChange(Changes.PropertyChange.new(editor.game,focused,&"color",color))
+	changes.bufferSave()
 
 func _keyTypeSelected(type:KeyBulk.TYPE) -> void:
 	if focused is not KeyBulk: return
-	editor.changes.addChange(Changes.PropertyChange.new(editor.game,focused,&"type",type))
-	editor.changes.bufferSave()
+	changes.addChange(Changes.PropertyChange.new(editor.game,focused,&"type",type))
+	changes.bufferSave()
 
 func _keyCountSet(count:C) -> void:
 	if focused is not KeyBulk: return
-	editor.changes.addChange(Changes.PropertyChange.new(editor.game,focused,&"count",count))
-	editor.changes.bufferSave()
+	changes.addChange(Changes.PropertyChange.new(editor.game,focused,&"count",count))
+	changes.bufferSave()
 
 func _keyInfiniteToggled(value:bool) -> void:
 	if focused is not KeyBulk: return
-	editor.changes.addChange(Changes.PropertyChange.new(editor.game,focused,&"infinite",value))
-	editor.changes.bufferSave()
+	changes.addChange(Changes.PropertyChange.new(editor.game,focused,&"infinite",value))
+	changes.bufferSave()
 
 func _doorColorSelected(color:Game.COLOR) -> void:
 	if focused is not Door: return
 	if componentFocused:
-		editor.changes.addChange(Changes.PropertyChange.new(editor.game,componentFocused,&"color",color))
+		changes.addChange(Changes.PropertyChange.new(editor.game,componentFocused,&"color",color))
 	elif %lockHandler.colorLink.button_pressed and focused.type == Door.TYPE.SIMPLE:
-		editor.changes.addChange(Changes.PropertyChange.new(editor.game,focused.locks[0],&"color",color))
+		changes.addChange(Changes.PropertyChange.new(editor.game,focused.locks[0],&"color",color))
 	if !componentFocused or (%lockHandler.colorLink.button_pressed and focused.type == Door.TYPE.SIMPLE):
-		editor.changes.addChange(Changes.PropertyChange.new(editor.game,focused,&"colorSpend",color))
-	editor.changes.bufferSave()
+		changes.addChange(Changes.PropertyChange.new(editor.game,focused,&"colorSpend",color))
+	changes.bufferSave()
 
 func _doorComplexNumberSet(value:C) -> void:
 	if focused is not Door: return
-	editor.changes.addChange(Changes.PropertyChange.new(editor.game,focused,&"copies",value))
-	editor.changes.bufferSave()
+	changes.addChange(Changes.PropertyChange.new(editor.game,focused,&"copies",value))
+	changes.bufferSave()
 
 func _doorAxialNumberSet(value:C) -> void:
 	if componentFocused is not Lock: return
-	editor.changes.addChange(Changes.PropertyChange.new(editor.game,componentFocused,&"count",value))
+	changes.addChange(Changes.PropertyChange.new(editor.game,componentFocused,&"count",value))
 	focused.queue_redraw()
 	if focused.type == Door.TYPE.SIMPLE:
 		componentFocused._simpleDoorUpdate()
 	else: componentFocused._setAutoConfiguration()
-	editor.changes.bufferSave()
+	changes.bufferSave()
 
 func _lockTypeSelected(type:Lock.TYPE) -> void:
 	if componentFocused is not Lock: return
@@ -241,7 +240,7 @@ func _lockTypeSelected(type:Lock.TYPE) -> void:
 
 func _doorTypeSelected(type:Door.TYPE) -> void:
 	if focused is not Door: return
-	editor.changes.addChange(Changes.PropertyChange.new(editor.game,focused,&"type",type))
+	changes.addChange(Changes.PropertyChange.new(editor.game,focused,&"type",type))
 	%lockHandler.colorLink.visible = focused.type == Door.TYPE.SIMPLE
 	if type == Door.TYPE.SIMPLE:
 		if len(focused.locks) == 0: %lockHandler._addElement()
@@ -252,9 +251,9 @@ func _doorTypeSelected(type:Door.TYPE) -> void:
 		%lockConfigurationSelector.visible = false
 	else:
 		if type == Door.TYPE.GATE:
-			editor.changes.addChange(Changes.PropertyChange.new(editor.game,focused,&"color",Game.COLOR.WHITE))
+			changes.addChange(Changes.PropertyChange.new(editor.game,focused,&"color",Game.COLOR.WHITE))
 		%lockConfigurationSelector.visible = componentFocused is Lock
-	editor.changes.bufferSave()
+	changes.bufferSave()
 	%spend.queue_redraw()
 
 func _spendSelected() -> void:
@@ -276,25 +275,25 @@ func _lockConfigurationSelected(option:ConfigurationSelector.OPTION) -> void:
 		ConfigurationSelector.OPTION.AnyM: componentFocused._comboDoorConfigurationChanged(Lock.SIZE_TYPE.AnyM)
 		ConfigurationSelector.OPTION.AnyL: componentFocused._comboDoorConfigurationChanged(Lock.SIZE_TYPE.AnyL)
 		ConfigurationSelector.OPTION.AnyXL: componentFocused._comboDoorConfigurationChanged(Lock.SIZE_TYPE.AnyXL)
-	editor.changes.bufferSave()
+	changes.bufferSave()
 
 func _blastLockSet() -> void:
 	if componentFocused is not Lock: return
-	editor.changes.addChange(Changes.PropertyChange.new(editor.game,componentFocused,&"count",(C.new(0,1) if %blastLockAxis.button_pressed else C.new(1)).times(-1 if %blastLockSign.button_pressed else 1)))
+	changes.addChange(Changes.PropertyChange.new(editor.game,componentFocused,&"count",(C.new(0,1) if %blastLockAxis.button_pressed else C.new(1)).times(-1 if %blastLockSign.button_pressed else 1)))
 	focused.queue_redraw()
-	editor.changes.bufferSave()
+	changes.bufferSave()
 
 func _setLevelStart() -> void:
 	if focused is not PlayerSpawn: return
 	if editor.game.levelStart:
 		editor.game.levelStart.queue_redraw()
-	editor.changes.addChange(Changes.GlobalObjectChange.new(editor.game,editor.game,&"levelStart",focused))
+	changes.addChange(Changes.GlobalObjectChange.new(editor.game,editor.game,&"levelStart",focused))
 	focused.queue_redraw()
 
 func _setSavestate() -> void:
 	if focused is not PlayerSpawn: return
 	if editor.game.levelStart == focused:
-		editor.changes.addChange(Changes.GlobalObjectChange.new(editor.game,editor.game,&"levelStart",null))
+		changes.addChange(Changes.GlobalObjectChange.new(editor.game,editor.game,&"levelStart",null))
 		focused.queue_redraw()
 
 func _playTest() -> void:
@@ -302,10 +301,10 @@ func _playTest() -> void:
 
 func _keyCounterWidthSelected(width:int):
 	if focused is not KeyCounter: return
-	editor.changes.addChange(Changes.PropertyChange.new(editor.game,focused,&"size",Vector2(KeyCounter.WIDTHS[width],focused.size.y)))
-	editor.changes.bufferSave()
+	changes.addChange(Changes.PropertyChange.new(editor.game,focused,&"size",Vector2(KeyCounter.WIDTHS[width],focused.size.y)))
+	changes.bufferSave()
 
 func _keyCounterColorSelected(color:Game.COLOR) -> void:
 	if focused is not KeyCounter: return
-	editor.changes.addChange(Changes.PropertyChange.new(editor.game,componentFocused,&"color",color))
-	editor.changes.bufferSave()
+	changes.addChange(Changes.PropertyChange.new(editor.game,componentFocused,&"color",color))
+	changes.bufferSave()

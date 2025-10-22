@@ -16,15 +16,15 @@ func setup(_keyCounter:KeyCounter) -> void:
 	add_child(remove)
 
 func _addElement() -> void:
-	var keyCounterElement:KeyCounterElement = editor.changes.addChange(Changes.CreateComponentChange.new(editor.game,KeyCounterElement,{&"position":Vector2(12,12+len(buttons)*40),&"parentId":keyCounter.id})).result
-	editor.changes.addChange(Changes.PropertyChange.new(editor.game,keyCounterElement,&"color",nextColor()))
+	var keyCounterElement:KeyCounterElement = changes.addChange(Changes.CreateComponentChange.new(editor.game,KeyCounterElement,{&"position":Vector2(12,12+len(buttons)*40),&"parentId":keyCounter.id})).result
+	changes.addChange(Changes.PropertyChange.new(editor.game,keyCounterElement,&"color",nextColor()))
 	var button:KeyCounterHandlerButton = KeyCounterHandlerButton.new(len(buttons), self, keyCounterElement)
 	addButton(button)
 	if len(buttons) == 1: remove.visible = false
-	editor.changes.bufferSave()
+	changes.bufferSave()
 
 func _removeElement() -> void:
-	editor.changes.addChange(Changes.DeleteComponentChange.new(editor.game,keyCounter.elements[selected]))
+	changes.addChange(Changes.DeleteComponentChange.new(editor.game,keyCounter.elements[selected]))
 	super()
 	if len(buttons) == 1: remove.visible = false
 

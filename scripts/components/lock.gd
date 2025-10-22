@@ -224,15 +224,15 @@ func _simpleDoorUpdate() -> void:
 		Vector2(64,64): newSizeType = SIZE_TYPE.AnyL
 		Vector2(96,96): newSizeType = SIZE_TYPE.AnyXL
 		_: newSizeType = SIZE_TYPE.ANY
-	editor.changes.addChange(Changes.PropertyChange.new(editor.game,self,&"position",Vector2.ZERO))
-	editor.changes.addChange(Changes.PropertyChange.new(editor.game,self,&"sizeType",newSizeType))
-	editor.changes.addChange(Changes.PropertyChange.new(editor.game,self,&"size",parent.size - Vector2(14,14)))
+	changes.addChange(Changes.PropertyChange.new(editor.game,self,&"position",Vector2.ZERO))
+	changes.addChange(Changes.PropertyChange.new(editor.game,self,&"sizeType",newSizeType))
+	changes.addChange(Changes.PropertyChange.new(editor.game,self,&"size",parent.size - Vector2(14,14)))
 	_setAutoConfiguration()
 	queue_redraw()
 
 func _comboDoorConfigurationChanged(newSizeType:SIZE_TYPE,newConfiguration:CONFIGURATION=CONFIGURATION.NONE) -> void:
-	editor.changes.addChange(Changes.PropertyChange.new(editor.game,self,&"sizeType",newSizeType))
-	editor.changes.addChange(Changes.PropertyChange.new(editor.game,self,&"configuration",newConfiguration))
+	changes.addChange(Changes.PropertyChange.new(editor.game,self,&"sizeType",newSizeType))
+	changes.addChange(Changes.PropertyChange.new(editor.game,self,&"configuration",newConfiguration))
 	var newSize:Vector2
 	match sizeType:
 		SIZE_TYPE.AnyS: newSize = Vector2(18,18)
@@ -241,7 +241,7 @@ func _comboDoorConfigurationChanged(newSizeType:SIZE_TYPE,newConfiguration:CONFI
 		SIZE_TYPE.AnyM: newSize = Vector2(38,38)
 		SIZE_TYPE.AnyL: newSize = Vector2(50,50)
 		SIZE_TYPE.AnyXL: newSize = Vector2(82,82)
-	if newSize: editor.changes.addChange(Changes.PropertyChange.new(editor.game,self,&"size",newSize))
+	if newSize: changes.addChange(Changes.PropertyChange.new(editor.game,self,&"size",newSize))
 	queue_redraw()
 
 func _comboDoorSizeChanged() -> void:
@@ -253,8 +253,8 @@ func _comboDoorSizeChanged() -> void:
 		Vector2(38,38): newSizeType = SIZE_TYPE.AnyM
 		Vector2(50,50): newSizeType = SIZE_TYPE.AnyL
 		Vector2(82,82): newSizeType = SIZE_TYPE.AnyXL
-	editor.changes.addChange(Changes.PropertyChange.new(editor.game,self,&"sizeType",newSizeType))
-	editor.changes.addChange(Changes.PropertyChange.new(editor.game,self,&"configuration",CONFIGURATION.NONE))
+	changes.addChange(Changes.PropertyChange.new(editor.game,self,&"sizeType",newSizeType))
+	changes.addChange(Changes.PropertyChange.new(editor.game,self,&"configuration",CONFIGURATION.NONE))
 	_setAutoConfiguration()
 	
 func _setAutoConfiguration() -> void:
@@ -263,12 +263,12 @@ func _setAutoConfiguration() -> void:
 		if sizeType == option[0]:
 			newConfiguration = option[1]
 			break
-	editor.changes.addChange(Changes.PropertyChange.new(editor.game,self,&"configuration",newConfiguration))
+	changes.addChange(Changes.PropertyChange.new(editor.game,self,&"configuration",newConfiguration))
 
 func _setType(newType:TYPE):
-	editor.changes.addChange(Changes.PropertyChange.new(editor.game,self,&"type",newType))
+	changes.addChange(Changes.PropertyChange.new(editor.game,self,&"type",newType))
 	if type == TYPE.BLANK:
-		editor.changes.addChange(Changes.PropertyChange.new(editor.game,self,&"count",C.new(1)))
+		changes.addChange(Changes.PropertyChange.new(editor.game,self,&"count",C.new(1)))
 		parent.queue_redraw()
 	_setAutoConfiguration()
 

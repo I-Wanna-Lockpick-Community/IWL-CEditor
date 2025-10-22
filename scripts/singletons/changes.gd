@@ -112,7 +112,7 @@ class CreateComponentChange extends Change:
 
 		do()
 		if type == PlayerSpawn and !game.levelStart:
-			game.editor.changes.addChange(GlobalObjectChange.new(game,game,&"levelStart",result))
+			game.changes.addChange(GlobalObjectChange.new(game,game,&"levelStart",result))
 		elif type == KeyCounterElement:
 			game.objects[prop[&"parentId"]]._elementsChanged()
 
@@ -187,14 +187,14 @@ class DeleteComponentChange extends Change: # TODO: FIX LOCKSELECTOR and KEYCOUN
 		
 		if type == Door:
 			for lock in component.locks:
-				game.editor.changes.addChange(DeleteComponentChange.new(game,lock))
+				game.changes.addChange(DeleteComponentChange.new(game,lock))
 		elif type == KeyCounter:
 			for element in component.elements:
-				game.editor.changes.addChange(DeleteComponentChange.new(game,element))
+				game.changes.addChange(DeleteComponentChange.new(game,element))
 		
 		do()
 		if type == PlayerSpawn and component == game.levelStart:
-			game.editor.changes.addChange(GlobalObjectChange.new(game,game,&"levelStart",null))
+			game.changes.addChange(GlobalObjectChange.new(game,game,&"levelStart",null))
 		elif type == KeyCounterElement:
 			game.objects[prop[&"parentId"]]._elementsChanged()
 

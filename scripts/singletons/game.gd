@@ -283,7 +283,7 @@ func playTest(spawn:PlayerSpawn) -> void:
 	editor.multiselect.deselect()
 	editor.focusDialog.defocus()
 	editor.componentDragged = null
-	editor.changes.bufferSave()
+	changes.bufferSave()
 
 func pauseTest() -> void:
 	playState = PLAY_STATE.PAUSED

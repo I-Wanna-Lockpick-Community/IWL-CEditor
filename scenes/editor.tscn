@@ -1,4 +1,4 @@
-[gd_scene load_steps=31 format=3 uid="uid://djnt51xv7wn52"]
+[gd_scene load_steps=30 format=3 uid="uid://djnt51xv7wn52"]
 
 [ext_resource type="Theme" uid="uid://bvfthh0vm4fbp" path="res://resources/uiTheme.tres" id="1_j8y2p"]
 [ext_resource type="Script" uid="uid://2wjcj6frwpjo" path="res://scripts/singletons/editor.gd" id="2_o435n"]
@@ -18,7 +18,6 @@
 [ext_resource type="Script" uid="uid://bstn8if8s6o5j" path="res://scripts/singletons/game.gd" id="11_3vi5u"]
 [ext_resource type="FontFile" uid="uid://cjub6sxbu8elx" path="res://resources/fonts/RobotoMono-SemiBold.ttf" id="12_2w0at"]
 [ext_resource type="PackedScene" uid="uid://8bth374yqwpe" path="res://scenes/focusDialog.tscn" id="12_74j0u"]
-[ext_resource type="Script" uid="uid://csgec0mt1klfc" path="res://scripts/singletons/changes.gd" id="12_78fwb"]
 [ext_resource type="PackedScene" uid="uid://c1kt2qxw6ooqf" path="res://scenes/multiselect.tscn" id="12_q8l03"]
 [ext_resource type="Script" uid="uid://pssxp78klup" path="res://scripts/singletons/multiselect.gd" id="13_0u1f5"]
 [ext_resource type="Texture2D" uid="uid://dn5r7rhgoxtrt" path="res://assets/ui/playControls/play.png" id="13_wyx26"]
@@ -260,7 +259,7 @@ stretch = true
 [node name="gameViewport" type="SubViewport" parent="c/gameViewportCont"]
 handle_input_locally = false
 canvas_item_default_texture_filter = 0
-size = Vector2i(2, 2)
+size = Vector2i(820, 628)
 render_target_update_mode = 4
 
 [node name="game" parent="c/gameViewportCont/gameViewport" instance=ExtResource("8_5tdu1")]
@@ -296,10 +295,6 @@ script = ExtResource("14_sdh1e")
 unique_name_in_owner = true
 visible = false
 layout_mode = 0
-
-[node name="changes" type="Node" parent="."]
-unique_name_in_owner = true
-script = ExtResource("12_78fwb")
 
 [connection signal="pressed" from="c/c/topBar/c/modes/select" to="c/c/topBar/c/modes" method="_setMode" binds= [0]]
 [connection signal="pressed" from="c/c/topBar/c/modes/tile" to="c/c/topBar/c/modes" method="_setMode" binds= [1]]

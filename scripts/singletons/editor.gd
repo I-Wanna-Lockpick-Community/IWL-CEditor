@@ -4,7 +4,6 @@ class_name Editor
 @onready var game:Game = %game
 @onready var modes:Modes = %modes
 @onready var gameViewportCont:SubViewportContainer = %gameViewportCont
-@onready var changes:Changes = %changes
 @onready var focusDialog:FocusDialog = %focusDialog
 @onready var quickSet:QuickSet = %quickSet
 @onready var multiselect:Multiselect = %multiselect

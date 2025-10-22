@@ -69,10 +69,10 @@ func receiveMouseInput(event:InputEventMouse) -> bool:
 	return false
 
 func _elementsChanged() -> void:
-	editor.changes.addChange(Changes.PropertyChange.new(editor.game,self,&"size",Vector2(size.x,23+len(elements)*40)))
+	changes.addChange(Changes.PropertyChange.new(editor.game,self,&"size",Vector2(size.x,23+len(elements)*40)))
 	var index:int = 0
 	for element in elements:
-		editor.changes.addChange(Changes.PropertyChange.new(editor.game,element,&"position",Vector2(12,12+index*40)))
+		changes.addChange(Changes.PropertyChange.new(editor.game,element,&"position",Vector2(12,12+index*40)))
 		index += 1
 
 func _swapElements(first:int, second:int) -> void: # TODO:DEJANK
@@ -80,7 +80,7 @@ func _swapElements(first:int, second:int) -> void: # TODO:DEJANK
 	var secondColor:Game.COLOR = elements[second].color
 	editor.componentDragged = elements[second]
 	editor.focusDialog.componentFocused = elements[second]
-	editor.changes.addChange(Changes.PropertyChange.new(editor.game,elements[first],&"color",secondColor))
-	editor.changes.addChange(Changes.PropertyChange.new(editor.game,elements[second],&"color",firstColor))
+	changes.addChange(Changes.PropertyChange.new(editor.game,elements[first],&"color",secondColor))
+	changes.addChange(Changes.PropertyChange.new(editor.game,elements[second],&"color",firstColor))
 	elements[first].queue_redraw()
 	elements[second].queue_redraw()
