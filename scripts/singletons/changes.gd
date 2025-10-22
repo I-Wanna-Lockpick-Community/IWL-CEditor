@@ -170,7 +170,7 @@ class CreateComponentChange extends Change:
 	func _to_string() -> String:
 		return "<CreateComponentChange:"+str(id)+">"
 
-class DeleteComponentChange extends Change:
+class DeleteComponentChange extends Change: # TODO: FIX LOCKSELECTOR and KEYCOUNTERSELECTOR WITH UNDO/REDO
 	var type:GDScript
 	var prop:Dictionary[StringName, Variant] = {}
 	var dictionary:Dictionary

@@ -34,6 +34,7 @@ func _select(button:Button) -> void:
 
 func nextColor() -> Game.COLOR:
 	# make sure to change this when implementing mods
+	if keyCounter.elements[len(buttons)-1].color == Game.COLORS - 1: return Game.COLOR.MASTER
 	return keyCounter.elements[len(buttons)-1].color + 1 as Game.COLOR
 
 class KeyCounterHandlerButton extends HandlerButton:

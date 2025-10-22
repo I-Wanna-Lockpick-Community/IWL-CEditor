@@ -44,4 +44,4 @@ func _draw() -> void:
 
 func getDrawPosition() -> Vector2: return position + parent.position
 
-func getHoverSize() -> Vector2: return Vector2(parent.size.x-24, 32)
+func getHoverSize() -> Vector2: return Vector2(54, 32)

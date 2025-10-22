@@ -109,6 +109,7 @@ func copySelection() -> void:
 		if select is TileSelect: clipboard.append(TileCopy.new(select))
 		elif select is ObjectSelect:
 			if select.object is Door: clipboard.append(DoorCopy.new(select))
+			elif select.object is KeyCounter: clipboard.append(KeyCounterCopy.new(select))
 			else: clipboard.append(ObjectCopy.new(select))
 	# itll only be disabled at the start
 	editor.paste.disabled = false
@@ -246,3 +247,35 @@ class LockCopy extends Copy:
 			if property != &"id" and property not in lock.CREATE_PARAMETERS:
 				editor.changes.addChange(Changes.PropertyChange.new(editor.game,lock,property,properties[property]))
 		return lock
+
+class KeyCounterCopy extends ObjectCopy:
+	var elements:Array[KeyCounterElementCopy]
+
+	func _init(select:ObjectSelect) -> void:
+		super(select)
+		for element in select.object.elements:
+			elements.append(KeyCounterElementCopy.new(editor,element))
+	
+	func paste() -> Door:
+		var object:GameObject = super()
+		if object:
+			for element in elements:
+				element.paste(object)
+		return object
+			 
+class KeyCounterElementCopy extends Copy:
+	var properties:Dictionary[StringName, Variant]
+
+	func _init(_editor,element:KeyCounterElement) -> void:
+		editor = _editor
+		for property in KeyCounterElement.EDITOR_PROPERTIES:
+			properties[property] = element.get(property)
+
+	func paste(keyCounter:KeyCounter) -> KeyCounterElement:
+		var element:KeyCounterElement = editor.changes.addChange(Changes.CreateComponentChange.new(editor.game,KeyCounterElement,
+			{&"position":properties[&"position"], &"parentId":keyCounter.id}
+		)).result
+		for property in element.EDITOR_PROPERTIES:
+			if property != &"id" and property not in element.CREATE_PARAMETERS:
+				editor.changes.addChange(Changes.PropertyChange.new(editor.game,element,property,properties[property]))
+		return element
