@@ -95,16 +95,16 @@ func getOffset() -> Vector2:
 		_: return Vector2(-7, -7)
 
 const CREATE_PARAMETERS:Array[StringName] = [
-	&"position", &"doorId"
+	&"position", &"parentId"
 ]
 const EDITOR_PROPERTIES:Array[StringName] = [
 	&"id", &"position", &"size",
-	&"doorId", &"color", &"type", &"configuration", &"sizeType", &"count",
+	&"parentId", &"color", &"type", &"configuration", &"sizeType", &"count",
 	&"index" # implciit
 ]
 
 var parent:Door
-var doorId:int
+var parentId:int
 var color:Game.COLOR = Game.COLOR.WHITE
 var type:TYPE = TYPE.NORMAL
 var configuration:CONFIGURATION = CONFIGURATION.spr1A

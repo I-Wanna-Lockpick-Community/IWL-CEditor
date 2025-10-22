@@ -21,7 +21,7 @@ func setup(_door:Door) -> void:
 	colorLink.visible = door.type == Door.TYPE.SIMPLE
 
 func _addElement() -> void:
-	var lock:Lock = editor.changes.addChange(Changes.CreateComponentChange.new(editor.game,Lock,{&"position":getFirstFreePosition(),&"doorId":door.id})).result
+	var lock:Lock = editor.changes.addChange(Changes.CreateComponentChange.new(editor.game,Lock,{&"position":getFirstFreePosition(),&"parentId":door.id})).result
 	if len(door.locks) == 1: editor.focusDialog._doorTypeSelected(Door.TYPE.SIMPLE)
 	elif door.type != Door.TYPE.GATE: editor.focusDialog._doorTypeSelected(Door.TYPE.COMBO)
 	colorLink.visible = door.type == Door.TYPE.SIMPLE
@@ -29,6 +29,7 @@ func _addElement() -> void:
 	addButton(button)
 	remove_child(colorLink)
 	add_child(colorLink)
+	editor.changes.bufferSave()
 
 func _removeElement() -> void: # -1 for automatic
 	editor.changes.addChange(Changes.DeleteComponentChange.new(editor.game,door.locks[selected]))

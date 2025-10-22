@@ -108,7 +108,7 @@ func _gui_input(event:InputEvent) -> void:
 			# multiselect
 			if %multiselect.receiveMouseInput(event): return
 			# size drag handles
-			if focusDialog.componentFocused and focusDialog.focused.type != Door.TYPE.SIMPLE:
+			if focusDialog.componentFocused is Lock and focusDialog.focused.type != Door.TYPE.SIMPLE:
 				if focusDialog.componentFocused.receiveMouseInput(event): return
 			elif objectHovered:
 				if objectHovered.receiveMouseInput(event): return
@@ -161,7 +161,7 @@ func _gui_input(event:InputEvent) -> void:
 							if objectHovered is not Door and game.levelBounds.has_point(mouseWorldPosition):
 								var door:Door = changes.addChange(Changes.CreateComponentChange.new(game,Door,{&"position":mouseTilePosition})).result
 								startSizeDrag(door)
-								changes.addChange(Changes.CreateComponentChange.new(game,Lock,{&"position":Vector2i.ZERO,&"doorId":door.id}))
+								changes.addChange(Changes.CreateComponentChange.new(game,Lock,{&"position":Vector2.ZERO,&"parentId":door.id}))
 								if !Input.is_key_pressed(KEY_SHIFT):
 									modes.setMode(MODE.SELECT)
 					if Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT):
@@ -177,6 +177,7 @@ func _gui_input(event:InputEvent) -> void:
 						if (!objectHovered or objectHovered.get_script() != otherObjects.selected) and game.levelBounds.has_point(mouseWorldPosition):
 							var object:GameObject = changes.addChange(Changes.CreateComponentChange.new(game,otherObjects.selected,{&"position":mouseTilePosition})).result
 							focusDialog.defocus()
+							changes.addChange(Changes.CreateComponentChange.new(game,KeyCounterElement,{&"position":Vector2(12,12),&"parentId":object.id}))
 							if !Input.is_key_pressed(KEY_SHIFT):
 								modes.setMode(MODE.SELECT)
 								startPositionDrag(object)

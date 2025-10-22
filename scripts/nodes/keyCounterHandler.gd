@@ -6,8 +6,8 @@ var keyCounter:KeyCounter
 func setup(_keyCounter:KeyCounter) -> void:
 	keyCounter = _keyCounter
 	deleteButtons()
-	for color in keyCounter.colors:
-		var button:KeyCounterHandlerButton = KeyCounterHandlerButton.new(len(buttons), self, color)
+	for element in keyCounter.elements:
+		var button:KeyCounterHandlerButton = KeyCounterHandlerButton.new(len(buttons), self, element)
 		buttons.append(button)
 		add_child(button)
 	remove_child(add)
@@ -16,32 +16,31 @@ func setup(_keyCounter:KeyCounter) -> void:
 	add_child(remove)
 
 func _addElement() -> void:
-	var button:KeyCounterHandlerButton = KeyCounterHandlerButton.new(len(buttons), self, Game.COLOR.WHITE)
-	editor.changes.addChange(Changes.ArrayAppendChange.new(editor.game,keyCounter,&"colors",Game.COLOR.WHITE))
-	keyCounter._colorsChanged()
+	var keyCounterElement:KeyCounterElement = editor.changes.addChange(Changes.CreateComponentChange.new(editor.game,KeyCounterElement,{&"position":Vector2(12,12+len(buttons)*40),&"parentId":keyCounter.id})).result
+	var button:KeyCounterHandlerButton = KeyCounterHandlerButton.new(len(buttons), self, keyCounterElement)
 	addButton(button)
 	if len(buttons) == 1: remove.visible = false
+	editor.changes.bufferSave()
 
 func _removeElement() -> void:
-	editor.changes.addChange(Changes.ArrayPopAtChange.new(editor.game,keyCounter,&"colors",selected))
-	keyCounter._colorsChanged()
+	editor.changes.addChange(Changes.DeleteComponentChange.new(editor.game,keyCounter.elements[selected]))
 	super()
 	if len(buttons) == 1: remove.visible = false
 
 func _select(button:Button) -> void:
 	super(button)
-	editor.focusDialog.keyCounterSelectColor()
+	if !manuallySetting: editor.focusDialog.focusComponent(keyCounter.elements[selected])
 
 class KeyCounterHandlerButton extends HandlerButton:
 	
-	var color:Game.COLOR
+	var element:KeyCounterElement
 
 	var drawMain:RID
 	var drawGlitch:RID
 
-	func _init(_index:int,_selector:KeyCounterHandler, _color:Game.COLOR) -> void:
+	func _init(_index:int,_selector:KeyCounterHandler, _element:KeyCounterElement) -> void:
 		super(_index, _selector)
-		color = _color
+		element = _element
 
 	func _ready() -> void:
 		drawMain = RenderingServer.canvas_item_create()
@@ -58,7 +57,7 @@ class KeyCounterHandlerButton extends HandlerButton:
 		if deleted: return
 		var rect:Rect2 = Rect2(position+Vector2.ONE, size-Vector2(2,2))
 		var texture:Texture2D
-		match color:
+		match element.color:
 			Game.COLOR.MASTER: texture = editor.game.masterTex()
 			Game.COLOR.PURE: texture = editor.game.pureTex()
 			Game.COLOR.STONE: texture = editor.game.stoneTex()
@@ -66,7 +65,7 @@ class KeyCounterHandlerButton extends HandlerButton:
 			Game.COLOR.QUICKSILVER: texture = editor.game.quicksilverTex()
 		if texture:
 			RenderingServer.canvas_item_add_texture_rect(drawMain,rect,texture)
-		elif color == Game.COLOR.GLITCH:
-			RenderingServer.canvas_item_add_rect(drawGlitch,rect,editor.game.mainTone[color])
+		elif element.color == Game.COLOR.GLITCH:
+			RenderingServer.canvas_item_add_rect(drawGlitch,rect,editor.game.mainTone[element.color])
 		else:
-			RenderingServer.canvas_item_add_rect(drawMain,rect,editor.game.mainTone[color])
+			RenderingServer.canvas_item_add_rect(drawMain,rect,editor.game.mainTone[element.color])

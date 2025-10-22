@@ -240,7 +240,7 @@ class LockCopy extends Copy:
 
 	func paste(door:Door) -> Lock:
 		var lock:Lock = editor.changes.addChange(Changes.CreateComponentChange.new(editor.game,Lock,
-			{&"position":properties[&"position"], &"doorId":door.id}
+			{&"position":properties[&"position"], &"parentId":door.id}
 		)).result
 		for property in lock.EDITOR_PROPERTIES:
 			if property != &"id" and property not in lock.CREATE_PARAMETERS:

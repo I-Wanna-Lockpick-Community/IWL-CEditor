@@ -6,8 +6,6 @@ const SEARCH_ICON:Texture2D = preload("res://assets/game/keyCounter/icon.png")
 const SEARCH_NAME:String = "Key Counter"
 const SEARCH_KEYWORDS:Array[String] = ["oKeyHandle", "key box"]
 
-func outlineTex() -> Texture2D: return getSprite()
-
 const SHORT:Texture2D = preload("res://assets/game/keyCounter/short.png")
 const MEDIUM:Texture2D = preload("res://assets/game/keyCounter/medium.png")
 const LONG:Texture2D = preload("res://assets/game/keyCounter/long.png")
@@ -34,15 +32,15 @@ const EDITOR_PROPERTIES:Array[StringName] = [
 var drawMain:RID
 var drawGlitch:RID
 
-var colors:Array[Game.COLOR] = [Game.COLOR.WHITE]
+var elements:Array[KeyCounterElement] = []
 
-func _init() -> void : size = Vector2(WIDTHS[0],63)
+func _init() -> void :
+	size = Vector2(WIDTHS[0],63)
+	z_index = 2
 
 func _ready() -> void:
 	drawMain = RenderingServer.canvas_item_create()
 	drawGlitch = RenderingServer.canvas_item_create()
-	RenderingServer.canvas_item_set_z_index(drawMain,2)
-	RenderingServer.canvas_item_set_z_index(drawGlitch,2)
 	RenderingServer.canvas_item_set_material(drawGlitch,Game.GLITCH_MATERIAL.get_rid())
 	RenderingServer.canvas_item_set_parent(drawMain,get_canvas_item())
 	RenderingServer.canvas_item_set_parent(drawGlitch,get_canvas_item())
@@ -55,13 +53,6 @@ func _draw() -> void:
 	var rect:Rect2 = Rect2(Vector2.ZERO, size)
 	var textureRect:Rect2 = Rect2(Vector2.ZERO, Vector2(size.x, 63))
 	RenderingServer.canvas_item_add_nine_patch(drawMain,rect,textureRect,getSprite(),TOP_LEFT,BOTTOM_RIGHT,TILE,TILE,true)
-	var yOffset:float = 12
-	for color in colors:
-		KeyBulk.drawKey(editor.game,drawMain,drawGlitch,Vector2(12,yOffset),color)
-		yOffset += 40
-
-func _colorsChanged() -> void:
-	editor.changes.addChange(Changes.PropertyChange.new(editor.game,self,&"size",Vector2(size.x,23+40*len(colors))))
 
 func receiveMouseInput(event:InputEventMouse) -> bool:
 	# resizing
@@ -76,3 +67,10 @@ func receiveMouseInput(event:InputEventMouse) -> bool:
 		editor.startSizeDrag(self, dragPivot)
 		return true
 	return false
+
+func _elementsChanged() -> void:
+	editor.changes.addChange(Changes.PropertyChange.new(editor.game,self,&"size",Vector2(size.x,23+len(elements)*40)))
+	var index:int = 0
+	for element in elements:
+		editor.changes.addChange(Changes.PropertyChange.new(editor.game,element,&"position",Vector2(12,12+index*40)))
+		index += 1

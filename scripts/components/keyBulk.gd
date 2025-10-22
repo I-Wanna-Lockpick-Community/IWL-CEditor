@@ -73,15 +73,17 @@ func _ready() -> void:
 	RenderingServer.canvas_item_set_z_index(drawSymbol,2)
 	editor.game.connect(&"goldIndexChanged",func():if Game.isAnimated(color): queue_redraw())
 
-func outlineTex() -> Texture2D:
-	match type:
+func outlineTex() -> Texture2D: return getOutlineTexture(color, type)
+
+static func getOutlineTexture(keyColor:Game.COLOR, keyType:TYPE=TYPE.NORMAL) -> Texture2D:
+	match keyType:
 		KeyBulk.TYPE.EXACT:
-			if color == Game.COLOR.MASTER: return preload("res://assets/game/key/master/outlineMaskExact.png")
+			if keyColor == Game.COLOR.MASTER: return preload("res://assets/game/key/master/outlineMaskExact.png")
 			else:  return preload("res://assets/game/key/exact/outlineMask.png")
 		KeyBulk.TYPE.STAR: return preload("res://assets/game/key/star/outlineMask.png")
 		KeyBulk.TYPE.UNSTAR: return preload("res://assets/game/key/unstar/outlineMask.png")
 		_:
-			match color:
+			match keyColor:
 				Game.COLOR.MASTER:
 					return preload("res://assets/game/key/master/outlineMask.png")
 				Game.COLOR.DYNAMITE: return preload("res://assets/game/key/dynamite/outlineMask.png")

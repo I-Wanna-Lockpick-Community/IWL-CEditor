@@ -100,28 +100,34 @@ class CreateComponentChange extends Change:
 		game = _game
 		type = _type
 		
-		if type == Lock: id = game.lockIdIter; game.lockIdIter += 1
-		else: id = game.objIdIter; game.objIdIter += 1
+		if type == Lock or type == KeyCounterElement: id = game.componentIdIter; game.componentIdIter += 1
+		else: id = game.objectIdIter; game.objectIdIter += 1
 
 		for property in type.CREATE_PARAMETERS:
 			prop[property] = Changes.copy(parameters[property])
 		
 		match type:
-			Lock: dictionary = game.locks
+			Lock, KeyCounterElement: dictionary = game.components
 			_: dictionary = game.objects
-		
+
 		do()
 		if type == PlayerSpawn and !game.levelStart:
 			game.editor.changes.addChange(GlobalObjectChange.new(game,game,&"levelStart",result))
+		elif type == KeyCounterElement:
+			game.objects[prop[&"parentId"]]._elementsChanged()
 
 	func do() -> void:
 		var component:GameComponent
 		var parent:Node = game.objectsParent
 		match type:
 			Lock:
-				parent = game.objects[prop[&"doorId"]]
+				parent = game.objects[prop[&"parentId"]]
 				prop[&"index"] = len(parent.locks)
 				component = Lock.new(parent,prop[&"index"])
+			KeyCounterElement:
+				parent = game.objects[prop[&"parentId"]]
+				prop[&"index"] = len(parent.elements)
+				component = KeyCounterElement.new(parent,prop[&"index"])
 			_: component = type.SCENE.instantiate()
 
 		
@@ -132,8 +138,12 @@ class CreateComponentChange extends Change:
 		
 		if type == Lock:
 			parent.locks.insert(prop[&"index"], component)
-			for lockIndex in range(prop[&"index"]+1, len(game.objects[prop[&"doorId"]].locks)):
-				game.objects[prop[&"doorId"]].locks[lockIndex].index += 1
+			for lockIndex in range(prop[&"index"]+1, len(game.objects[prop[&"parentId"]].locks)):
+				game.objects[prop[&"parentId"]].locks[lockIndex].index += 1
+		elif type == KeyCounterElement:
+			parent.elements.insert(prop[&"index"], component)
+			for elementIndex in range(prop[&"index"]+1, len(game.objects[prop[&"parentId"]].elements)):
+				game.objects[prop[&"parentId"]].elements[elementIndex].index += 1
 		
 		result = component
 		parent.add_child(component)
@@ -146,10 +156,14 @@ class CreateComponentChange extends Change:
 		else: game.editor.focusDialog.defocusComponent()
 
 		if type == Lock:
-			game.objects[prop[&"doorId"]].locks.pop_at(prop[&"index"])
-			for lockIndex in range(prop[&"index"], len(game.objects[prop[&"doorId"]].locks)):
-				game.objects[prop[&"doorId"]].locks[lockIndex].index -= 1
-		
+			game.objects[prop[&"parentId"]].locks.pop_at(prop[&"index"])
+			for lockIndex in range(prop[&"index"], len(game.objects[prop[&"parentId"]].locks)):
+				game.objects[prop[&"parentId"]].locks[lockIndex].index -= 1
+		elif type == KeyCounterElement:
+			game.objects[prop[&"parentId"]].elements.pop_at(prop[&"index"])
+			for elementIndex in range(prop[&"index"], len(game.objects[prop[&"parentId"]].elements)):
+				game.objects[prop[&"parentId"]].elements[elementIndex].index -= 1
+
 		dictionary[id].queue_free()
 		dictionary.erase(id)
 	
@@ -168,16 +182,21 @@ class DeleteComponentChange extends Change:
 			prop[property] = Changes.copy(component.get(property))
 		
 		match type:
-			Lock: dictionary = game.locks
+			Lock, KeyCounterElement: dictionary = game.components
 			_: dictionary = game.objects
 		
 		if type == Door:
 			for lock in component.locks:
 				game.editor.changes.addChange(DeleteComponentChange.new(game,lock))
-
+		elif type == KeyCounter:
+			for element in component.elements:
+				game.editor.changes.addChange(DeleteComponentChange.new(game,element))
+		
+		do()
 		if type == PlayerSpawn and component == game.levelStart:
 			game.editor.changes.addChange(GlobalObjectChange.new(game,game,&"levelStart",null))
-		do()
+		elif type == KeyCounterElement:
+			game.objects[prop[&"parentId"]]._elementsChanged()
 
 	func do() -> void:
 		game.editor.objectHovered = null
@@ -187,9 +206,13 @@ class DeleteComponentChange extends Change:
 		else: game.editor.focusDialog.defocusComponent()
 
 		if type == Lock:
-			game.objects[prop[&"doorId"]].locks.pop_at(prop[&"index"])
-			for lockIndex in range(prop[&"index"], len(game.objects[prop[&"doorId"]].locks)):
-				game.objects[prop[&"doorId"]].locks[lockIndex].index -= 1
+			game.objects[prop[&"parentId"]].locks.pop_at(prop[&"index"])
+			for lockIndex in range(prop[&"index"], len(game.objects[prop[&"parentId"]].locks)):
+				game.objects[prop[&"parentId"]].locks[lockIndex].index -= 1
+		elif type == KeyCounterElement:
+			game.objects[prop[&"parentId"]].elements.pop_at(prop[&"index"])
+			for elementIndex in range(prop[&"index"], len(game.objects[prop[&"parentId"]].elements)):
+				game.objects[prop[&"parentId"]].elements[elementIndex].index -= 1
 		
 		dictionary[prop[&"id"]].queue_free()
 		dictionary.erase(prop[&"id"])
@@ -199,8 +222,11 @@ class DeleteComponentChange extends Change:
 		var parent:Variant = game.objectsParent
 		match type:
 			Lock:
-				parent = game.objects[prop[&"doorId"]]
+				parent = game.objects[prop[&"parentId"]]
 				component = Lock.new(parent,prop[&"index"])
+			KeyCounterElement:
+				parent = game.objects[prop[&"parentId"]]
+				component = KeyCounterElement.new(parent,prop[&"index"])
 			_: component = type.SCENE.instantiate()
 		
 		for property in component.EDITOR_PROPERTIES:
@@ -211,6 +237,10 @@ class DeleteComponentChange extends Change:
 			parent.locks.insert(prop[&"index"], component)
 			for lockIndex in range(prop[&"index"]+1, len(parent.locks)):
 				parent.locks[lockIndex].index += 1
+		elif type == KeyCounterElement:
+			parent.elements.insert(prop[&"index"], component)
+			for elementIndex in range(prop[&"index"]+1, len(game.objects[prop[&"parentId"]].elements)):
+				game.objects[prop[&"parentId"]].elements[elementIndex].index += 1
 		
 		parent.add_child(component)
 	
@@ -242,7 +272,7 @@ class PropertyChange extends Change:
 	func changeValue(value:Variant) -> void:
 		var component:GameComponent
 		match type:
-			Lock: component = game.locks[id]
+			Lock, KeyCounterElement: component = game.components[id]
 			_: component = game.objects[id]
 		component.set(property, value)
 		component.propertyChanged(property)
@@ -298,7 +328,7 @@ class ArrayAppendChange extends Change:
 		after = _after
 		array = _array
 		match component.get_script():
-			Lock: dictionary = game.locks
+			Lock: dictionary = game.components
 			_: dictionary = game.objects
 		do()
 
@@ -322,7 +352,7 @@ class ArrayElementChange extends Change:
 		before = Changes.copy(component.get(array)[index])
 		after = Changes.copy(_after)
 		match component.get_script():
-			Lock: dictionary = game.locks
+			Lock: dictionary = game.components
 			_: dictionary = game.objects
 		do()
 
@@ -345,7 +375,7 @@ class ArrayPopAtChange extends Change:
 		index = _index
 		before = Changes.copy(component.get(array)[index])
 		match component.get_script():
-			Lock: dictionary = game.locks
+			Lock: dictionary = game.components
 			_: dictionary = game.objects
 		do()
 

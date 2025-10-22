@@ -46,9 +46,10 @@ func focus(object:GameObject) -> void:
 		else: %savestate.button_pressed = true
 	elif focused is KeyCounter:
 		%keyCounterWidthSelector.setSelect(KeyCounter.WIDTHS.find(focused.size.x))
+		%keyCounterColorSelector.visible = false
 		if new:
 			%keyCounterHandler.setup(focused)
-			%keyCounterHandler.setSelect(0)
+			focusComponent(focused.elements[-1])
 
 func showCorrectDialog() -> void:
 	%keyDialog.visible = focused is KeyBulk
@@ -71,21 +72,26 @@ func focusComponent(component:GameComponent) -> void:
 	componentFocused = component
 	if component is Lock:
 		%doorColorSelector.visible = true
-		%doorColorSelector.setSelect(componentFocused.color)
-		%doorAxialNumberEdit.setValue(componentFocused.count, true)
-		%lockHandler.setSelect(componentFocused.index)
-		%lockTypeSelector.setSelect(componentFocused.type)
+		%doorColorSelector.setSelect(component.color)
+		%doorAxialNumberEdit.setValue(component.count, true)
+		%lockHandler.setSelect(component.index)
+		%lockTypeSelector.setSelect(component.type)
 		%lockConfigurationSelector.visible = focused.type != Door.TYPE.SIMPLE
-		%lockConfigurationSelector.setup(componentFocused)
+		%lockConfigurationSelector.setup(component)
 		%lockSettings.visible = true
-		%doorAxialNumberEdit.visible = componentFocused.type == Lock.TYPE.NORMAL or componentFocused.type == Lock.TYPE.EXACT
+		%doorAxialNumberEdit.visible = component.type == Lock.TYPE.NORMAL or component.type == Lock.TYPE.EXACT
 		%doorComplexNumberEdit.visible = false
-		%blastLockSettings.visible = componentFocused.type == Lock.TYPE.BLAST
+		%blastLockSettings.visible = component.type == Lock.TYPE.BLAST
 		%blastLockSign.button_pressed = component.count.sign() < 0
 		%blastLockAxis.button_pressed = component.count.isNonzeroImag()
 		%lockHandler.redrawButton(component.index)
 		if new:
 			interact(%doorAxialNumberEdit)
+	elif component is KeyCounterElement:
+		%keyCounterHandler.setSelect(component.index)
+		%keyCounterHandler.redrawButton(component.index)
+		%keyCounterColorSelector.visible = true
+		%keyCounterColorSelector.setSelect(component.color)
 
 func defocusComponent() -> void:
 	if !componentFocused: return
@@ -300,11 +306,5 @@ func _keyCounterWidthSelected(width:int):
 
 func _keyCounterColorSelected(color:Game.COLOR) -> void:
 	if focused is not KeyCounter: return
-	var index:int = %keyCounterHandler.selected
-	editor.changes.addChange(Changes.ArrayElementChange.new(editor.game,focused,&"colors",index,color))
+	editor.changes.addChange(Changes.PropertyChange.new(editor.game,componentFocused,&"color",color))
 	editor.changes.bufferSave()
-	%keyCounterHandler.buttons[index].color = color
-	%keyCounterHandler.redrawButton(index)
-
-func keyCounterSelectColor() -> void:
-	%keyCounterColorSelector.setSelect(%keyCounterHandler.buttons[%keyCounterHandler.selected].color)

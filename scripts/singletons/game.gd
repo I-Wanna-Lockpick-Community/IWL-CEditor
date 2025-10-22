@@ -224,14 +224,14 @@ const darkTone:Array[Color] = [
 @onready var playCamera:Camera2D = %playCamera
 @onready var objectsParent:Node = %objectsParent
 
-var objIdIter:int = 0 # for creating objects
-var lockIdIter:int = 0 # for creating locks
+var objectIdIter:int = 0 # for creating objects
+var componentIdIter:int = 0 # for creating components
 var goldIndex:int = 0 # youve seen this before
 var goldIndexFloat:float = 0
 signal goldIndexChanged
 
 var objects:Dictionary[int,GameObject] = {}
-var locks:Dictionary[int,Lock] = {}
+var components:Dictionary[int,GameComponent] = {}
 
 var levelBounds:Rect2i = Rect2i(0,0,800,608):
 	set(value):

@@ -46,6 +46,6 @@ position_smoothing_enabled = true
 unique_name_in_owner = true
 
 [node name="outline" type="Node2D" parent="."]
-z_index = 1
+z_index = 3
 material = ExtResource("2_lnu2h")
 script = ExtResource("3_mx8sn")
