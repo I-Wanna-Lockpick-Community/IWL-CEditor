@@ -139,6 +139,7 @@ func _draw() -> void:
 	RenderingServer.canvas_item_clear(drawGlitch)
 	RenderingServer.canvas_item_clear(drawScaled)
 	RenderingServer.canvas_item_clear(drawMain)
+	if !parent.active and editor.game.playState == Game.PLAY_STATE.PLAY: return
 	var rect:Rect2 = Rect2(-getOffset(), size)
 	# fill
 	var texture:Texture2D
@@ -292,3 +293,21 @@ func receiveMouseInput(event:InputEventMouse) -> bool:
 		editor.startSizeDrag(self, dragPivot)
 		return true
 	return false
+
+# ==== PLAY ==== #
+func canOpen(player:Player) -> bool:
+	match type:
+		TYPE.NORMAL: return !player.key[color].across(count.axis()).reduce().lt(count.abs())
+		TYPE.BLANK: return player.key[color].eq(0)
+		TYPE.BLAST:
+			return player.key[color].axis().across(count.axis()).reduce().gt(0)
+		TYPE.ALL: return player.key[color].neq(0)
+		TYPE.EXACT: return player.key[color].across(count.axibs()).eq(count)
+		_: return true
+
+func getCost(player:Player) -> C:
+	match type:
+		TYPE.NORMAL, TYPE.EXACT: return count
+		TYPE.BLAST: return player.key[color].across(count.axibs())
+		TYPE.ALL: return player.key[color]
+		_: return C.ZERO

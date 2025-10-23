@@ -135,6 +135,7 @@ class CreateComponentChange extends Change:
 		component.id = id
 		for property in component.CREATE_PARAMETERS:
 			component.set(property, Changes.copy(prop[property]))
+			component.propertyChanged(property)
 		dictionary[id] = component
 		
 		if type == Lock:
@@ -232,6 +233,7 @@ class DeleteComponentChange extends Change: # TODO: FIX LOCKSELECTOR and KEYCOUN
 		
 		for property in component.EDITOR_PROPERTIES:
 			component.set(property, Changes.copy(prop[property]))
+			component.propertyChanged(property)
 		dictionary[prop[&"id"]] = component
 		
 		if type == Lock:

@@ -46,10 +46,8 @@ func _addElement() -> void: addButton(HandlerButton.new(len(buttons), self))
 func addButton(button:HandlerButton) -> void:
 	buttons.append(button)
 	add_child(button)
-	remove_child(add)
-	remove_child(remove)
-	add_child(add)
-	add_child(remove)
+	move_child(add, -1)
+	move_child(remove, -1)
 	button.button_pressed = true
 	remove.visible = true
 

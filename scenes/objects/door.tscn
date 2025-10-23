@@ -1,16 +1,34 @@
-[gd_scene load_steps=3 format=3 uid="uid://8vb6fw2swqpa"]
+[gd_scene load_steps=4 format=3 uid="uid://8vb6fw2swqpa"]
 
 [ext_resource type="Script" uid="uid://ilxjbdbs4jx0" path="res://scripts/components/door.gd" id="1_yar34"]
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_uw3m6"]
+resource_local_to_scene = true
+size = Vector2(30, 30)
+
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_yar34"]
+resource_local_to_scene = true
 size = Vector2(32, 32)
 
 [node name="door" type="Node2D"]
 script = ExtResource("1_yar34")
 
 [node name="collision" type="StaticBody2D" parent="."]
+unique_name_in_owner = true
 
 [node name="shape" type="CollisionShape2D" parent="collision"]
 unique_name_in_owner = true
 position = Vector2(16, 16)
+shape = SubResource("RectangleShape2D_uw3m6")
+
+[node name="interact" type="Area2D" parent="."]
+unique_name_in_owner = true
+monitoring = false
+
+[node name="interactShape" type="CollisionShape2D" parent="interact"]
+unique_name_in_owner = true
+position = Vector2(16, 16)
 shape = SubResource("RectangleShape2D_yar34")
+
+[node name="audio" type="AudioStreamPlayer" parent="."]
+unique_name_in_owner = true

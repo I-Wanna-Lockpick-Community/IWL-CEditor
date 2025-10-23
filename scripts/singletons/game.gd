@@ -261,6 +261,8 @@ var playState:PLAY_STATE = PLAY_STATE.EDIT:
 		%editorCamera.enabled = playState != PLAY_STATE.PLAY
 		%playCamera.enabled = playState == PLAY_STATE.PLAY
 
+var starAngle:float = 0 # angle of star in key counters
+
 func _ready() -> void:
 	gameChanges.game = self
 
@@ -284,6 +286,9 @@ func playTest(spawn:PlayerSpawn) -> void:
 	playState = PLAY_STATE.PLAY
 	latestSpawn = spawn
 
+	goldIndex = 0
+	starAngle = 0
+
 	editor.multiselect.deselect()
 	editor.focusDialog.defocus()
 	editor.componentDragged = null
@@ -293,10 +298,12 @@ func playTest(spawn:PlayerSpawn) -> void:
 	for object in objects.values():
 		object.start()
 		object.queue_redraw()
+	for component in components.values(): component.queue_redraw()
 
 func pauseTest() -> void:
 	playState = PLAY_STATE.PAUSED
 	for object in objects.values(): object.queue_redraw()
+	for component in components.values(): component.queue_redraw()
 
 func stopTest() -> void:
 	playState = PLAY_STATE.EDIT
@@ -304,6 +311,7 @@ func stopTest() -> void:
 	gameChanges.saveBuffered = false
 	player = null
 	for object in objects.values(): object.queue_redraw()
+	for component in components.values(): component.queue_redraw()
 
 func restart() -> void:
 	stopTest()

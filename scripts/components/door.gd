@@ -56,6 +56,7 @@ func _draw() -> void:
 	RenderingServer.canvas_item_clear(drawMain)
 	RenderingServer.canvas_item_clear(drawGlitch)
 	RenderingServer.canvas_item_clear(drawCopies)
+	if !active and editor.game.playState == Game.PLAY_STATE.PLAY: return
 	var rect:Rect2 = Rect2(Vector2.ZERO, size)
 	# fill
 	var texture:Texture2D
@@ -111,8 +112,81 @@ func receiveMouseInput(event:InputEventMouse) -> bool:
 
 func propertyChanged(property:StringName) -> void:
 	if property == &"size" or property == &"type":
-		shape.shape.size = size
-		shape.position = size/2
+		%shape.shape.size = size
+		%shape.position = size/2
+		%interactShape.shape.size = size
+		%interactShape.position = size/2
+		print(size/2)
+		print(%shape.position)
 		if type == TYPE.SIMPLE:
-			shape.shape.size -= Vector2(2,2)
-			shape.position += Vector2(1,1)
+			%shape.shape.size -= Vector2(2,2)
+			%shape.position += Vector2(1,1)
+		else:
+			%interactShape.shape.size += Vector2(2,2)
+			%interactShape.position -= Vector2(1,1)
+		print(%shape.position)
+		print(%shape.shape.size)
+
+# ==== PLAY ==== #
+func tryOpen(player:Player) -> void:
+	for lock in locks:
+		if !lock.canOpen(player): return
+	
+	var cost:C = C.ZERO
+	for lock in locks:
+		cost = cost.plus(lock.getCost(player))
+	
+	gameChanges.addChange(GameChanges.KeyChange.new(editor.game, colorSpend, player.key[colorSpend].minus(cost)))
+	gameChanges.addChange(GameChanges.PropertyChange.new(editor.game, self, &"active", false))
+	gameChanges.bufferSave()
+
+	match type:
+		TYPE.SIMPLE:
+			if locks[0].type == Lock.TYPE.BLAST: %audio.stream = preload("res://resources/sounds/door/blast.wav")
+			else: %audio.stream = preload("res://resources/sounds/door/simple.wav")
+		TYPE.COMBO: %audio.stream = preload("res://resources/sounds/door/combo.wav")
+	%audio.play()
+
+	for y in floor(size.y/16):
+		for x in floor(size.x/16):
+			add_child(Debris.new(colorSpend,Vector2(x*16,y*16)))
+
+func propertyGameChanged(property:StringName) -> void:
+	if property == &"active":
+		%collision.process_mode = PROCESS_MODE_INHERIT if active else PROCESS_MODE_DISABLED
+		%interact.process_mode = PROCESS_MODE_INHERIT if active else PROCESS_MODE_DISABLED
+
+class Debris extends Node2D:
+	const FRAME:Texture2D = preload("res://assets/game/door/debris/frame.png")
+	const HIGH:Texture2D = preload("res://assets/game/door/debris/high.png")
+	const MAIN:Texture2D = preload("res://assets/game/door/debris/main.png")
+	const DARK:Texture2D = preload("res://assets/game/door/debris/dark.png")
+
+	var color:Game.COLOR
+	var opacity:float = 1
+	var velocity:Vector2 = Vector2.ZERO
+	var acceleration:Vector2 = Vector2.ZERO
+	
+	const FPS:float = 60
+
+	func _init(_color:Game.COLOR,_position):
+		color = _color
+		position = _position
+		velocity.x = randf_range(-1.2,1.2)
+		velocity.y = randf_range(-4,-3)
+		acceleration.y = randf_range(0.4,0.5)
+	
+	func _physics_process(delta:float):
+		opacity -= 2.4*delta # 0.04 per frame, 60fps
+		modulate.a = opacity
+		if opacity <= 0: queue_free()
+
+		position += velocity
+		velocity += acceleration
+
+	func _draw() -> void:
+		var rect:Rect2 = Rect2(Vector2.ZERO,Vector2(16,16))
+		RenderingServer.canvas_item_add_texture_rect(get_canvas_item(),rect,FRAME)
+		RenderingServer.canvas_item_add_texture_rect(get_canvas_item(),rect,HIGH,false,Game.highTone[color])
+		RenderingServer.canvas_item_add_texture_rect(get_canvas_item(),rect,MAIN,false,Game.mainTone[color])
+		RenderingServer.canvas_item_add_texture_rect(get_canvas_item(),rect,DARK,false,Game.darkTone[color])

@@ -129,20 +129,20 @@ static func drawKey(game:Game,keyDrawMain:RID,keyDrawGlitch:RID,keyOffset:Vector
 		RenderingServer.canvas_item_add_texture_rect(keyDrawMain,rect,getFrame(keyType))
 		RenderingServer.canvas_item_add_texture_rect(keyDrawMain,rect,getFill(keyType),false,Game.mainTone[keyColor])
 
-# ==== PLAY ====
+# ==== PLAY ==== #
 func collect(player:Player) -> void:
 	match type:
-		TYPE.NORMAL: gameChanges.addChange(GameChanges.KeyChange.new(editor.game, color, player.keys[color].plus(count)))
+		TYPE.NORMAL: gameChanges.addChange(GameChanges.KeyChange.new(editor.game, color, player.key[color].plus(count)))
 		TYPE.EXACT: gameChanges.addChange(GameChanges.KeyChange.new(editor.game, color, count))
-		TYPE.SIGNFLIP: gameChanges.addChange(GameChanges.KeyChange.new(editor.game, color, player.keys[color].times(-1)))
-		TYPE.POSROTOR: gameChanges.addChange(GameChanges.KeyChange.new(editor.game, color, player.keys[color].times(C.I)))
-		TYPE.NEGROTOR: gameChanges.addChange(GameChanges.KeyChange.new(editor.game, color, player.keys[color].times(C.nI)))
+		TYPE.SIGNFLIP: gameChanges.addChange(GameChanges.KeyChange.new(editor.game, color, player.key[color].times(-1)))
+		TYPE.POSROTOR: gameChanges.addChange(GameChanges.KeyChange.new(editor.game, color, player.key[color].times(C.I)))
+		TYPE.NEGROTOR: gameChanges.addChange(GameChanges.KeyChange.new(editor.game, color, player.key[color].times(C.nI)))
+		TYPE.STAR: gameChanges.addChange(GameChanges.StarChange.new(editor.game, color, true))
+		TYPE.UNSTAR: gameChanges.addChange(GameChanges.StarChange.new(editor.game, color, false))
 		
-	gameChanges.addChange(GameChanges.PropertyChange.new(editor.game, self, &"active", false))
+	if !infinite: gameChanges.addChange(GameChanges.PropertyChange.new(editor.game, self, &"active", false))
 	gameChanges.bufferSave()
-	collectSound()
 
-func collectSound() -> void:
 	if color == Game.COLOR.MASTER:
 		%audio.stream = preload("res://resources/sounds/key/master.wav")
 	else:
@@ -154,3 +154,7 @@ func collectSound() -> void:
 				if count.sign() < 0: %audio.stream = preload("res://resources/sounds/key/negative.wav")
 				else: %audio.stream = preload("res://resources/sounds/key/normal.wav")
 	%audio.play()
+
+func propertyGameChanged(property:StringName) -> void:
+	if property == &"active":
+		%interact.process_mode = PROCESS_MODE_INHERIT if active else PROCESS_MODE_DISABLED

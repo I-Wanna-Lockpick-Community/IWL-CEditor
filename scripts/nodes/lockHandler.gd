@@ -12,12 +12,9 @@ func setup(_door:Door) -> void:
 		var button:LockHandlerButton = LockHandlerButton.new(len(buttons), self, lock)
 		buttons.append(button)
 		add_child(button)
-	remove_child(add)
-	remove_child(remove)
-	remove_child(colorLink)
-	add_child(add)
-	add_child(remove)
-	add_child(colorLink)
+	move_child(add, -1)
+	move_child(remove, -1)
+	move_child(colorLink, -1)
 	colorLink.visible = door.type == Door.TYPE.SIMPLE
 	remove.visible = len(buttons) > 0
 
@@ -28,8 +25,7 @@ func _addElement() -> void:
 	colorLink.visible = door.type == Door.TYPE.SIMPLE
 	var button:LockHandlerButton = LockHandlerButton.new(len(buttons), self, lock)
 	addButton(button)
-	remove_child(colorLink)
-	add_child(colorLink)
+	move_child(colorLink, -1)
 	changes.bufferSave()
 
 func _removeElement() -> void: # -1 for automatic
@@ -79,7 +75,9 @@ class LockHandlerButton extends HandlerButton:
 		drawMain = RenderingServer.canvas_item_create()
 		RenderingServer.canvas_item_set_parent(drawMain,selector.get_canvas_item())
 		editor.game.connect(&"goldIndexChanged",queue_redraw)
-		connect(&"item_rect_changed",queue_redraw) # control positioning jank
+		await get_tree().process_frame
+		await get_tree().process_frame # control positioning jank. figure out some way to fix this
+		queue_redraw()
 
 	func _draw() -> void:
 		RenderingServer.canvas_item_clear(drawMain)

@@ -10,10 +10,8 @@ func setup(_keyCounter:KeyCounter) -> void:
 		var button:KeyCounterHandlerButton = KeyCounterHandlerButton.new(len(buttons), self, element)
 		buttons.append(button)
 		add_child(button)
-	remove_child(add)
-	remove_child(remove)
-	add_child(add)
-	add_child(remove)
+	move_child(add, -1)
+	move_child(remove, -1)
 
 func _addElement() -> void:
 	var keyCounterElement:KeyCounterElement = changes.addChange(Changes.CreateComponentChange.new(editor.game,KeyCounterElement,{&"position":Vector2(12,12+len(buttons)*40),&"parentId":keyCounter.id})).result
@@ -55,7 +53,9 @@ class KeyCounterHandlerButton extends HandlerButton:
 		RenderingServer.canvas_item_set_parent(drawMain,selector.get_canvas_item())
 		RenderingServer.canvas_item_set_parent(drawGlitch,selector.get_canvas_item())
 		editor.game.connect(&"goldIndexChanged",queue_redraw)
-		connect(&"item_rect_changed",queue_redraw) # control positioning jank
+		await get_tree().process_frame
+		await get_tree().process_frame # control positioning jank. figure out some way to fix this
+		queue_redraw()
 	
 	func _draw() -> void:
 		RenderingServer.canvas_item_clear(drawMain)

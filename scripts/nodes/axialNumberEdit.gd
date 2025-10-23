@@ -8,7 +8,7 @@ signal valueSet(value:C)
 
 var newlyInteracted:bool = false
 
-var value:C = C.new(0)
+var value:C = C.ZERO
 var bufferedSign:C = C.new(1) # since -0 (and 0i and -0i) cant exist, activate it when the number is set
 var purpose:NumberEdit.PURPOSE = NumberEdit.PURPOSE.AXIAL
 
@@ -54,7 +54,7 @@ func receiveKey(key:InputEventKey):
 			deNew()
 		KEY_BACKSPACE:
 			theme_type_variation = &"NumberEditPanelContainerSelected"
-			if Input.is_key_pressed(KEY_CTRL) or newlyInteracted: setValue(C.new(0))
+			if Input.is_key_pressed(KEY_CTRL) or newlyInteracted: setValue(C.ZERO)
 			else:
 				if (value.r.gt(-10) and value.r.lt(0)): bufferedSign = C.new(-1)
 				elif (value.i.gt(0) and value.i.lt(10)): bufferedSign = C.I
@@ -70,7 +70,7 @@ func receiveKey(key:InputEventKey):
 		KEY_LEFT, KEY_RIGHT: deNew()
 		_: return false
 	if number != -1:
-		if newlyInteracted: setValue(C.new(0),true)
+		if newlyInteracted: setValue(C.ZERO,true)
 		deNew()
 		if value.axis().eq(0): setValue(bufferedSign.times(number))
 		else: setValue(value.times(10).plus(value.axis().times(bufferedSign).times(number)))

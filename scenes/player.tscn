@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=3 uid="uid://6yguarjtefnc"]
+[gd_scene load_steps=19 format=3 uid="uid://6yguarjtefnc"]
 
 [ext_resource type="Script" uid="uid://bdaplq37fmdoo" path="res://scripts/singletons/player.gd" id="1_jej6c"]
 [ext_resource type="Texture2D" uid="uid://bau8k25wjq37" path="res://assets/game/player/fall0.png" id="2_f1ej7"]
@@ -80,7 +80,11 @@ animations = [{
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_jej6c"]
 size = Vector2(12, 21)
 
+[sub_resource type="CircleShape2D" id="CircleShape2D_f1ej7"]
+radius = 23.0
+
 [node name="player" type="CharacterBody2D"]
+z_index = 5
 script = ExtResource("1_jej6c")
 
 [node name="collision" type="CollisionShape2D" parent="."]
@@ -94,10 +98,19 @@ sprite_frames = SubResource("SpriteFrames_31cv2")
 animation = &"idle"
 
 [node name="interact" type="Area2D" parent="."]
+collision_layer = 0
 
 [node name="collision" type="CollisionShape2D" parent="interact"]
 position = Vector2(0, -1.5)
 shape = SubResource("RectangleShape2D_jej6c")
+
+[node name="near" type="Area2D" parent="."]
+unique_name_in_owner = true
+position = Vector2(1, 0)
+collision_layer = 0
+
+[node name="collision" type="CollisionShape2D" parent="near"]
+shape = SubResource("CircleShape2D_f1ej7")
 
 [node name="undoSound" type="AudioStreamPlayer" parent="."]
 unique_name_in_owner = true
@@ -108,3 +121,4 @@ pitch_scale = 0.6
 unique_name_in_owner = true
 
 [connection signal="area_entered" from="interact" to="." method="_interacted"]
+[connection signal="area_entered" from="near" to="." method="_near"]

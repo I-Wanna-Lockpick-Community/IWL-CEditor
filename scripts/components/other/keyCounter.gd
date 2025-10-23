@@ -34,6 +34,8 @@ var drawGlitch:RID
 
 var elements:Array[KeyCounterElement] = []
 
+var starAngle:float = 0
+
 func _init() -> void :
 	size = Vector2(WIDTHS[0],63)
 	z_index = 2
@@ -44,6 +46,10 @@ func _ready() -> void:
 	RenderingServer.canvas_item_set_material(drawGlitch,Game.GLITCH_MATERIAL.get_rid())
 	RenderingServer.canvas_item_set_parent(drawMain,get_canvas_item())
 	RenderingServer.canvas_item_set_parent(drawGlitch,get_canvas_item())
+
+func _process(delta:float):
+	starAngle += delta*2.3038346126 # 2.2 degrees per frame, 60fps
+	starAngle = fmod(starAngle,TAU)
 
 func _draw() -> void:
 	RenderingServer.canvas_item_clear(drawMain)
@@ -80,3 +86,8 @@ func _swapElements(first:int, second:int) -> void: # TODO:DEJANK
 	editor.focusDialog.componentFocused = elements[second]
 	changes.addChange(Changes.PropertyChange.new(editor.game,elements[first],&"color",secondColor))
 	changes.addChange(Changes.PropertyChange.new(editor.game,elements[second],&"color",firstColor))
+
+# ==== PLAY ==== #
+func start() -> void:
+	super()
+	starAngle = 0

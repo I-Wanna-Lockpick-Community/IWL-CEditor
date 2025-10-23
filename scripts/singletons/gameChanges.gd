@@ -17,11 +17,12 @@ func bufferSave() -> void:
 	saveBuffered = true
 
 func addChange(change:Change) -> Change:
+	if change.cancelled: return change
 	undoStack.append(change)
 	return change
 
 func _process(_delta) -> void:
-	if saveBuffered and game.player.is_on_floor():
+	if saveBuffered and game.player.is_on_floor() and !game.player.nearDoor:
 		saveBuffered = false
 		assert(undoStack[-1] is not UndoSeparator)
 		undoStack.append(UndoSeparator.new(game.player.position))
@@ -44,6 +45,7 @@ static func copy(value:Variant) -> Variant:
 
 class Change extends RefCounted:
 	var game:Game
+	var cancelled:bool = false
 	# is a singular recorded change
 	# do() subsumed to _init()
 	func undo() -> void: pass
@@ -55,19 +57,39 @@ class UndoSeparator extends RefCounted:
 	func _init(_position:Vector2) -> void:
 		position = _position
 
-class KeyChange extends Change:
-	# C major -> A minor, for example
+class ColorChange extends Change:
+	# a change to something in an array of player indexed by colors
+	# like key and star
+	static func array() -> StringName: return &""
 
 	var color:Game.COLOR
-	var before:C
+	var before:Variant
 
-	func _init(_game:Game, _color:Game.COLOR, after:C) -> void:
+	func _init(_game:Game, _color:Game.COLOR, after:Variant) -> void:
 		game = _game
 		color = _color
-		before = GameChanges.copy(game.player.keys[color])
-		game.player.keys[color] = GameChanges.copy(after)
+		before = GameChanges.copy(game.player.get(array())[color])
+		if before == after:
+			cancelled = true
+			return
+		game.player.get(array())[color] = GameChanges.copy(after)
 	
-	func undo() -> void: game.player.keys[color] = GameChanges.copy(before)
+	func undo() -> void: game.player.get(array())[color] = GameChanges.copy(before)
+
+class KeyChange extends ColorChange:
+	# C major -> A minor, for example
+	static func array() -> StringName: return &"key"
+
+	func _init(_game:Game, _color:Game.COLOR, after:Variant) -> void:
+		if _game.player.star[_color]:
+			cancelled = true
+			return
+		super(_game,_color,after)
+
+class StarChange extends ColorChange:
+	# a change to the starred state
+	static func array() -> StringName: return &"star"
+
 
 class PropertyChange extends Change:
 	var id:int
@@ -80,6 +102,9 @@ class PropertyChange extends Change:
 		id = component.id
 		property = _property
 		before = Changes.copy(component.get(property))
+		if before == after:
+			cancelled = true
+			return
 		type = component.get_script()
 		assert(before != after)
 		changeValue(Changes.copy(after))
@@ -94,6 +119,8 @@ class PropertyChange extends Change:
 		component.set(property, value)
 		component.propertyGameChanged(property)
 		component.queue_redraw()
+		if component is Door:
+			for lock in component.locks: lock.queue_redraw()
 	
 	func _to_string() -> String:
 		return "<PropetyChange:"+str(id)+"."+str(before)+"->"+str(property)+">"

@@ -13,8 +13,7 @@ var above:bool = false # display above the object instead
 func focus(object:GameObject) -> void:
 	var new:bool = object != focused
 	focused = object
-	editor.game.objectsParent.remove_child(focused)
-	editor.game.objectsParent.add_child(focused)
+	editor.game.objectsParent.move_child(focused, -1)
 	showCorrectDialog()
 	if focused is KeyBulk:
 		%keyColorSelector.setSelect(focused.color)
