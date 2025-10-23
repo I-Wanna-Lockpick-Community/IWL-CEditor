@@ -1,7 +1,7 @@
 extends Node2D
 class_name Outline
 
-const OUTLINE_MATERIAL:ShaderMaterial = preload("res://resources/outlineDrawMaterial.tres")
+const OUTLINE_MATERIAL:ShaderMaterial = preload("res://resources/materials/outlineDrawMaterial.tres")
 
 @onready var editor:Editor = get_node("/root/editor")
 

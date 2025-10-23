@@ -1,6 +1,6 @@
 [gd_scene load_steps=8 format=3 uid="uid://y6pa4i2cormu"]
 
-[ext_resource type="Theme" uid="uid://bvfthh0vm4fbp" path="res://resources/uiTheme.tres" id="1_8c2am"]
+[ext_resource type="Theme" uid="uid://bvfthh0vm4fbp" path="res://resources/materials/uiTheme.tres" id="1_8c2am"]
 [ext_resource type="Texture2D" uid="uid://di4cbwrveccbg" path="res://assets/game/playerSpawn/levelStart.png" id="2_61t66"]
 [ext_resource type="Script" uid="uid://b71lnok6hnnk0" path="res://scripts/nodes/searchResult.gd" id="2_da2uf"]
 [ext_resource type="FontFile" uid="uid://c1cbi8by5johg" path="res://resources/fonts/fTalk.fnt" id="3_61t66"]

@@ -21,7 +21,7 @@ func addChange(change:Change) -> Change:
 func _process(_delta) -> void:
 	if saveBuffered:
 		saveBuffered = false
-		if undoStack[stackPosition] is UndoSeparator: return
+		if undoStack[stackPosition] is UndoSeparator: return # nothing new happened
 		undoStack.append(UndoSeparator.new())
 		stackPosition += 1
 
@@ -29,8 +29,9 @@ func undo() -> void:
 	if stackPosition == 0: return
 	if undoStack[stackPosition] is UndoSeparator: stackPosition -= 1
 	else:
-		assert(stackPosition == len(undoStack)-1)
-		undoStack.append(UndoSeparator.new())
+		assert(stackPosition == len(undoStack)-1) # new changes havent been saved yet
+		undoStack.append(UndoSeparator.new()) # [sep] [chg] <[chg]> -> [sep] [chg] <[chg]> [sep]
+	saveBuffered = false
 	while true:
 		var change = undoStack[stackPosition]
 		if change is UndoSeparator: return
@@ -112,7 +113,7 @@ class CreateComponentChange extends Change:
 
 		do()
 		if type == PlayerSpawn and !game.levelStart:
-			game.changes.addChange(GlobalObjectChange.new(game,game,&"levelStart",result))
+			changes.addChange(GlobalObjectChange.new(game,game,&"levelStart",result))
 		elif type == KeyCounterElement:
 			game.objects[prop[&"parentId"]]._elementsChanged()
 
@@ -187,14 +188,14 @@ class DeleteComponentChange extends Change: # TODO: FIX LOCKSELECTOR and KEYCOUN
 		
 		if type == Door:
 			for lock in component.locks:
-				game.changes.addChange(DeleteComponentChange.new(game,lock))
+				changes.addChange(DeleteComponentChange.new(game,lock))
 		elif type == KeyCounter:
 			for element in component.elements:
-				game.changes.addChange(DeleteComponentChange.new(game,element))
+				changes.addChange(DeleteComponentChange.new(game,element))
 		
 		do()
 		if type == PlayerSpawn and component == game.levelStart:
-			game.changes.addChange(GlobalObjectChange.new(game,game,&"levelStart",null))
+			changes.addChange(GlobalObjectChange.new(game,game,&"levelStart",null))
 		elif type == KeyCounterElement:
 			game.objects[prop[&"parentId"]]._elementsChanged()
 
@@ -284,7 +285,7 @@ class PropertyChange extends Change:
 		return "<PropetyChange:"+str(id)+"."+str(property)+"->"+str(after)+">"
 
 class GlobalObjectChange extends Change:
-	# changes a property that points to a gameobject in some global singleton; -1 for null
+	# changes a property that points to a gameobject in some singleton; -1 for null
 
 	var singleton:Node
 	var property:StringName

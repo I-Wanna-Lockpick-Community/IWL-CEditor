@@ -57,14 +57,14 @@ func receiveKey(key:InputEventKey):
 			if Input.is_key_pressed(KEY_CTRL) or newlyInteracted: setValue(C.new(0))
 			else:
 				if (value.r.gt(-10) and value.r.lt(0)): bufferedSign = C.new(-1)
-				elif (value.i.gt(0) and value.i.lt(10)): bufferedSign = C.new(0,1)
-				elif (value.i.gt(-10) and value.i.lt(0)): bufferedSign = C.new(0,-1)
+				elif (value.i.gt(0) and value.i.lt(10)): bufferedSign = C.I
+				elif (value.i.gt(-10) and value.i.lt(0)): bufferedSign = C.nI
 				if value.eq(0): bufferedSign = C.new(1)
 				@warning_ignore("integer_division") setValue(C.new(value.divint(10)))
 			deNew()
 		KEY_I:
 			if value.eq(0): bufferedSign = bufferedSign.times(C.new(0,-1 if Input.is_key_pressed(KEY_SHIFT) else 1))
-			setValue(value.times(C.new(0,1)))
+			setValue(value.times(C.I))
 		KEY_UP: increment(); deNew()
 		KEY_DOWN: decrement(); deNew()
 		KEY_LEFT, KEY_RIGHT: deNew()

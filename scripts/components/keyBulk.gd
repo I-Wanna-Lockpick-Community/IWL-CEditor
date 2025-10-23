@@ -94,6 +94,7 @@ func _draw() -> void:
 	RenderingServer.canvas_item_clear(drawMain)
 	RenderingServer.canvas_item_clear(drawGlitch)
 	RenderingServer.canvas_item_clear(drawSymbol)
+	if !active and editor.game.playState == Game.PLAY_STATE.PLAY: return
 	var rect:Rect2 = Rect2(Vector2.ZERO, size)
 	drawKey(editor.game,drawMain,drawGlitch,Vector2.ZERO,color,type)
 	match type:
@@ -128,3 +129,28 @@ static func drawKey(game:Game,keyDrawMain:RID,keyDrawGlitch:RID,keyOffset:Vector
 		RenderingServer.canvas_item_add_texture_rect(keyDrawMain,rect,getFrame(keyType))
 		RenderingServer.canvas_item_add_texture_rect(keyDrawMain,rect,getFill(keyType),false,Game.mainTone[keyColor])
 
+# ==== PLAY ====
+func collect(player:Player) -> void:
+	match type:
+		TYPE.NORMAL: gameChanges.addChange(GameChanges.KeyChange.new(editor.game, color, player.keys[color].plus(count)))
+		TYPE.EXACT: gameChanges.addChange(GameChanges.KeyChange.new(editor.game, color, count))
+		TYPE.SIGNFLIP: gameChanges.addChange(GameChanges.KeyChange.new(editor.game, color, player.keys[color].times(-1)))
+		TYPE.POSROTOR: gameChanges.addChange(GameChanges.KeyChange.new(editor.game, color, player.keys[color].times(C.I)))
+		TYPE.NEGROTOR: gameChanges.addChange(GameChanges.KeyChange.new(editor.game, color, player.keys[color].times(C.nI)))
+		
+	gameChanges.addChange(GameChanges.PropertyChange.new(editor.game, self, &"active", false))
+	gameChanges.bufferSave()
+	collectSound()
+
+func collectSound() -> void:
+	if color == Game.COLOR.MASTER:
+		%audio.stream = preload("res://resources/sounds/key/master.wav")
+	else:
+		match type:
+			TYPE.SIGNFLIP, TYPE.POSROTOR, TYPE.NEGROTOR: %audio.stream = preload("res://resources/sounds/key/signflip.wav")
+			TYPE.STAR: %audio.stream = preload("res://resources/sounds/key/star.wav")
+			TYPE.UNSTAR: %audio.stream = preload("res://resources/sounds/key/unstar.wav")
+			_:
+				if count.sign() < 0: %audio.stream = preload("res://resources/sounds/key/negative.wav")
+				else: %audio.stream = preload("res://resources/sounds/key/normal.wav")
+	%audio.play()

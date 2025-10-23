@@ -15,9 +15,14 @@ run/main_scene="uid://djnt51xv7wn52"
 config/features=PackedStringArray("4.5", "GL Compatibility")
 config/icon="uid://b5g2tn4r1674k"
 
+[audio]
+
+buses/default_bus_layout="res://resources/sounds/defaultBusLayout.tres"
+
 [autoload]
 
 changes="*res://scripts/singletons/changes.gd"
+gameChanges="*res://scripts/singletons/gameChanges.gd"
 
 [display]
 

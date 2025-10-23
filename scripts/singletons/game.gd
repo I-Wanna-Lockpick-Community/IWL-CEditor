@@ -242,14 +242,15 @@ var levelBounds:Rect2i = Rect2i(0,0,800,608):
 		%playCamera.set_limit.right = levelBounds.end.x
 		%playCamera.set_limit.bottom = levelBounds.end.y
 
-const GLITCH_MATERIAL:ShaderMaterial = preload("res://resources/glitchDrawMaterial.tres")
-const UNSCALED_GLITCH_MATERIAL:ShaderMaterial = preload("res://resources/unscaledGlitchDrawMaterial.tres") # to reduce shader parameters
-const PIXELATED_MATERIAL:ShaderMaterial = preload("res://resources/pixelatedDrawMaterial.tres")
+const GLITCH_MATERIAL:ShaderMaterial = preload("res://resources/materials/glitchDrawMaterial.tres")
+const UNSCALED_GLITCH_MATERIAL:ShaderMaterial = preload("res://resources/materials/unscaledGlitchDrawMaterial.tres") # to reduce shader parameters
+const PIXELATED_MATERIAL:ShaderMaterial = preload("res://resources/materials/pixelatedDrawMaterial.tres")
 
 const FKEYX:Font = preload("res://resources/fonts/fKeyX.fnt")
 const FKEYNUM:Font = preload("res://resources/fonts/fKeyNum.fnt")
 const FTALK:Font = preload("res://resources/fonts/fTalk.fnt")
 
+var latestSpawn:PlayerSpawn
 var levelStart:PlayerSpawn
 var player:Player
 enum PLAY_STATE {EDIT, PLAY, PAUSED}
@@ -257,9 +258,11 @@ var playState:PLAY_STATE = PLAY_STATE.EDIT:
 	set(value):
 		playState = value
 		editor.topBar._playStateChanged()
-		for object in objects.values(): object.queue_redraw()
 		%editorCamera.enabled = playState != PLAY_STATE.PLAY
 		%playCamera.enabled = playState == PLAY_STATE.PLAY
+
+func _ready() -> void:
+	gameChanges.game = self
 
 func _process(delta:float) -> void:
 	goldIndexFloat += delta*6 # 0.1 per frame, 60fps
@@ -279,18 +282,29 @@ func playTest(spawn:PlayerSpawn) -> void:
 		add_child(player)
 		player.position = spawn.position + Vector2(17, 23)
 	playState = PLAY_STATE.PLAY
-	
+	latestSpawn = spawn
+
 	editor.multiselect.deselect()
 	editor.focusDialog.defocus()
 	editor.componentDragged = null
 	changes.bufferSave()
 
+	gameChanges.start()
+	for object in objects.values():
+		object.start()
+		object.queue_redraw()
+
 func pauseTest() -> void:
 	playState = PLAY_STATE.PAUSED
+	for object in objects.values(): object.queue_redraw()
 
 func stopTest() -> void:
 	playState = PLAY_STATE.EDIT
 	player.queue_free()
+	gameChanges.saveBuffered = false
 	player = null
+	for object in objects.values(): object.queue_redraw()
 
-	
+func restart() -> void:
+	stopTest()
+	playTest(latestSpawn)

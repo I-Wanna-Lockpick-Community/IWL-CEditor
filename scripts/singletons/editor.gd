@@ -182,7 +182,8 @@ func _gui_input(event:InputEvent) -> void:
 						if (!objectHovered or objectHovered.get_script() != otherObjects.selected) and game.levelBounds.has_point(mouseWorldPosition):
 							var object:GameObject = changes.addChange(Changes.CreateComponentChange.new(game,otherObjects.selected,{&"position":mouseTilePosition})).result
 							focusDialog.defocus()
-							changes.addChange(Changes.CreateComponentChange.new(game,KeyCounterElement,{&"position":Vector2(12,12),&"parentId":object.id}))
+							if otherObjects.selected == KeyCounter:
+								changes.addChange(Changes.CreateComponentChange.new(game,KeyCounterElement,{&"position":Vector2(12,12),&"parentId":object.id}))
 							if !Input.is_key_pressed(KEY_SHIFT):
 								modes.setMode(MODE.SELECT)
 								startPositionDrag(object)
@@ -278,9 +279,7 @@ func _input(event:InputEvent) -> void:
 	if event is InputEventKey and event.is_pressed():
 		if game.playState == Game.PLAY_STATE.PLAY:
 			# IN PLAY
-			match event.keycode:
-				KEY_P: game.pauseTest()
-				KEY_O: game.stopTest()
+			game.player.receiveKey(event)
 		else:
 			# IN EDIT
 			if %objectSearch.has_focus(): return
@@ -314,9 +313,11 @@ func _input(event:InputEvent) -> void:
 					game.editorCamera.position = zoomPoint - gameViewportCont.size / (cameraZoom*2)
 				KEY_SPACE:
 					if !topBar.play.disabled:
+						var ctrlHeld:bool = Input.is_key_pressed(KEY_CTRL)
 						await get_tree().process_frame
 						await get_tree().process_frame # bullshit to make sure you dont jump at the start
-						game.playTest(game.levelStart)
+						if ctrlHeld: game.playTest(game.latestSpawn)
+						else: game.playTest(game.levelStart)
 				KEY_DELETE: multiselect.delete()
 				KEY_TAB: grab_focus()
 

@@ -45,8 +45,6 @@ func _ready() -> void:
 	RenderingServer.canvas_item_set_parent(drawMain,get_canvas_item())
 	RenderingServer.canvas_item_set_parent(drawGlitch,get_canvas_item())
 
-func _process(_delta:float) -> void: queue_redraw()
-
 func _draw() -> void:
 	RenderingServer.canvas_item_clear(drawMain)
 	RenderingServer.canvas_item_clear(drawGlitch)
@@ -82,5 +80,3 @@ func _swapElements(first:int, second:int) -> void: # TODO:DEJANK
 	editor.focusDialog.componentFocused = elements[second]
 	changes.addChange(Changes.PropertyChange.new(editor.game,elements[first],&"color",secondColor))
 	changes.addChange(Changes.PropertyChange.new(editor.game,elements[second],&"color",firstColor))
-	elements[first].queue_redraw()
-	elements[second].queue_redraw()

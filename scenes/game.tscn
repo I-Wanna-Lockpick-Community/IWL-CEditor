@@ -1,7 +1,7 @@
 [gd_scene load_steps=6 format=3 uid="uid://2hd65vn44me7"]
 
 [ext_resource type="Texture2D" uid="uid://dsany13ywiwir" path="res://assets/game/tiles.png" id="1_2q6dc"]
-[ext_resource type="Material" uid="uid://bc5stfiew5ji4" path="res://resources/outlineDrawMaterial.tres" id="2_lnu2h"]
+[ext_resource type="Material" uid="uid://bc5stfiew5ji4" path="res://resources/materials/outlineDrawMaterial.tres" id="2_lnu2h"]
 [ext_resource type="Script" uid="uid://c7ptucaohcnil" path="res://scripts/singletons/outline.gd" id="3_mx8sn"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_w7c3h"]

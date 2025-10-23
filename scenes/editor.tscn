@@ -1,6 +1,6 @@
 [gd_scene load_steps=30 format=3 uid="uid://djnt51xv7wn52"]
 
-[ext_resource type="Theme" uid="uid://bvfthh0vm4fbp" path="res://resources/uiTheme.tres" id="1_j8y2p"]
+[ext_resource type="Theme" uid="uid://bvfthh0vm4fbp" path="res://resources/materials/uiTheme.tres" id="1_j8y2p"]
 [ext_resource type="Script" uid="uid://2wjcj6frwpjo" path="res://scripts/singletons/editor.gd" id="2_o435n"]
 [ext_resource type="Script" uid="uid://bt2qk0jhpuc53" path="res://scripts/singletons/topBar.gd" id="3_3vi5u"]
 [ext_resource type="Script" uid="uid://ced7aml4sfanx" path="res://scripts/singletons/modes.gd" id="4_4jiep"]
@@ -10,7 +10,7 @@
 [ext_resource type="Texture2D" uid="uid://cx3mntdf11c1g" path="res://assets/ui/modes/key.png" id="6_sdh1e"]
 [ext_resource type="Texture2D" uid="uid://ckk7i2y24ysor" path="res://assets/ui/modes/door.png" id="7_2w0at"]
 [ext_resource type="PackedScene" uid="uid://2hd65vn44me7" path="res://scenes/game.tscn" id="8_5tdu1"]
-[ext_resource type="Shader" uid="uid://befrul0j4yc02" path="res://resources/level.gdshader" id="8_o435n"]
+[ext_resource type="Shader" uid="uid://befrul0j4yc02" path="res://resources/materials/level.gdshader" id="8_o435n"]
 [ext_resource type="Texture2D" uid="uid://b4tmgbs01eh7i" path="res://assets/ui/modes/paste.png" id="9_0u1f5"]
 [ext_resource type="Script" uid="uid://brsj7c2dial40" path="res://scripts/singletons/otherObjects.gd" id="9_k1sck"]
 [ext_resource type="Texture2D" uid="uid://b2ouh1fqa64em" path="res://assets/ui/modes/search.png" id="10_8g6du"]
