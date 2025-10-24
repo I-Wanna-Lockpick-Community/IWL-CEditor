@@ -100,6 +100,7 @@ size_flags_vertical = 3
 
 [node name="c" type="VBoxContainer" parent="c/c/MarginContainer/c2/scroll"]
 layout_mode = 2
+size_flags_horizontal = 3
 
 [node name="info" type="VBoxContainer" parent="c/c/MarginContainer/c2/scroll/c"]
 unique_name_in_owner = true
