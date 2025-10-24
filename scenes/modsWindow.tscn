@@ -195,12 +195,12 @@ layout_mode = 2
 theme_override_constants/separation = 16
 alignment = 1
 
-[node name="Button" type="Button" parent="c/c/MarginContainer/c2/buttons/HBoxContainer"]
+[node name="cancel" type="Button" parent="c/c/MarginContainer/c2/buttons/HBoxContainer"]
 layout_mode = 2
 theme_type_variation = &"RadioButtonText"
 text = "Cancel"
 
-[node name="Button2" type="Button" parent="c/c/MarginContainer/c2/buttons/HBoxContainer"]
+[node name="saveChanges" type="Button" parent="c/c/MarginContainer/c2/buttons/HBoxContainer"]
 layout_mode = 2
 theme_type_variation = &"RadioButtonText"
 text = "Save Changes"
@@ -212,3 +212,5 @@ text = "Save Changes"
 [connection signal="item_selected" from="c/c/c/mods" to="." method="_modsSelected"]
 [connection signal="nothing_selected" from="c/c/c/mods" to="." method="_modsDefocused"]
 [connection signal="meta_clicked" from="c/c/MarginContainer/c2/scroll/c/info/versionInfo/version" to="." method="_linkClicked"]
+[connection signal="pressed" from="c/c/MarginContainer/c2/buttons/HBoxContainer/cancel" to="." method="_close"]
+[connection signal="pressed" from="c/c/MarginContainer/c2/buttons/HBoxContainer/saveChanges" to="." method="_saveChanges"]

@@ -66,6 +66,7 @@ func setMod(mod:Mods.Mod, active:bool) -> bool:
 	return true
 
 func _close() -> void: queue_free()
+func _saveChanges() -> void: _close()
 
 func _modpackSelected(index:int, manual:bool=false) -> void:
 	if index == -1:
