@@ -49,12 +49,15 @@ func focus(object:GameObject) -> void:
 		if new:
 			%keyCounterHandler.setup(focused)
 			focusComponent(focused.elements[-1])
+	elif focused is Goal:
+		%goalTypeSelector.setSelect(focused.type)
 
 func showCorrectDialog() -> void:
 	%keyDialog.visible = focused is KeyBulk
 	%doorDialog.visible = focused is Door
 	%playerDialog.visible = focused is PlayerSpawn
 	%keyCounterDialog.visible = focused is KeyCounter
+	%goalDialog.visible = focused is Goal
 	above = focused is KeyCounter
 	%speechBubbler.rotation_degrees = 0 if above else 180
 
@@ -306,4 +309,9 @@ func _keyCounterWidthSelected(width:int):
 func _keyCounterColorSelected(color:Game.COLOR) -> void:
 	if focused is not KeyCounter: return
 	changes.addChange(Changes.PropertyChange.new(editor.game,componentFocused,&"color",color))
+	changes.bufferSave()
+
+func _goalTypeSelected(type:Goal.TYPE) -> void:
+	if focused is not Goal: return
+	changes.addChange(Changes.PropertyChange.new(editor.game,focused,&"type",type))
 	changes.bufferSave()

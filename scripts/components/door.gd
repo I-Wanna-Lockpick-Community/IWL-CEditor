@@ -116,16 +116,8 @@ func propertyChanged(property:StringName) -> void:
 		%shape.position = size/2
 		%interactShape.shape.size = size
 		%interactShape.position = size/2
-		print(size/2)
-		print(%shape.position)
-		if type == TYPE.SIMPLE:
-			%shape.shape.size -= Vector2(2,2)
-			%shape.position += Vector2(1,1)
-		else:
-			%interactShape.shape.size += Vector2(2,2)
-			%interactShape.position -= Vector2(1,1)
-		print(%shape.position)
-		print(%shape.shape.size)
+		if type == TYPE.SIMPLE: %shape.shape.size -= Vector2(2,2)
+		else: %interactShape.shape.size += Vector2(2,2)
 
 # ==== PLAY ==== #
 func tryOpen(player:Player) -> void:

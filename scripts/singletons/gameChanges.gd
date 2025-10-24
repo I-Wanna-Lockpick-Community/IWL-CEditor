@@ -23,6 +23,7 @@ func addChange(change:Change) -> Change:
 
 func _process(_delta) -> void:
 	if saveBuffered and game.player.is_on_floor() and !game.player.nearDoor:
+		await get_tree().process_frame # maybe race condition? it seems to be able to get stuck sometimes with keys
 		saveBuffered = false
 		assert(undoStack[-1] is not UndoSeparator)
 		undoStack.append(UndoSeparator.new(game.player.position))

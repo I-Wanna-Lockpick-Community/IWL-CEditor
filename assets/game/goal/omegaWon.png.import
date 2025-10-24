@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cugfu2s5i5jpq"
-path="res://.godot/imported/sprite.png-18076cc718a4a8a604e01e794962cf53.ctex"
+uid="uid://dx143rb8h448j"
+path="res://.godot/imported/omegaWon.png-6bc605e97ce20221531aeb15f22f20f5.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/game/goal/sprite.png"
-dest_files=["res://.godot/imported/sprite.png-18076cc718a4a8a604e01e794962cf53.ctex"]
+source_file="res://assets/game/goal/omegaWon.png"
+dest_files=["res://.godot/imported/omegaWon.png-6bc605e97ce20221531aeb15f22f20f5.ctex"]
 
 [params]
 

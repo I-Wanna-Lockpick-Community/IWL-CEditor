@@ -2,23 +2,34 @@ extends GameObject
 class_name Goal
 const SCENE:PackedScene = preload("res://scenes/objects/goal.tscn")
 
-const SEARCH_ICON:Texture2D = preload("res://assets/game/goal/sprite.png")
+const SEARCH_ICON:Texture2D = NORMAL
 const SEARCH_NAME:String = "Goal"
 const SEARCH_KEYWORDS:Array[String] = ["oGoal", "end", "win"]
 
 static func outlineTex() -> Texture2D: return preload("res://assets/game/goal/outlineMask.png")
+
+const NORMAL:Texture2D = preload("res://assets/game/goal/normal.png")
+const OMEGA:Texture2D = preload("res://assets/game/goal/omega.png")
+func getSprite() -> Texture2D:
+	match type:
+		TYPE.OMEGA: return OMEGA
+		_: return NORMAL
 
 const CREATE_PARAMETERS:Array[StringName] = [
 	&"position"
 ]
 const EDITOR_PROPERTIES:Array[StringName] = [
 	&"id", &"position", &"size",
+	&"type"
 ]
 
-var drawGlow:RID
+const TYPES:int = 2
+enum TYPE {NORMAL, OMEGA}
+
+var type:TYPE = TYPE.NORMAL
+
 var drawMain:RID
 
-var glowAngle:float = 0
 var floatAngle:float = 0
 var particleSpawnTimer:float = 0
 
@@ -29,8 +40,8 @@ func _physics_process(delta:float):
 	if particleSpawnTimer >= 0.1:
 		particleSpawnTimer -= 0.1
 		var particle:Particle = Particle.new()
-		#if has_won:
-		#	part.hue = 60
+		#if has_won: particle.hue = 60
+		if type == TYPE.OMEGA: particle.hue = 275
 		%particles.add_child(particle)
 		%particles.move_child(particle, 0)
 		return particle
@@ -39,23 +50,17 @@ func _physics_process(delta:float):
 func _process(delta:float):
 	floatAngle += delta*2.6179938780 # 2.5 degrees per frame, 60fps
 	floatAngle = fmod(floatAngle,TAU)
-	glowAngle += delta*1.0471975512 # 2.5 degrees per frame, 60fps
-	glowAngle = fmod(glowAngle,TAU)
 	queue_redraw()
 
 func _ready() -> void:
-	drawGlow = RenderingServer.canvas_item_create()
 	drawMain = RenderingServer.canvas_item_create()
 	RenderingServer.canvas_item_set_z_index(drawMain,1)
-	RenderingServer.canvas_item_set_parent(drawGlow,get_canvas_item())
 	RenderingServer.canvas_item_set_parent(drawMain,get_canvas_item())
 
 func _draw() -> void:
-	RenderingServer.canvas_item_clear(drawGlow)
 	RenderingServer.canvas_item_clear(drawMain)
-	RenderingServer.canvas_item_add_texture_rect(drawGlow,Rect2(Vector2.ZERO,Vector2(32,32)),SEARCH_ICON)
 	var rect:Rect2 = Rect2(Vector2(0,floor(3*sin(floatAngle))), size)
-	RenderingServer.canvas_item_add_texture_rect(drawMain,rect,SEARCH_ICON)
+	RenderingServer.canvas_item_add_texture_rect(drawMain,rect,getSprite())
 
 class Particle extends Sprite2D: # taken from lpe
 
@@ -96,5 +101,4 @@ class Particle extends Sprite2D: # taken from lpe
 # ==== PLAY ==== #
 func start() -> void:
 	super()
-	glowAngle = 0
 	floatAngle = 0

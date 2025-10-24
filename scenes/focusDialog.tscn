@@ -1,4 +1,4 @@
-[gd_scene load_steps=30 format=3 uid="uid://8bth374yqwpe"]
+[gd_scene load_steps=31 format=3 uid="uid://8bth374yqwpe"]
 
 [ext_resource type="Theme" uid="uid://bvfthh0vm4fbp" path="res://resources/materials/uiTheme.tres" id="1_eqegh"]
 [ext_resource type="Script" uid="uid://dm8t82nhqkdlc" path="res://scripts/singletons/focusDialog.gd" id="2_k8bto"]
@@ -25,6 +25,7 @@
 [ext_resource type="Texture2D" uid="uid://ddautei1wlnil" path="res://assets/ui/focusDialog/otherObjects/playtest.png" id="24_7tfe2"]
 [ext_resource type="Script" uid="uid://lbaubg2qq1s1" path="res://scripts/nodes/keyCounterHandler.gd" id="25_1rcup"]
 [ext_resource type="Script" uid="uid://ckcofkmbukj5o" path="res://scripts/nodes/keyCounterWidthSelector.gd" id="25_7tfe2"]
+[ext_resource type="Script" uid="uid://bg8oswa2bhdsv" path="res://scripts/nodes/goalTypeSelector.gd" id="26_1rcup"]
 
 [sub_resource type="ButtonGroup" id="ButtonGroup_oii3e"]
 
@@ -362,6 +363,33 @@ layout_mode = 2
 script = ExtResource("3_wmate")
 metadata/_custom_type_script = "uid://c70juj2p5s6yd"
 
+[node name="goalDialog" type="Control" parent="."]
+unique_name_in_owner = true
+anchors_preset = 0
+
+[node name="c" type="PanelContainer" parent="goalDialog"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -20.0
+offset_right = 20.0
+offset_bottom = 40.0
+grow_horizontal = 2
+theme_type_variation = &"DialogPanelContainer"
+
+[node name="c" type="MarginContainer" parent="goalDialog/c"]
+layout_mode = 2
+
+[node name="c" type="VBoxContainer" parent="goalDialog/c/c"]
+layout_mode = 2
+
+[node name="goalTypeSelector" type="GridContainer" parent="goalDialog/c/c/c"]
+unique_name_in_owner = true
+layout_mode = 2
+script = ExtResource("26_1rcup")
+metadata/_custom_type_script = "uid://bg8oswa2bhdsv"
+
 [node name="speechBubbler" type="Node2D" parent="."]
 unique_name_in_owner = true
 
@@ -394,3 +422,4 @@ default_color = Color(0.8352941, 0.8352941, 0.8352941, 1)
 [connection signal="pressed" from="playerDialog/c/c/c/savestate" to="." method="_setSavestate"]
 [connection signal="select" from="keyCounterDialog/c/c/c/keyCounterWidthSelector" to="." method="_keyCounterWidthSelected"]
 [connection signal="select" from="keyCounterDialog/c/c/c/keyCounterColorSelector" to="." method="_keyCounterColorSelected"]
+[connection signal="select" from="goalDialog/c/c/c/goalTypeSelector" to="." method="_goalTypeSelected"]
