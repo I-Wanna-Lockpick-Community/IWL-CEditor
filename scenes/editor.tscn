@@ -1,4 +1,4 @@
-[gd_scene load_steps=30 format=3 uid="uid://djnt51xv7wn52"]
+[gd_scene load_steps=32 format=3 uid="uid://djnt51xv7wn52"]
 
 [ext_resource type="Theme" uid="uid://bvfthh0vm4fbp" path="res://resources/materials/uiTheme.tres" id="1_j8y2p"]
 [ext_resource type="Script" uid="uid://2wjcj6frwpjo" path="res://scripts/singletons/editor.gd" id="2_o435n"]
@@ -7,6 +7,8 @@
 [ext_resource type="Texture2D" uid="uid://brlbjt36syjq8" path="res://assets/ui/modes/select.png" id="4_78fwb"]
 [ext_resource type="Script" uid="uid://buv3n70m06kje" path="res://scripts/nodes/hotkeyButton.gd" id="5_3vi5u"]
 [ext_resource type="Texture2D" uid="uid://tcsqjcnuio0j" path="res://assets/ui/modes/tile.png" id="5_74j0u"]
+[ext_resource type="Texture2D" uid="uid://5nn25q4md27b" path="res://assets/ui/modes/file.png" id="5_m12ww"]
+[ext_resource type="Script" uid="uid://bu13x48angurk" path="res://scripts/singletons/fileMenu.gd" id="6_7msgv"]
 [ext_resource type="Texture2D" uid="uid://cx3mntdf11c1g" path="res://assets/ui/modes/key.png" id="6_sdh1e"]
 [ext_resource type="Texture2D" uid="uid://ckk7i2y24ysor" path="res://assets/ui/modes/door.png" id="7_2w0at"]
 [ext_resource type="PackedScene" uid="uid://2hd65vn44me7" path="res://scenes/game.tscn" id="8_5tdu1"]
@@ -104,9 +106,33 @@ layout_mode = 2
 size_flags_horizontal = 3
 script = ExtResource("4_4jiep")
 
+[node name="fileMenu" type="MenuButton" parent="c/c/topBar/c/modes"]
+layout_mode = 2
+icon = ExtResource("5_m12ww")
+flat = false
+item_count = 7
+popup/item_0/text = "New"
+popup/item_0/id = 0
+popup/item_1/text = "Open"
+popup/item_1/id = 1
+popup/item_2/text = "Save"
+popup/item_2/id = 2
+popup/item_3/text = "Save As"
+popup/item_3/id = 3
+popup/item_4/text = "Export"
+popup/item_4/id = 4
+popup/item_5/id = 5
+popup/item_5/separator = true
+popup/item_6/text = "Mods "
+popup/item_6/id = 6
+script = ExtResource("6_7msgv")
+
+[node name="spacer" type="Control" parent="c/c/topBar/c/modes"]
+custom_minimum_size = Vector2(16, 0)
+layout_mode = 2
+
 [node name="select" type="Button" parent="c/c/topBar/c/modes"]
 layout_mode = 2
-theme_type_variation = &"RadioButton"
 theme_override_styles/normal = SubResource("StyleBoxFlat_74j0u")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_sdh1e")
 theme_override_styles/hover = SubResource("StyleBoxFlat_2w0at")
@@ -120,7 +146,6 @@ metadata/_custom_type_script = "uid://buv3n70m06kje"
 
 [node name="tile" type="Button" parent="c/c/topBar/c/modes"]
 layout_mode = 2
-theme_type_variation = &"RadioButton"
 toggle_mode = true
 button_group = SubResource("ButtonGroup_wm3ai")
 icon = ExtResource("5_74j0u")
@@ -130,7 +155,6 @@ metadata/_custom_type_script = "uid://buv3n70m06kje"
 
 [node name="key" type="Button" parent="c/c/topBar/c/modes"]
 layout_mode = 2
-theme_type_variation = &"RadioButton"
 toggle_mode = true
 button_group = SubResource("ButtonGroup_wm3ai")
 icon = ExtResource("6_sdh1e")
@@ -141,7 +165,6 @@ metadata/_custom_type_script = "uid://buv3n70m06kje"
 
 [node name="door" type="Button" parent="c/c/topBar/c/modes"]
 layout_mode = 2
-theme_type_variation = &"RadioButton"
 toggle_mode = true
 button_group = SubResource("ButtonGroup_wm3ai")
 icon = ExtResource("7_2w0at")
@@ -169,7 +192,6 @@ layout_mode = 2
 unique_name_in_owner = true
 custom_minimum_size = Vector2(36, 0)
 layout_mode = 2
-theme_type_variation = &"RadioButton"
 toggle_mode = true
 button_group = SubResource("ButtonGroup_wm3ai")
 icon = ExtResource("10_aa8l6")
@@ -203,7 +225,6 @@ layout_mode = 2
 [node name="paste" type="Button" parent="c/c/topBar/c/modes"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_type_variation = &"RadioButton"
 disabled = true
 toggle_mode = true
 button_group = SubResource("ButtonGroup_wm3ai")
@@ -221,7 +242,6 @@ alignment = 2
 [node name="play" type="Button" parent="c/c/topBar/c/playControls"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_type_variation = &"RadioButton"
 disabled = true
 icon = ExtResource("13_wyx26")
 script = ExtResource("5_3vi5u")
@@ -232,7 +252,6 @@ metadata/_custom_type_script = "uid://buv3n70m06kje"
 unique_name_in_owner = true
 visible = false
 layout_mode = 2
-theme_type_variation = &"RadioButton"
 icon = ExtResource("15_fce0a")
 script = ExtResource("5_3vi5u")
 defaultHotkey = "P"
@@ -242,7 +261,6 @@ metadata/_custom_type_script = "uid://buv3n70m06kje"
 unique_name_in_owner = true
 visible = false
 layout_mode = 2
-theme_type_variation = &"RadioButton"
 icon = ExtResource("16_m12ww")
 script = ExtResource("5_3vi5u")
 defaultHotkey = "O"

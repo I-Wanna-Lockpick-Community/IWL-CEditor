@@ -16,7 +16,7 @@ const fonts_path := "res://resources/fonts/"
 		_convert()
 
 func _ready() -> void:
-	gamemaker_fonts_path = FileAccess.get_file_as_string(("res://meta/fonts_path.txt")).split("\n")[0]
+	gamemaker_fonts_path = "C:/Users/Beeka/Desktop/Things/Games/iwlp/IWannaLockpickDecompilation/fonts"
 
 func _convert():
 	# Copy the .png file
@@ -43,7 +43,7 @@ func _convert():
 	# Write the .fnt file
 	if not FileAccess.file_exists(fonts_path.path_join(font_name + font_extension)):
 		print("Writing to " + font_name + font_extension)
-		file = file.open(fonts_path.path_join(font_name + font_extension), FileAccess.WRITE)
+		file = FileAccess.open(fonts_path.path_join(font_name + font_extension), FileAccess.WRITE)
 		file.store_string(new_content)
 		file.close()
 		print("Content of " + font_name + " copied to clipboard!")

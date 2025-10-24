@@ -88,7 +88,7 @@ func _gui_input(event:InputEvent) -> void:
 			# modes
 			if isLeftUnclick(event) or isRightUnclick(event):
 				if componentDragged and sizeDragging():
-					if !mods.active("VarLockSize") and componentDragged is Lock and componentDragged.parent.type == Door.TYPE.COMBO:
+					if !mods.active(&"VarLockSize") and componentDragged is Lock and componentDragged.parent.type == Door.TYPE.COMBO:
 						componentDragged._coerceSize()
 					if componentDragged is GameObject: focusDialog.focus(componentDragged)
 					else: focusDialog.focusComponent(componentDragged)

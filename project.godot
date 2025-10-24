@@ -29,6 +29,8 @@ mods="*res://scripts/singletons/mods.gd"
 
 window/size/viewport_width=820
 window/size/viewport_height=697
+window/subwindows/embed_subwindows=false
+window/per_pixel_transparency/allowed=true
 
 [input]
 

@@ -1,0 +1,213 @@
+[gd_scene load_steps=10 format=3 uid="uid://cy3r5ixcra171"]
+
+[ext_resource type="Script" uid="uid://bkvb1du41rufh" path="res://scripts/singletons/modsWindow.gd" id="1_3smad"]
+[ext_resource type="Theme" uid="uid://bvfthh0vm4fbp" path="res://resources/materials/uiTheme.tres" id="1_gbm3x"]
+[ext_resource type="Texture2D" uid="uid://ero2whmx4t0r" path="res://assets/ui/mods/icon/Refactored.png" id="3_ug10a"]
+[ext_resource type="FontFile" uid="uid://c1cbi8by5johg" path="res://resources/fonts/fTalk.fnt" id="4_iypae"]
+[ext_resource type="FontFile" uid="uid://cjub6sxbu8elx" path="res://resources/fonts/RobotoMono-SemiBold.ttf" id="5_iduno"]
+[ext_resource type="FontFile" uid="uid://bdml4ely61msn" path="res://resources/fonts/fTalkSmall.fnt" id="5_pjwfn"]
+
+[sub_resource type="StyleBoxLine" id="StyleBoxLine_gbm3x"]
+content_margin_left = 4.0
+content_margin_right = 4.0
+content_margin_bottom = 0.0
+color = Color(0.5, 0.5, 0.5, 1)
+thickness = 2
+
+[sub_resource type="LabelSettings" id="LabelSettings_iduno"]
+font = ExtResource("4_iypae")
+font_size = 12
+
+[sub_resource type="LabelSettings" id="LabelSettings_ug10a"]
+font = ExtResource("5_pjwfn")
+font_size = 10
+
+[node name="modsWindow" type="Window"]
+oversampling_override = 1.0
+title = "Mods"
+initial_position = 2
+size = Vector2i(640, 400)
+transient = true
+exclusive = true
+theme = ExtResource("1_gbm3x")
+script = ExtResource("1_3smad")
+
+[node name="c" type="PanelContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+focus_mode = 1
+
+[node name="c" type="HBoxContainer" parent="c"]
+layout_mode = 2
+
+[node name="c" type="VBoxContainer" parent="c/c"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 1.9
+
+[node name="c" type="HBoxContainer" parent="c/c/c"]
+layout_mode = 2
+
+[node name="l" type="Label" parent="c/c/c/c"]
+layout_mode = 2
+text = "Modpack: "
+
+[node name="modpacks" type="OptionButton" parent="c/c/c/c"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="versionsLabel" type="Label" parent="c/c/c/c"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Version:"
+
+[node name="versions" type="OptionButton" parent="c/c/c/c"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="sep" type="HSeparator" parent="c/c/c"]
+layout_mode = 2
+theme_override_constants/separation = 2
+theme_override_styles/separator = SubResource("StyleBoxLine_gbm3x")
+
+[node name="mods" type="Tree" parent="c/c/c"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+hide_root = true
+
+[node name="sep" type="VSeparator" parent="c/c"]
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="c/c"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_right = 8
+
+[node name="c2" type="VBoxContainer" parent="c/c/MarginContainer"]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+
+[node name="scroll" type="ScrollContainer" parent="c/c/MarginContainer/c2"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="c" type="VBoxContainer" parent="c/c/MarginContainer/c2/scroll"]
+layout_mode = 2
+
+[node name="info" type="VBoxContainer" parent="c/c/MarginContainer/c2/scroll/c"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="infoName" type="Label" parent="c/c/MarginContainer/c2/scroll/c/info"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Title of the thing"
+label_settings = SubResource("LabelSettings_iduno")
+horizontal_alignment = 1
+vertical_alignment = 2
+
+[node name="sep" type="HSeparator" parent="c/c/MarginContainer/c2/scroll/c/info"]
+layout_mode = 2
+theme_type_variation = &"HSeparatorFancy"
+
+[node name="modpackInfo" type="VBoxContainer" parent="c/c/MarginContainer/c2/scroll/c/info"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="infoIcon" type="TextureRect" parent="c/c/MarginContainer/c2/scroll/c/info/modpackInfo"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+texture = ExtResource("3_ug10a")
+
+[node name="sep" type="HSeparator" parent="c/c/MarginContainer/c2/scroll/c/info/modpackInfo"]
+layout_mode = 2
+theme_type_variation = &"HSeparatorFancy"
+
+[node name="infoDescription" type="Label" parent="c/c/MarginContainer/c2/scroll/c/info"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+text = "Info paragraph"
+label_settings = SubResource("LabelSettings_ug10a")
+autowrap_mode = 2
+
+[node name="versionInfo" type="VBoxContainer" parent="c/c/MarginContainer/c2/scroll/c/info"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="sep" type="HSeparator" parent="c/c/MarginContainer/c2/scroll/c/info/versionInfo"]
+layout_mode = 2
+theme_type_variation = &"HSeparatorFancy"
+
+[node name="version" type="RichTextLabel" parent="c/c/MarginContainer/c2/scroll/c/info/versionInfo"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_fonts/normal_font = ExtResource("5_iduno")
+theme_override_font_sizes/normal_font_size = 12
+bbcode_enabled = true
+text = "Version: "
+fit_content = true
+horizontal_alignment = 1
+
+[node name="versionDescription" type="Label" parent="c/c/MarginContainer/c2/scroll/c/info/versionInfo"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+text = "Version paragraph"
+label_settings = SubResource("LabelSettings_ug10a")
+autowrap_mode = 2
+
+[node name="noModpackInfo" type="VBoxContainer" parent="c/c/MarginContainer/c2/scroll/c"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="label" type="Label" parent="c/c/MarginContainer/c2/scroll/c/noModpackInfo"]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+text = "
+Mods selected do not fit any existing modpack.
+Exporting to .room.gmx will not be posible."
+label_settings = SubResource("LabelSettings_ug10a")
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="buttons" type="VBoxContainer" parent="c/c/MarginContainer/c2"]
+layout_mode = 2
+
+[node name="sep" type="HSeparator" parent="c/c/MarginContainer/c2/buttons"]
+layout_mode = 2
+theme_type_variation = &"HSeparatorFancy"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="c/c/MarginContainer/c2/buttons"]
+layout_mode = 2
+theme_override_constants/separation = 16
+alignment = 1
+
+[node name="Button" type="Button" parent="c/c/MarginContainer/c2/buttons/HBoxContainer"]
+layout_mode = 2
+theme_type_variation = &"RadioButtonText"
+text = "Cancel"
+
+[node name="Button2" type="Button" parent="c/c/MarginContainer/c2/buttons/HBoxContainer"]
+layout_mode = 2
+theme_type_variation = &"RadioButtonText"
+text = "Save Changes"
+
+[connection signal="close_requested" from="." to="." method="_close"]
+[connection signal="item_selected" from="c/c/c/c/modpacks" to="." method="_modpackSelected"]
+[connection signal="focus_exited" from="c/c/c/mods" to="." method="_mods_defocused"]
+[connection signal="item_edited" from="c/c/c/mods" to="." method="_modsSelected"]
+[connection signal="item_selected" from="c/c/c/mods" to="." method="_modsSelected"]
+[connection signal="nothing_selected" from="c/c/c/mods" to="." method="_modsDefocused"]
+[connection signal="meta_clicked" from="c/c/MarginContainer/c2/scroll/c/info/versionInfo/version" to="." method="_linkClicked"]

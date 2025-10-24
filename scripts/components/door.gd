@@ -111,14 +111,18 @@ func receiveMouseInput(event:InputEventMouse) -> bool:
 	return false
 func propertyChangedInit(property:StringName) -> void:
 	if property == &"type":
-		if type == TYPE.SIMPLE:
-			if len(locks) == 0: addLock()
-			elif len(locks) > 1:
-				for lockIndex in range(1,len(locks)):
-					removeLock(lockIndex)
-			locks[0]._simpleDoorUpdate()
-		elif type == TYPE.GATE:
-			changes.addChange(Changes.PropertyChange.new(editor.game,self,&"color",Game.COLOR.WHITE))
+		match type:
+			TYPE.SIMPLE:
+				if len(locks) == 0: addLock()
+				elif len(locks) > 1:
+					for lockIndex in range(1,len(locks)):
+						removeLock(lockIndex)
+				locks[0]._simpleDoorUpdate()
+			TYPE.COMBO:
+				if !mods.active(&"VarLockSize"):
+					for lock in locks: lock._coerceSize()
+			TYPE.GATE:
+				changes.addChange(Changes.PropertyChange.new(editor.game,self,&"color",Game.COLOR.WHITE))
 	if property == &"size" and type == TYPE.SIMPLE: locks[0]._simpleDoorUpdate()
 
 func propertyChangedDo(property:StringName) -> void:
