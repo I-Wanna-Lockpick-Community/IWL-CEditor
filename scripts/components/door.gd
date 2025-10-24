@@ -109,8 +109,19 @@ func receiveMouseInput(event:InputEventMouse) -> bool:
 		editor.startSizeDrag(self, dragPivot)
 		return true
 	return false
+func propertyChangedInit(property:StringName) -> void:
+	if property == &"type":
+		if type == TYPE.SIMPLE:
+			if len(locks) == 0: addLock()
+			elif len(locks) > 1:
+				for lockIndex in range(1,len(locks)):
+					removeLock(lockIndex)
+			locks[0]._simpleDoorUpdate()
+		elif type == TYPE.GATE:
+			changes.addChange(Changes.PropertyChange.new(editor.game,self,&"color",Game.COLOR.WHITE))
+	if property == &"size" and type == TYPE.SIMPLE: locks[0]._simpleDoorUpdate()
 
-func propertyChanged(property:StringName) -> void:
+func propertyChangedDo(property:StringName) -> void:
 	if property == &"size" or property == &"type":
 		%shape.shape.size = size
 		%shape.position = size/2
@@ -118,6 +129,32 @@ func propertyChanged(property:StringName) -> void:
 		%interactShape.position = size/2
 		if type == TYPE.SIMPLE: %shape.shape.size -= Vector2(2,2)
 		else: %interactShape.shape.size += Vector2(2,2)
+
+func addLock() -> void:
+	changes.addChange(Changes.CreateComponentChange.new(editor.game,Lock,{&"position":getFirstFreePosition(),&"parentId":id}))
+	if len(locks) == 1: editor.focusDialog._doorTypeSelected(Door.TYPE.SIMPLE)
+	elif type == Door.TYPE.SIMPLE: editor.focusDialog._doorTypeSelected(Door.TYPE.COMBO)
+	changes.bufferSave()
+
+func getFirstFreePosition() -> Vector2:
+	var x:float = 0
+	while true:
+		for y in floor(size.y/32):
+			var rect:Rect2 = Rect2(Vector2(32*x+7,32*y+7), Vector2(32,32))
+			var overlaps:bool = false
+			for lock in locks:
+				if Rect2(lock.position-lock.getOffset(), lock.size).intersects(rect):
+					overlaps = true
+					break
+			if overlaps: continue
+			return Vector2(32*x,32*y)
+		x += 1
+	return Vector2.ZERO # unreachable
+
+func removeLock(index:int) -> void:
+	changes.addChange(Changes.DeleteComponentChange.new(editor.game,locks[index]))
+	if type == Door.TYPE.SIMPLE: changes.addChange(Changes.PropertyChange.new(editor.game,self,&"type",TYPE.COMBO))
+	changes.bufferSave()
 
 # ==== PLAY ==== #
 func tryOpen(player:Player) -> void:
@@ -143,7 +180,7 @@ func tryOpen(player:Player) -> void:
 		for x in floor(size.x/16):
 			add_child(Debris.new(colorSpend,Vector2(x*16,y*16)))
 
-func propertyGameChanged(property:StringName) -> void:
+func propertyGameChangedDo(property:StringName) -> void:
 	if property == &"active":
 		%collision.process_mode = PROCESS_MODE_INHERIT if active else PROCESS_MODE_DISABLED
 		%interact.process_mode = PROCESS_MODE_INHERIT if active else PROCESS_MODE_DISABLED

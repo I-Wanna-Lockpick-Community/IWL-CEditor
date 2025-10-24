@@ -6,24 +6,24 @@ var keyCounter:KeyCounter
 func setup(_keyCounter:KeyCounter) -> void:
 	keyCounter = _keyCounter
 	deleteButtons()
-	for element in keyCounter.elements:
-		var button:KeyCounterHandlerButton = KeyCounterHandlerButton.new(len(buttons), self, element)
+	for index in len(keyCounter.elements):
+		var button:KeyCounterHandlerButton = KeyCounterHandlerButton.new(index, self)
 		buttons.append(button)
 		add_child(button)
 	move_child(add, -1)
 	move_child(remove, -1)
 
-func _addElement() -> void:
-	var keyCounterElement:KeyCounterElement = changes.addChange(Changes.CreateComponentChange.new(editor.game,KeyCounterElement,{&"position":Vector2(12,12+len(buttons)*40),&"parentId":keyCounter.id})).result
-	changes.addChange(Changes.PropertyChange.new(editor.game,keyCounterElement,&"color",nextColor()))
-	var button:KeyCounterHandlerButton = KeyCounterHandlerButton.new(len(buttons), self, keyCounterElement)
-	addButton(button)
-	if len(buttons) == 1: remove.visible = false
-	changes.bufferSave()
+func addComponent() -> void: keyCounter.addElement()
+func removeComponent() -> void: keyCounter.removeElement(selected)
 
-func _removeElement() -> void:
-	changes.addChange(Changes.DeleteComponentChange.new(editor.game,keyCounter.elements[selected]))
-	super()
+static func buttonType() -> GDScript: return KeyCounterHandlerButton
+
+func addButton(index:int=len(buttons)) -> void:
+	super(index)
+	if len(buttons) == 1: remove.visible = false
+
+func removeButton(index:int=selected) -> void:
+	super(index)
 	if len(buttons) == 1: remove.visible = false
 
 func _select(button:Button) -> void:
@@ -42,9 +42,9 @@ class KeyCounterHandlerButton extends HandlerButton:
 	var drawMain:RID
 	var drawGlitch:RID
 
-	func _init(_index:int,_selector:KeyCounterHandler, _element:KeyCounterElement) -> void:
+	func _init(_index:int,_selector:KeyCounterHandler) -> void:
 		super(_index, _selector)
-		element = _element
+		element = selector.keyCounter.elements[index]
 
 	func _ready() -> void:
 		drawMain = RenderingServer.canvas_item_create()

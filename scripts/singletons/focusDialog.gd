@@ -45,7 +45,8 @@ func focus(object:GameObject) -> void:
 		else: %savestate.button_pressed = true
 	elif focused is KeyCounter:
 		%keyCounterWidthSelector.setSelect(KeyCounter.WIDTHS.find(focused.size.x))
-		%keyCounterColorSelector.visible = false
+		if !componentFocused:
+			%keyCounterColorSelector.visible = false
 		if new:
 			%keyCounterHandler.setup(focused)
 			focusComponent(focused.elements[-1])
@@ -167,10 +168,10 @@ func receiveKey(event:InputEvent) -> bool:
 			KEY_C:
 				if componentFocused: editor.quickSet.startQuick(QuickSet.QUICK.COLOR, componentFocused)
 				else: editor.quickSet.startQuick(QuickSet.QUICK.COLOR, focused)
-			KEY_L: if Input.is_key_pressed(KEY_CTRL): %lockHandler._addElement()
+			KEY_L: if Input.is_key_pressed(KEY_CTRL): focused.addLock()
 			KEY_DELETE:
 				if componentFocused:
-					%lockHandler._removeElement()
+					focused.removeLock(componentFocused.index)
 					if len(focused.locks) != 0: focusComponent(focused.locks[len(focused.locks)-1])
 					else: focus(focused)
 				else: changes.addChange(Changes.DeleteComponentChange.new(editor.game,focused))
@@ -231,9 +232,6 @@ func _doorAxialNumberSet(value:C) -> void:
 	if componentFocused is not Lock: return
 	changes.addChange(Changes.PropertyChange.new(editor.game,componentFocused,&"count",value))
 	focused.queue_redraw()
-	if focused.type == Door.TYPE.SIMPLE:
-		componentFocused._simpleDoorUpdate()
-	else: componentFocused._setAutoConfiguration()
 	changes.bufferSave()
 
 func _lockTypeSelected(type:Lock.TYPE) -> void:
@@ -243,20 +241,7 @@ func _lockTypeSelected(type:Lock.TYPE) -> void:
 func _doorTypeSelected(type:Door.TYPE) -> void:
 	if focused is not Door: return
 	changes.addChange(Changes.PropertyChange.new(editor.game,focused,&"type",type))
-	%lockHandler.colorLink.visible = focused.type == Door.TYPE.SIMPLE
-	if type == Door.TYPE.SIMPLE:
-		if len(focused.locks) == 0: %lockHandler._addElement()
-		elif len(focused.locks) > 1:
-			for lock in focused.locks.slice(1):
-				%lockHandler._removeElement(lock.index)
-		focused.locks[0]._simpleDoorUpdate()
-		%lockConfigurationSelector.visible = false
-	else:
-		if type == Door.TYPE.GATE:
-			changes.addChange(Changes.PropertyChange.new(editor.game,focused,&"color",Game.COLOR.WHITE))
-		%lockConfigurationSelector.visible = componentFocused is Lock
 	changes.bufferSave()
-	%spend.queue_redraw()
 
 func _spendSelected() -> void:
 	defocusComponent()
@@ -315,3 +300,19 @@ func _goalTypeSelected(type:Goal.TYPE) -> void:
 	if focused is not Goal: return
 	changes.addChange(Changes.PropertyChange.new(editor.game,focused,&"type",type))
 	changes.bufferSave()
+
+func focusComponentAdded(type:GDScript, index:int) -> void:
+	if type == Lock:
+		%lockHandler.addButton(index)
+		focusComponent(focused.locks[index])
+	elif type == KeyCounterElement:
+		%keyCounterHandler.addButton(index)
+		focusComponent(focused.elements[index])
+
+func focusComponentRemoved(type:GDScript, index:int) -> void:
+	if type == Lock:
+		%lockHandler.removeButton(index)
+		if index != 0: focusComponent(focused.locks[index-1])
+	elif type == KeyCounterElement:
+		%keyCounterHandler.removeButton(index)
+		assert(index != 0); focusComponent(focused.elements[index-1])

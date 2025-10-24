@@ -135,7 +135,7 @@ class CreateComponentChange extends Change:
 		component.id = id
 		for property in component.CREATE_PARAMETERS:
 			component.set(property, Changes.copy(prop[property]))
-			component.propertyChanged(property)
+			component.propertyChangedDo(property)
 		dictionary[id] = component
 		
 		if type == Lock:
@@ -150,6 +150,8 @@ class CreateComponentChange extends Change:
 		result = component
 		parent.add_child(component)
 
+		if parent == game.editor.focusDialog.focused: game.editor.focusDialog.focusComponentAdded(type, prop[&"index"])
+
 	func undo() -> void:
 		game.editor.objectHovered = null
 		game.editor.componentDragged = null
@@ -157,17 +159,22 @@ class CreateComponentChange extends Change:
 		if dictionary[id] is GameObject: game.editor.focusDialog.defocus()
 		else: game.editor.focusDialog.defocusComponent()
 
+		var parent:GameObject
 		if type == Lock:
-			game.objects[prop[&"parentId"]].locks.pop_at(prop[&"index"])
-			for lockIndex in range(prop[&"index"], len(game.objects[prop[&"parentId"]].locks)):
-				game.objects[prop[&"parentId"]].locks[lockIndex].index -= 1
+			parent = game.objects[prop[&"parentId"]]
+			parent.locks.pop_at(prop[&"index"])
+			for lockIndex in range(prop[&"index"], len(parent.locks)):
+				parent.locks[lockIndex].index -= 1
 		elif type == KeyCounterElement:
-			game.objects[prop[&"parentId"]].elements.pop_at(prop[&"index"])
-			for elementIndex in range(prop[&"index"], len(game.objects[prop[&"parentId"]].elements)):
-				game.objects[prop[&"parentId"]].elements[elementIndex].index -= 1
+			parent = game.objects[prop[&"parentId"]]
+			parent.elements.pop_at(prop[&"index"])
+			for elementIndex in range(prop[&"index"], len(parent.elements)):
+				parent.elements[elementIndex].index -= 1
 
 		dictionary[id].queue_free()
 		dictionary.erase(id)
+
+		if parent and parent == game.editor.focusDialog.focused: game.editor.focusDialog.focusComponentRemoved(type, prop[&"index"])
 	
 	func _to_string() -> String:
 		return "<CreateComponentChange:"+str(id)+">"
@@ -207,17 +214,22 @@ class DeleteComponentChange extends Change: # TODO: FIX LOCKSELECTOR and KEYCOUN
 		if dictionary[prop[&"id"]] is GameObject: game.editor.focusDialog.defocus()
 		else: game.editor.focusDialog.defocusComponent()
 
+		var parent:GameObject
 		if type == Lock:
-			game.objects[prop[&"parentId"]].locks.pop_at(prop[&"index"])
-			for lockIndex in range(prop[&"index"], len(game.objects[prop[&"parentId"]].locks)):
-				game.objects[prop[&"parentId"]].locks[lockIndex].index -= 1
+			parent = game.objects[prop[&"parentId"]]
+			parent.locks.pop_at(prop[&"index"])
+			for lockIndex in range(prop[&"index"], len(parent.locks)):
+				parent.locks[lockIndex].index -= 1
 		elif type == KeyCounterElement:
+			parent = game.objects[prop[&"parentId"]]
 			game.objects[prop[&"parentId"]].elements.pop_at(prop[&"index"])
-			for elementIndex in range(prop[&"index"], len(game.objects[prop[&"parentId"]].elements)):
-				game.objects[prop[&"parentId"]].elements[elementIndex].index -= 1
+			for elementIndex in range(prop[&"index"], len(parent.elements)):
+				parent.elements[elementIndex].index -= 1
 		
 		dictionary[prop[&"id"]].queue_free()
 		dictionary.erase(prop[&"id"])
+
+		if parent and parent == game.editor.focusDialog.focused: game.editor.focusDialog.focusComponentRemoved(type, prop[&"index"])
 	
 	func undo() -> void:
 		var component:Variant
@@ -233,7 +245,7 @@ class DeleteComponentChange extends Change: # TODO: FIX LOCKSELECTOR and KEYCOUN
 		
 		for property in component.EDITOR_PROPERTIES:
 			component.set(property, Changes.copy(prop[property]))
-			component.propertyChanged(property)
+			component.propertyChangedDo(property)
 		dictionary[prop[&"id"]] = component
 		
 		if type == Lock:
@@ -246,6 +258,8 @@ class DeleteComponentChange extends Change: # TODO: FIX LOCKSELECTOR and KEYCOUN
 				game.objects[prop[&"parentId"]].elements[elementIndex].index += 1
 		
 		parent.add_child(component)
+
+		if parent == game.editor.focusDialog.focused: game.editor.focusDialog.focusComponentAdded(type, prop[&"index"])
 	
 	func _to_string() -> String:
 		return "<DeleteComponentChange:"+str(prop[&"id"])+">"
@@ -268,6 +282,7 @@ class PropertyChange extends Change:
 			cancelled = true
 			return
 		do()
+		component.propertyChangedInit(property)
 
 	func do() -> void: changeValue(Changes.copy(after))
 	func undo() -> void: changeValue(Changes.copy(before))
@@ -278,7 +293,7 @@ class PropertyChange extends Change:
 			Lock, KeyCounterElement: component = game.components[id]
 			_: component = game.objects[id]
 		component.set(property, value)
-		component.propertyChanged(property)
+		component.propertyChangedDo(property)
 		component.queue_redraw()
 		if game.editor.focusDialog.focused == component: game.editor.focusDialog.focus(component)
 		elif game.editor.focusDialog.componentFocused == component: game.editor.focusDialog.focusComponent(component)

@@ -155,6 +155,6 @@ func collect(player:Player) -> void:
 				else: %audio.stream = preload("res://resources/sounds/key/normal.wav")
 	%audio.play()
 
-func propertyGameChanged(property:StringName) -> void:
+func propertyGameChangedDo(property:StringName) -> void:
 	if property == &"active":
 		%interact.process_mode = PROCESS_MODE_INHERIT if active else PROCESS_MODE_DISABLED

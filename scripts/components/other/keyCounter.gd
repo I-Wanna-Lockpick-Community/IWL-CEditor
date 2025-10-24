@@ -87,6 +87,14 @@ func _swapElements(first:int, second:int) -> void: # TODO:DEJANK
 	changes.addChange(Changes.PropertyChange.new(editor.game,elements[first],&"color",secondColor))
 	changes.addChange(Changes.PropertyChange.new(editor.game,elements[second],&"color",firstColor))
 
+func addElement() -> void:
+	changes.addChange(Changes.CreateComponentChange.new(editor.game,KeyCounterElement,{&"position":Vector2(12,12+len(elements)*40),&"parentId":id}))
+	changes.bufferSave()
+
+func removeElement(index:int) -> void:
+	changes.addChange(Changes.DeleteComponentChange.new(editor.game,elements[index]))
+	changes.bufferSave()
+
 # ==== PLAY ==== #
 func start() -> void:
 	super()

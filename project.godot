@@ -23,6 +23,7 @@ buses/default_bus_layout="res://resources/sounds/defaultBusLayout.tres"
 
 changes="*res://scripts/singletons/changes.gd"
 gameChanges="*res://scripts/singletons/gameChanges.gd"
+mods="*res://scripts/singletons/mods.gd"
 
 [display]
 

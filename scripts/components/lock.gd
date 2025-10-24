@@ -228,7 +228,6 @@ func _simpleDoorUpdate() -> void:
 	changes.addChange(Changes.PropertyChange.new(editor.game,self,&"position",Vector2.ZERO))
 	changes.addChange(Changes.PropertyChange.new(editor.game,self,&"sizeType",newSizeType))
 	changes.addChange(Changes.PropertyChange.new(editor.game,self,&"size",parent.size - Vector2(14,14)))
-	_setAutoConfiguration()
 	queue_redraw()
 
 func _comboDoorConfigurationChanged(newSizeType:SIZE_TYPE,newConfiguration:CONFIGURATION=CONFIGURATION.NONE) -> void:
@@ -256,7 +255,6 @@ func _comboDoorSizeChanged() -> void:
 		Vector2(82,82): newSizeType = SIZE_TYPE.AnyXL
 	changes.addChange(Changes.PropertyChange.new(editor.game,self,&"sizeType",newSizeType))
 	changes.addChange(Changes.PropertyChange.new(editor.game,self,&"configuration",CONFIGURATION.NONE))
-	_setAutoConfiguration()
 	
 func _setAutoConfiguration() -> void:
 	var newConfiguration:CONFIGURATION = CONFIGURATION.NONE
@@ -271,7 +269,6 @@ func _setType(newType:TYPE):
 	if type == TYPE.BLANK:
 		changes.addChange(Changes.PropertyChange.new(editor.game,self,&"count",C.new(1)))
 		parent.queue_redraw()
-	_setAutoConfiguration()
 
 func receiveMouseInput(event:InputEventMouse) -> bool:
 	# resizing
@@ -293,6 +290,24 @@ func receiveMouseInput(event:InputEventMouse) -> bool:
 		editor.startSizeDrag(self, dragPivot)
 		return true
 	return false
+
+func _coerceSize() -> void:
+	var newSize:Vector2 = size + Vector2(14,14)
+	if newSize == Vector2(48,48) or size == Vector2(38,38):
+		# 1.5x1.5 or AnyM
+		newSize = Vector2(38,38)
+	else:
+		newSize = newSize.snapped(Vector2(32,32))
+		newSize -= Vector2(14,14)
+		newSize = newSize.min(Vector2(82,82))
+		if newSize.x != newSize.y and (newSize.x >= 50 or newSize.y >= 50):
+			newSize = Vector2(50,50)
+	changes.addChange(Changes.PropertyChange.new(editor.game,self,&"size",newSize))
+
+func propertyChangedInit(property:StringName) -> void:
+	if parent.type == Door.TYPE.COMBO:
+		if property == &"size": _comboDoorSizeChanged()
+	if property == &"count" or property == &"sizeType" or property == &"type": _setAutoConfiguration()
 
 # ==== PLAY ==== #
 func canOpen(player:Player) -> bool:

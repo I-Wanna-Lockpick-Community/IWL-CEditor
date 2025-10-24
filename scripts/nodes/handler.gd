@@ -15,15 +15,18 @@ func _ready() -> void:
 	add = Button.new()
 	add.theme_type_variation = &"SelectorButton"
 	add.icon = preload("res://assets/ui/focusDialog/handler/add.png")
-	add.connect(&"pressed", _addElement)
+	add.connect(&"pressed", addComponent)
 	add_child(add)
 	remove = Button.new()
 	remove.theme_type_variation = &"SelectorButton"
 	remove.icon = preload("res://assets/ui/focusDialog/handler/remove.png")
-	remove.connect(&"pressed", _removeElement)
+	remove.connect(&"pressed", removeComponent)
 	add_child(remove)
 
 	buttonGroup.connect("pressed", _select)
+
+func addComponent() -> void: pass
+func removeComponent() -> void: pass
 
 func deleteButtons() -> void:
 	for button in buttons:
@@ -41,9 +44,10 @@ func setSelect(index:int) -> void:
 func _select(button:Button) -> void: # not necessarily HandlerButton since lockhandler's buttongroup is shared with %spend
 	selected = button.index
 
-func _addElement() -> void: addButton(HandlerButton.new(len(buttons), self))
+static func buttonType() -> GDScript: return HandlerButton
 
-func addButton(button:HandlerButton) -> void:
+func addButton(index:int=len(buttons)) -> void:
+	var button:HandlerButton = buttonType().new(index, self)
 	buttons.append(button)
 	add_child(button)
 	move_child(add, -1)
@@ -51,12 +55,12 @@ func addButton(button:HandlerButton) -> void:
 	button.button_pressed = true
 	remove.visible = true
 
-func _removeElement() -> void:
-	var button:Button = buttons.pop_at(selected)
+func removeButton(index:int=selected) -> void:
+	var button:HandlerButton = buttons.pop_at(index)
 	button.deleted = true
 	button._draw()
 	button.queue_free()
-	for i in range(selected, len(buttons)):
+	for i in range(index, len(buttons)):
 		buttons[i].index -= 1
 	if len(buttons) == 0: remove.visible = false
 	else: setSelect(len(buttons)-1)

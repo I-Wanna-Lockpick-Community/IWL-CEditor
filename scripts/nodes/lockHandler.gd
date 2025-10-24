@@ -8,8 +8,8 @@ var door:Door
 func setup(_door:Door) -> void:
 	door = _door
 	deleteButtons()
-	for lock in door.locks:
-		var button:LockHandlerButton = LockHandlerButton.new(len(buttons), self, lock)
+	for index in len(door.locks):
+		var button:LockHandlerButton = LockHandlerButton.new(index, self)
 		buttons.append(button)
 		add_child(button)
 	move_child(add, -1)
@@ -18,41 +18,23 @@ func setup(_door:Door) -> void:
 	colorLink.visible = door.type == Door.TYPE.SIMPLE
 	remove.visible = len(buttons) > 0
 
-func _addElement() -> void:
-	var lock:Lock = changes.addChange(Changes.CreateComponentChange.new(editor.game,Lock,{&"position":getFirstFreePosition(),&"parentId":door.id})).result
-	if len(door.locks) == 1: editor.focusDialog._doorTypeSelected(Door.TYPE.SIMPLE)
-	elif door.type != Door.TYPE.GATE: editor.focusDialog._doorTypeSelected(Door.TYPE.COMBO)
-	colorLink.visible = door.type == Door.TYPE.SIMPLE
-	var button:LockHandlerButton = LockHandlerButton.new(len(buttons), self, lock)
-	addButton(button)
-	move_child(colorLink, -1)
-	changes.bufferSave()
+func addComponent() -> void: door.addLock()
+func removeComponent() -> void: door.removeLock(selected)
 
-func _removeElement() -> void: # -1 for automatic
-	changes.addChange(Changes.DeleteComponentChange.new(editor.game,door.locks[selected]))
-	if door.type != Door.TYPE.GATE: editor.focusDialog._doorTypeSelected(Door.TYPE.COMBO)
+static func buttonType() -> GDScript: return LockHandlerButton
+
+func addButton(index:int=len(buttons)) -> void:
+	super(index)
+	move_child(colorLink, -1)
+
+func removeButton(index:int=selected) -> void:
+	super(index)
 	colorLink.visible = false
-	super()
 
 func _select(button:Button) -> void:
 	if button is not LockHandlerButton: return
 	super(button)
 	if !manuallySetting: editor.focusDialog.focusComponent(door.locks[selected])
-
-func getFirstFreePosition() -> Vector2:
-	var x:float = 0
-	while true:
-		for y in floor(door.size.y/32):
-			var rect:Rect2 = Rect2(Vector2(32*x+7,32*y+7), Vector2(32,32))
-			var overlaps:bool = false
-			for lock in door.locks:
-				if Rect2(lock.position-lock.getOffset(), lock.size).intersects(rect):
-					overlaps = true
-					break
-			if overlaps: continue
-			return Vector2(32*x,32*y)
-		x += 1
-	return Vector2.ZERO # unreachable
 
 class LockHandlerButton extends HandlerButton:
 	const ICONS:Array[Texture2D] = [
@@ -67,9 +49,9 @@ class LockHandlerButton extends HandlerButton:
 
 	var drawMain:RID
 
-	func _init(_index:int,_selector:LockHandler, _lock:Lock) -> void:
+	func _init(_index:int,_selector:LockHandler) -> void:
 		super(_index, _selector)
-		lock = _lock
+		lock = selector.door.locks[index]
 	
 	func _ready() -> void:
 		drawMain = RenderingServer.canvas_item_create()

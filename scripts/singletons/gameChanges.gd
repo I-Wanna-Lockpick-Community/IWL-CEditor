@@ -118,7 +118,7 @@ class PropertyChange extends Change:
 			Lock: component = game.components[id]
 			_: component = game.objects[id]
 		component.set(property, value)
-		component.propertyGameChanged(property)
+		component.propertyGameChangedDo(property)
 		component.queue_redraw()
 		if component is Door:
 			for lock in component.locks: lock.queue_redraw()

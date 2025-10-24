@@ -88,6 +88,8 @@ func _gui_input(event:InputEvent) -> void:
 			# modes
 			if isLeftUnclick(event) or isRightUnclick(event):
 				if componentDragged and sizeDragging():
+					if !mods.active("VarLockSize") and componentDragged is Lock and componentDragged.parent.type == Door.TYPE.COMBO:
+						componentDragged._coerceSize()
 					if componentDragged is GameObject: focusDialog.focus(componentDragged)
 					else: focusDialog.focusComponent(componentDragged)
 				changes.bufferSave()
@@ -272,8 +274,6 @@ func dragComponent() -> bool: # returns whether or not an object is being dragge
 			var toRect:Rect2 = dragPivotRect.expand(dragPosition)
 			changes.addChange(Changes.PropertyChange.new(game,componentDragged,&"position",toRect.position-parentPosition))
 			changes.addChange(Changes.PropertyChange.new(game,componentDragged,&"size",toRect.size))
-			if componentDragged is Door and componentDragged.type == Door.TYPE.SIMPLE: componentDragged.locks[0]._simpleDoorUpdate()
-			if componentDragged is Lock: componentDragged._comboDoorSizeChanged()
 	return true
 
 func _input(event:InputEvent) -> void:
