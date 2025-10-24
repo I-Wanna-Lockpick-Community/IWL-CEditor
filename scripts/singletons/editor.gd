@@ -109,7 +109,8 @@ func _gui_input(event:InputEvent) -> void:
 					DRAG_MODE.SIZE_HORIZ: mouse_default_cursor_shape = CURSOR_HSIZE
 			else: mouse_default_cursor_shape = CURSOR_ARROW
 			# multiselect
-			if %multiselect.receiveMouseInput(event): return
+			if multiselect.receiveMouseInput(event): return
+			elif multiselect.state == Multiselect.STATE.HOLDING and isLeftClick(event): multiselect.deselect()
 			# size drag handles
 			if focusDialog.componentFocused is Lock and focusDialog.focused.type != Door.TYPE.SIMPLE:
 				if focusDialog.componentFocused.receiveMouseInput(event): return
