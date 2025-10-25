@@ -238,6 +238,7 @@ func tryOpen(player:Player) -> void:
 	match type:
 		TYPE.SIMPLE:
 			if locks[0].type == Lock.TYPE.BLAST: AudioManager.play(preload("res://resources/sounds/door/blast.wav"))
+			elif colorSpend == Game.COLOR.MASTER and locks[0] == Game.COLOR.MASTER: AudioManager.play(preload("res://resources/sounds/door/master.wav"))
 			else: AudioManager.play(preload("res://resources/sounds/door/simple.wav"))
 		TYPE.COMBO: AudioManager.play(preload("res://resources/sounds/door/combo.wav"))
 
