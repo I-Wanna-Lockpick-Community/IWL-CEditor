@@ -12,10 +12,11 @@ func setup() -> void:
 	firstButton = true
 	for child in %modsAdded.get_children(): child.queue_free()
 	for child in %modsRemoved.get_children(): child.queue_free()
-	for mod in modsWindow.modsAdded:
-		%modsAdded.add_child(ModSelectButton.new(self,mod))
-	for mod in modsWindow.modsRemoved:
-		%modsRemoved.add_child(ModSelectButton.new(self,mod))
+	for mod in mods.mods.keys():
+		if mod in modsWindow.modsAdded:
+			%modsAdded.add_child(ModSelectButton.new(self,mod))
+		elif mod in modsWindow.modsRemoved:
+			%modsRemoved.add_child(ModSelectButton.new(self,mod))
 
 func _modSelected(button:ModSelectButton) -> void:
 	%modName.text = button.mod.name
