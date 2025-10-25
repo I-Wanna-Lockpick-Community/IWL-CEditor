@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dfb1lp8jm4bny"
-path="res://.godot/imported/normal3.png-67ff91784c2004d79f80b88e7629e184.ctex"
+uid="uid://cc65kc24aumq8"
+path="res://.godot/imported/heldMaster.png-d37494c74348b653c8a95c2cae830b39.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/game/key/silver/normal3.png"
-dest_files=["res://.godot/imported/normal3.png-67ff91784c2004d79f80b88e7629e184.ctex"]
+source_file="res://assets/game/player/heldMaster.png"
+dest_files=["res://.godot/imported/heldMaster.png-d37494c74348b653c8a95c2cae830b39.ctex"]
 
 [params]
 

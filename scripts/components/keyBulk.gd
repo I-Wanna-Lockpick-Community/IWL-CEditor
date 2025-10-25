@@ -87,7 +87,7 @@ static func getOutlineTexture(keyColor:Game.COLOR, keyType:TYPE=TYPE.NORMAL) -> 
 				Game.COLOR.MASTER:
 					return preload("res://assets/game/key/master/outlineMask.png")
 				Game.COLOR.DYNAMITE: return preload("res://assets/game/key/dynamite/outlineMask.png")
-				Game.COLOR.QUICKSILVER: return preload("res://assets/game/key/silver/outlineMask.png")
+				Game.COLOR.QUICKSILVER: return preload("res://assets/game/key/quicksilver/outlineMask.png")
 				_: return preload("res://assets/game/key/normal/outlineMask.png")
 
 func _draw() -> void:
@@ -99,7 +99,7 @@ func _draw() -> void:
 	drawKey(editor.game,drawMain,drawGlitch,Vector2.ZERO,color,type)
 	match type:
 		KeyBulk.TYPE.NORMAL, KeyBulk.TYPE.EXACT:
-			if !count.eq(1): TextDraw.outlined(FKEYBULK,drawSymbol,str(count),keycountColor(),keycountOutlineColor(),18,Vector2(2,31),4)
+			if !count.eq(1): TextDraw.outlined(FKEYBULK,drawSymbol,str(count),keycountColor(),keycountOutlineColor(),18,Vector2(2,31))
 		KeyBulk.TYPE.SIGNFLIP: RenderingServer.canvas_item_add_texture_rect(drawSymbol,rect,SIGNFLIP_SYMBOL)
 		KeyBulk.TYPE.POSROTOR, KeyBulk.TYPE.CURSE: RenderingServer.canvas_item_add_texture_rect(drawSymbol,rect,POSROTOR_SYMBOL)
 		KeyBulk.TYPE.NEGROTOR, KeyBulk.TYPE.UNCURSE: RenderingServer.canvas_item_add_texture_rect(drawSymbol,rect,NEGROTOR_SYMBOL)
@@ -144,16 +144,16 @@ func collect(player:Player) -> void:
 	gameChanges.bufferSave()
 
 	if color == Game.COLOR.MASTER:
-		%audio.stream = preload("res://resources/sounds/key/master.wav")
+		AudioManager.play(preload("res://resources/sounds/key/master.wav"))
 	else:
 		match type:
-			TYPE.SIGNFLIP, TYPE.POSROTOR, TYPE.NEGROTOR: %audio.stream = preload("res://resources/sounds/key/signflip.wav")
-			TYPE.STAR: %audio.stream = preload("res://resources/sounds/key/star.wav")
-			TYPE.UNSTAR: %audio.stream = preload("res://resources/sounds/key/unstar.wav")
+			TYPE.SIGNFLIP, TYPE.POSROTOR, TYPE.NEGROTOR: AudioManager.play(preload("res://resources/sounds/key/signflip.wav"))
+			TYPE.STAR: AudioManager.play(preload("res://resources/sounds/key/star.wav"))
+			TYPE.UNSTAR: AudioManager.play(preload("res://resources/sounds/key/unstar.wav"))
 			_:
-				if count.sign() < 0: %audio.stream = preload("res://resources/sounds/key/negative.wav")
-				else: %audio.stream = preload("res://resources/sounds/key/normal.wav")
-	%audio.play()
+				if count.sign() < 0: AudioManager.play(preload("res://resources/sounds/key/negative.wav"))
+				else: AudioManager.play(preload("res://resources/sounds/key/normal.wav"))
+
 
 func propertyGameChangedDo(property:StringName) -> void:
 	if property == &"active":

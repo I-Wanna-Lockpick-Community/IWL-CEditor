@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dywnntldao7r2"
-path="res://.godot/imported/negative3.png-01bf18f0472759e28878ea4ca55d1423.ctex"
+uid="uid://csmepipibw1n1"
+path="res://.godot/imported/outlineMask.png-a11bdab7970e4a56ec466b2c6d7aa756.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/game/key/master/negative3.png"
-dest_files=["res://.godot/imported/negative3.png-01bf18f0472759e28878ea4ca55d1423.ctex"]
+source_file="res://assets/game/key/quicksilver/outlineMask.png"
+dest_files=["res://.godot/imported/outlineMask.png-a11bdab7970e4a56ec466b2c6d7aa756.ctex"]
 
 [params]
 

@@ -142,25 +142,26 @@ func _draw() -> void:
 	if !parent.active and editor.game.playState == Game.PLAY_STATE.PLAY: return
 	var rect:Rect2 = Rect2(-getOffset(), size)
 	# fill
-	var texture:Texture2D
-	var tileTexture:bool = false
-	match color:
-		Game.COLOR.MASTER: texture = editor.game.masterTex()
-		Game.COLOR.PURE: texture = editor.game.pureTex()
-		Game.COLOR.STONE: texture = editor.game.stoneTex()
-		Game.COLOR.DYNAMITE: texture = editor.game.dynamiteTex(); tileTexture = true
-		Game.COLOR.QUICKSILVER: texture = editor.game.quicksilverTex()
-	if texture:
-		if !tileTexture:
-			RenderingServer.canvas_item_set_material(drawScaled,Game.PIXELATED_MATERIAL.get_rid())
-			RenderingServer.canvas_item_set_instance_shader_parameter(drawScaled, &"size", size)
-		RenderingServer.canvas_item_add_texture_rect(drawScaled,rect,texture,tileTexture)
-	elif color == Game.COLOR.GLITCH:
-		if sizeType == SIZE_TYPE.ANY: RenderingServer.canvas_item_add_nine_patch(drawGlitch,rect,ANY_RECT,getLockFillSprite(),CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,Game.mainTone[color])
-		else: RenderingServer.canvas_item_add_texture_rect(drawGlitch,rect,getLockFillSprite(),false,Game.mainTone[color])
-	else:
-		if sizeType == SIZE_TYPE.ANY: RenderingServer.canvas_item_add_nine_patch(drawMain,rect,ANY_RECT,getLockFillSprite(),CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,Game.mainTone[color])
-		else: RenderingServer.canvas_item_add_texture_rect(drawMain,rect,getLockFillSprite(),false,Game.mainTone[color])
+	if parent.animState != Door.ANIM_STATE.RELOCK or parent.animPart > 2:
+		var texture:Texture2D
+		var tileTexture:bool = false
+		match color:
+			Game.COLOR.MASTER: texture = editor.game.masterTex()
+			Game.COLOR.PURE: texture = editor.game.pureTex()
+			Game.COLOR.STONE: texture = editor.game.stoneTex()
+			Game.COLOR.DYNAMITE: texture = editor.game.dynamiteTex(); tileTexture = true
+			Game.COLOR.QUICKSILVER: texture = editor.game.quicksilverTex()
+		if texture:
+			if !tileTexture:
+				RenderingServer.canvas_item_set_material(drawScaled,Game.PIXELATED_MATERIAL.get_rid())
+				RenderingServer.canvas_item_set_instance_shader_parameter(drawScaled, &"size", size)
+			RenderingServer.canvas_item_add_texture_rect(drawScaled,rect,texture,tileTexture)
+		elif color == Game.COLOR.GLITCH:
+			if sizeType == SIZE_TYPE.ANY: RenderingServer.canvas_item_add_nine_patch(drawGlitch,rect,ANY_RECT,getLockFillSprite(),CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,Game.mainTone[color])
+			else: RenderingServer.canvas_item_add_texture_rect(drawGlitch,rect,getLockFillSprite(),false,Game.mainTone[color])
+		else:
+			if sizeType == SIZE_TYPE.ANY: RenderingServer.canvas_item_add_nine_patch(drawMain,rect,ANY_RECT,getLockFillSprite(),CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,Game.mainTone[color])
+			else: RenderingServer.canvas_item_add_texture_rect(drawMain,rect,getLockFillSprite(),false,Game.mainTone[color])
 	# frame
 	if sizeType == SIZE_TYPE.ANY: RenderingServer.canvas_item_add_nine_patch(drawMain,rect,ANY_RECT,getLockFrameSprite(),CORNER_SIZE,CORNER_SIZE)
 	else: RenderingServer.canvas_item_add_texture_rect(drawMain,rect,getLockFrameSprite())

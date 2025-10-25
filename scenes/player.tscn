@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=3 uid="uid://6yguarjtefnc"]
+[gd_scene load_steps=18 format=3 uid="uid://6yguarjtefnc"]
 
 [ext_resource type="Script" uid="uid://bdaplq37fmdoo" path="res://scripts/singletons/player.gd" id="1_jej6c"]
 [ext_resource type="Texture2D" uid="uid://bau8k25wjq37" path="res://assets/game/player/fall0.png" id="2_f1ej7"]
@@ -13,7 +13,6 @@
 [ext_resource type="Texture2D" uid="uid://c83anqcgokvca" path="res://assets/game/player/run1.png" id="11_4ni07"]
 [ext_resource type="Texture2D" uid="uid://c7ak6him2djsv" path="res://assets/game/player/run2.png" id="12_l71n6"]
 [ext_resource type="Texture2D" uid="uid://cenapyi0tfs6a" path="res://assets/game/player/run3.png" id="13_ke2ow"]
-[ext_resource type="AudioStream" uid="uid://yqdb32dbw8uq" path="res://resources/sounds/player/undo.wav" id="14_f1ej7"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ujl30"]
 size = Vector2(12, 21)
@@ -98,6 +97,7 @@ sprite_frames = SubResource("SpriteFrames_31cv2")
 animation = &"idle"
 
 [node name="interact" type="Area2D" parent="."]
+unique_name_in_owner = true
 collision_layer = 0
 
 [node name="collision" type="CollisionShape2D" parent="interact"]
@@ -111,14 +111,3 @@ collision_layer = 0
 
 [node name="collision" type="CollisionShape2D" parent="near"]
 shape = SubResource("CircleShape2D_f1ej7")
-
-[node name="undoSound" type="AudioStreamPlayer" parent="."]
-unique_name_in_owner = true
-stream = ExtResource("14_f1ej7")
-pitch_scale = 0.6
-
-[node name="audio" type="AudioStreamPlayer" parent="."]
-unique_name_in_owner = true
-
-[connection signal="area_entered" from="interact" to="." method="_interacted"]
-[connection signal="area_entered" from="near" to="." method="_near"]

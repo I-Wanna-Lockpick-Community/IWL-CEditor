@@ -35,6 +35,7 @@ func undo() -> bool:
 	while true:
 		if undoStack[-1] is UndoSeparator:
 			game.player.position = undoStack[-1].position
+			game.player.dropMaster()
 			return true
 		var change = undoStack.pop_back()
 		change.undo()
@@ -86,6 +87,7 @@ class KeyChange extends ColorChange:
 			cancelled = true
 			return
 		super(_game,_color,after)
+		game.player.checkMaster()
 
 class StarChange extends ColorChange:
 	# a change to the starred state

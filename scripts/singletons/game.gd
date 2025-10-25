@@ -99,17 +99,17 @@ func dynamiteKeyTex(type:KeyBulk.TYPE) -> Texture2D: return DYNAMITE_KEY_TEXTURE
 
 
 const QUICKSILVER_TEXTURE:Array[Texture2D] = [
-	preload("res://assets/game/colorTexture/silver0.png"),
-	preload("res://assets/game/colorTexture/silver1.png"),
-	preload("res://assets/game/colorTexture/silver2.png"),
-	preload("res://assets/game/colorTexture/silver3.png")
+	preload("res://assets/game/colorTexture/quicksilver0.png"),
+	preload("res://assets/game/colorTexture/quicksilver1.png"),
+	preload("res://assets/game/colorTexture/quicksilver2.png"),
+	preload("res://assets/game/colorTexture/quicksilver3.png")
 ]
 func quicksilverTex() -> Texture2D: return QUICKSILVER_TEXTURE[goldIndex%4]
 const QUICKSILVER_KEY_TEXTURE:Array[Texture2D] = [
-	preload("res://assets/game/key/silver/normal0.png"),
-	preload("res://assets/game/key/silver/normal1.png"),
-	preload("res://assets/game/key/silver/normal2.png"),
-	preload("res://assets/game/key/silver/normal3.png")
+	preload("res://assets/game/key/quicksilver/normal0.png"),
+	preload("res://assets/game/key/quicksilver/normal1.png"),
+	preload("res://assets/game/key/quicksilver/normal2.png"),
+	preload("res://assets/game/key/quicksilver/normal3.png")
 	# awaiting
 ]
 func quicksilverKeyTex(_type:KeyBulk.TYPE) -> Texture2D: return QUICKSILVER_KEY_TEXTURE[goldIndex%4]
@@ -245,6 +245,9 @@ var levelBounds:Rect2i = Rect2i(0,0,800,608):
 const GLITCH_MATERIAL:ShaderMaterial = preload("res://resources/materials/glitchDrawMaterial.tres")
 const UNSCALED_GLITCH_MATERIAL:ShaderMaterial = preload("res://resources/materials/unscaledGlitchDrawMaterial.tres") # to reduce shader parameters
 const PIXELATED_MATERIAL:ShaderMaterial = preload("res://resources/materials/pixelatedDrawMaterial.tres")
+const ADDITIVE_MATERIAL:CanvasItemMaterial = preload("res://resources/materials/additiveMaterial.tres")
+const SUBTRACTIVE_MATERIAL:CanvasItemMaterial = preload("res://resources/materials/subtractiveMaterial.tres")
+const NEGATIVE_MATERIAL:ShaderMaterial = preload("res://resources/materials/negativeMaterial.tres")
 
 const FKEYX:Font = preload("res://resources/fonts/fKeyX.fnt")
 const FKEYNUM:Font = preload("res://resources/fonts/fKeyNum.fnt")
@@ -260,8 +263,11 @@ var playState:PLAY_STATE = PLAY_STATE.EDIT:
 		editor.topBar._playStateChanged()
 		%editorCamera.enabled = playState != PLAY_STATE.PLAY
 		%playCamera.enabled = playState == PLAY_STATE.PLAY
+		fastAnimSpeed = 0
+		fastAnimTimer = 0
 
-var starAngle:float = 0 # angle of star in key counters
+var fastAnimSpeed:float = 0 # 0: slowest, 1: fastest
+var fastAnimTimer:float = 0 # speed resets when this counts down to 0
 
 func _ready() -> void:
 	gameChanges.game = self
@@ -276,6 +282,17 @@ func _process(delta:float) -> void:
 	RenderingServer.global_shader_parameter_set(&"RCAMERA_ZOOM", 1/editor.cameraZoom)
 	if player:
 		%playCamera.position = player.position
+	# fast anims
+	if fastAnimTimer > 0:
+		fastAnimTimer -= delta
+		# counted down; reset
+		if fastAnimTimer <= 0:
+			fastAnimTimer = 0
+			fastAnimSpeed = 0
+
+func fasterAnims() -> void:
+	fastAnimTimer = 1.6666666667 # 100 frames, 60fps
+	fastAnimSpeed = min(fastAnimSpeed+0.05, 1)
 
 func playTest(spawn:PlayerSpawn) -> void:
 	if playState == PLAY_STATE.EDIT:
@@ -286,8 +303,7 @@ func playTest(spawn:PlayerSpawn) -> void:
 	playState = PLAY_STATE.PLAY
 	latestSpawn = spawn
 
-	goldIndex = 0
-	starAngle = 0
+	goldIndexFloat = 0
 
 	editor.multiselect.deselect()
 	editor.focusDialog.defocus()
@@ -315,4 +331,5 @@ func stopTest() -> void:
 
 func restart() -> void:
 	stopTest()
+	await get_tree().process_frame # to be safe
 	playTest(latestSpawn)

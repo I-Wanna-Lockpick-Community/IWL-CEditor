@@ -16,6 +16,3 @@ monitoring = false
 unique_name_in_owner = true
 position = Vector2(16, 16)
 shape = SubResource("RectangleShape2D_47wsx")
-
-[node name="audio" type="AudioStreamPlayer" parent="."]
-unique_name_in_owner = true

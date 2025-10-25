@@ -49,6 +49,7 @@ func receiveKey(key:InputEventKey):
 		KEY_8: number = 8
 		KEY_9: number = 9
 		KEY_MINUS:
+			if newlyInteracted: setValue(C.new(0),true)
 			if value.eq(0): bufferedSign = bufferedSign.times(-1)
 			setValue(value.times(-1))
 			deNew()

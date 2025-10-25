@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://ctqa7ts7aae6g"
-path="res://.godot/imported/silver3.png-ffec42ecae86929e60f196db2caa0579.ctex"
+uid="uid://palgvrd5fvj3"
+path="res://.godot/imported/masterShine.png-0530a6582a1119745f2c9c83b443a970.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/game/colorTexture/silver3.png"
-dest_files=["res://.godot/imported/silver3.png-ffec42ecae86929e60f196db2caa0579.ctex"]
+source_file="res://assets/game/player/masterShine.png"
+dest_files=["res://.godot/imported/masterShine.png-0530a6582a1119745f2c9c83b443a970.ctex"]
 
 [params]
 

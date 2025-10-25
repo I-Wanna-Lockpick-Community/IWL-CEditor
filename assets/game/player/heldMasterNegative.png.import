@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://csmepipibw1n1"
-path="res://.godot/imported/outlineMask.png-d3a19b3d85eeb6d78d48d6b8b7086ccc.ctex"
+uid="uid://q2iopacqwvl7"
+path="res://.godot/imported/heldMasterNegative.png-59467be24e2ecdaf97ebd568b6aa73e5.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/game/key/silver/outlineMask.png"
-dest_files=["res://.godot/imported/outlineMask.png-d3a19b3d85eeb6d78d48d6b8b7086ccc.ctex"]
+source_file="res://assets/game/player/heldMasterNegative.png"
+dest_files=["res://.godot/imported/heldMasterNegative.png-59467be24e2ecdaf97ebd568b6aa73e5.ctex"]
 
 [params]
 

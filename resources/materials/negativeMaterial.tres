@@ -1,0 +1,6 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://ce7uyj6p1aick"]
+
+[ext_resource type="Shader" uid="uid://c2ft3c15fooxg" path="res://resources/materials/negative.gdshader" id="1_b64ki"]
+
+[resource]
+shader = ExtResource("1_b64ki")

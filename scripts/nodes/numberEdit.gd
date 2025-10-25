@@ -51,6 +51,7 @@ func receiveKey(key:InputEventKey):
 		KEY_8: number = 8
 		KEY_9: number = 9
 		KEY_MINUS:
+			if newlyInteracted: setValue(Q.new(0),true)
 			if value.n == 0: bufferedNegative = !bufferedNegative
 			setValue(value.times(-1))
 			deNew()

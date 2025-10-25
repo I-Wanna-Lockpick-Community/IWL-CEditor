@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dq3xhyqk8hbmc"
-path="res://.godot/imported/negative1.png-fe6b1befef8e289111f0f3c3781214f2.ctex"
+uid="uid://dfb1lp8jm4bny"
+path="res://.godot/imported/normal3.png-62b7200115ac5e45772b142ee6c39ae7.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/game/key/master/negative1.png"
-dest_files=["res://.godot/imported/negative1.png-fe6b1befef8e289111f0f3c3781214f2.ctex"]
+source_file="res://assets/game/key/quicksilver/normal3.png"
+dest_files=["res://.godot/imported/normal3.png-62b7200115ac5e45772b142ee6c39ae7.ctex"]
 
 [params]
 
