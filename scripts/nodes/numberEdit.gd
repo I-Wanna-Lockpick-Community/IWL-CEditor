@@ -51,10 +51,8 @@ func receiveKey(key:InputEventKey):
 		KEY_8: number = 8
 		KEY_9: number = 9
 		KEY_MINUS:
-			if newlyInteracted: setValue(Q.new(0),true)
 			if value.n == 0: bufferedNegative = !bufferedNegative
 			setValue(value.times(-1))
-			deNew()
 		KEY_BACKSPACE:
 			theme_type_variation = &"NumberEditPanelContainerSelected"
 			if Input.is_key_pressed(KEY_CTRL) or newlyInteracted: setValue(Q.new(0))
@@ -69,7 +67,9 @@ func receiveKey(key:InputEventKey):
 		KEY_LEFT, KEY_RIGHT: deNew()
 		_: return false
 	if number != -1:
-		if newlyInteracted: setValue(Q.new(0),true)
+		if newlyInteracted:
+			if value.lt(0): bufferedNegative = true
+			setValue(Q.new(0),true)
 		deNew()
 		if value.n < 0 || bufferedNegative: setValue(Q.new(value.n*10-number))
 		else: setValue(Q.new(value.n*10+number))
