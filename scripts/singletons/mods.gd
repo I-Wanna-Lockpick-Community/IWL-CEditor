@@ -17,23 +17,23 @@ static var mods:Dictionary[StringName, Mod] = {
 		"Adds the None Color from L4vo5's Lockpick Editor"
 	),
 	&"C1": Mod.new(
-		"IWL: Continued - World 1",
+		"IWL:C World 1",
 		"Adds Remote Locks and Negated Locks from world 1 of IWL:C"
 	),
 	&"C2": Mod.new(
-		"IWL: Continued - World 2",
+		"IWL:C World 2",
 		"Adds Dynamite Keys and Quicksilver Keys from world 2 of IWL:C"
 	),
 	&"C3": Mod.new(
-		"IWL: Continued - World 3",
+		"IWL:C World 3",
 		"Adds Partial Blast Locks and Exact Locks from world 3 of IWL:C"
 	),
 	&"C4": Mod.new(
-		"IWL: Continued - World 4",
+		"IWL:C World 4",
 		"Adds Dark Aura Keys and Aura Breaker Keys from world 4 of IWL:C" # maybe we should figure out some official name for these
 	),
 	&"C5": Mod.new(
-		"IWL: Continued - World 5",
+		"IWL:C World 5",
 		"Adds Curse and Decurse Keys and Lock Armaments from world 5 of IWL:C"
 	),
 }
@@ -81,6 +81,13 @@ func getActiveMods() -> Array[StringName]:
 		if mods[mod].active: array.append(mod)
 	return array
 
+func getTempActiveMods() -> Array[StringName]:
+	var array:Array[StringName] = []
+	for mod in mods.keys():
+		if mods[mod].tempActive: array.append(mod)
+	return array
+
+
 func openModsWindow() -> void:
 	var window:Window = preload("res://scenes/modsWindow.tscn").instantiate()
 	editor.add_child(window)
@@ -101,6 +108,7 @@ func listIncompatibilities(mod:Mod) -> String:
 	return string
 class Mod extends RefCounted:
 	var active:bool = false
+	var tempActive:bool = false # used while in modsWindow
 	var name:String
 	var description:String
 	var dependencies:Array[StringName]

@@ -1,6 +1,6 @@
 [gd_scene load_steps=32 format=3 uid="uid://djnt51xv7wn52"]
 
-[ext_resource type="Theme" uid="uid://bvfthh0vm4fbp" path="res://resources/materials/uiTheme.tres" id="1_j8y2p"]
+[ext_resource type="Theme" uid="uid://bvfthh0vm4fbp" path="res://resources/uiTheme.tres" id="1_j8y2p"]
 [ext_resource type="Script" uid="uid://2wjcj6frwpjo" path="res://scripts/singletons/editor.gd" id="2_o435n"]
 [ext_resource type="Script" uid="uid://bt2qk0jhpuc53" path="res://scripts/singletons/topBar.gd" id="3_3vi5u"]
 [ext_resource type="Script" uid="uid://ced7aml4sfanx" path="res://scripts/singletons/modes.gd" id="4_4jiep"]
@@ -277,7 +277,7 @@ stretch = true
 [node name="gameViewport" type="SubViewport" parent="c/gameViewportCont"]
 handle_input_locally = false
 canvas_item_default_texture_filter = 0
-size = Vector2i(820, 628)
+size = Vector2i(2, 2)
 render_target_update_mode = 4
 
 [node name="game" parent="c/gameViewportCont/gameViewport" instance=ExtResource("8_5tdu1")]

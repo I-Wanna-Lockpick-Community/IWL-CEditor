@@ -12,7 +12,7 @@ func bufferSave() -> void:
 	saveBuffered = true
 
 func addChange(change:Change) -> Change:
-	if change.cancelled: return change
+	if change.cancelled: return null
 	if stackPosition != len(undoStack) - 1: undoStack = undoStack.slice(0,stackPosition+1)
 	undoStack.append(change)
 	stackPosition += 1

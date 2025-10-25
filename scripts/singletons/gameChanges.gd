@@ -17,7 +17,7 @@ func bufferSave() -> void:
 	saveBuffered = true
 
 func addChange(change:Change) -> Change:
-	if change.cancelled: return change
+	if change.cancelled: return null
 	undoStack.append(change)
 	return change
 
