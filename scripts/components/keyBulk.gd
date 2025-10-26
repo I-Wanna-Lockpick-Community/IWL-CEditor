@@ -97,6 +97,7 @@ func _draw() -> void:
 	if !active and editor.game.playState == Game.PLAY_STATE.PLAY: return
 	var rect:Rect2 = Rect2(Vector2.ZERO, size)
 	drawKey(editor.game,drawMain,drawGlitch,Vector2.ZERO,color,type)
+	if animState == ANIM_STATE.FLASH: RenderingServer.canvas_item_add_texture_rect(drawSymbol,rect,outlineTex(),false,Color(Color.WHITE,animAlpha))
 	match type:
 		KeyBulk.TYPE.NORMAL, KeyBulk.TYPE.EXACT:
 			if !count.eq(1): TextDraw.outlined(FKEYBULK,drawSymbol,str(count),keycountColor(),keycountOutlineColor(),18,Vector2(2,31))
@@ -130,6 +131,18 @@ static func drawKey(game:Game,keyDrawMain:RID,keyDrawGlitch:RID,keyOffset:Vector
 		RenderingServer.canvas_item_add_texture_rect(keyDrawMain,rect,getFill(keyType),false,Game.mainTone[keyColor])
 
 # ==== PLAY ==== #
+enum ANIM_STATE {IDLE, FLASH}
+var animState:ANIM_STATE = ANIM_STATE.IDLE
+var animAlpha:float = 0
+
+func _process(delta:float) -> void:
+	match animState:
+		ANIM_STATE.IDLE: animAlpha = 0
+		ANIM_STATE.FLASH:
+			animAlpha -= delta*6
+			if animAlpha <= 0: animState = ANIM_STATE.IDLE
+			queue_redraw()
+
 func collect(player:Player) -> void:
 	match type:
 		TYPE.NORMAL: gameChanges.addChange(GameChanges.KeyChange.new(editor.game, color, player.key[color].plus(count)))
@@ -140,7 +153,8 @@ func collect(player:Player) -> void:
 		TYPE.STAR: gameChanges.addChange(GameChanges.StarChange.new(editor.game, color, true))
 		TYPE.UNSTAR: gameChanges.addChange(GameChanges.StarChange.new(editor.game, color, false))
 		
-	if !infinite: gameChanges.addChange(GameChanges.PropertyChange.new(editor.game, self, &"active", false))
+	if infinite: flashAnimation()
+	else: gameChanges.addChange(GameChanges.PropertyChange.new(editor.game, self, &"active", false))
 	gameChanges.bufferSave()
 
 	if color == Game.COLOR.MASTER:
@@ -154,6 +168,9 @@ func collect(player:Player) -> void:
 				if count.sign() < 0: AudioManager.play(preload("res://resources/sounds/key/negative.wav"))
 				else: AudioManager.play(preload("res://resources/sounds/key/normal.wav"))
 
+func flashAnimation() -> void:
+	animState = ANIM_STATE.FLASH
+	animAlpha = 1
 
 func propertyGameChangedDo(property:StringName) -> void:
 	if property == &"active":

@@ -89,7 +89,7 @@ func _physics_process(_delta:float) -> void:
 	else:
 		nearDoor = false
 		for area in %near.get_overlapping_areas(): near(area)
-		for area in %interact.get_overlapping_areas(): interact(area)
+		for area in %interact.get_overlapping_areas(): interacted(area)
 
 func _process(delta:float) -> void:
 	masterShineAngle += delta*4.1887902048 # 4 degrees per frame, 60fps
@@ -105,14 +105,17 @@ func receiveKey(event:InputEventKey):
 		KEY_Z: if gameChanges.undo(): AudioManager.play(preload("res://resources/sounds/player/undo.wav")).pitch_scale = 0.6
 		KEY_X: cycleMaster()
 
-func interact(area:Area2D):
+func _newlyInteracted(area:Area2D) -> void:
 	var object:GameObject = area.get_parent()
 	if object is KeyBulk:
 		object.collect(self)
-	elif object is Door:
+
+func interacted(area:Area2D) -> void:
+	var object:GameObject = area.get_parent()
+	if object is Door:
 		object.tryOpen(self)
 
-func near(area:Area2D):
+func near(area:Area2D) -> void:
 	var object:GameObject = area.get_parent()
 	if object is Door: nearDoor = true
 

@@ -183,7 +183,7 @@ var animAlpha:float = 0
 var addCopySound:AudioStreamPlayer
 var animPart:int = 0
 
-func _process(delta:float):
+func _process(delta:float) -> void:
 	match animState:
 		ANIM_STATE.IDLE: animTimer = 0; animAlpha = 0
 		ANIM_STATE.ADD_COPY:

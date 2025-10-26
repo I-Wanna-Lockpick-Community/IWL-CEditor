@@ -111,3 +111,5 @@ collision_layer = 0
 
 [node name="collision" type="CollisionShape2D" parent="near"]
 shape = SubResource("CircleShape2D_f1ej7")
+
+[connection signal="area_entered" from="interact" to="." method="_newlyInteracted"]
