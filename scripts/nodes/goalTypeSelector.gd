@@ -3,6 +3,7 @@ class_name GoalTypeSelector
 
 const ICONS:Array[Texture2D] = [
 	preload("res://assets/game/goal/normal.png"),
+	preload("res://assets/game/goal/star.png"),
 	preload("res://assets/game/goal/omega.png"),
 ]
 
