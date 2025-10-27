@@ -15,5 +15,6 @@ func getDrawPosition() -> Vector2: return position
 func receiveMouseInput(_event:InputEventMouse) -> bool: return false
 
 func propertyChangedInit(_property:StringName) -> void: pass
-func propertyChangedDo(_property:StringName) -> void: if isReady and editor.findProblems: editor.findProblems.findProblems(self)
+func propertyChangedDo(_property:StringName) -> void:
+	if editor and editor.findProblems: editor.findProblems.findProblems(self)
 func propertyGameChangedDo(_property:StringName) -> void: pass

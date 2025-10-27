@@ -3,6 +3,7 @@ class_name FindProblems
 
 @onready var editor:Editor = get_node("/root/editor")
 @onready var modsWindow:ModsWindow = get_parent()
+@onready var problemsLabel:Label = %problemsLabel
 var buttonGroup:ButtonGroup = ButtonGroup.new()
 var firstButton:bool = false
 
@@ -51,6 +52,7 @@ func _modSelected(button:ModSelectButton) -> void:
 	%modName.text = button.mod.name
 	var anyProblems:bool = false
 	for child in %problems.get_children(): %problems.remove_child(child)
+	if shownDisplay: shownDisplay.stopShowing()
 
 	for problemType in button.mod.problems.keys():
 		if len(button.mod.problems[problemType]) != 0:
@@ -66,6 +68,7 @@ func findProblems(component:GameComponent) -> void:
 
 func noteProblem(mod:StringName, type:StringName, component:GameComponent, isProblem:bool) -> void:
 	var problem:Array = [mod, type]
+	print(isProblem, component.problems)
 	if isProblem and problem not in component.problems:
 		component.problems.append(problem)
 		mods.mods[mod].problems[type].append(component)
@@ -78,7 +81,6 @@ func noteProblem(mod:StringName, type:StringName, component:GameComponent, isPro
 		problems -= 1
 		if isReady: problemDisplays[mod][type].removeInstance(index)
 	if isReady: mods.mods[mod].selectButton.setIcon()
-	
 
 class ModSelectButton extends Button:
 	const NO_PROBLEM:Texture2D = preload("res://assets/ui/mods/noProblem.png")

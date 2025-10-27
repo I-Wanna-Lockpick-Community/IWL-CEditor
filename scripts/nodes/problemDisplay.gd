@@ -46,6 +46,8 @@ func _showPressed():
 	showInstance(0)
 
 func stopShowing() -> void:
+	if findProblems.shownDisplay != self: return
+	findProblems.shownDisplay = null
 	%show.visible = true
 	%shower.visible = false
 
@@ -55,6 +57,12 @@ func _showRight(): showInstance(posmod(showIndex+1,count))
 func newInstance() -> void: setTexts()
 
 func removeInstance(index:int) -> void:
+	if count == 0:
+		stopShowing()
+		get_parent().remove_child(self)
+		findProblems.problemsLabel.text = "Problems found:" if mod.hasProblems() else "No problems here"
+		return
 	if showIndex > index: showIndex -= 1
+	elif showIndex == count: showInstance(index-1)
 	elif showIndex == index: showInstance(index)
 	setTexts()
