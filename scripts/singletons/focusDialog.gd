@@ -26,12 +26,12 @@ func focus(object:GameObject) -> void:
 		%doorTypes.get_child(focused.type).button_pressed = true
 		%lockHandler.colorLink.visible = focused.type == Door.TYPE.SIMPLE
 		%spend.queue_redraw()
+		%lockConfigurationSelector.visible = componentFocused and focused.type != Door.TYPE.SIMPLE
+		%doorColorSelector.visible = componentFocused or focused.type != Door.TYPE.GATE # a mod will probably add something so i wont turn off the menu completely
 		if !componentFocused:
-			%lockConfigurationSelector.visible = false
 			%lockSettings.visible = false
 			%doorAxialNumberEdit.visible = false
 			%doorComplexNumberEdit.visible = focused.type != Door.TYPE.GATE
-			%doorColorSelector.visible = focused.type != Door.TYPE.GATE # a mod will probably add something so i wont turn off the menu completely
 			%doorColorSelector.setSelect(focused.colorSpend)
 			%doorComplexNumberEdit.setValue(focused.copies, true)
 			%spend.button_pressed = true
@@ -71,15 +71,13 @@ func defocus() -> void:
 
 func focusComponent(component:GameComponent) -> void:
 	var new:bool = component != componentFocused
-	if focused != component.parent: focus(component.parent)
 	componentFocused = component
+	if focused != component.parent: focus(component.parent)
 	if component is Lock:
-		%doorColorSelector.visible = true
 		%doorColorSelector.setSelect(component.color)
 		%doorAxialNumberEdit.setValue(component.count, true)
 		%lockHandler.setSelect(component.index)
 		%lockTypeSelector.setSelect(component.type)
-		%lockConfigurationSelector.visible = focused.type != Door.TYPE.SIMPLE
 		%lockConfigurationSelector.setup(component)
 		%lockSettings.visible = true
 		%doorAxialNumberEdit.visible = component.type == Lock.TYPE.NORMAL or component.type == Lock.TYPE.EXACT

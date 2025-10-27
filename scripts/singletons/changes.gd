@@ -198,16 +198,16 @@ class DeleteComponentChange extends Change: # TODO: FIX LOCKSELECTOR and KEYCOUN
 			_: dictionary = game.objects
 		
 		if type == Door:
-			for lock in component.locks:
+			for lock in component.locks.duplicate():
 				changes.addChange(DeleteComponentChange.new(game,lock))
 		elif type == KeyCounter:
-			for element in component.elements:
+			for element in component.elements.duplicate():
 				changes.addChange(DeleteComponentChange.new(game,element))
 		
-		do()
 		if type == PlayerSpawn and component == game.levelStart:
 			changes.addChange(GlobalObjectChange.new(game,game,&"levelStart",null))
-		elif type == KeyCounterElement:
+		do()
+		if type == KeyCounterElement:
 			game.objects[prop[&"parentId"]]._elementsChanged()
 
 	func do() -> void:

@@ -135,6 +135,8 @@ func propertyChangedInit(property:StringName) -> void:
 				if !mods.active(&"NstdLockSize"):
 					for lock in locks: lock._coerceSize()
 			TYPE.GATE:
+				if !mods.active(&"NstdLockSize"):
+					for lock in locks: lock._coerceSize()
 				changes.addChange(Changes.PropertyChange.new(editor.game,self,&"color",Game.COLOR.WHITE))
 	if property == &"size" and type == TYPE.SIMPLE: locks[0]._simpleDoorUpdate()
 
