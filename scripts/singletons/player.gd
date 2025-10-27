@@ -119,6 +119,8 @@ func near(area:Area2D) -> void:
 	var object:GameObject = area.get_parent()
 	if object is Door: nearDoor = true
 
+func overlapping(area:Area2D) -> bool: return %interact.overlaps_area(area)
+
 func cycleMaster() -> void:
 	if masterCycle < 1: # MASTER
 		var relevantCount:C = key[Game.COLOR.MASTER].across(complexMode)

@@ -69,7 +69,7 @@ func _draw() -> void:
 	var texture:Texture2D
 	var tileTexture:bool = false
 	if type == TYPE.GATE:
-		RenderingServer.canvas_item_add_texture_rect(drawMain,rect,GATE_FILL,true)
+		RenderingServer.canvas_item_add_texture_rect(drawMain,rect,GATE_FILL,true,Color(Color.WHITE,lerp(0.35,1.0,gateAlpha)))
 	else:
 		if animState != ANIM_STATE.RELOCK or animPart > 2:
 			match colorSpend:
@@ -187,6 +187,9 @@ var animTimer:float = 0
 var animAlpha:float = 0
 var addCopySound:AudioStreamPlayer
 var animPart:int = 0
+var gateAlpha:float = 1
+var gateOpen:bool = false
+var gateBufferCheck:Player = null
 
 func _process(delta:float) -> void:
 	match animState:
@@ -217,6 +220,16 @@ func _process(delta:float) -> void:
 			if animTimer >= animLength:
 				animState = ANIM_STATE.IDLE
 			queue_redraw()
+	if type == TYPE.GATE:
+		if gateBufferCheck and !gateBufferCheck.overlapping(%interact):
+			gateBufferCheck = null
+			gameChanges.addChange(GameChanges.PropertyChange.new(editor.game,self,&"gateOpen",false))
+		if !gateOpen and gateAlpha < 1:
+			gateAlpha = min(gateAlpha+0.1, 1)
+			queue_redraw()
+		elif gateOpen and gateAlpha > 0:
+			gateAlpha = max(gateAlpha-0.1, 0)
+			queue_redraw()
 
 func start() -> void:
 	gameCopies = copies
@@ -224,9 +237,14 @@ func start() -> void:
 	animTimer = 0
 	animAlpha = 0
 	animPart = 0
+	gateAlpha = 1
+	gateOpen = false
+	gateBufferCheck = null
+	propertyGameChangedDo(&"gateOpen")
 	super()
 
 func tryOpen(player:Player) -> void:
+	if type == TYPE.GATE: return
 	if animState != ANIM_STATE.IDLE: return
 	if player.masterCycle == 1 and tryMasterOpen(player): return
 
@@ -314,6 +332,15 @@ func propertyGameChangedDo(property:StringName) -> void:
 	if property == &"active":
 		%collision.process_mode = PROCESS_MODE_INHERIT if active else PROCESS_MODE_DISABLED
 		%interact.process_mode = PROCESS_MODE_INHERIT if active else PROCESS_MODE_DISABLED
+	if property == &"gateOpen" and type == TYPE.GATE:
+		%collision.process_mode = PROCESS_MODE_DISABLED if gateOpen else PROCESS_MODE_INHERIT
+
+func gateCheck(player:Player) -> void:
+	var shouldOpen:bool = true
+	for lock in locks:
+		if !lock.canOpen(player): shouldOpen = false
+	if gateOpen and !shouldOpen: gateBufferCheck = player
+	elif !gateOpen and shouldOpen: gameChanges.addChange(GameChanges.PropertyChange.new(editor.game,self,&"gateOpen",true))
 
 class Debris extends Node2D:
 	const FRAME:Texture2D = preload("res://assets/game/door/debris/frame.png")

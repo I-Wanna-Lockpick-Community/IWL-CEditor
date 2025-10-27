@@ -74,10 +74,12 @@ func focusComponent(component:GameComponent) -> void:
 	componentFocused = component
 	if focused != component.parent: focus(component.parent)
 	if component is Lock:
+		%doorColorSelector.visible = true
 		%doorColorSelector.setSelect(component.color)
 		%doorAxialNumberEdit.setValue(component.count, true)
 		%lockHandler.setSelect(component.index)
 		%lockTypeSelector.setSelect(component.type)
+		%lockConfigurationSelector.visible = focused.type != Door.TYPE.SIMPLE
 		%lockConfigurationSelector.setup(component)
 		%lockSettings.visible = true
 		%doorAxialNumberEdit.visible = component.type == Lock.TYPE.NORMAL or component.type == Lock.TYPE.EXACT
