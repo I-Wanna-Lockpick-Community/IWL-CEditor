@@ -4,7 +4,7 @@ class_name GameObject
 
 var active:bool = true
 
-func propertyChangedDo(_property:StringName) -> void: pass
+func propertyChangedDo(property:StringName) -> void: super(property)
 
 func start() -> void:
 	active = true

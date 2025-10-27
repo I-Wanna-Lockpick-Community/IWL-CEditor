@@ -132,13 +132,16 @@ func propertyChangedInit(property:StringName) -> void:
 						removeLock(lockIndex)
 				locks[0]._simpleDoorUpdate()
 			TYPE.COMBO:
-				if !mods.active(&"VarLockSize"):
+				if !mods.active(&"NstdLockSize"):
 					for lock in locks: lock._coerceSize()
 			TYPE.GATE:
 				changes.addChange(Changes.PropertyChange.new(editor.game,self,&"color",Game.COLOR.WHITE))
 	if property == &"size" and type == TYPE.SIMPLE: locks[0]._simpleDoorUpdate()
 
 func propertyChangedDo(property:StringName) -> void:
+	super(property)
+	if property == &"type" and editor.findProblems:
+		for lock in locks: editor.findProblems.findProblems(lock)
 	if property == &"size" or property == &"type":
 		%shape.shape.size = size
 		%shape.position = size/2

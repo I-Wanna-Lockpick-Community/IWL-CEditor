@@ -1,6 +1,9 @@
 extends Window
 class_name ModsWindow
 
+enum STAGE {SELECT_MODS, FIND_PROBLEMS}
+var stage:STAGE = STAGE.SELECT_MODS
+
 var modsAdded:Array[StringName] # mods that have been added
 var modsRemoved:Array[StringName] # mods that have been added
 
@@ -25,12 +28,14 @@ func _next() -> void:
 	%selectMods.visible = false
 	%findProblems.visible = true
 	title = "Find Problems"
+	stage = STAGE.FIND_PROBLEMS
 	%findProblems.setup()
 
 func _back():
 	%selectMods.visible = true
 	%findProblems.visible = false
 	title = "Select Mods"
+	stage = STAGE.SELECT_MODS
 
 func _saveChanges():
 	mods.activeModpack = tempActiveModpack

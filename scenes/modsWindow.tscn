@@ -23,7 +23,6 @@ title = "Select Mods"
 initial_position = 2
 size = Vector2i(640, 400)
 transient = true
-exclusive = true
 theme = ExtResource("1_gbm3x")
 script = ExtResource("1_3smad")
 
@@ -287,12 +286,8 @@ vertical_alignment = 2
 layout_mode = 2
 theme_type_variation = &"HSeparatorFancy"
 
-[node name="problems" type="VBoxContainer" parent="findProblems/c/c2/c/c"]
+[node name="problemsLabel" type="Label" parent="findProblems/c/c2/c/c"]
 unique_name_in_owner = true
-layout_mode = 2
-size_flags_vertical = 3
-
-[node name="l" type="Label" parent="findProblems/c/c2/c/c/problems"]
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
 text = "
@@ -300,6 +295,11 @@ No problems here"
 label_settings = SubResource("LabelSettings_ug10a")
 horizontal_alignment = 1
 autowrap_mode = 2
+
+[node name="problems" type="VBoxContainer" parent="findProblems/c/c2/c/c"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
 
 [node name="buttons" type="HBoxContainer" parent="findProblems/c/c2/c/c"]
 layout_mode = 2
@@ -312,6 +312,7 @@ theme_type_variation = &"RadioButtonText"
 text = "Back"
 
 [node name="saveChanges" type="Button" parent="findProblems/c/c2/c/c/buttons"]
+unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"RadioButtonText"
 text = "Save Changes"

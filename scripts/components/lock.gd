@@ -4,6 +4,7 @@ class_name Lock
 const TYPES:int = 5
 enum TYPE {NORMAL, BLANK, BLAST, ALL, EXACT}
 enum SIZE_TYPE {AnyS, AnyH, AnyV, AnyM, AnyL, AnyXL, ANY}
+const SIZES:Array[Vector2] = [Vector2(18,18), Vector2(50,18), Vector2(18,50), Vector2(38,38), Vector2(50,50), Vector2(82,82)]
 enum CONFIGURATION {spr1A, spr2H, spr2V, spr3H, spr3V, spr4A, spr4B, spr5A, spr5B, spr6A, spr6B, spr8A, spr12A, spr24A, NONE}
 
 func getAvailableConfigurations() -> Array[Array]:
@@ -306,7 +307,7 @@ func _coerceSize() -> void:
 	changes.addChange(Changes.PropertyChange.new(editor.game,self,&"size",newSize))
 
 func propertyChangedInit(property:StringName) -> void:
-	if parent.type == Door.TYPE.COMBO:
+	if parent.type != Door.TYPE.SIMPLE:
 		if property == &"size": _comboDoorSizeChanged()
 	if property == &"count" or property == &"sizeType" or property == &"type": _setAutoConfiguration()
 

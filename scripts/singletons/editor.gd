@@ -10,6 +10,7 @@ class_name Editor
 @onready var paste:Button = %paste
 @onready var otherObjects:OtherObjects = %otherObjects
 @onready var topBar:TopBar = %topBar
+var findProblems:FindProblems
 
 enum MODE {SELECT, TILE, KEY, DOOR, OTHER, PASTE}
 var mode:MODE = MODE.SELECT
@@ -88,7 +89,7 @@ func _gui_input(event:InputEvent) -> void:
 			# modes
 			if isLeftUnclick(event) or isRightUnclick(event):
 				if componentDragged and sizeDragging():
-					if !mods.active(&"VarLockSize") and componentDragged is Lock and componentDragged.parent.type == Door.TYPE.COMBO:
+					if !mods.active(&"NstdLockSize") and componentDragged is Lock and componentDragged.parent.type == Door.TYPE.COMBO:
 						componentDragged._coerceSize()
 					if componentDragged is GameObject: focusDialog.focus(componentDragged)
 					else: focusDialog.focusComponent(componentDragged)
@@ -352,3 +353,12 @@ static func rectSign(rect:Rect2, point:Vector2) -> Vector2: # the "sign" of a po
 	if point.y < rect.position.y: signY = -1
 	if point.y >= rect.end.y: signY = 1
 	return Vector2(signX, signY)
+
+func scrollIntoView(component:GameComponent) -> void:
+	var rect:Rect2 = Rect2(component.getDrawPosition()-Vector2(16,16), component.size+Vector2(32,32))
+	var screenRect:Rect2 = Rect2(screenspaceToWorldspace(gameViewportCont.position), gameViewportCont.size/game.editorCamera.zoom)
+	if rect.size.x > screenRect.size.x: zoomCamera(0.8**ceil(log(screenRect.size.x/rect.size.x)/-0.2231435513))
+	if rect.size.y > screenRect.size.y: zoomCamera(0.8**ceil(log(screenRect.size.y/rect.size.y)/-0.2231435513))
+	game.editorCamera.zoom = Vector2(targetCameraZoom,targetCameraZoom)
+	screenRect = Rect2(screenspaceToWorldspace(gameViewportCont.position), gameViewportCont.size/game.editorCamera.zoom)
+	game.editorCamera.position = game.editorCamera.position.clamp(rect.end-screenRect.size, rect.position)

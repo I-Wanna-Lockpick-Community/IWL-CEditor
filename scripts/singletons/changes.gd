@@ -131,7 +131,6 @@ class CreateComponentChange extends Change:
 				component = KeyCounterElement.new(parent,prop[&"index"])
 			_: component = type.SCENE.instantiate()
 
-		
 		component.id = id
 		for property in component.CREATE_PARAMETERS:
 			component.set(property, Changes.copy(prop[property]))
@@ -151,6 +150,10 @@ class CreateComponentChange extends Change:
 		parent.add_child(component)
 
 		if parent == game.editor.focusDialog.focused: game.editor.focusDialog.focusComponentAdded(type, prop[&"index"])
+
+		await component.ready
+		component.isReady = true
+		if game.editor.findProblems: game.editor.findProblems.findProblems(component)
 
 	func undo() -> void:
 		game.editor.objectHovered = null
@@ -260,7 +263,11 @@ class DeleteComponentChange extends Change: # TODO: FIX LOCKSELECTOR and KEYCOUN
 		parent.add_child(component)
 
 		if parent == game.editor.focusDialog.focused: game.editor.focusDialog.focusComponentAdded(type, prop[&"index"])
-	
+
+		await component.ready
+		component.isReady = true
+		if game.editor.findProblems: game.editor.findProblems.findProblems(component)
+
 	func _to_string() -> String:
 		return "<DeleteComponentChange:"+str(prop[&"id"])+">"
 
