@@ -150,7 +150,8 @@ class CreateComponentChange extends Change:
 				game.objects[prop[&"parentId"]].elements[elementIndex].index += 1
 		
 		result = component
-		parent.add_child(component)
+		if parent is Door: parent.locksParent.add_child(component)
+		else: parent.add_child(component)
 
 		if parent == game.editor.focusDialog.focused: game.editor.focusDialog.focusComponentAdded(type, prop[&"index"])
 
@@ -266,7 +267,8 @@ class DeleteComponentChange extends Change: # TODO: FIX LOCKSELECTOR and KEYCOUN
 			for elementIndex in range(prop[&"index"]+1, len(game.objects[prop[&"parentId"]].elements)):
 				game.objects[prop[&"parentId"]].elements[elementIndex].index += 1
 		
-		parent.add_child(component)
+		if parent is Door: parent.locksParent.add_child(component)
+		else: parent.add_child(component)
 
 		if parent == game.editor.focusDialog.focused: game.editor.focusDialog.focusComponentAdded(type, prop[&"index"])
 

@@ -29,3 +29,9 @@ monitoring = false
 unique_name_in_owner = true
 position = Vector2(16, 16)
 shape = SubResource("RectangleShape2D_yar34")
+
+[node name="locksParent" type="Node2D" parent="."]
+unique_name_in_owner = true
+
+[node name="auraParent" type="Node2D" parent="."]
+unique_name_in_owner = true

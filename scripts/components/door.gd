@@ -11,6 +11,19 @@ const SPEND_MAIN:Texture2D = preload("res://assets/game/door/spendMain.png")
 const SPEND_DARK:Texture2D = preload("res://assets/game/door/spendDark.png")
 const GATE_FILL:Texture2D = preload("res://assets/game/door/gateFill.png")
 
+const CRUMBLED_1X1:Texture2D = preload("res://assets/game/door/aura/crumbled1x1.png")
+const CRUMBLED_1X2:Texture2D = preload("res://assets/game/door/aura/crumbled1x2.png")
+const CRUMBLED_2X2:Texture2D = preload("res://assets/game/door/aura/crumbled2x2.png")
+const CRUMBLED_BASE:Texture2D = preload("res://assets/game/door/aura/crumbledBase.png")
+
+const FROZEN_MATERIAL:ShaderMaterial = preload("res://resources/materials/frozenDrawMaterial.tres")
+const PAINTED_MATERIAL:CanvasItemMaterial = preload("res://resources/materials/additiveMaterial.tres")
+
+const FROZEN_1X1:Texture2D = preload("res://assets/game/door/aura/frozen1x1.png")
+const FROZEN_1X2:Texture2D = preload("res://assets/game/door/aura/frozen1x2.png")
+const FROZEN_2X2:Texture2D = preload("res://assets/game/door/aura/frozen2x2.png")
+const FROZEN_3X2:Texture2D = preload("res://assets/game/door/aura/frozen3x2.png")
+
 const TEXTURE_RECT:Rect2 = Rect2(Vector2.ZERO,Vector2(64,64)) # size of all the door textures
 const CORNER_SIZE:Vector2 = Vector2(9,9) # size of door ninepatch corners
 const TILE:RenderingServer.NinePatchAxisMode = RenderingServer.NinePatchAxisMode.NINE_PATCH_TILE # just to save characters
@@ -20,20 +33,29 @@ const CREATE_PARAMETERS:Array[StringName] = [
 ]
 const EDITOR_PROPERTIES:Array[StringName] = [
 	&"id", &"position", &"size",
-	&"colorSpend", &"copies", &"type"
+	&"colorSpend", &"copies", &"type",
+	&"frozen", &"crumbled", &"painted"
 ]
 
 var colorSpend:Game.COLOR = Game.COLOR.WHITE
 var copies:C = C.new(1)
 var type:TYPE = TYPE.SIMPLE
+var frozen:bool = false
+var crumbled:bool = false
+var painted:bool = false
 
 var drawScaled:RID
 var drawMain:RID
 var drawGlitch:RID
+var drawCrumbled:RID
+var drawPainted:RID
+var drawFrozen:RID
 var drawCopies:RID
 var drawNegative:RID
 
 var locks:Array[Lock] = []
+
+@onready var locksParent:Node2D = %locksParent
 
 const COPIES_COLOR = Color("#edeae7")
 const COPIES_OUTLINE_COLOR = Color("#3e2d1c")
@@ -44,15 +66,23 @@ func _ready() -> void:
 	drawScaled = RenderingServer.canvas_item_create()
 	drawMain = RenderingServer.canvas_item_create()
 	drawGlitch = RenderingServer.canvas_item_create()
+	drawCrumbled = RenderingServer.canvas_item_create()
+	drawPainted = RenderingServer.canvas_item_create()
+	drawFrozen = RenderingServer.canvas_item_create()
 	drawCopies = RenderingServer.canvas_item_create()
 	drawNegative = RenderingServer.canvas_item_create()
 	RenderingServer.canvas_item_set_material(drawGlitch,Game.GLITCH_MATERIAL.get_rid())
+	RenderingServer.canvas_item_set_material(drawPainted,PAINTED_MATERIAL.get_rid())
+	RenderingServer.canvas_item_set_material(drawFrozen,FROZEN_MATERIAL.get_rid())
 	RenderingServer.canvas_item_set_material(drawNegative,Game.NEGATIVE_MATERIAL.get_rid())
 	RenderingServer.canvas_item_set_z_index(drawCopies,1)
 	RenderingServer.canvas_item_set_z_index(drawNegative,1)
 	RenderingServer.canvas_item_set_parent(drawScaled,get_canvas_item())
 	RenderingServer.canvas_item_set_parent(drawMain,get_canvas_item())
 	RenderingServer.canvas_item_set_parent(drawGlitch,get_canvas_item())
+	RenderingServer.canvas_item_set_parent(drawCrumbled, %auraParent.get_canvas_item())
+	RenderingServer.canvas_item_set_parent(drawPainted, %auraParent.get_canvas_item())
+	RenderingServer.canvas_item_set_parent(drawFrozen, %auraParent.get_canvas_item())
 	RenderingServer.canvas_item_set_parent(drawCopies,get_canvas_item())
 	RenderingServer.canvas_item_set_parent(drawNegative,get_canvas_item())
 	game.connect(&"goldIndexChanged",queue_redraw)
@@ -61,6 +91,9 @@ func _draw() -> void:
 	RenderingServer.canvas_item_clear(drawScaled)
 	RenderingServer.canvas_item_clear(drawMain)
 	RenderingServer.canvas_item_clear(drawGlitch)
+	RenderingServer.canvas_item_clear(drawCrumbled)
+	RenderingServer.canvas_item_clear(drawPainted)
+	RenderingServer.canvas_item_clear(drawFrozen)
 	RenderingServer.canvas_item_clear(drawCopies)
 	RenderingServer.canvas_item_clear(drawNegative)
 	if !active and game.playState == Game.PLAY_STATE.PLAY: return
@@ -69,7 +102,7 @@ func _draw() -> void:
 	var texture:Texture2D
 	var tileTexture:bool = false
 	if type == TYPE.GATE:
-		RenderingServer.canvas_item_add_texture_rect(drawMain,rect,GATE_FILL,true,Color(Color.WHITE,lerp(0.35,1.0,gateAlpha)))
+		if false: RenderingServer.canvas_item_add_texture_rect(drawMain,rect,GATE_FILL,true,Color(Color.WHITE,lerp(0.35,1.0,gateAlpha)))
 	else:
 		if animState != ANIM_STATE.RELOCK or animPart > 2:
 			match colorSpend:
@@ -94,6 +127,22 @@ func _draw() -> void:
 		# frame
 		if len(locks) > 0 and type == TYPE.SIMPLE and locks[0].count.sign() < 0: RenderingServer.canvas_item_add_nine_patch(drawMain,rect,TEXTURE_RECT,FRAME_NEGATIVE,CORNER_SIZE,CORNER_SIZE)
 		else: RenderingServer.canvas_item_add_nine_patch(drawMain,rect,TEXTURE_RECT,FRAME,CORNER_SIZE,CORNER_SIZE)
+	# auras
+	if crumbled if game.playState == Game.PLAY_STATE.EDIT else gameCrumbled:
+		if size == Vector2(32,32): RenderingServer.canvas_item_add_texture_rect(drawCrumbled,Rect2(Vector2.ZERO, size),CRUMBLED_1X1)
+		elif size == Vector2(32,64): RenderingServer.canvas_item_add_texture_rect(drawCrumbled,Rect2(Vector2.ZERO, size),CRUMBLED_1X2)
+		elif size == Vector2(64,64): RenderingServer.canvas_item_add_texture_rect(drawCrumbled,Rect2(Vector2.ZERO, size),CRUMBLED_2X2)
+		else:
+			RenderingServer.canvas_item_add_nine_patch(drawCrumbled,rect,TEXTURE_RECT,CRUMBLED_BASE,Vector2(16,18),Vector2(16,14),TILE,TILE,true)
+	if frozen if game.playState == Game.PLAY_STATE.EDIT else gameFrozen:
+		RenderingServer.canvas_item_set_instance_shader_parameter(drawFrozen, &"size", Vector2(0,0))
+		if size == Vector2(32,32): RenderingServer.canvas_item_add_texture_rect(drawFrozen,Rect2(Vector2.ZERO, size),FROZEN_1X1)
+		elif size == Vector2(32,64): RenderingServer.canvas_item_add_texture_rect(drawFrozen,Rect2(Vector2.ZERO, size),FROZEN_1X2)
+		elif size == Vector2(64,64): RenderingServer.canvas_item_add_texture_rect(drawFrozen,Rect2(Vector2.ZERO, size),FROZEN_2X2)
+		elif size == Vector2(96,64): RenderingServer.canvas_item_add_texture_rect(drawFrozen,Rect2(Vector2.ZERO, size),FROZEN_3X2)
+		else:
+			RenderingServer.canvas_item_set_instance_shader_parameter(drawFrozen, &"size", size)
+			RenderingServer.canvas_item_add_rect(drawFrozen,rect,Color.WHITE)
 	# anim overlays
 	if animState == ANIM_STATE.ADD_COPY: RenderingServer.canvas_item_add_rect(drawNegative,rect,Color(Color.WHITE,animAlpha))
 	elif animState == ANIM_STATE.RELOCK: RenderingServer.canvas_item_add_rect(drawCopies,rect,Color(Color.WHITE,animAlpha)) # just to be on top of everything else
@@ -180,6 +229,9 @@ func removeLock(index:int) -> void:
 
 # ==== PLAY ==== #
 var gameCopies:C = C.new(1)
+var gameFrozen:bool = false
+var gameCrumbled:bool = false
+var gamePainted:bool = false
 
 enum ANIM_STATE {IDLE, ADD_COPY, RELOCK}
 var animState:ANIM_STATE = ANIM_STATE.IDLE
@@ -233,6 +285,9 @@ func _process(delta:float) -> void:
 
 func start() -> void:
 	gameCopies = copies
+	gameFrozen = frozen
+	gameCrumbled = crumbled
+	gamePainted = painted
 	animState = ANIM_STATE.IDLE
 	animTimer = 0
 	animAlpha = 0

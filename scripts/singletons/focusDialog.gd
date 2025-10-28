@@ -28,9 +28,13 @@ func focus(object:GameObject) -> void:
 		%spend.queue_redraw()
 		%lockConfigurationSelector.visible = componentFocused and focused.type != Door.TYPE.SIMPLE
 		%doorColorSelector.visible = componentFocused or focused.type != Door.TYPE.GATE # a mod will probably add something so i wont turn off the menu completely
+		%frozen.button_pressed = focused.frozen
+		%crumbled.button_pressed = focused.crumbled
+		%painted.button_pressed = focused.painted
 		if !componentFocused:
 			%lockSettings.visible = false
 			%doorAxialNumberEdit.visible = false
+			%doorAuraSettings.visible = focused.type != Door.TYPE.GATE
 			%doorComplexNumberEdit.visible = focused.type != Door.TYPE.GATE
 			%doorColorSelector.setSelect(focused.colorSpend)
 			%doorComplexNumberEdit.setValue(focused.copies, true)
@@ -59,7 +63,7 @@ func showCorrectDialog() -> void:
 	%playerDialog.visible = focused is PlayerSpawn
 	%keyCounterDialog.visible = focused is KeyCounter
 	%goalDialog.visible = focused is Goal
-	above = focused is KeyCounter
+	above = focused is KeyCounter # maybe add more later
 	%speechBubbler.rotation_degrees = 0 if above else 180
 
 func defocus() -> void:
@@ -83,6 +87,7 @@ func focusComponent(component:GameComponent) -> void:
 		%lockConfigurationSelector.setup(component)
 		%lockSettings.visible = true
 		%doorAxialNumberEdit.visible = component.type == Lock.TYPE.NORMAL or component.type == Lock.TYPE.EXACT
+		%doorAuraSettings.visible = false
 		%doorComplexNumberEdit.visible = false
 		%blastLockSettings.visible = component.type == Lock.TYPE.BLAST
 		%blastLockSign.button_pressed = component.count.sign() < 0
@@ -316,3 +321,20 @@ func focusComponentRemoved(type:GDScript, index:int) -> void:
 	elif type == KeyCounterElement:
 		%keyCounterHandler.removeButton(index)
 		assert(index != 0); focusComponent(focused.elements[index-1])
+
+
+func _frozenSet(value:bool):
+	if focused is not Door: return
+	changes.addChange(Changes.PropertyChange.new(editor.game,focused,&"frozen",value))
+	changes.bufferSave()
+
+func _crumbledSet(value:bool):
+	if focused is not Door: return
+	changes.addChange(Changes.PropertyChange.new(editor.game,focused,&"crumbled",value))
+	changes.bufferSave()
+
+func _paintedSet(value:bool):
+	if focused is not Door: return
+	changes.addChange(Changes.PropertyChange.new(editor.game,focused,&"painted",value))
+	changes.bufferSave()
+
