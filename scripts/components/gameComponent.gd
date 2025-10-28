@@ -8,7 +8,8 @@ var problems:Array[Array] = [] # array[array[mod, problemtype]]
 
 var isReady:bool = false
 
-@onready var editor:Editor = get_node("/root/editor")
+var editor:Editor
+var game:Game
 
 func getDrawPosition() -> Vector2: return position
 

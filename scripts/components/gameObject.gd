@@ -6,6 +6,8 @@ var active:bool = true
 
 func propertyChangedDo(property:StringName) -> void: super(property)
 
-func start() -> void:
+func start() -> void: pass
+
+func stop() -> void:
 	active = true
 	propertyGameChangedDo(&"active")

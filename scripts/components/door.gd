@@ -55,7 +55,7 @@ func _ready() -> void:
 	RenderingServer.canvas_item_set_parent(drawGlitch,get_canvas_item())
 	RenderingServer.canvas_item_set_parent(drawCopies,get_canvas_item())
 	RenderingServer.canvas_item_set_parent(drawNegative,get_canvas_item())
-	editor.game.connect(&"goldIndexChanged",queue_redraw)
+	game.connect(&"goldIndexChanged",queue_redraw)
 
 func _draw() -> void:
 	RenderingServer.canvas_item_clear(drawScaled)
@@ -63,7 +63,7 @@ func _draw() -> void:
 	RenderingServer.canvas_item_clear(drawGlitch)
 	RenderingServer.canvas_item_clear(drawCopies)
 	RenderingServer.canvas_item_clear(drawNegative)
-	if !active and editor.game.playState == Game.PLAY_STATE.PLAY: return
+	if !active and game.playState == Game.PLAY_STATE.PLAY: return
 	var rect:Rect2 = Rect2(Vector2.ZERO, size)
 	# fill
 	var texture:Texture2D
@@ -73,11 +73,11 @@ func _draw() -> void:
 	else:
 		if animState != ANIM_STATE.RELOCK or animPart > 2:
 			match colorSpend:
-				Game.COLOR.MASTER: texture = editor.game.masterTex()
-				Game.COLOR.PURE: texture = editor.game.pureTex()
-				Game.COLOR.STONE: texture = editor.game.stoneTex()
-				Game.COLOR.DYNAMITE: texture = editor.game.dynamiteTex(); tileTexture = true
-				Game.COLOR.QUICKSILVER: texture = editor.game.quicksilverTex()
+				Game.COLOR.MASTER: texture = game.masterTex()
+				Game.COLOR.PURE: texture = game.pureTex()
+				Game.COLOR.STONE: texture = game.stoneTex()
+				Game.COLOR.DYNAMITE: texture = game.dynamiteTex(); tileTexture = true
+				Game.COLOR.QUICKSILVER: texture = game.quicksilverTex()
 			if texture:
 				if !tileTexture:
 					RenderingServer.canvas_item_set_material(drawScaled,Game.PIXELATED_MATERIAL.get_rid())
@@ -98,7 +98,7 @@ func _draw() -> void:
 	if animState == ANIM_STATE.ADD_COPY: RenderingServer.canvas_item_add_rect(drawNegative,rect,Color(Color.WHITE,animAlpha))
 	elif animState == ANIM_STATE.RELOCK: RenderingServer.canvas_item_add_rect(drawCopies,rect,Color(Color.WHITE,animAlpha)) # just to be on top of everything else
 	# copies
-	if editor.game.playState == Game.PLAY_STATE.EDIT:
+	if game.playState == Game.PLAY_STATE.EDIT:
 		if !copies.eq(1): TextDraw.outlinedCentered(Game.FKEYX,drawCopies,"×"+str(copies),COPIES_COLOR,COPIES_OUTLINE_COLOR,20,Vector2(size.x/2,-8))
 	else:
 		if !gameCopies.eq(1): TextDraw.outlinedCentered(Game.FKEYX,drawCopies,"×"+str(gameCopies),COPIES_COLOR,COPIES_OUTLINE_COLOR,20,Vector2(size.x/2,-8))
@@ -137,7 +137,7 @@ func propertyChangedInit(property:StringName) -> void:
 			TYPE.GATE:
 				if !mods.active(&"NstdLockSize"):
 					for lock in locks: lock._coerceSize()
-				changes.addChange(Changes.PropertyChange.new(editor.game,self,&"color",Game.COLOR.WHITE))
+				changes.addChange(Changes.PropertyChange.new(game,self,&"color",Game.COLOR.WHITE))
 	if property == &"size" and type == TYPE.SIMPLE: locks[0]._simpleDoorUpdate()
 
 func propertyChangedDo(property:StringName) -> void:
@@ -153,7 +153,7 @@ func propertyChangedDo(property:StringName) -> void:
 		else: %interactShape.shape.size += Vector2(2,2)
 
 func addLock() -> void:
-	changes.addChange(Changes.CreateComponentChange.new(editor.game,Lock,{&"position":getFirstFreePosition(),&"parentId":id}))
+	changes.addChange(Changes.CreateComponentChange.new(game,Lock,{&"position":getFirstFreePosition(),&"parentId":id}))
 	if len(locks) == 1: editor.focusDialog._doorTypeSelected(Door.TYPE.SIMPLE)
 	elif type == Door.TYPE.SIMPLE: editor.focusDialog._doorTypeSelected(Door.TYPE.COMBO)
 	changes.bufferSave()
@@ -174,8 +174,8 @@ func getFirstFreePosition() -> Vector2:
 	return Vector2.ZERO # unreachable
 
 func removeLock(index:int) -> void:
-	changes.addChange(Changes.DeleteComponentChange.new(editor.game,locks[index]))
-	if type == Door.TYPE.SIMPLE: changes.addChange(Changes.PropertyChange.new(editor.game,self,&"type",TYPE.COMBO))
+	changes.addChange(Changes.DeleteComponentChange.new(game,locks[index]))
+	if type == Door.TYPE.SIMPLE: changes.addChange(Changes.PropertyChange.new(game,self,&"type",TYPE.COMBO))
 	changes.bufferSave()
 
 # ==== PLAY ==== #
@@ -197,22 +197,22 @@ func _process(delta:float) -> void:
 		ANIM_STATE.ADD_COPY:
 			animTimer += delta*60
 			if addCopySound: addCopySound.pitch_scale = 1 + 0.015*animTimer
-			var animLength:float = lerp(50,10,editor.game.fastAnimSpeed)
+			var animLength:float = lerp(50,10,game.fastAnimSpeed)
 			animAlpha = 1 - animTimer/animLength
 			if animTimer >= animLength: animState = ANIM_STATE.IDLE
 			queue_redraw()
 		ANIM_STATE.RELOCK:
 			animTimer += delta*60
-			var animLength:float = lerp(60,12,editor.game.fastAnimSpeed)
+			var animLength:float = lerp(60,12,game.fastAnimSpeed)
 			match animPart:
-				0: if animTimer >= lerp(25,5,editor.game.fastAnimSpeed):
+				0: if animTimer >= lerp(25,5,game.fastAnimSpeed):
 					AudioManager.play(preload("res://resources/sounds/door/relock.wav"))
 					animPart += 1
-				1: if animTimer >= lerp(40,8,editor.game.fastAnimSpeed):
+				1: if animTimer >= lerp(40,8,game.fastAnimSpeed):
 					AudioManager.play(preload("res://resources/sounds/door/masterNegative.wav"))
 					animAlpha = 1
 					animPart += 1
-				2: if animTimer >= lerp(50,10,editor.game.fastAnimSpeed):
+				2: if animTimer >= lerp(50,10,game.fastAnimSpeed):
 					animPart += 1
 					for lock in locks: lock.queue_redraw()
 				3:
@@ -223,12 +223,12 @@ func _process(delta:float) -> void:
 	if type == TYPE.GATE:
 		if gateBufferCheck and !gateBufferCheck.overlapping(%interact):
 			gateBufferCheck = null
-			gameChanges.addChange(GameChanges.PropertyChange.new(editor.game,self,&"gateOpen",false))
+			gameChanges.addChange(GameChanges.PropertyChange.new(game,self,&"gateOpen",false))
 		if !gateOpen and gateAlpha < 1:
-			gateAlpha = min(gateAlpha+0.1, 1)
+			gateAlpha = min(gateAlpha+delta*6, 1)
 			queue_redraw()
 		elif gateOpen and gateAlpha > 0:
-			gateAlpha = max(gateAlpha-0.1, 0)
+			gateAlpha = max(gateAlpha-delta*6, 0)
 			queue_redraw()
 
 func start() -> void:
@@ -237,10 +237,13 @@ func start() -> void:
 	animTimer = 0
 	animAlpha = 0
 	animPart = 0
+	propertyGameChangedDo(&"gateOpen")
+	super()
+
+func stop() -> void:
 	gateAlpha = 1
 	gateOpen = false
 	gateBufferCheck = null
-	propertyGameChangedDo(&"gateOpen")
 	super()
 
 func tryOpen(player:Player) -> void:
@@ -255,8 +258,8 @@ func tryOpen(player:Player) -> void:
 	for lock in locks:
 		cost = cost.plus(lock.getCost(player))
 	
-	gameChanges.addChange(GameChanges.KeyChange.new(editor.game, colorSpend, player.key[colorSpend].minus(cost)))
-	gameChanges.addChange(GameChanges.PropertyChange.new(editor.game, self, &"gameCopies", gameCopies.minus(1)))
+	gameChanges.addChange(GameChanges.KeyChange.new(game, colorSpend, player.key[colorSpend].minus(cost)))
+	gameChanges.addChange(GameChanges.PropertyChange.new(game, self, &"gameCopies", gameCopies.minus(1)))
 	
 	match type:
 		TYPE.SIMPLE:
@@ -274,8 +277,8 @@ func tryMasterOpen(player:Player) -> bool:
 	if hasColor(Game.COLOR.PURE): return false
 
 	var openedForwards:bool = gameCopies.across(player.masterMode).reduce().gt(0)
-	gameChanges.addChange(GameChanges.PropertyChange.new(editor.game, self, &"gameCopies", gameCopies.minus(player.masterMode)))
-	gameChanges.addChange(GameChanges.KeyChange.new(editor.game, Game.COLOR.MASTER, player.key[Game.COLOR.MASTER].minus(player.masterMode)))
+	gameChanges.addChange(GameChanges.PropertyChange.new(game, self, &"gameCopies", gameCopies.minus(player.masterMode)))
+	gameChanges.addChange(GameChanges.KeyChange.new(game, Game.COLOR.MASTER, player.key[Game.COLOR.MASTER].minus(player.masterMode)))
 	
 	if openedForwards:
 		AudioManager.play(preload("res://resources/sounds/door/master.wav"))
@@ -295,7 +298,7 @@ func hasColor(color:Game.COLOR) -> bool:
 	return false
 
 func destroy() -> void:
-	gameChanges.addChange(GameChanges.PropertyChange.new(editor.game, self, &"active", false))
+	gameChanges.addChange(GameChanges.PropertyChange.new(game, self, &"active", false))
 	var color:Game.COLOR = colorSpend
 	if type == TYPE.SIMPLE: color = locks[0].color
 	for y in floor(size.y/16):
@@ -307,7 +310,7 @@ func addCopyAnimation() -> void:
 	animTimer = 0
 	animAlpha = 0
 	animPart = 0
-	editor.game.fasterAnims()
+	game.fasterAnims()
 	addCopySound = AudioManager.play(preload("res://resources/sounds/door/addCopy.wav"))
 	var color:Game.COLOR = colorSpend
 	if type == TYPE.SIMPLE: color = locks[0].color
@@ -320,13 +323,13 @@ func relockAnimation() -> void:
 	animTimer = 0
 	animAlpha = 0
 	animPart = 0
-	editor.game.fasterAnims()
+	game.fasterAnims()
 	for lock in locks: lock.queue_redraw()
 	var color:Game.COLOR = colorSpend
 	if type == TYPE.SIMPLE: color = locks[0].color
 	for y in floor(size.y/16):
 		for x in floor(size.x/16):
-			add_child(RelockDebris.new(editor.game,color,Vector2(x*16,y*16)))
+			add_child(RelockDebris.new(game,color,Vector2(x*16,y*16)))
 
 func propertyGameChangedDo(property:StringName) -> void:
 	if property == &"active":
@@ -340,7 +343,7 @@ func gateCheck(player:Player) -> void:
 	for lock in locks:
 		if !lock.canOpen(player): shouldOpen = false
 	if gateOpen and !shouldOpen: gateBufferCheck = player
-	elif !gateOpen and shouldOpen: gameChanges.addChange(GameChanges.PropertyChange.new(editor.game,self,&"gateOpen",true))
+	elif !gateOpen and shouldOpen: gameChanges.addChange(GameChanges.PropertyChange.new(game,self,&"gateOpen",true))
 
 class Debris extends Node2D:
 	const FRAME:Texture2D = preload("res://assets/game/door/debris/frame.png")

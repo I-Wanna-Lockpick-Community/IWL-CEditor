@@ -134,24 +134,24 @@ func _ready() -> void:
 	RenderingServer.canvas_item_set_parent(drawGlitch,get_canvas_item())
 	RenderingServer.canvas_item_set_parent(drawScaled,get_canvas_item())
 	RenderingServer.canvas_item_set_parent(drawMain,get_canvas_item())
-	editor.game.connect(&"goldIndexChanged",queue_redraw)
+	game.connect(&"goldIndexChanged",queue_redraw)
 
 func _draw() -> void:
 	RenderingServer.canvas_item_clear(drawGlitch)
 	RenderingServer.canvas_item_clear(drawScaled)
 	RenderingServer.canvas_item_clear(drawMain)
-	if !parent.active and editor.game.playState == Game.PLAY_STATE.PLAY: return
+	if !parent.active and game.playState == Game.PLAY_STATE.PLAY: return
 	var rect:Rect2 = Rect2(-getOffset(), size)
 	# fill
 	if parent.animState != Door.ANIM_STATE.RELOCK or parent.animPart > 2:
 		var texture:Texture2D
 		var tileTexture:bool = false
 		match color:
-			Game.COLOR.MASTER: texture = editor.game.masterTex()
-			Game.COLOR.PURE: texture = editor.game.pureTex()
-			Game.COLOR.STONE: texture = editor.game.stoneTex()
-			Game.COLOR.DYNAMITE: texture = editor.game.dynamiteTex(); tileTexture = true
-			Game.COLOR.QUICKSILVER: texture = editor.game.quicksilverTex()
+			Game.COLOR.MASTER: texture = game.masterTex()
+			Game.COLOR.PURE: texture = game.pureTex()
+			Game.COLOR.STONE: texture = game.stoneTex()
+			Game.COLOR.DYNAMITE: texture = game.dynamiteTex(); tileTexture = true
+			Game.COLOR.QUICKSILVER: texture = game.quicksilverTex()
 		if texture:
 			if !tileTexture:
 				RenderingServer.canvas_item_set_material(drawScaled,Game.PIXELATED_MATERIAL.get_rid())
@@ -227,14 +227,14 @@ func _simpleDoorUpdate() -> void:
 		Vector2(64,64): newSizeType = SIZE_TYPE.AnyL
 		Vector2(96,96): newSizeType = SIZE_TYPE.AnyXL
 		_: newSizeType = SIZE_TYPE.ANY
-	changes.addChange(Changes.PropertyChange.new(editor.game,self,&"position",Vector2.ZERO))
-	changes.addChange(Changes.PropertyChange.new(editor.game,self,&"sizeType",newSizeType))
-	changes.addChange(Changes.PropertyChange.new(editor.game,self,&"size",parent.size - Vector2(14,14)))
+	changes.addChange(Changes.PropertyChange.new(game,self,&"position",Vector2.ZERO))
+	changes.addChange(Changes.PropertyChange.new(game,self,&"sizeType",newSizeType))
+	changes.addChange(Changes.PropertyChange.new(game,self,&"size",parent.size - Vector2(14,14)))
 	queue_redraw()
 
 func _comboDoorConfigurationChanged(newSizeType:SIZE_TYPE,newConfiguration:CONFIGURATION=CONFIGURATION.NONE) -> void:
-	changes.addChange(Changes.PropertyChange.new(editor.game,self,&"sizeType",newSizeType))
-	changes.addChange(Changes.PropertyChange.new(editor.game,self,&"configuration",newConfiguration))
+	changes.addChange(Changes.PropertyChange.new(game,self,&"sizeType",newSizeType))
+	changes.addChange(Changes.PropertyChange.new(game,self,&"configuration",newConfiguration))
 	var newSize:Vector2
 	match sizeType:
 		SIZE_TYPE.AnyS: newSize = Vector2(18,18)
@@ -243,7 +243,7 @@ func _comboDoorConfigurationChanged(newSizeType:SIZE_TYPE,newConfiguration:CONFI
 		SIZE_TYPE.AnyM: newSize = Vector2(38,38)
 		SIZE_TYPE.AnyL: newSize = Vector2(50,50)
 		SIZE_TYPE.AnyXL: newSize = Vector2(82,82)
-	if newSize: changes.addChange(Changes.PropertyChange.new(editor.game,self,&"size",newSize))
+	if newSize: changes.addChange(Changes.PropertyChange.new(game,self,&"size",newSize))
 	queue_redraw()
 
 func _comboDoorSizeChanged() -> void:
@@ -255,8 +255,8 @@ func _comboDoorSizeChanged() -> void:
 		Vector2(38,38): newSizeType = SIZE_TYPE.AnyM
 		Vector2(50,50): newSizeType = SIZE_TYPE.AnyL
 		Vector2(82,82): newSizeType = SIZE_TYPE.AnyXL
-	changes.addChange(Changes.PropertyChange.new(editor.game,self,&"sizeType",newSizeType))
-	changes.addChange(Changes.PropertyChange.new(editor.game,self,&"configuration",CONFIGURATION.NONE))
+	changes.addChange(Changes.PropertyChange.new(game,self,&"sizeType",newSizeType))
+	changes.addChange(Changes.PropertyChange.new(game,self,&"configuration",CONFIGURATION.NONE))
 	
 func _setAutoConfiguration() -> void:
 	var newConfiguration:CONFIGURATION = CONFIGURATION.NONE
@@ -264,12 +264,12 @@ func _setAutoConfiguration() -> void:
 		if sizeType == option[0]:
 			newConfiguration = option[1]
 			break
-	changes.addChange(Changes.PropertyChange.new(editor.game,self,&"configuration",newConfiguration))
+	changes.addChange(Changes.PropertyChange.new(game,self,&"configuration",newConfiguration))
 
 func _setType(newType:TYPE):
-	changes.addChange(Changes.PropertyChange.new(editor.game,self,&"type",newType))
+	changes.addChange(Changes.PropertyChange.new(game,self,&"type",newType))
 	if type == TYPE.BLANK:
-		changes.addChange(Changes.PropertyChange.new(editor.game,self,&"count",C.new(1)))
+		changes.addChange(Changes.PropertyChange.new(game,self,&"count",C.new(1)))
 		parent.queue_redraw()
 
 func receiveMouseInput(event:InputEventMouse) -> bool:
@@ -294,17 +294,17 @@ func receiveMouseInput(event:InputEventMouse) -> bool:
 	return false
 
 func _coerceSize() -> void:
-	var newSize:Vector2 = size + Vector2(14,14)
-	if newSize == Vector2(48,48) or size == Vector2(38,38):
-		# 1.5x1.5 or AnyM
+	var newSize = (size+Vector2(14,14)).snapped(Vector2(16,16))
+	if newSize == Vector2(48,48):
 		newSize = Vector2(38,38)
 	else:
-		newSize = newSize.snapped(Vector2(32,32))
-		newSize -= Vector2(14,14)
+		newSize = (size+Vector2(14,14)).snapped(Vector2(32,32)) - Vector2(14,14)
+		if newSize in SIZES: return
 		newSize = newSize.min(Vector2(82,82))
-		if newSize.x != newSize.y and (newSize.x >= 50 or newSize.y >= 50):
-			newSize = Vector2(50,50)
-	changes.addChange(Changes.PropertyChange.new(editor.game,self,&"size",newSize))
+		# 1x3, 2x3 -> 3x3
+		if newSize.x < newSize.y: newSize = Vector2(newSize.y, newSize.y)
+		elif newSize.y < newSize.x: newSize = Vector2(newSize.x, newSize.x)
+	changes.addChange(Changes.PropertyChange.new(game,self,&"size",newSize))
 
 func propertyChangedInit(property:StringName) -> void:
 	if parent.type != Door.TYPE.SIMPLE:

@@ -70,8 +70,7 @@ func _ready() -> void:
 	RenderingServer.canvas_item_set_parent(drawMain,get_canvas_item())
 	RenderingServer.canvas_item_set_parent(drawGlitch,get_canvas_item())
 	RenderingServer.canvas_item_set_parent(drawSymbol,get_canvas_item())
-	RenderingServer.canvas_item_set_z_index(drawSymbol,2)
-	editor.game.connect(&"goldIndexChanged",func():if Game.isAnimated(color): queue_redraw())
+	game.connect(&"goldIndexChanged",func():if Game.isAnimated(color): queue_redraw())
 
 func outlineTex() -> Texture2D: return getOutlineTexture(color, type)
 
@@ -94,9 +93,9 @@ func _draw() -> void:
 	RenderingServer.canvas_item_clear(drawMain)
 	RenderingServer.canvas_item_clear(drawGlitch)
 	RenderingServer.canvas_item_clear(drawSymbol)
-	if !active and editor.game.playState == Game.PLAY_STATE.PLAY: return
+	if !active and game.playState == Game.PLAY_STATE.PLAY: return
 	var rect:Rect2 = Rect2(Vector2.ZERO, size)
-	drawKey(editor.game,drawMain,drawGlitch,Vector2.ZERO,color,type)
+	drawKey(game,drawMain,drawGlitch,Vector2.ZERO,color,type)
 	if animState == ANIM_STATE.FLASH: RenderingServer.canvas_item_add_texture_rect(drawSymbol,rect,outlineTex(),false,Color(Color.WHITE,animAlpha))
 	match type:
 		KeyBulk.TYPE.NORMAL, KeyBulk.TYPE.EXACT:
@@ -109,18 +108,18 @@ func _draw() -> void:
 func keycountColor() -> Color: return Color("#363029") if count.sign() < 0 else Color("#ebe3dd")
 func keycountOutlineColor() -> Color: return Color("#d6cfc9") if count.sign() < 0 else Color("#363029")
 
-static func drawKey(game:Game,keyDrawMain:RID,keyDrawGlitch:RID,keyOffset:Vector2,keyColor:Game.COLOR,keyType:TYPE=TYPE.NORMAL) -> void:
+static func drawKey(_game:Game,keyDrawMain:RID,keyDrawGlitch:RID,keyOffset:Vector2,keyColor:Game.COLOR,keyType:TYPE=TYPE.NORMAL) -> void:
 	var texture:Texture2D
 	var rect:Rect2 = Rect2(keyOffset, Vector2(32,32))
 	match keyColor:
-		Game.COLOR.MASTER: texture = game.masterKeyTex(keyType)
-		Game.COLOR.PURE: texture = game.pureKeyTex(keyType)
-		Game.COLOR.STONE: texture = game.stoneKeyTex(keyType)
-		Game.COLOR.DYNAMITE: texture = game.dynamiteKeyTex(keyType)
-		Game.COLOR.QUICKSILVER: texture = game.quicksilverKeyTex(keyType)
-		Game.COLOR.ICE: texture = game.iceKeyTex(keyType)
-		Game.COLOR.MUD: texture = game.mudKeyTex(keyType)
-		Game.COLOR.GRAFFITI: texture = game.graffitiKeyTex(keyType)
+		Game.COLOR.MASTER: texture = _game.masterKeyTex(keyType)
+		Game.COLOR.PURE: texture = _game.pureKeyTex(keyType)
+		Game.COLOR.STONE: texture = _game.stoneKeyTex(keyType)
+		Game.COLOR.DYNAMITE: texture = _game.dynamiteKeyTex(keyType)
+		Game.COLOR.QUICKSILVER: texture = _game.quicksilverKeyTex(keyType)
+		Game.COLOR.ICE: texture = _game.iceKeyTex(keyType)
+		Game.COLOR.MUD: texture = _game.mudKeyTex(keyType)
+		Game.COLOR.GRAFFITI: texture = _game.graffitiKeyTex(keyType)
 	if texture:
 		RenderingServer.canvas_item_add_texture_rect(keyDrawMain,rect,texture)
 	elif keyColor == Game.COLOR.GLITCH:
@@ -145,16 +144,16 @@ func _process(delta:float) -> void:
 
 func collect(player:Player) -> void:
 	match type:
-		TYPE.NORMAL: gameChanges.addChange(GameChanges.KeyChange.new(editor.game, color, player.key[color].plus(count)))
-		TYPE.EXACT: gameChanges.addChange(GameChanges.KeyChange.new(editor.game, color, count))
-		TYPE.SIGNFLIP: gameChanges.addChange(GameChanges.KeyChange.new(editor.game, color, player.key[color].times(-1)))
-		TYPE.POSROTOR: gameChanges.addChange(GameChanges.KeyChange.new(editor.game, color, player.key[color].times(C.I)))
-		TYPE.NEGROTOR: gameChanges.addChange(GameChanges.KeyChange.new(editor.game, color, player.key[color].times(C.nI)))
-		TYPE.STAR: gameChanges.addChange(GameChanges.StarChange.new(editor.game, color, true))
-		TYPE.UNSTAR: gameChanges.addChange(GameChanges.StarChange.new(editor.game, color, false))
+		TYPE.NORMAL: gameChanges.addChange(GameChanges.KeyChange.new(game, color, player.key[color].plus(count)))
+		TYPE.EXACT: gameChanges.addChange(GameChanges.KeyChange.new(game, color, count))
+		TYPE.SIGNFLIP: gameChanges.addChange(GameChanges.KeyChange.new(game, color, player.key[color].times(-1)))
+		TYPE.POSROTOR: gameChanges.addChange(GameChanges.KeyChange.new(game, color, player.key[color].times(C.I)))
+		TYPE.NEGROTOR: gameChanges.addChange(GameChanges.KeyChange.new(game, color, player.key[color].times(C.nI)))
+		TYPE.STAR: gameChanges.addChange(GameChanges.StarChange.new(game, color, true))
+		TYPE.UNSTAR: gameChanges.addChange(GameChanges.StarChange.new(game, color, false))
 		
 	if infinite: flashAnimation()
-	else: gameChanges.addChange(GameChanges.PropertyChange.new(editor.game, self, &"active", false))
+	else: gameChanges.addChange(GameChanges.PropertyChange.new(game, self, &"active", false))
 	gameChanges.bufferSave()
 
 	if color == Game.COLOR.MASTER:

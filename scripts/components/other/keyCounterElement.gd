@@ -47,12 +47,12 @@ func _draw() -> void:
 	RenderingServer.canvas_item_clear(drawStar)
 	RenderingServer.canvas_item_clear(drawGlitch)
 	RenderingServer.canvas_item_clear(drawMain)
-	if editor.game.playState != Game.PLAY_STATE.EDIT and editor.game.player.star[color]:
+	if editor.game.player and editor.game.player.star[color]:
 		RenderingServer.canvas_item_set_transform(drawStar,Transform2D(parent.starAngle,Vector2(16,16)))
 		RenderingServer.canvas_item_add_texture_rect(drawStar,Rect2(Vector2(-25.6,-25.6),Vector2(51.2,51.2)),STAR,false,STAR_COLOR)
 	KeyBulk.drawKey(editor.game,drawMain,drawGlitch,Vector2.ZERO,color)
 	Game.FKEYNUM.draw_string(drawMain,Vector2(38,14),"x",HORIZONTAL_ALIGNMENT_LEFT,-1,22,TEXT_COLOR)
-	Game.FKEYNUM.draw_string(drawMain,Vector2(58,14),"0" if editor.game.playState == Game.PLAY_STATE.EDIT else str(editor.game.player.key[color]),HORIZONTAL_ALIGNMENT_LEFT,-1,22,TEXT_COLOR)
+	Game.FKEYNUM.draw_string(drawMain,Vector2(58,14),"0" if !editor.game.player else str(editor.game.player.key[color]),HORIZONTAL_ALIGNMENT_LEFT,-1,22,TEXT_COLOR)
 
 func getDrawPosition() -> Vector2: return position + parent.position
 

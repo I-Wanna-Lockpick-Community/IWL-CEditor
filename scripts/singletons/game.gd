@@ -326,7 +326,9 @@ func stopTest() -> void:
 	player.queue_free()
 	gameChanges.saveBuffered = false
 	player = null
-	for object in objects.values(): object.queue_redraw()
+	for object in objects.values():
+		object.stop()
+		object.queue_redraw()
 	for component in components.values(): component.queue_redraw()
 
 func restart() -> void:

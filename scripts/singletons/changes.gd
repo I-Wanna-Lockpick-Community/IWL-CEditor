@@ -131,6 +131,9 @@ class CreateComponentChange extends Change:
 				component = KeyCounterElement.new(parent,prop[&"index"])
 			_: component = type.SCENE.instantiate()
 
+		component.editor = game.editor
+		component.game = game
+
 		component.id = id
 		for property in component.CREATE_PARAMETERS:
 			component.set(property, Changes.copy(prop[property]))
@@ -246,6 +249,9 @@ class DeleteComponentChange extends Change: # TODO: FIX LOCKSELECTOR and KEYCOUN
 				component = KeyCounterElement.new(parent,prop[&"index"])
 			_: component = type.SCENE.instantiate()
 		
+		component.editor = game.editor
+		component.game = game
+
 		for property in component.EDITOR_PROPERTIES:
 			component.set(property, Changes.copy(prop[property]))
 			component.propertyChangedDo(property)

@@ -52,7 +52,8 @@ func _process(_delta) -> void:
 
 	mouseWorldPosition = screenspaceToWorldspace(get_global_mouse_position())
 	mouseTilePosition = Vector2i(mouseWorldPosition) / tileSize * tileSize
-	gameViewportCont.material.set_shader_parameter("mousePosition",mouseWorldPosition)
+	if game.playState == Game.PLAY_STATE.PLAY: gameViewportCont.material.set_shader_parameter("mousePosition",Vector2(-1e7,-1e7)) # probably far away enough
+	else: gameViewportCont.material.set_shader_parameter("mousePosition",mouseWorldPosition)
 	gameViewportCont.material.set_shader_parameter("screenPosition",screenspaceToWorldspace(Vector2.ZERO))
 	if game.playState == Game.PLAY_STATE.PLAY: cameraZoom = game.playCamera.zoom.x
 	else: cameraZoom = game.editorCamera.zoom.x
@@ -73,6 +74,8 @@ func _process(_delta) -> void:
 			for element in focusDialog.focused.elements:
 				if Rect2(element.getDrawPosition(), element.getHoverSize()).has_point(mouseWorldPosition):
 					componentHovered = element
+
+	game.tiles.z_index = 2 if mode == MODE.TILE else 0
 
 func _gui_input(event:InputEvent) -> void:
 	if event is InputEventMouse:
