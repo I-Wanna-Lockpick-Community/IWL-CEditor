@@ -36,7 +36,7 @@ func undo() -> bool:
 		if undoStack[-1] is UndoSeparator:
 			game.player.position = undoStack[-1].position
 			game.player.dropMaster()
-			for object in game.objects.values(): if object is Door and object.type == Door.TYPE.GATE: object.gateCheck(game.player)
+			for object in game.objects.values(): if object is Door and object.type == Door.TYPE.GATE: object.gateBufferCheck = null
 			return true
 		var change = undoStack.pop_back()
 		change.undo()

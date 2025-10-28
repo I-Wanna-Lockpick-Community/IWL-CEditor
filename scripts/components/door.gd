@@ -397,8 +397,11 @@ func gateCheck(player:Player) -> void:
 	var shouldOpen:bool = true
 	for lock in locks:
 		if !lock.canOpen(player): shouldOpen = false
-	if gateOpen and !shouldOpen: gateBufferCheck = player
-	elif !gateOpen and shouldOpen: gameChanges.addChange(GameChanges.PropertyChange.new(game,self,&"gateOpen",true))
+	if gateOpen and !shouldOpen:
+		gateBufferCheck = player
+	elif !gateOpen and shouldOpen:
+		gateBufferCheck = null
+		gameChanges.addChange(GameChanges.PropertyChange.new(editor.game,self,&"gateOpen",true))
 
 class Debris extends Node2D:
 	const FRAME:Texture2D = preload("res://assets/game/door/debris/frame.png")
