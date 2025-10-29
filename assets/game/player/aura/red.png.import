@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bqnutiagg46ay"
-path="res://.godot/imported/idle1.png-156509aabdd63311cf148baf8d030ed3.ctex"
+uid="uid://jngemi52w5io"
+path="res://.godot/imported/red.png-f8076d7066222a98e89854f7942fb876.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/game/player/idle1.png"
-dest_files=["res://.godot/imported/idle1.png-156509aabdd63311cf148baf8d030ed3.ctex"]
+source_file="res://assets/game/player/aura/red.png"
+dest_files=["res://.godot/imported/red.png-f8076d7066222a98e89854f7942fb876.ctex"]
 
 [params]
 

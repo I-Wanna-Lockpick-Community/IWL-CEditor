@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bau8k25wjq37"
-path="res://.godot/imported/fall0.png-d52d27c5fa7feaa4b34d1c8a4758b95e.ctex"
+uid="uid://cemq0mbj8iwad"
+path="res://.godot/imported/blue.png-5c508e83d49e7a8bc3f9cee317e081f4.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/game/player/fall0.png"
-dest_files=["res://.godot/imported/fall0.png-d52d27c5fa7feaa4b34d1c8a4758b95e.ctex"]
+source_file="res://assets/game/player/aura/blue.png"
+dest_files=["res://.godot/imported/blue.png-5c508e83d49e7a8bc3f9cee317e081f4.ctex"]
 
 [params]
 

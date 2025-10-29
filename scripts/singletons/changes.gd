@@ -163,8 +163,8 @@ class CreateComponentChange extends Change:
 		game.editor.objectHovered = null
 		game.editor.componentDragged = null
 
-		if dictionary[id] is GameObject: game.editor.focusDialog.defocus()
-		else: game.editor.focusDialog.defocusComponent()
+		if dictionary[id] == game.editor.focusDialog.focused: game.editor.focusDialog.defocus()
+		elif dictionary[id] == game.editor.focusDialog.componentFocused: game.editor.focusDialog.defocusComponent()
 
 		var parent:GameObject
 		if type == Lock:
@@ -218,8 +218,8 @@ class DeleteComponentChange extends Change: # TODO: FIX LOCKSELECTOR and KEYCOUN
 		game.editor.objectHovered = null
 		game.editor.componentDragged = null
 
-		if dictionary[prop[&"id"]] is GameObject: game.editor.focusDialog.defocus()
-		else: game.editor.focusDialog.defocusComponent()
+		if dictionary[prop[&"id"]] == game.editor.focusDialog.focused: game.editor.focusDialog.defocus()
+		elif dictionary[prop[&"id"]] == game.editor.focusDialog.componentFocused: game.editor.focusDialog.defocusComponent()
 
 		var parent:GameObject
 		if type == Lock:

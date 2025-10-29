@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://f7k0ehrv7yvi"
-path="res://.godot/imported/idle3.png-d2d61b2a8b995920b44416e73059c6d0.ctex"
+uid="uid://bau8k25wjq37"
+path="res://.godot/imported/fall0.png-5205144de00db2a807a0708a5d80dc5d.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/game/player/idle3.png"
-dest_files=["res://.godot/imported/idle3.png-d2d61b2a8b995920b44416e73059c6d0.ctex"]
+source_file="res://assets/game/player/lily/fall0.png"
+dest_files=["res://.godot/imported/fall0.png-5205144de00db2a807a0708a5d80dc5d.ctex"]
 
 [params]
 

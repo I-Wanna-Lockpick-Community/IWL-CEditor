@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://d0ckfsr100le6"
-path="res://.godot/imported/idle2.png-b34c56947369ff63d88b455a4efb68f0.ctex"
+uid="uid://palgvrd5fvj3"
+path="res://.godot/imported/shine.png-9e2d5b5f286495ffef7890f7f8c429ef.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/game/player/idle2.png"
-dest_files=["res://.godot/imported/idle2.png-b34c56947369ff63d88b455a4efb68f0.ctex"]
+source_file="res://assets/game/player/held/shine.png"
+dest_files=["res://.godot/imported/shine.png-9e2d5b5f286495ffef7890f7f8c429ef.ctex"]
 
 [params]
 

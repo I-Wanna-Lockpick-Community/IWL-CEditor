@@ -3,16 +3,21 @@ class_name Player
 
 var game:Game
 
-const MASTER_SHINE:Texture2D = preload("res://assets/game/player/masterShine.png")
+const HELD_SHINE:Texture2D = preload("res://assets/game/player/held/shine.png")
 func getMasterShineColor() -> Color: return Color("#b4b432") if masterMode.reduce().gt(0) else Color("#3232b4")
 
-const HELD_MASTER:Texture2D = preload("res://assets/game/player/heldMaster.png")
-const HELD_QUICKSILVER:Texture2D = preload("res://assets/game/player/heldQuicksilver.png")
-const HELD_MASTER_NEGATIVE:Texture2D = preload("res://assets/game/player/heldMasterNegative.png")
-const HELD_QUICKSILVER_NEGATIVE:Texture2D = preload("res://assets/game/player/heldQuicksilverNegative.png")
+const HELD_MASTER:Texture2D = preload("res://assets/game/player/held/master.png")
+const HELD_QUICKSILVER:Texture2D = preload("res://assets/game/player/held/quicksilver.png")
+const HELD_MASTER_NEGATIVE:Texture2D = preload("res://assets/game/player/held/masterNegative.png")
+const HELD_QUICKSILVER_NEGATIVE:Texture2D = preload("res://assets/game/player/held/quicksilverNegative.png")
 func getHeldKeySprite() -> Texture2D:
 	if masterCycle == 1: return HELD_MASTER if masterMode.reduce().gt(0) else HELD_MASTER_NEGATIVE
 	else: return HELD_QUICKSILVER if masterMode.reduce().gt(0) else HELD_QUICKSILVER_NEGATIVE
+
+const AURA_RED:Texture2D = preload("res://assets/game/player/aura/red.png")
+const AURA_GREEN:Texture2D = preload("res://assets/game/player/aura/green.png")
+const AURA_BLUE:Texture2D = preload("res://assets/game/player/aura/blue.png")
+const AURA_DRAW_OPACITY:Color = Color(Color.WHITE,0.5)
 
 const FPS:float = 60 # godot velocity works in /s so we account for gamemaker's fps, which is 60
 
@@ -36,14 +41,22 @@ var masterShineDraw:RID
 var masterKeyDraw:RID
 var masterShineAngle:float
 
-var firstFrame:bool = true
+var firstFrame:bool = true # jank prevention
+
+var auraRed:bool = false
+var auraGreen:bool = false
+var auraBlue:bool = false
+var auraDraw:RID
 
 func _ready() -> void:
+	auraDraw = RenderingServer.canvas_item_create()
 	masterShineDraw = RenderingServer.canvas_item_create()
 	masterKeyDraw = RenderingServer.canvas_item_create()
 	RenderingServer.canvas_item_set_material(masterShineDraw, Game.ADDITIVE_MATERIAL)
+	RenderingServer.canvas_item_set_z_index(auraDraw,11)
 	RenderingServer.canvas_item_set_z_index(masterShineDraw,11)
 	RenderingServer.canvas_item_set_z_index(masterKeyDraw,11)
+	RenderingServer.canvas_item_set_parent(auraDraw, get_canvas_item())
 	RenderingServer.canvas_item_set_parent(masterShineDraw, get_canvas_item())
 	RenderingServer.canvas_item_set_parent(masterKeyDraw, get_canvas_item())
 
@@ -117,7 +130,9 @@ func interacted(area:Area2D) -> void:
 
 func near(area:Area2D) -> void:
 	var object:GameObject = area.get_parent()
-	if object is Door: nearDoor = true
+	if object is Door:
+		nearDoor = true
+		object.auraCheck(self)
 
 func overlapping(area:Area2D) -> bool: return %interact.overlaps_area(area)
 
@@ -147,17 +162,26 @@ func dropMaster() -> void:
 	masterMode = C.ZERO
 	masterCycle = 0
 
-func checkMaster() -> void:
+func checkKeys() -> void:
+	auraRed = !key[Game.COLOR.RED].lt(1)
+	auraGreen = !key[Game.COLOR.GREEN].lt(5)
+	auraBlue = !key[Game.COLOR.BLUE].lt(3)
+
 	match masterCycle:
 		1: if key[Game.COLOR.MASTER].across(masterMode).reduce().gt(0): return
 		2: if key[Game.COLOR.QUICKSILVER].across(masterMode).reduce().gt(0): return
 	masterMode = C.ZERO; masterCycle = 0
 
 func _draw() -> void:
+	RenderingServer.canvas_item_clear(auraDraw)
 	RenderingServer.canvas_item_clear(masterShineDraw)
 	RenderingServer.canvas_item_clear(masterKeyDraw)
+	var auraRect:Rect2 = Rect2(Vector2(-32,-32),Vector2(64,64))
+	if auraRed: RenderingServer.canvas_item_add_texture_rect(auraDraw,auraRect,AURA_RED,false,AURA_DRAW_OPACITY)
+	if auraGreen: RenderingServer.canvas_item_add_texture_rect(auraDraw,auraRect,AURA_GREEN,false,AURA_DRAW_OPACITY)
+	if auraBlue: RenderingServer.canvas_item_add_texture_rect(auraDraw,auraRect,AURA_BLUE,false,AURA_DRAW_OPACITY)
 	if masterCycle != 0:
 		var masterShineScale:float = 0.8 + 0.2*sin(masterShineAngle)
 		var masterDrawOpacity:Color = Color(Color.WHITE,masterShineScale*0.6)
-		RenderingServer.canvas_item_add_texture_rect(masterShineDraw,Rect2(Vector2(-32,-32)*masterShineScale,Vector2(64,64)*masterShineScale),MASTER_SHINE,false,getMasterShineColor())
+		RenderingServer.canvas_item_add_texture_rect(masterShineDraw,Rect2(Vector2(-32,-32)*masterShineScale,Vector2(64,64)*masterShineScale),HELD_SHINE,false,getMasterShineColor())
 		RenderingServer.canvas_item_add_texture_rect(masterKeyDraw,Rect2(Vector2(-16,-16),Vector2(32,32)),getHeldKeySprite(),false,masterDrawOpacity)

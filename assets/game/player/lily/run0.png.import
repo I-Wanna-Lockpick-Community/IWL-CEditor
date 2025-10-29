@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://palgvrd5fvj3"
-path="res://.godot/imported/masterShine.png-0530a6582a1119745f2c9c83b443a970.ctex"
+uid="uid://forpasq1sw45"
+path="res://.godot/imported/run0.png-765368eb588683823e9d8431a4849988.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/game/player/masterShine.png"
-dest_files=["res://.godot/imported/masterShine.png-0530a6582a1119745f2c9c83b443a970.ctex"]
+source_file="res://assets/game/player/lily/run0.png"
+dest_files=["res://.godot/imported/run0.png-765368eb588683823e9d8431a4849988.ctex"]
 
 [params]
 

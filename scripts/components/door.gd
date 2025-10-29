@@ -317,6 +317,7 @@ func stop() -> void:
 func tryOpen(player:Player) -> void:
 	if type == TYPE.GATE: return
 	if animState != ANIM_STATE.IDLE: return
+	if gameFrozen or gameCrumbled or gamePainted: return
 	if player.masterCycle == 1 and tryMasterOpen(player): return
 
 	for lock in locks:
@@ -369,9 +370,7 @@ func destroy() -> void:
 	gameChanges.addChange(GameChanges.PropertyChange.new(game, self, &"active", false))
 	var color:Game.COLOR = colorSpend
 	if type == TYPE.SIMPLE: color = locks[0].color
-	for y in floor(size.y/16):
-		for x in floor(size.x/16):
-			add_child(Debris.new(color,Vector2(x*16,y*16)))
+	makeDebris(Debris, color)
 
 func addCopyAnimation() -> void:
 	animState = ANIM_STATE.ADD_COPY
@@ -382,9 +381,7 @@ func addCopyAnimation() -> void:
 	addCopySound = AudioManager.play(preload("res://resources/sounds/door/addCopy.wav"))
 	var color:Game.COLOR = colorSpend
 	if type == TYPE.SIMPLE: color = locks[0].color
-	for y in floor(size.y/16):
-		for x in floor(size.x/16):
-			add_child(AddCopyDebris.new(color,Vector2(x*16,y*16)))
+	makeDebris(AddCopyDebris, color)
 
 func relockAnimation() -> void:
 	animState = ANIM_STATE.RELOCK
@@ -395,9 +392,12 @@ func relockAnimation() -> void:
 	for lock in locks: lock.queue_redraw()
 	var color:Game.COLOR = colorSpend
 	if type == TYPE.SIMPLE: color = locks[0].color
+	makeDebris(RelockDebris, color)
+
+func makeDebris(debrisType:GDScript, debrisColor:Game.COLOR) -> void:
 	for y in floor(size.y/16):
 		for x in floor(size.x/16):
-			add_child(RelockDebris.new(game,color,Vector2(x*16,y*16)))
+			add_child(debrisType.new(game,debrisColor,Vector2(x*16,y*16)))
 
 func propertyGameChangedDo(property:StringName) -> void:
 	if property == &"active":
@@ -416,12 +416,31 @@ func gateCheck(player:Player) -> void:
 		gateBufferCheck = null
 		gameChanges.addChange(GameChanges.PropertyChange.new(editor.game,self,&"gateOpen",true))
 
+func auraCheck(player:Player) -> void:
+	var deAuraed:bool = false
+	if player.auraRed and gameFrozen:
+		gameChanges.addChange(GameChanges.PropertyChange.new(editor.game,self,&"gameFrozen",false))
+		makeDebris(Debris, Game.COLOR.WHITE)
+		deAuraed = true
+	if player.auraGreen and gameCrumbled:
+		gameChanges.addChange(GameChanges.PropertyChange.new(editor.game,self,&"gameCrumbled",false))
+		makeDebris(Debris, Game.COLOR.BROWN)
+		deAuraed = true
+	if player.auraBlue and gamePainted:
+		gameChanges.addChange(GameChanges.PropertyChange.new(editor.game,self,&"gamePainted",false))
+		makeDebris(Debris, Game.COLOR.ORANGE)
+		deAuraed = true
+	if deAuraed:
+		AudioManager.play(preload("res://resources/sounds/door/deaura.wav"))
+		changes.bufferSave()
+
 class Debris extends Node2D:
 	const FRAME:Texture2D = preload("res://assets/game/door/debris/frame.png")
 	const HIGH:Texture2D = preload("res://assets/game/door/debris/high.png")
 	const MAIN:Texture2D = preload("res://assets/game/door/debris/main.png")
 	const DARK:Texture2D = preload("res://assets/game/door/debris/dark.png")
 
+	var game:Game
 	var color:Game.COLOR
 	var opacity:float = 1
 	var velocity:Vector2 = Vector2.ZERO
@@ -430,7 +449,8 @@ class Debris extends Node2D:
 
 	const FPS:float = 60
 
-	func _init(_color:Game.COLOR,_position) -> void:
+	func _init(_game:Game,_color:Game.COLOR,_position) -> void:
+		game = _game
 		color = _color
 		position = _position
 	
@@ -469,17 +489,12 @@ class AddCopyDebris extends Debris:
 		RenderingServer.canvas_item_add_texture_rect(get_canvas_item(),rect,DARK,false,Game.darkTone[color].inverted())
 
 class RelockDebris extends Debris:
-	var game:Game
 	var angle:float = randf_range(0,TAU)
 	var speed:float = 1.5
 	var startPosition:Vector2
 	var part:int = 0
 	var timer:int = 0
 	var whiteAmt:float = 0
-
-	func _init(_game:Game,_color:Game.COLOR,_position) -> void:
-		game = _game
-		super(_color, _position)
 
 	func _ready() -> void:
 		startPosition = position

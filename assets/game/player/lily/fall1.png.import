@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cc65kc24aumq8"
-path="res://.godot/imported/heldMaster.png-d37494c74348b653c8a95c2cae830b39.ctex"
+uid="uid://bnr15i8qm6v5c"
+path="res://.godot/imported/fall1.png-e63215bf9e029f4c5f6fa08ae3e0a830.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/game/player/heldMaster.png"
-dest_files=["res://.godot/imported/heldMaster.png-d37494c74348b653c8a95c2cae830b39.ctex"]
+source_file="res://assets/game/player/lily/fall1.png"
+dest_files=["res://.godot/imported/fall1.png-e63215bf9e029f4c5f6fa08ae3e0a830.ctex"]
 
 [params]
 

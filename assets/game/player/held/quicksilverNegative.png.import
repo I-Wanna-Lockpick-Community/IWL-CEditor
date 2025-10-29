@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://q2iopacqwvl7"
-path="res://.godot/imported/heldMasterNegative.png-59467be24e2ecdaf97ebd568b6aa73e5.ctex"
+uid="uid://cjhdfepcbyg7o"
+path="res://.godot/imported/quicksilverNegative.png-0a8cc8cb552295bcdb1925989f3fcbd1.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/game/player/heldMasterNegative.png"
-dest_files=["res://.godot/imported/heldMasterNegative.png-59467be24e2ecdaf97ebd568b6aa73e5.ctex"]
+source_file="res://assets/game/player/held/quicksilverNegative.png"
+dest_files=["res://.godot/imported/quicksilverNegative.png-0a8cc8cb552295bcdb1925989f3fcbd1.ctex"]
 
 [params]
 

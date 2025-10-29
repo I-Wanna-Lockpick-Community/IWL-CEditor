@@ -37,6 +37,7 @@ func undo() -> bool:
 			game.player.position = undoStack[-1].position
 			game.player.dropMaster()
 			for object in game.objects.values(): if object is Door and object.type == Door.TYPE.GATE: object.gateBufferCheck = null
+			game.player.checkKeys()
 			return true
 		var change = undoStack.pop_back()
 		change.undo()
@@ -88,7 +89,7 @@ class KeyChange extends ColorChange:
 			cancelled = true
 			return
 		super(_game,_color,after)
-		game.player.checkMaster()
+		game.player.checkKeys()
 		for object in game.objects.values(): if object is Door and object.type == Door.TYPE.GATE: object.gateCheck(game.player)
 
 class StarChange extends ColorChange:

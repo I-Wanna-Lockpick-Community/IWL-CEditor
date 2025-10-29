@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://c5xgfyqclx23k"
-path="res://.godot/imported/jump1.png-f83f2566779f946d877b288cfebc63ff.ctex"
+uid="uid://f7k0ehrv7yvi"
+path="res://.godot/imported/idle3.png-49402d7f84f52d20d3142b929691569c.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/game/player/jump1.png"
-dest_files=["res://.godot/imported/jump1.png-f83f2566779f946d877b288cfebc63ff.ctex"]
+source_file="res://assets/game/player/lily/idle3.png"
+dest_files=["res://.godot/imported/idle3.png-49402d7f84f52d20d3142b929691569c.ctex"]
 
 [params]
 

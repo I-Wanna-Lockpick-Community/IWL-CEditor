@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://forpasq1sw45"
-path="res://.godot/imported/run0.png-198ff3b8078c13926999bdb46d96ed5e.ctex"
+uid="uid://dc0ke4et2rvsk"
+path="res://.godot/imported/green.png-4a96dfca9ad5ea358d407a34e7bc3538.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/game/player/run0.png"
-dest_files=["res://.godot/imported/run0.png-198ff3b8078c13926999bdb46d96ed5e.ctex"]
+source_file="res://assets/game/player/aura/green.png"
+dest_files=["res://.godot/imported/green.png-4a96dfca9ad5ea358d407a34e7bc3538.ctex"]
 
 [params]
 
