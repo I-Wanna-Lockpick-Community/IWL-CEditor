@@ -1,7 +1,8 @@
-[gd_scene load_steps=34 format=3 uid="uid://8bth374yqwpe"]
+[gd_scene load_steps=36 format=3 uid="uid://8bth374yqwpe"]
 
 [ext_resource type="Theme" uid="uid://bvfthh0vm4fbp" path="res://resources/uiTheme.tres" id="1_eqegh"]
-[ext_resource type="Script" uid="uid://dm8t82nhqkdlc" path="res://scripts/singletons/focusDialog.gd" id="2_k8bto"]
+[ext_resource type="Script" uid="uid://dm8t82nhqkdlc" path="res://scripts/singletons/focusDialog/focusDialog.gd" id="2_k8bto"]
+[ext_resource type="Script" uid="uid://cj40i8w460jnl" path="res://scripts/singletons/focusDialog/keyDialog.gd" id="3_b5h7e"]
 [ext_resource type="Script" uid="uid://c70juj2p5s6yd" path="res://scripts/nodes/focusDialog/colorSelector.gd" id="3_wmate"]
 [ext_resource type="Script" uid="uid://dgllodap6540" path="res://scripts/nodes/focusDialog/keyTypeSelector.gd" id="4_cb7cu"]
 [ext_resource type="PackedScene" uid="uid://tpxbw5vtj5nx" path="res://scenes/complexNumberEdit.tscn" id="5_qjvko"]
@@ -10,6 +11,7 @@
 [ext_resource type="Texture2D" uid="uid://bulx3wvhsmgvx" path="res://assets/empty.png" id="8_w3a3f"]
 [ext_resource type="Texture2D" uid="uid://qd82dduwyvjj" path="res://assets/ui/focusDialog/keyInfiniteToggle/hover.png" id="9_4nd11"]
 [ext_resource type="Texture2D" uid="uid://dcaheb86npiio" path="res://assets/ui/focusDialog/doorType/simple.png" id="10_oii3e"]
+[ext_resource type="Script" uid="uid://cq06lldmmo4k4" path="res://scripts/singletons/focusDialog/doorDialog.gd" id="11_drywk"]
 [ext_resource type="Texture2D" uid="uid://ulo77sni12v" path="res://assets/ui/focusDialog/doorType/combo.png" id="11_jwt4y"]
 [ext_resource type="Texture2D" uid="uid://bowkgmjrwugjj" path="res://assets/ui/focusDialog/doorType/gate.png" id="12_qi8n2"]
 [ext_resource type="Texture2D" uid="uid://d2tw3epi1grlq" path="res://assets/ui/focusDialog/doorType/spend.png" id="13_jwt4y"]
@@ -49,6 +51,7 @@ script = ExtResource("2_k8bto")
 unique_name_in_owner = true
 visible = false
 anchors_preset = 0
+script = ExtResource("3_b5h7e")
 
 [node name="c" type="PanelContainer" parent="keyDialog"]
 layout_mode = 1
@@ -114,6 +117,7 @@ stretch_mode = 0
 [node name="doorDialog" type="Control" parent="."]
 unique_name_in_owner = true
 anchors_preset = 0
+script = ExtResource("11_drywk")
 
 [node name="c" type="VBoxContainer" parent="doorDialog"]
 layout_mode = 1
@@ -427,24 +431,24 @@ points = PackedVector2Array(-8, -1, -6, -1, 0, 5, 6, -1, 8, -1)
 width = 2.0
 default_color = Color(0.8352941, 0.8352941, 0.8352941, 1)
 
-[connection signal="select" from="keyDialog/c/c/c/keyColorSelector" to="." method="_keyColorSelected"]
-[connection signal="select" from="keyDialog/c/c/c/keyTypeSelector" to="." method="_keyTypeSelected"]
-[connection signal="valueSet" from="keyDialog/c/c/c/keyCountEdit" to="." method="_keyCountSet"]
-[connection signal="toggled" from="keyDialog/keepWorldScale/keyInfiniteToggle" to="." method="_keyInfiniteToggled"]
-[connection signal="pressed" from="doorDialog/c/door/c/c/doorTypes/simple" to="." method="_doorTypeSelected" binds= [0]]
-[connection signal="pressed" from="doorDialog/c/door/c/c/doorTypes/combo" to="." method="_doorTypeSelected" binds= [1]]
-[connection signal="pressed" from="doorDialog/c/door/c/c/doorTypes/gate" to="." method="_doorTypeSelected" binds= [2]]
-[connection signal="pressed" from="doorDialog/c/door/c/c/doorTypes/spend" to="." method="_spendSelected"]
-[connection signal="select" from="doorDialog/c/lock/c/c/lockConfigurationSelector" to="." method="_lockConfigurationSelected"]
-[connection signal="select" from="doorDialog/c/lock/c/c/doorColorSelector" to="." method="_doorColorSelected"]
-[connection signal="select" from="doorDialog/c/lock/c/c/lockSettings/lockTypeSelector" to="." method="_lockTypeSelected"]
-[connection signal="toggled" from="doorDialog/c/lock/c/c/doorAuraSettings/frozen" to="." method="_frozenSet"]
-[connection signal="toggled" from="doorDialog/c/lock/c/c/doorAuraSettings/crumbled" to="." method="_crumbledSet"]
-[connection signal="toggled" from="doorDialog/c/lock/c/c/doorAuraSettings/painted" to="." method="_paintedSet"]
-[connection signal="valueSet" from="doorDialog/c/lock/c/c/doorComplexNumberEdit" to="." method="_doorComplexNumberSet"]
-[connection signal="valueSet" from="doorDialog/c/lock/c/c/doorAxialNumberEdit" to="." method="_doorAxialNumberSet"]
-[connection signal="pressed" from="doorDialog/c/lock/c/c/blastLockSettings/blastLockSign" to="." method="_blastLockSet"]
-[connection signal="pressed" from="doorDialog/c/lock/c/c/blastLockSettings/blastLockAxis" to="." method="_blastLockSet"]
+[connection signal="select" from="keyDialog/c/c/c/keyColorSelector" to="keyDialog" method="_keyColorSelected"]
+[connection signal="select" from="keyDialog/c/c/c/keyTypeSelector" to="keyDialog" method="_keyTypeSelected"]
+[connection signal="valueSet" from="keyDialog/c/c/c/keyCountEdit" to="keyDialog" method="_keyCountSet"]
+[connection signal="toggled" from="keyDialog/keepWorldScale/keyInfiniteToggle" to="keyDialog" method="_keyInfiniteToggled"]
+[connection signal="pressed" from="doorDialog/c/door/c/c/doorTypes/simple" to="doorDialog" method="_doorTypeSelected" binds= [0]]
+[connection signal="pressed" from="doorDialog/c/door/c/c/doorTypes/combo" to="doorDialog" method="_doorTypeSelected" binds= [1]]
+[connection signal="pressed" from="doorDialog/c/door/c/c/doorTypes/gate" to="doorDialog" method="_doorTypeSelected" binds= [2]]
+[connection signal="pressed" from="doorDialog/c/door/c/c/doorTypes/spend" to="doorDialog" method="_spendSelected"]
+[connection signal="select" from="doorDialog/c/lock/c/c/lockConfigurationSelector" to="doorDialog" method="_lockConfigurationSelected"]
+[connection signal="select" from="doorDialog/c/lock/c/c/doorColorSelector" to="doorDialog" method="_doorColorSelected"]
+[connection signal="select" from="doorDialog/c/lock/c/c/lockSettings/lockTypeSelector" to="doorDialog" method="_lockTypeSelected"]
+[connection signal="toggled" from="doorDialog/c/lock/c/c/doorAuraSettings/frozen" to="doorDialog" method="_frozenSet"]
+[connection signal="toggled" from="doorDialog/c/lock/c/c/doorAuraSettings/crumbled" to="doorDialog" method="_crumbledSet"]
+[connection signal="toggled" from="doorDialog/c/lock/c/c/doorAuraSettings/painted" to="doorDialog" method="_paintedSet"]
+[connection signal="valueSet" from="doorDialog/c/lock/c/c/doorComplexNumberEdit" to="doorDialog" method="_doorComplexNumberSet"]
+[connection signal="valueSet" from="doorDialog/c/lock/c/c/doorAxialNumberEdit" to="doorDialog" method="_doorAxialNumberSet"]
+[connection signal="pressed" from="doorDialog/c/lock/c/c/blastLockSettings/blastLockSign" to="doorDialog" method="_blastLockSet"]
+[connection signal="pressed" from="doorDialog/c/lock/c/c/blastLockSettings/blastLockAxis" to="doorDialog" method="_blastLockSet"]
 [connection signal="pressed" from="playerDialog/c/c/c/playTest" to="." method="_playTest"]
 [connection signal="pressed" from="playerDialog/c/c/c/levelStart" to="." method="_setLevelStart"]
 [connection signal="pressed" from="playerDialog/c/c/c/savestate" to="." method="_setSavestate"]

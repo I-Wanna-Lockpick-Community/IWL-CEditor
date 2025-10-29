@@ -22,10 +22,14 @@ func setTexts() -> void:
 	if count == 1: %countLabel.text = "1 instance"
 	else: %countLabel.text = str(count) + " instances"
 	%showIndex.text = str(showIndex+1) + "/" + str(count)
+	visible = count > 0
 
 func getProblemName() -> String:
 	match [modId, type]:
 		[&"NstdLockSize", &"NstdLockSize"]: return "Nonstandard Lock Size"
+
+		[&"C3", &"ExactLock"]: return "Exact Lock"
+		[&"C5", &"CurseKeyType"]: return "Curse/Decurse Key"
 	return "huh?? what??"
 
 func showInstance(index:int) -> void:
@@ -58,8 +62,7 @@ func newInstance() -> void: setTexts()
 
 func removeInstance(index:int) -> void:
 	if count == 0:
-		stopShowing()
-		get_parent().remove_child(self)
+		visible = false
 		findProblems.problemsLabel.text = "Problems found:" if mod.hasProblems() else "No problems here"
 		return
 	if showIndex > index: showIndex -= 1

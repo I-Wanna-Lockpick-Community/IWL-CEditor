@@ -107,7 +107,7 @@ func _draw() -> void:
 	var texture:Texture2D
 	var tileTexture:bool = false
 	if type == TYPE.GATE:
-		if false: RenderingServer.canvas_item_add_texture_rect(drawMain,rect,GATE_FILL,true,Color(Color.WHITE,lerp(0.35,1.0,gateAlpha)))
+		RenderingServer.canvas_item_add_texture_rect(drawMain,rect,GATE_FILL,true,Color(Color.WHITE,lerp(0.35,1.0,gateAlpha)))
 	else:
 		if animState != ANIM_STATE.RELOCK or animPart > 2:
 			match baseColor():
@@ -184,6 +184,7 @@ func receiveMouseInput(event:InputEventMouse) -> bool:
 		editor.startSizeDrag(self, dragPivot)
 		return true
 	return false
+
 func propertyChangedInit(property:StringName) -> void:
 	if property == &"type":
 		match type:
@@ -200,6 +201,10 @@ func propertyChangedInit(property:StringName) -> void:
 				if !mods.active(&"NstdLockSize"):
 					for lock in locks: lock._coerceSize()
 				changes.addChange(Changes.PropertyChange.new(game,self,&"color",Game.COLOR.WHITE))
+				changes.addChange(Changes.PropertyChange.new(game,self,&"copies",C.new(1)))
+				changes.addChange(Changes.PropertyChange.new(game,self,&"frozen",false))
+				changes.addChange(Changes.PropertyChange.new(game,self,&"crumbled",false))
+				changes.addChange(Changes.PropertyChange.new(game,self,&"painted",false))
 	if property == &"size" and type == TYPE.SIMPLE: locks[0]._simpleDoorUpdate()
 
 func propertyChangedDo(property:StringName) -> void:
@@ -216,8 +221,8 @@ func propertyChangedDo(property:StringName) -> void:
 
 func addLock() -> void:
 	changes.addChange(Changes.CreateComponentChange.new(game,Lock,{&"position":getFirstFreePosition(),&"parentId":id}))
-	if len(locks) == 1: editor.focusDialog._doorTypeSelected(Door.TYPE.SIMPLE)
-	elif type == Door.TYPE.SIMPLE: editor.focusDialog._doorTypeSelected(Door.TYPE.COMBO)
+	if len(locks) == 1: changes.addChange(Changes.PropertyChange.new(game,self,&"type",TYPE.SIMPLE))
+	elif type == Door.TYPE.SIMPLE: changes.addChange(Changes.PropertyChange.new(game,self,&"type",TYPE.COMBO))
 	changes.bufferSave()
 
 func getFirstFreePosition() -> Vector2:

@@ -106,8 +106,8 @@ func receiveKey(event:InputEventKey) -> void:
 func apply() -> void:
 	match quick:
 		QUICK.COLOR:
-			if component is KeyBulk: editor.focusDialog._keyColorSelected(matched)
-			if component is Door or component is Lock: editor.focusDialog._doorColorSelected(matched)
+			if component is KeyBulk: editor.focusDialog.keyDialog._keyColorSelected(matched)
+			if component is Door or component is Lock: editor.focusDialog.doorDialog._doorColorSelected(matched)
 
 func matchesId(values:int) -> bool: return input.is_valid_int() and input.to_int() >= 0 and input.to_int() < values
 

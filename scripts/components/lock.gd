@@ -309,7 +309,12 @@ func _coerceSize() -> void:
 func propertyChangedInit(property:StringName) -> void:
 	if parent.type != Door.TYPE.SIMPLE:
 		if property == &"size": _comboDoorSizeChanged()
-	if property == &"count" or property == &"sizeType" or property == &"type": _setAutoConfiguration()
+	if property in [&"count", &"sizeType", &"type"]: _setAutoConfiguration()
+	if property in [&"count", &"type"]:
+		if type in [TYPE.BLANK, TYPE.ALL] and count.neq(1):
+			changes.addChange(Changes.PropertyChange.new(game,self,&"count",C.new(1)))
+		if type == TYPE.BLAST and count.neq(count.axis()) or count.eq(0):
+			changes.addChange(Changes.PropertyChange.new(game,self,&"count",C.new(1) if count.eq(0) else count.axis()))
 
 func effectiveColor() -> Game.COLOR: # for calculations
 	if parent.cursed and parent.curseColor != Game.COLOR.PURE: return parent.curseColor

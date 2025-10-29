@@ -1,6 +1,6 @@
 [gd_scene load_steps=18 format=3 uid="uid://6yguarjtefnc"]
 
-[ext_resource type="Script" uid="uid://bdaplq37fmdoo" path="res://scripts/singletons/player.gd" id="1_jej6c"]
+[ext_resource type="Script" uid="uid://bdaplq37fmdoo" path="res://scripts/singletons/game/player.gd" id="1_jej6c"]
 [ext_resource type="Texture2D" uid="uid://bau8k25wjq37" path="res://assets/game/player/lily/fall0.png" id="2_f1ej7"]
 [ext_resource type="Texture2D" uid="uid://bnr15i8qm6v5c" path="res://assets/game/player/lily/fall1.png" id="3_oprun"]
 [ext_resource type="Texture2D" uid="uid://c516w3wfnbrtu" path="res://assets/game/player/lily/idle0.png" id="4_a8ls1"]

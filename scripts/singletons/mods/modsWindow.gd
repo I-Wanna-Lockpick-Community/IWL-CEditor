@@ -1,6 +1,8 @@
 extends Window
 class_name ModsWindow
 
+@onready var editor:Editor = get_node("/root/editor")
+
 enum STAGE {SELECT_MODS, FIND_PROBLEMS}
 var stage:STAGE = STAGE.SELECT_MODS
 
@@ -38,8 +40,10 @@ func _back():
 	stage = STAGE.SELECT_MODS
 
 func _saveChanges():
-	mods.activeModpack = tempActiveModpack
-	mods.activeVersion = tempActiveVersion
+	changes.addChange(Changes.GlobalPropertyChange.new(mods,&"activeModpack",tempActiveModpack))
+	changes.addChange(Changes.GlobalPropertyChange.new(mods,&"activeVersion",tempActiveVersion))
 	for mod in mods.mods.values():
-		mod.active = mod.tempActive
+		changes.addChange(Changes.GlobalPropertyChange.new(mod,&"active",mod.tempActive))
+	changes.bufferSave()
+	editor.focusDialog.changedMods()
 	queue_free()

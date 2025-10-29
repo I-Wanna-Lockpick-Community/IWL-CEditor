@@ -129,6 +129,10 @@ static func drawKey(_game:Game,keyDrawMain:RID,keyDrawGlitch:RID,keyOffset:Vecto
 		RenderingServer.canvas_item_add_texture_rect(keyDrawMain,rect,getFrame(keyType))
 		RenderingServer.canvas_item_add_texture_rect(keyDrawMain,rect,getFill(keyType),false,Game.mainTone[keyColor])
 
+func propertyChangedInit(property:StringName) -> void:
+	if property in [&"count", &"type"]:
+		if type not in [TYPE.NORMAL, TYPE.EXACT] and count.neq(1): changes.addChange(Changes.PropertyChange.new(game,self,&"count",C.new(1)))
+
 # ==== PLAY ==== #
 enum ANIM_STATE {IDLE, FLASH}
 var animState:ANIM_STATE = ANIM_STATE.IDLE

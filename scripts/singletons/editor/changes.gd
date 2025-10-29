@@ -178,6 +178,8 @@ class CreateComponentChange extends Change:
 			for elementIndex in range(prop[&"index"], len(parent.elements)):
 				parent.elements[elementIndex].index -= 1
 
+		if game.editor.findProblems: game.editor.findProblems.componentRemoved(dictionary[id])
+
 		dictionary[id].queue_free()
 		dictionary.erase(id)
 
@@ -186,7 +188,7 @@ class CreateComponentChange extends Change:
 	func _to_string() -> String:
 		return "<CreateComponentChange:"+str(id)+">"
 
-class DeleteComponentChange extends Change: # TODO: FIX LOCKSELECTOR and KEYCOUNTERSELECTOR WITH UNDO/REDO
+class DeleteComponentChange extends Change:
 	var type:GDScript
 	var prop:Dictionary[StringName, Variant] = {}
 	var dictionary:Dictionary
@@ -233,6 +235,8 @@ class DeleteComponentChange extends Change: # TODO: FIX LOCKSELECTOR and KEYCOUN
 			for elementIndex in range(prop[&"index"], len(parent.elements)):
 				parent.elements[elementIndex].index -= 1
 		
+		if game.editor.findProblems: game.editor.findProblems.componentRemoved(dictionary[prop[&"id"]])
+
 		dictionary[prop[&"id"]].queue_free()
 		dictionary.erase(prop[&"id"])
 
@@ -346,6 +350,26 @@ class GlobalObjectChange extends Change:
 
 		if singleton == game and property == &"levelStart":
 			game.editor.topBar.updatePlayButton()
+
+class GlobalPropertyChange extends Change:
+	# changes a property in some singleton
+
+	var singleton:Node
+	var property:StringName
+	var before:Variant
+	var after:Variant
+
+	func _init(_singleton:Node, _property:StringName, _after:Variant) -> void:
+		singleton = _singleton
+		property = _property
+		before = singleton.get(property)
+		after = _after
+		if before == after:
+			cancelled = true
+			return
+	
+	func do() -> void: singleton.set(property, after)
+	func undo() -> void: singleton.set(property, before)
 
 class ArrayAppendChange extends Change:
 	# appends to array

@@ -55,20 +55,24 @@ func _modSelected(button:ModSelectButton) -> void:
 	if shownDisplay: shownDisplay.stopShowing()
 
 	for problemType in button.mod.problems.keys():
+		%problems.add_child(problemDisplays[button.modId][problemType])
+		problemDisplays[button.modId][problemType].setTexts()
 		if len(button.mod.problems[problemType]) != 0:
 			anyProblems = true
-			%problems.add_child(problemDisplays[button.modId][problemType])
-			problemDisplays[button.modId][problemType].setTexts()
 	%problemsLabel.text = "Problems found:" if anyProblems else "No problems here"
 
 func findProblems(component:GameComponent) -> void:
 	match component.get_script():
+		KeyBulk:
+			if &"C5" in modsWindow.modsRemoved:
+				noteProblem(&"C5", &"CurseKeyType", component, component.type == KeyBulk.TYPE.CURSE or component.type == KeyBulk.TYPE.UNCURSE)
 		Lock:
-			if &"NstdLockSize" in modsWindow.modsRemoved: noteProblem(&"NstdLockSize", &"NstdLockSize", component, component.parent.type != Door.TYPE.SIMPLE and component.size not in Lock.SIZES)
+			if &"NstdLockSize" in modsWindow.modsRemoved:
+				noteProblem(&"C3", &"ExactLock", component, component.type == Lock.TYPE.EXACT)
+				noteProblem(&"NstdLockSize", &"NstdLockSize", component, component.parent.type != Door.TYPE.SIMPLE and component.size not in Lock.SIZES)
 
 func noteProblem(mod:StringName, type:StringName, component:GameComponent, isProblem:bool) -> void:
 	var problem:Array = [mod, type]
-	print(isProblem, component.problems)
 	if isProblem and problem not in component.problems:
 		component.problems.append(problem)
 		mods.mods[mod].problems[type].append(component)
@@ -81,6 +85,10 @@ func noteProblem(mod:StringName, type:StringName, component:GameComponent, isPro
 		problems -= 1
 		if isReady: problemDisplays[mod][type].removeInstance(index)
 	if isReady: mods.mods[mod].selectButton.setIcon()
+
+func componentRemoved(component:GameComponent) -> void:
+	for problem in component.problems:
+		noteProblem(problem[0], problem[1], component, false)
 
 class ModSelectButton extends Button:
 	const NO_PROBLEM:Texture2D = preload("res://assets/ui/mods/noProblem.png")
