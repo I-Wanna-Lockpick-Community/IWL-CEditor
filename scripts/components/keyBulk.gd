@@ -151,6 +151,8 @@ func collect(player:Player) -> void:
 		TYPE.NEGROTOR: gameChanges.addChange(GameChanges.KeyChange.new(game, color, player.key[color].times(C.nI)))
 		TYPE.STAR: gameChanges.addChange(GameChanges.StarChange.new(game, color, true))
 		TYPE.UNSTAR: gameChanges.addChange(GameChanges.StarChange.new(game, color, false))
+		TYPE.CURSE: gameChanges.addChange(GameChanges.CurseChange.new(game, color, true))
+		TYPE.UNCURSE: gameChanges.addChange(GameChanges.CurseChange.new(game, color, false))
 		
 	if infinite: flashAnimation()
 	else: gameChanges.addChange(GameChanges.PropertyChange.new(game, self, &"active", false))

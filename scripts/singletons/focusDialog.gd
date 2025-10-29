@@ -103,7 +103,7 @@ func focusComponent(component:GameComponent) -> void:
 
 func defocusComponent() -> void:
 	if !componentFocused: return
-	componentFocused = null;
+	componentFocused = null
 
 func interact(edit:PanelContainer) -> void:
 	deinteract()
@@ -177,11 +177,21 @@ func receiveKey(event:InputEvent) -> bool:
 			KEY_DELETE:
 				if componentFocused:
 					focused.removeLock(componentFocused.index)
-					if len(focused.locks) != 0: focusComponent(focused.locks[len(focused.locks)-1])
+					if len(focused.locks) != 0: focusComponent(focused.locks[-1])
 					else: focus(focused)
 				else: changes.addChange(Changes.DeleteComponentChange.new(editor.game,focused))
 				changes.bufferSave()
 			_: return false
+	elif focused is KeyCounter:
+		match event.keycode:
+			KEY_E: if Input.is_key_pressed(KEY_CTRL): focused.addElement()
+			KEY_DELETE:
+				if componentFocused:
+					focused.removeElement(componentFocused.index)
+					if len(focused.elements) != 0: focusComponent(focused.elements[-1])
+					else: focus(focused)
+				else: changes.addChange(Changes.DeleteComponentChange.new(editor.game,focused))
+				changes.bufferSave()
 	else:
 		match event.keycode:
 			KEY_DELETE:
@@ -320,7 +330,7 @@ func focusComponentRemoved(type:GDScript, index:int) -> void:
 		if index != 0: focusComponent(focused.locks[index-1])
 	elif type == KeyCounterElement:
 		%keyCounterHandler.removeButton(index)
-		assert(index != 0); focusComponent(focused.elements[index-1])
+		if index != 0: focusComponent(focused.elements[index-1])
 
 
 func _frozenSet(value:bool):
@@ -337,4 +347,3 @@ func _paintedSet(value:bool):
 	if focused is not Door: return
 	changes.addChange(Changes.PropertyChange.new(editor.game,focused,&"painted",value))
 	changes.bufferSave()
-

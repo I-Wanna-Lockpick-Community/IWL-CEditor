@@ -75,7 +75,7 @@ func _process(_delta) -> void:
 				if Rect2(element.getDrawPosition(), element.getHoverSize()).has_point(mouseWorldPosition):
 					componentHovered = element
 
-	game.tiles.z_index = 2 if mode == MODE.TILE else 0
+	game.tiles.z_index = 3 if mode == MODE.TILE and game.playState != Game.PLAY_STATE.PLAY else 0
 
 func _gui_input(event:InputEvent) -> void:
 	if event is InputEventMouse:
@@ -230,8 +230,8 @@ func startSizeDrag(component:GameComponent, pivot:SIZE_DRAG_PIVOT=SIZE_DRAG_PIVO
 		SIZE_DRAG_PIVOT.TOP: rectPos += componentDragged.position+Vector2(0,componentDragged.size.y-minSize.y); dragMode = DRAG_MODE.SIZE_VERT
 		SIZE_DRAG_PIVOT.RIGHT: rectPos += componentDragged.position; dragMode = DRAG_MODE.SIZE_HORIZ
 		SIZE_DRAG_PIVOT.LEFT: rectPos += componentDragged.position+Vector2(componentDragged.size.x-minSize.x,0); dragMode = DRAG_MODE.SIZE_HORIZ
-	if dragMode == DRAG_MODE.SIZE_VERT:  minSize.x = componentDragged.size.x;
-	if dragMode == DRAG_MODE.SIZE_HORIZ:  minSize.y = componentDragged.size.y;
+	if dragMode == DRAG_MODE.SIZE_VERT:  minSize.x = componentDragged.size.x
+	if dragMode == DRAG_MODE.SIZE_HORIZ:  minSize.y = componentDragged.size.y
 	dragPivotRect = Rect2(rectPos, minSize)
 	previousDragPosition = mouseTilePosition
 

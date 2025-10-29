@@ -1,6 +1,7 @@
 extends RefCounted
 class_name Q
 
+static var ZERO:Q = Q.new(0)
 var n:int
 
 func _init(_n) -> void:

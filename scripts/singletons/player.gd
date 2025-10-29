@@ -18,6 +18,7 @@ const AURA_RED:Texture2D = preload("res://assets/game/player/aura/red.png")
 const AURA_GREEN:Texture2D = preload("res://assets/game/player/aura/green.png")
 const AURA_BLUE:Texture2D = preload("res://assets/game/player/aura/blue.png")
 const AURA_DRAW_OPACITY:Color = Color(Color.WHITE,0.5)
+const AURA_RECT:Rect2 = Rect2(Vector2(-32,-32),Vector2(64,64))
 
 const FPS:float = 60 # godot velocity works in /s so we account for gamemaker's fps, which is 60
 
@@ -29,6 +30,7 @@ const Y_MAXSPEED:float = 9
 var canDoubleJump:bool = true
 var key:Array[C] = []
 var star:Array[bool]
+var curse:Array[bool]
 
 var nearDoor:bool = false # cant save if near a door
 
@@ -39,7 +41,7 @@ var complexMode:C = C.new(1) # C(1,0) for real view, C(0,1) for i-view
 
 var masterShineDraw:RID
 var masterKeyDraw:RID
-var masterShineAngle:float
+var masterShineAngle:float = 0
 
 var firstFrame:bool = true # jank prevention
 
@@ -48,25 +50,33 @@ var auraGreen:bool = false
 var auraBlue:bool = false
 var auraDraw:RID
 
+var curseMode:int = 0 # 0 = none, 1 = curse, -1 = uncurse
+var curseColor:Game.COLOR
+var drawCurse:CurseParticle
+
 func _ready() -> void:
 	auraDraw = RenderingServer.canvas_item_create()
 	masterShineDraw = RenderingServer.canvas_item_create()
 	masterKeyDraw = RenderingServer.canvas_item_create()
+	drawCurse = CurseParticle.new(curseColor,curseMode)
 	RenderingServer.canvas_item_set_material(masterShineDraw, Game.ADDITIVE_MATERIAL)
-	RenderingServer.canvas_item_set_z_index(auraDraw,11)
-	RenderingServer.canvas_item_set_z_index(masterShineDraw,11)
-	RenderingServer.canvas_item_set_z_index(masterKeyDraw,11)
+	drawCurse.z_index = 4
+	RenderingServer.canvas_item_set_z_index(auraDraw,6)
+	RenderingServer.canvas_item_set_z_index(masterShineDraw,6)
+	RenderingServer.canvas_item_set_z_index(masterKeyDraw,6)
 	RenderingServer.canvas_item_set_parent(auraDraw, get_canvas_item())
 	RenderingServer.canvas_item_set_parent(masterShineDraw, get_canvas_item())
 	RenderingServer.canvas_item_set_parent(masterKeyDraw, get_canvas_item())
+	add_child(drawCurse)
 
 	for color in Game.COLORS:
 		# if color == Game.COLOR.STONE:
 		key.append(C.ZERO)
 		star.append(false)
+		curse.append(color == Game.COLOR.BROWN)
 
 func _physics_process(_delta:float) -> void:
-	if game.playState == Game.PLAY_STATE.PAUSED:
+	if game.playState != Game.PLAY_STATE.PLAY:
 		%sprite.pause()
 		return
 	
@@ -109,6 +119,10 @@ func _process(delta:float) -> void:
 	masterShineAngle = fmod(masterShineAngle,TAU)
 	queue_redraw()
 
+	drawCurse.mode = curseMode
+	drawCurse.color = curseColor
+	drawCurse.queue_redraw()
+
 func receiveKey(event:InputEventKey):
 	if event.echo: return
 	match event.keycode:
@@ -133,6 +147,7 @@ func near(area:Area2D) -> void:
 	if object is Door:
 		nearDoor = true
 		object.auraCheck(self)
+		if curseMode: object.curseCheck(self)
 
 func overlapping(area:Area2D) -> bool: return %interact.overlaps_area(area)
 
@@ -163,23 +178,35 @@ func dropMaster() -> void:
 	masterCycle = 0
 
 func checkKeys() -> void:
+	match masterCycle:
+		1: if !key[Game.COLOR.MASTER].across(masterMode).reduce().gt(0): masterMode = C.ZERO; masterCycle = 0
+		2: if !key[Game.COLOR.QUICKSILVER].across(masterMode).reduce().gt(0): masterMode = C.ZERO; masterCycle = 0
+	
 	auraRed = !key[Game.COLOR.RED].lt(1)
 	auraGreen = !key[Game.COLOR.GREEN].lt(5)
 	auraBlue = !key[Game.COLOR.BLUE].lt(3)
 
-	match masterCycle:
-		1: if key[Game.COLOR.MASTER].across(masterMode).reduce().gt(0): return
-		2: if key[Game.COLOR.QUICKSILVER].across(masterMode).reduce().gt(0): return
-	masterMode = C.ZERO; masterCycle = 0
+	curseMode = 0
+	var highestSeen:Q = Q.ZERO
+	for color in Game.COLORS:
+		if !curse[color] or key[color].r.eq(0): continue
+		# tie
+		if key[color].r.abs().eq(highestSeen): curseMode = 0
+		elif key[color].r.abs().gt(highestSeen):
+			highestSeen = key[color].r.abs()
+			curseMode = key[color].r.sign()
+			curseColor = color as Game.COLOR
+
 
 func _draw() -> void:
 	RenderingServer.canvas_item_clear(auraDraw)
 	RenderingServer.canvas_item_clear(masterShineDraw)
 	RenderingServer.canvas_item_clear(masterKeyDraw)
-	var auraRect:Rect2 = Rect2(Vector2(-32,-32),Vector2(64,64))
-	if auraRed: RenderingServer.canvas_item_add_texture_rect(auraDraw,auraRect,AURA_RED,false,AURA_DRAW_OPACITY)
-	if auraGreen: RenderingServer.canvas_item_add_texture_rect(auraDraw,auraRect,AURA_GREEN,false,AURA_DRAW_OPACITY)
-	if auraBlue: RenderingServer.canvas_item_add_texture_rect(auraDraw,auraRect,AURA_BLUE,false,AURA_DRAW_OPACITY)
+	# auras
+	if auraRed: RenderingServer.canvas_item_add_texture_rect(auraDraw,AURA_RECT,AURA_RED,false,AURA_DRAW_OPACITY)
+	if auraGreen: RenderingServer.canvas_item_add_texture_rect(auraDraw,AURA_RECT,AURA_GREEN,false,AURA_DRAW_OPACITY)
+	if auraBlue: RenderingServer.canvas_item_add_texture_rect(auraDraw,AURA_RECT,AURA_BLUE,false,AURA_DRAW_OPACITY)
+	# held
 	if masterCycle != 0:
 		var masterShineScale:float = 0.8 + 0.2*sin(masterShineAngle)
 		var masterDrawOpacity:Color = Color(Color.WHITE,masterShineScale*0.6)

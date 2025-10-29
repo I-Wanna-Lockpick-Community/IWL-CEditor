@@ -77,6 +77,7 @@ class ColorChange extends Change:
 			cancelled = true
 			return
 		game.player.get(array())[color] = GameChanges.copy(after)
+		game.player.checkKeys()
 	
 	func undo() -> void: game.player.get(array())[color] = GameChanges.copy(before)
 
@@ -89,12 +90,15 @@ class KeyChange extends ColorChange:
 			cancelled = true
 			return
 		super(_game,_color,after)
-		game.player.checkKeys()
 		for object in game.objects.values(): if object is Door and object.type == Door.TYPE.GATE: object.gateCheck(game.player)
 
 class StarChange extends ColorChange:
 	# a change to the starred state
 	static func array() -> StringName: return &"star"
+
+class CurseChange extends ColorChange:
+	# a change to the starred state
+	static func array() -> StringName: return &"curse"
 
 
 class PropertyChange extends Change:

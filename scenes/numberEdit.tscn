@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=3 uid="uid://sm362bc2r4fm"]
 
-[ext_resource type="Script" uid="uid://bh1poc6866o7c" path="res://scripts/nodes/numberEdit.gd" id="1_1fl8k"]
+[ext_resource type="Script" uid="uid://bh1poc6866o7c" path="res://scripts/nodes/focusDialog/numberEdit.gd" id="1_1fl8k"]
 [ext_resource type="Theme" uid="uid://bvfthh0vm4fbp" path="res://resources/uiTheme.tres" id="1_tcfpl"]
 [ext_resource type="FontVariation" uid="uid://s8hoox1x423q" path="res://resources/fonts/fNumberEdit.tres" id="2_tcfpl"]
 

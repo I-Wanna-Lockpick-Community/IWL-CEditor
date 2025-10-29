@@ -7,7 +7,7 @@ const SEARCH_NAME:String = "Player Spawn"
 const SEARCH_KEYWORDS:Array[String] = ["objPlayerStart", "start", "lily", "kid"]
 
 func outlineTex() -> Texture2D:
-	if editor.game.levelStart == self: return LEVELSTART_ICON
+	if game.levelStart == self: return LEVELSTART_ICON
 	return SAVESTATE_ICON
 
 const LEVELSTART_ICON:Texture2D = preload("res://assets/game/playerSpawn/levelStart.png")
@@ -29,7 +29,7 @@ func _ready() -> void:
 
 func _draw() -> void:
 	RenderingServer.canvas_item_clear(drawMain)
-	if editor.game.playState == Game.PLAY_STATE.PLAY: return
+	if game.playState == Game.PLAY_STATE.PLAY: return
 	var rect:Rect2 = Rect2(Vector2.ZERO, size)
-	if editor.game.levelStart == self: RenderingServer.canvas_item_add_texture_rect(drawMain,rect,SEARCH_ICON)
+	if game.levelStart == self: RenderingServer.canvas_item_add_texture_rect(drawMain,rect,SEARCH_ICON)
 	else: RenderingServer.canvas_item_add_texture_rect(drawMain,rect,SAVESTATE_ICON)

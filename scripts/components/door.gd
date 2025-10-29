@@ -110,7 +110,7 @@ func _draw() -> void:
 		if false: RenderingServer.canvas_item_add_texture_rect(drawMain,rect,GATE_FILL,true,Color(Color.WHITE,lerp(0.35,1.0,gateAlpha)))
 	else:
 		if animState != ANIM_STATE.RELOCK or animPart > 2:
-			match colorSpend:
+			match baseColor():
 				Game.COLOR.MASTER: texture = game.masterTex()
 				Game.COLOR.PURE: texture = game.pureTex()
 				Game.COLOR.STONE: texture = game.stoneTex()
@@ -121,14 +121,14 @@ func _draw() -> void:
 					RenderingServer.canvas_item_set_material(drawScaled,Game.PIXELATED_MATERIAL.get_rid())
 					RenderingServer.canvas_item_set_instance_shader_parameter(drawScaled, &"size", size)
 				RenderingServer.canvas_item_add_texture_rect(drawScaled,rect,texture,tileTexture)
-			elif colorSpend == Game.COLOR.GLITCH:
+			elif baseColor() == Game.COLOR.GLITCH:
 				RenderingServer.canvas_item_add_nine_patch(drawGlitch,rect,TEXTURE_RECT,SPEND_HIGH,CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,Game.highTone[Game.COLOR.GLITCH])
 				RenderingServer.canvas_item_add_nine_patch(drawGlitch,rect,TEXTURE_RECT,SPEND_MAIN,CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,Game.mainTone[Game.COLOR.GLITCH])
 				RenderingServer.canvas_item_add_nine_patch(drawGlitch,rect,TEXTURE_RECT,SPEND_DARK,CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,Game.darkTone[Game.COLOR.GLITCH])
 			else:
-				RenderingServer.canvas_item_add_nine_patch(drawMain,rect,TEXTURE_RECT,SPEND_HIGH,CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,Game.highTone[colorSpend])
-				RenderingServer.canvas_item_add_nine_patch(drawMain,rect,TEXTURE_RECT,SPEND_MAIN,CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,Game.mainTone[colorSpend])
-				RenderingServer.canvas_item_add_nine_patch(drawMain,rect,TEXTURE_RECT,SPEND_DARK,CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,Game.darkTone[colorSpend])
+				RenderingServer.canvas_item_add_nine_patch(drawMain,rect,TEXTURE_RECT,SPEND_HIGH,CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,Game.highTone[baseColor()])
+				RenderingServer.canvas_item_add_nine_patch(drawMain,rect,TEXTURE_RECT,SPEND_MAIN,CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,Game.mainTone[baseColor()])
+				RenderingServer.canvas_item_add_nine_patch(drawMain,rect,TEXTURE_RECT,SPEND_DARK,CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,Game.darkTone[baseColor()])
 		# frame
 		if len(locks) > 0 and type == TYPE.SIMPLE and locks[0].count.sign() < 0: RenderingServer.canvas_item_add_nine_patch(drawMain,rect,TEXTURE_RECT,FRAME_NEGATIVE,CORNER_SIZE,CORNER_SIZE)
 		else: RenderingServer.canvas_item_add_nine_patch(drawMain,rect,TEXTURE_RECT,FRAME,CORNER_SIZE,CORNER_SIZE)
@@ -245,6 +245,9 @@ var gameCopies:C = C.new(1)
 var gameFrozen:bool = false
 var gameCrumbled:bool = false
 var gamePainted:bool = false
+var cursed:bool = false
+var curseColor:Game.COLOR
+var curseTimer:float = 0
 
 enum ANIM_STATE {IDLE, ADD_COPY, RELOCK}
 var animState:ANIM_STATE = ANIM_STATE.IDLE
@@ -257,6 +260,11 @@ var gateOpen:bool = false
 var gateBufferCheck:Player = null
 
 func _process(delta:float) -> void:
+	if cursed and active:
+		curseTimer += delta
+		if curseTimer >= 2:
+			curseTimer -= 2
+			makeCurseParticles(curseColor,1,0.2,0.3)
 	match animState:
 		ANIM_STATE.IDLE: animTimer = 0; animAlpha = 0
 		ANIM_STATE.ADD_COPY:
@@ -309,6 +317,8 @@ func start() -> void:
 	super()
 
 func stop() -> void:
+	cursed = false
+	curseTimer = 0
 	gateAlpha = 1
 	gateOpen = false
 	gateBufferCheck = null
@@ -327,13 +337,13 @@ func tryOpen(player:Player) -> void:
 	for lock in locks:
 		cost = cost.plus(lock.getCost(player))
 	
-	gameChanges.addChange(GameChanges.KeyChange.new(game, colorSpend, player.key[colorSpend].minus(cost)))
+	gameChanges.addChange(GameChanges.KeyChange.new(game, effectiveColor(), player.key[effectiveColor()].minus(cost)))
 	gameChanges.addChange(GameChanges.PropertyChange.new(game, self, &"gameCopies", gameCopies.minus(1)))
 	
 	match type:
 		TYPE.SIMPLE:
 			if locks[0].type == Lock.TYPE.BLAST: AudioManager.play(preload("res://resources/sounds/door/blast.wav"))
-			elif colorSpend == Game.COLOR.MASTER and locks[0].color == Game.COLOR.MASTER: AudioManager.play(preload("res://resources/sounds/door/master.wav"))
+			elif effectiveColor() == Game.COLOR.MASTER and locks[0].effectiveColor() == Game.COLOR.MASTER: AudioManager.play(preload("res://resources/sounds/door/master.wav"))
 			else: AudioManager.play(preload("res://resources/sounds/door/simple.wav"))
 		TYPE.COMBO: AudioManager.play(preload("res://resources/sounds/door/combo.wav"))
 
@@ -362,14 +372,14 @@ func tryMasterOpen(player:Player) -> bool:
 	return true
 
 func hasColor(color:Game.COLOR) -> bool:
-	if colorSpend == color: return true
-	for lock in locks: if lock.color == color: return true
+	if effectiveColor() == color: return true
+	for lock in locks: if lock.effectiveColor() == color: return true
 	return false
 
 func destroy() -> void:
 	gameChanges.addChange(GameChanges.PropertyChange.new(game, self, &"active", false))
-	var color:Game.COLOR = colorSpend
-	if type == TYPE.SIMPLE: color = locks[0].color
+	var color:Game.COLOR = baseColor()
+	if type == TYPE.SIMPLE: color = locks[0].baseColor()
 	makeDebris(Debris, color)
 
 func addCopyAnimation() -> void:
@@ -379,8 +389,8 @@ func addCopyAnimation() -> void:
 	animPart = 0
 	game.fasterAnims()
 	addCopySound = AudioManager.play(preload("res://resources/sounds/door/addCopy.wav"))
-	var color:Game.COLOR = colorSpend
-	if type == TYPE.SIMPLE: color = locks[0].color
+	var color:Game.COLOR = baseColor()
+	if type == TYPE.SIMPLE: color = locks[0].baseColor()
 	makeDebris(AddCopyDebris, color)
 
 func relockAnimation() -> void:
@@ -390,8 +400,8 @@ func relockAnimation() -> void:
 	animPart = 0
 	game.fasterAnims()
 	for lock in locks: lock.queue_redraw()
-	var color:Game.COLOR = colorSpend
-	if type == TYPE.SIMPLE: color = locks[0].color
+	var color:Game.COLOR = baseColor()
+	if type == TYPE.SIMPLE: color = locks[0].baseColor()
 	makeDebris(RelockDebris, color)
 
 func makeDebris(debrisType:GDScript, debrisColor:Game.COLOR) -> void:
@@ -414,25 +424,55 @@ func gateCheck(player:Player) -> void:
 		gateBufferCheck = player
 	elif !gateOpen and shouldOpen:
 		gateBufferCheck = null
-		gameChanges.addChange(GameChanges.PropertyChange.new(editor.game,self,&"gateOpen",true))
+		gameChanges.addChange(GameChanges.PropertyChange.new(game,self,&"gateOpen",true))
 
 func auraCheck(player:Player) -> void:
 	var deAuraed:bool = false
 	if player.auraRed and gameFrozen:
-		gameChanges.addChange(GameChanges.PropertyChange.new(editor.game,self,&"gameFrozen",false))
+		gameChanges.addChange(GameChanges.PropertyChange.new(game,self,&"gameFrozen",false))
 		makeDebris(Debris, Game.COLOR.WHITE)
 		deAuraed = true
 	if player.auraGreen and gameCrumbled:
-		gameChanges.addChange(GameChanges.PropertyChange.new(editor.game,self,&"gameCrumbled",false))
+		gameChanges.addChange(GameChanges.PropertyChange.new(game,self,&"gameCrumbled",false))
 		makeDebris(Debris, Game.COLOR.BROWN)
 		deAuraed = true
 	if player.auraBlue and gamePainted:
-		gameChanges.addChange(GameChanges.PropertyChange.new(editor.game,self,&"gamePainted",false))
+		gameChanges.addChange(GameChanges.PropertyChange.new(game,self,&"gamePainted",false))
 		makeDebris(Debris, Game.COLOR.ORANGE)
 		deAuraed = true
 	if deAuraed:
 		AudioManager.play(preload("res://resources/sounds/door/deaura.wav"))
 		changes.bufferSave()
+
+func isAllColor(color:Game.COLOR) -> bool:
+	if colorSpend != color: return false
+	for lock in locks: if lock.color != color: return false
+	return true
+
+func curseCheck(player:Player) -> void:
+	if hasColor(Game.COLOR.PURE): return
+	if player.curseMode > 0 and !isAllColor(player.curseColor) and (!cursed or curseColor != player.curseColor):
+		gameChanges.addChange(GameChanges.PropertyChange.new(game,self,&"cursed",true))
+		gameChanges.addChange(GameChanges.PropertyChange.new(game,self,&"curseColor",player.curseColor))
+		makeCurseParticles(curseColor, 1, 0.2, 0.5)
+		AudioManager.play(preload("res://resources/sounds/door/curse.wav"))
+	elif player.curseMode < 0 and cursed and curseColor == player.curseColor:
+		gameChanges.addChange(GameChanges.PropertyChange.new(game,self,&"cursed",false))
+		makeCurseParticles(Game.COLOR.BROWN, -1, 0.2, 0.5)
+		AudioManager.play(preload("res://resources/sounds/door/decurse.wav"))
+
+func makeCurseParticles(color:Game.COLOR, mode:int, scaleMin:float=1,scaleMax:float=1) -> void:
+	for y in floor(size.y/16):
+		for x in floor(size.x/16):
+			add_child(CurseParticle.Temporary.new(color, mode, Vector2(x,y)*16+Vector2.ONE*randf_range(4,12), randf_range(scaleMin,scaleMax)))
+
+func effectiveColor() -> Game.COLOR: # for calculations
+	if cursed and curseColor != Game.COLOR.PURE: return curseColor
+	return colorSpend
+
+func baseColor() -> Game.COLOR: # for drawing
+	if cursed and curseColor != Game.COLOR.PURE: return curseColor
+	return colorSpend
 
 class Debris extends Node2D:
 	const FRAME:Texture2D = preload("res://assets/game/door/debris/frame.png")

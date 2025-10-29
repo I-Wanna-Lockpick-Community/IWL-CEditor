@@ -73,10 +73,10 @@ func receiveMouseInput(event:InputEventMouse) -> bool:
 	return false
 
 func _elementsChanged() -> void:
-	changes.addChange(Changes.PropertyChange.new(editor.game,self,&"size",Vector2(size.x,23+len(elements)*40)))
+	changes.addChange(Changes.PropertyChange.new(game,self,&"size",Vector2(size.x,23+len(elements)*40)))
 	var index:int = 0
 	for element in elements:
-		changes.addChange(Changes.PropertyChange.new(editor.game,element,&"position",Vector2(12,12+index*40)))
+		changes.addChange(Changes.PropertyChange.new(game,element,&"position",Vector2(12,12+index*40)))
 		index += 1
 
 func _swapElements(first:int, second:int) -> void: # TODO:DEJANK
@@ -84,16 +84,23 @@ func _swapElements(first:int, second:int) -> void: # TODO:DEJANK
 	var secondColor:Game.COLOR = elements[second].color
 	editor.componentDragged = elements[second]
 	editor.focusDialog.componentFocused = elements[second]
-	changes.addChange(Changes.PropertyChange.new(editor.game,elements[first],&"color",secondColor))
-	changes.addChange(Changes.PropertyChange.new(editor.game,elements[second],&"color",firstColor))
+	changes.addChange(Changes.PropertyChange.new(game,elements[first],&"color",secondColor))
+	changes.addChange(Changes.PropertyChange.new(game,elements[second],&"color",firstColor))
 
 func addElement() -> void:
-	changes.addChange(Changes.CreateComponentChange.new(editor.game,KeyCounterElement,{&"position":Vector2(12,12+len(elements)*40),&"parentId":id}))
+	var element:KeyCounterElement = changes.addChange(Changes.CreateComponentChange.new(game,KeyCounterElement,{&"position":Vector2(12,12+len(elements)*40),&"parentId":id})).result
+	changes.addChange(Changes.PropertyChange.new(game,element,&"color",nextColor()))
 	changes.bufferSave()
 
 func removeElement(index:int) -> void:
-	changes.addChange(Changes.DeleteComponentChange.new(editor.game,elements[index]))
+	changes.addChange(Changes.DeleteComponentChange.new(game,elements[index]))
 	changes.bufferSave()
+
+func nextColor() -> Game.COLOR:
+	# make sure to change this when implementing mods
+	if len(elements) < 2: return Game.COLOR.WHITE
+	if elements[-2].color == Game.COLORS - 1: return Game.COLOR.MASTER
+	return elements[-2].color + 1 as Game.COLOR
 
 # ==== PLAY ==== #
 func start() -> void:

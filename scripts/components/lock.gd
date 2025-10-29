@@ -146,7 +146,7 @@ func _draw() -> void:
 	if parent.animState != Door.ANIM_STATE.RELOCK or parent.animPart > 2:
 		var texture:Texture2D
 		var tileTexture:bool = false
-		match color:
+		match baseColor():
 			Game.COLOR.MASTER: texture = game.masterTex()
 			Game.COLOR.PURE: texture = game.pureTex()
 			Game.COLOR.STONE: texture = game.stoneTex()
@@ -157,12 +157,12 @@ func _draw() -> void:
 				RenderingServer.canvas_item_set_material(drawScaled,Game.PIXELATED_MATERIAL.get_rid())
 				RenderingServer.canvas_item_set_instance_shader_parameter(drawScaled, &"size", size)
 			RenderingServer.canvas_item_add_texture_rect(drawScaled,rect,texture,tileTexture)
-		elif color == Game.COLOR.GLITCH:
+		elif baseColor() == Game.COLOR.GLITCH:
 			if sizeType == SIZE_TYPE.ANY: RenderingServer.canvas_item_add_nine_patch(drawGlitch,rect,ANY_RECT,getLockFillSprite(),CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,Game.mainTone[color])
-			else: RenderingServer.canvas_item_add_texture_rect(drawGlitch,rect,getLockFillSprite(),false,Game.mainTone[color])
+			else: RenderingServer.canvas_item_add_texture_rect(drawGlitch,rect,getLockFillSprite(),false,Game.mainTone[baseColor()])
 		else:
 			if sizeType == SIZE_TYPE.ANY: RenderingServer.canvas_item_add_nine_patch(drawMain,rect,ANY_RECT,getLockFillSprite(),CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,Game.mainTone[color])
-			else: RenderingServer.canvas_item_add_texture_rect(drawMain,rect,getLockFillSprite(),false,Game.mainTone[color])
+			else: RenderingServer.canvas_item_add_texture_rect(drawMain,rect,getLockFillSprite(),false,Game.mainTone[baseColor()])
 	# frame
 	if sizeType == SIZE_TYPE.ANY: RenderingServer.canvas_item_add_nine_patch(drawMain,rect,ANY_RECT,getLockFrameSprite(),CORNER_SIZE,CORNER_SIZE)
 	else: RenderingServer.canvas_item_add_texture_rect(drawMain,rect,getLockFrameSprite())
@@ -187,14 +187,14 @@ func _draw() -> void:
 
 				var strWidth:float = Game.FTALK.get_string_size(string,HORIZONTAL_ALIGNMENT_LEFT,-1,12).x + lockOffsetX
 
-				var startX:int = round((size.x - strWidth)/2);
-				var startY:int = round((size.y+14)/2);
-				if showLock and vertical: startY -= 8;
+				var startX:int = round((size.x - strWidth)/2)
+				var startY:int = round((size.y+14)/2)
+				if showLock and vertical: startY -= 8
 				@warning_ignore("integer_division")
 				if showLock:
 					var lockRect:Rect2
 					if vertical:
-						var lockStartX:int = round((size.x - lockOffsetX)/2);
+						var lockStartX:int = round((size.x - lockOffsetX)/2)
 						lockRect = Rect2(Vector2(lockStartX+lockOffsetX/2,size.y/2+11)-SYMBOL_SIZE/2-getOffset(),Vector2(32,32))
 					elif symbolLast: lockRect = Rect2(Vector2(startX+strWidth-lockOffsetX/2,size.y/2)-SYMBOL_SIZE/2-getOffset(),Vector2(32,32))
 					else: lockRect = Rect2(Vector2(startX+lockOffsetX/2,size.y/2)-SYMBOL_SIZE/2-getOffset(),Vector2(32,32))
@@ -311,20 +311,28 @@ func propertyChangedInit(property:StringName) -> void:
 		if property == &"size": _comboDoorSizeChanged()
 	if property == &"count" or property == &"sizeType" or property == &"type": _setAutoConfiguration()
 
+func effectiveColor() -> Game.COLOR: # for calculations
+	if parent.cursed and parent.curseColor != Game.COLOR.PURE: return parent.curseColor
+	return color
+
+func baseColor() -> Game.COLOR: # for drawing
+	if parent.cursed and parent.curseColor != Game.COLOR.PURE: return parent.curseColor
+	return color
+
 # ==== PLAY ==== #
 func canOpen(player:Player) -> bool:
 	match type:
-		TYPE.NORMAL: return !player.key[color].across(count.axis()).reduce().lt(count.abs())
-		TYPE.BLANK: return player.key[color].eq(0)
+		TYPE.NORMAL: return !player.key[effectiveColor()].across(count.axis()).reduce().lt(count.abs())
+		TYPE.BLANK: return player.key[effectiveColor()].eq(0)
 		TYPE.BLAST:
-			return player.key[color].axis().across(count.axis()).reduce().gt(0)
-		TYPE.ALL: return player.key[color].neq(0)
-		TYPE.EXACT: return player.key[color].across(count.axibs()).eq(count)
+			return player.key[effectiveColor()].axis().across(count.axis()).reduce().gt(0)
+		TYPE.ALL: return player.key[effectiveColor()].neq(0)
+		TYPE.EXACT: return player.key[effectiveColor()].across(count.axibs()).eq(count)
 		_: return true
 
 func getCost(player:Player) -> C:
 	match type:
 		TYPE.NORMAL, TYPE.EXACT: return count
-		TYPE.BLAST: return player.key[color].across(count.axibs())
-		TYPE.ALL: return player.key[color]
+		TYPE.BLAST: return player.key[effectiveColor()].across(count.axibs())
+		TYPE.ALL: return player.key[effectiveColor()]
 		_: return C.ZERO

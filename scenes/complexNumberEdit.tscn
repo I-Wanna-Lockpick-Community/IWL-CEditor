@@ -1,7 +1,7 @@
 [gd_scene load_steps=6 format=3 uid="uid://tpxbw5vtj5nx"]
 
 [ext_resource type="Theme" uid="uid://bvfthh0vm4fbp" path="res://resources/uiTheme.tres" id="1_n5xw7"]
-[ext_resource type="Script" uid="uid://baijlter1i5mk" path="res://scripts/nodes/complexNumberEdit.gd" id="2_0uk8m"]
+[ext_resource type="Script" uid="uid://baijlter1i5mk" path="res://scripts/nodes/focusDialog/complexNumberEdit.gd" id="2_0uk8m"]
 [ext_resource type="Texture2D" uid="uid://ciyd5ja4gu1u1" path="res://assets/ui/focusDialog/numberEdit/complexNumberEditPlus.png" id="3_205pp"]
 [ext_resource type="PackedScene" uid="uid://sm362bc2r4fm" path="res://scenes/numberEdit.tscn" id="3_dqp57"]
 [ext_resource type="Texture2D" uid="uid://dy5pu0dl7us8k" path="res://assets/ui/focusDialog/numberEdit/complexNumberEditI.png" id="4_dqp57"]
