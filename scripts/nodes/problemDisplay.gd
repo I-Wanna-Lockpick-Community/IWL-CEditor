@@ -28,7 +28,11 @@ func getProblemName() -> String:
 	match [modId, type]:
 		[&"NstdLockSize", &"NstdLockSize"]: return "Nonstandard Lock Size"
 
+		[&"C2", &"DynamiteColor"]: return "Dynamite Color"
+		[&"C2", &"QuicksilverColor"]: return "Quicksilver Color"
 		[&"C3", &"ExactLock"]: return "Exact Lock"
+		[&"C4", &"DarkAuraColor"]: return "Dark Aura Color"
+		[&"C4", &"AuraBreakerColor"]: return "Aura Breaker Color"
 		[&"C5", &"CurseKeyType"]: return "Curse/Decurse Key"
 	return "huh?? what??"
 
@@ -38,7 +42,7 @@ func showInstance(index:int) -> void:
 	var component:GameComponent = mod.problems[type][index]
 	if component is GameObject:
 		editor.focusDialog.defocusComponent()
-		editor.focusDialog.focus(component)
+		editor.focusDialog.focus(component,true)
 	else: editor.focusDialog.focusComponent(component)
 	editor.scrollIntoView(component)
 

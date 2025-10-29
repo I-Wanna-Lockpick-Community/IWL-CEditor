@@ -114,6 +114,41 @@ func listIncompatibilities(mod:Mod) -> String:
 	for id in mod.incompatibilities:
 		string += "\n - " + mods[id].name
 	return string
+
+func colors() -> Array[Game.COLOR]:
+	var array:Array[Game.COLOR] = [
+		Game.COLOR.MASTER,
+		Game.COLOR.WHITE, Game.COLOR.ORANGE, Game.COLOR.PURPLE,
+		Game.COLOR.RED, Game.COLOR.GREEN, Game.COLOR.BLUE,
+		Game.COLOR.PINK, Game.COLOR.CYAN, Game.COLOR.BLACK,
+		Game.COLOR.BROWN,
+		Game.COLOR.PURE,
+		Game.COLOR.GLITCH,
+		Game.COLOR.STONE,
+	]
+	if active(&"C2"): array.append_array([Game.COLOR.DYNAMITE, Game.COLOR.QUICKSILVER])
+	if active(&"C4"): array.append_array([Game.COLOR.MAROON, Game.COLOR.FOREST, Game.COLOR.NAVY, Game.COLOR.ICE, Game.COLOR.MUD, Game.COLOR.GRAFFITI])
+	return array
+
+func keyTypes() -> Array[KeyBulk.TYPE]:
+	var array:Array[KeyBulk.TYPE] = [
+		KeyBulk.TYPE.NORMAL,
+		KeyBulk.TYPE.EXACT,
+		KeyBulk.TYPE.STAR, KeyBulk.TYPE.UNSTAR,
+		KeyBulk.TYPE.SIGNFLIP, KeyBulk.TYPE.POSROTOR, KeyBulk.TYPE.NEGROTOR
+	]
+	if active(&"C5"): array.append_array([KeyBulk.TYPE.CURSE, KeyBulk.TYPE.UNCURSE])
+	return array
+
+func lockTypes() -> Array[Lock.TYPE]:
+	var array:Array[Lock.TYPE] = [
+		Lock.TYPE.NORMAL,
+		Lock.TYPE.BLANK,
+		Lock.TYPE.BLAST, Lock.TYPE.ALL
+	]
+	if active(&"C3"): array.append(Lock.TYPE.EXACT)
+	return array
+
 class Mod extends RefCounted:
 	var active:bool = false
 	var tempActive:bool = false # used while in modsWindow

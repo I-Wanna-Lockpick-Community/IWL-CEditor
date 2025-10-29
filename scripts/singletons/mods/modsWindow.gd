@@ -45,5 +45,5 @@ func _saveChanges():
 	for mod in mods.mods.values():
 		changes.addChange(Changes.GlobalPropertyChange.new(mod,&"active",mod.tempActive))
 	changes.bufferSave()
-	editor.focusDialog.changedMods()
+	get_tree().call_group("modUI", "changedMods")
 	queue_free()

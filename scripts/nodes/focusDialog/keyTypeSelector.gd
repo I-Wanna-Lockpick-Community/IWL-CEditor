@@ -20,6 +20,12 @@ func _ready() -> void:
 	buttonType = KeyTypeSelectorButton
 	super()
 
+func changedMods() -> void:
+	var keyTypes:Array[KeyBulk.TYPE] = mods.keyTypes()
+	for button in buttons: button.visible = false
+	for keyType in keyTypes: buttons[keyType].visible = true
+	columns = len(keyTypes)
+
 class KeyTypeSelectorButton extends SelectorButton:
 	var drawMain:RID
 

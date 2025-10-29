@@ -4,13 +4,13 @@ class_name KeyCounterDialog
 @onready var editor:Editor = get_node("/root/editor")
 @onready var main = get_parent()
 
-func focus(focused:KeyCounter, new:bool) -> void:
+func focus(focused:KeyCounter, new:bool, dontRedirect:bool) -> void:
 	%keyCounterWidthSelector.setSelect(KeyCounter.WIDTHS.find(focused.size.x))
 	if !main.componentFocused:
 		%keyCounterColorSelector.visible = false
 	if new:
 		%keyCounterHandler.setup(focused)
-		main.focusComponent(focused.elements[-1])
+		if !dontRedirect: main.focusComponent(focused.elements[-1])
 
 func focusComponent(component:Lock, _new:bool) -> void:
 	%keyCounterHandler.setSelect(component.index)

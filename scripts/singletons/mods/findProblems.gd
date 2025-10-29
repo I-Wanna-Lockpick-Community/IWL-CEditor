@@ -64,12 +64,25 @@ func _modSelected(button:ModSelectButton) -> void:
 func findProblems(component:GameComponent) -> void:
 	match component.get_script():
 		KeyBulk:
+			findColorProblems(component, component.color)
 			if &"C5" in modsWindow.modsRemoved:
-				noteProblem(&"C5", &"CurseKeyType", component, component.type == KeyBulk.TYPE.CURSE or component.type == KeyBulk.TYPE.UNCURSE)
+				noteProblem(&"C5", &"CurseKeyType", component, component.type in [KeyBulk.TYPE.CURSE, KeyBulk.TYPE.UNCURSE])
 		Lock:
+			findColorProblems(component, component.color)
 			if &"NstdLockSize" in modsWindow.modsRemoved:
-				noteProblem(&"C3", &"ExactLock", component, component.type == Lock.TYPE.EXACT)
 				noteProblem(&"NstdLockSize", &"NstdLockSize", component, component.parent.type != Door.TYPE.SIMPLE and component.size not in Lock.SIZES)
+			if &"C3" in modsWindow.modsRemoved:
+				noteProblem(&"C3", &"ExactLock", component, component.type == Lock.TYPE.EXACT)
+		Door:
+			findColorProblems(component, component.colorSpend)
+
+func findColorProblems(component:GameComponent, color:Game.COLOR) -> void:
+	if &"C2" in modsWindow.modsRemoved:
+		noteProblem(&"C2", &"DynamiteColor", component, color == Game.COLOR.DYNAMITE)
+		noteProblem(&"C2", &"QuicksilverColor", component, color == Game.COLOR.QUICKSILVER)
+	if &"C4" in modsWindow.modsRemoved:
+		noteProblem(&"C4", &"DarkAuraColor", component, color in [Game.COLOR.MAROON, Game.COLOR.FOREST, Game.COLOR.NAVY])
+		noteProblem(&"C4", &"AuraBreakerColor", component, color in [Game.COLOR.ICE, Game.COLOR.MUD, Game.COLOR.GRAFFITI])
 
 func noteProblem(mod:StringName, type:StringName, component:GameComponent, isProblem:bool) -> void:
 	var problem:Array = [mod, type]

@@ -22,7 +22,7 @@ func receiveKey(event:InputEventKey) -> bool:
 			elif main.focused.type == KeyBulk.TYPE.POSROTOR: _keyTypeSelected(KeyBulk.TYPE.SIGNFLIP)
 			else: _keyTypeSelected(KeyBulk.TYPE.POSROTOR)
 		KEY_C: editor.quickSet.startQuick(QuickSet.QUICK.COLOR, main.focused)
-		KEY_U: _keyTypeSelected(KeyBulk.TYPE.CURSE if main.focused.type != KeyBulk.TYPE.CURSE else KeyBulk.TYPE.UNCURSE)
+		KEY_U: if mods.active(&"C5"): _keyTypeSelected(KeyBulk.TYPE.CURSE if main.focused.type != KeyBulk.TYPE.CURSE else KeyBulk.TYPE.UNCURSE)
 		KEY_DELETE:
 			changes.addChange(Changes.DeleteComponentChange.new(editor.game,main.focused))
 			changes.bufferSave()

@@ -1,4 +1,4 @@
-[gd_scene load_steps=36 format=3 uid="uid://8bth374yqwpe"]
+[gd_scene load_steps=39 format=3 uid="uid://8bth374yqwpe"]
 
 [ext_resource type="Theme" uid="uid://bvfthh0vm4fbp" path="res://resources/uiTheme.tres" id="1_eqegh"]
 [ext_resource type="Script" uid="uid://dm8t82nhqkdlc" path="res://scripts/singletons/focusDialog/focusDialog.gd" id="2_k8bto"]
@@ -31,6 +31,9 @@
 [ext_resource type="Script" uid="uid://lbaubg2qq1s1" path="res://scripts/nodes/focusDialog/keyCounterHandler.gd" id="25_1rcup"]
 [ext_resource type="Script" uid="uid://ckcofkmbukj5o" path="res://scripts/nodes/focusDialog/keyCounterWidthSelector.gd" id="25_7tfe2"]
 [ext_resource type="Script" uid="uid://bg8oswa2bhdsv" path="res://scripts/nodes/focusDialog/goalTypeSelector.gd" id="26_1rcup"]
+[ext_resource type="Script" uid="uid://ofo6shxaymkl" path="res://scripts/singletons/focusDialog/playerDialog.gd" id="28_4qfwo"]
+[ext_resource type="Script" uid="uid://dihumic7k5rec" path="res://scripts/singletons/focusDialog/keyCounterDialog.gd" id="30_bfxh1"]
+[ext_resource type="Script" uid="uid://b0shfyjnfk7ih" path="res://scripts/singletons/focusDialog/goalDialog.gd" id="33_di8ev"]
 
 [sub_resource type="ButtonGroup" id="ButtonGroup_oii3e"]
 
@@ -71,16 +74,18 @@ layout_mode = 2
 layout_mode = 2
 theme_override_constants/separation = 2
 
-[node name="keyColorSelector" type="GridContainer" parent="keyDialog/c/c/c"]
+[node name="keyColorSelector" type="GridContainer" parent="keyDialog/c/c/c" groups=["modUI"]]
 unique_name_in_owner = true
 layout_mode = 2
+size_flags_horizontal = 4
 theme = ExtResource("1_eqegh")
 script = ExtResource("3_wmate")
 metadata/_custom_type_script = "uid://c70juj2p5s6yd"
 
-[node name="keyTypeSelector" type="GridContainer" parent="keyDialog/c/c/c"]
+[node name="keyTypeSelector" type="GridContainer" parent="keyDialog/c/c/c" groups=["modUI"]]
 unique_name_in_owner = true
 layout_mode = 2
+size_flags_horizontal = 4
 script = ExtResource("4_cb7cu")
 metadata/_custom_type_script = "uid://dgllodap6540"
 
@@ -116,6 +121,7 @@ stretch_mode = 0
 
 [node name="doorDialog" type="Control" parent="."]
 unique_name_in_owner = true
+visible = false
 anchors_preset = 0
 script = ExtResource("11_drywk")
 
@@ -220,9 +226,10 @@ alignment = 1
 script = ExtResource("17_cu8b0")
 metadata/_custom_type_script = "uid://c71qe58ht0isn"
 
-[node name="doorColorSelector" type="GridContainer" parent="doorDialog/c/lock/c/c"]
+[node name="doorColorSelector" type="GridContainer" parent="doorDialog/c/lock/c/c" groups=["modUI"]]
 unique_name_in_owner = true
 layout_mode = 2
+size_flags_horizontal = 4
 script = ExtResource("3_wmate")
 metadata/_custom_type_script = "uid://c70juj2p5s6yd"
 
@@ -230,7 +237,7 @@ metadata/_custom_type_script = "uid://c70juj2p5s6yd"
 unique_name_in_owner = true
 layout_mode = 2
 
-[node name="lockTypeSelector" type="GridContainer" parent="doorDialog/c/lock/c/c/lockSettings"]
+[node name="lockTypeSelector" type="GridContainer" parent="doorDialog/c/lock/c/c/lockSettings" groups=["modUI"]]
 unique_name_in_owner = true
 layout_mode = 2
 script = ExtResource("15_vfuuy")
@@ -300,6 +307,7 @@ icon = ExtResource("23_h1xy2")
 unique_name_in_owner = true
 visible = false
 anchors_preset = 0
+script = ExtResource("28_4qfwo")
 
 [node name="c" type="PanelContainer" parent="playerDialog"]
 layout_mode = 1
@@ -344,6 +352,7 @@ text = "Test State"
 unique_name_in_owner = true
 visible = false
 anchors_preset = 0
+script = ExtResource("30_bfxh1")
 
 [node name="c" type="PanelContainer" parent="keyCounterDialog"]
 layout_mode = 1
@@ -385,9 +394,10 @@ script = ExtResource("25_1rcup")
 buttonGroup = SubResource("ButtonGroup_7tfe2")
 metadata/_custom_type_script = "uid://lbaubg2qq1s1"
 
-[node name="keyCounterColorSelector" type="GridContainer" parent="keyCounterDialog/c/c/c"]
+[node name="keyCounterColorSelector" type="GridContainer" parent="keyCounterDialog/c/c/c" groups=["modUI"]]
 unique_name_in_owner = true
 layout_mode = 2
+size_flags_horizontal = 4
 script = ExtResource("3_wmate")
 metadata/_custom_type_script = "uid://c70juj2p5s6yd"
 
@@ -395,6 +405,7 @@ metadata/_custom_type_script = "uid://c70juj2p5s6yd"
 unique_name_in_owner = true
 visible = false
 anchors_preset = 0
+script = ExtResource("33_di8ev")
 
 [node name="c" type="PanelContainer" parent="goalDialog"]
 layout_mode = 1
@@ -449,9 +460,9 @@ default_color = Color(0.8352941, 0.8352941, 0.8352941, 1)
 [connection signal="valueSet" from="doorDialog/c/lock/c/c/doorAxialNumberEdit" to="doorDialog" method="_doorAxialNumberSet"]
 [connection signal="pressed" from="doorDialog/c/lock/c/c/blastLockSettings/blastLockSign" to="doorDialog" method="_blastLockSet"]
 [connection signal="pressed" from="doorDialog/c/lock/c/c/blastLockSettings/blastLockAxis" to="doorDialog" method="_blastLockSet"]
-[connection signal="pressed" from="playerDialog/c/c/c/playTest" to="." method="_playTest"]
-[connection signal="pressed" from="playerDialog/c/c/c/levelStart" to="." method="_setLevelStart"]
-[connection signal="pressed" from="playerDialog/c/c/c/savestate" to="." method="_setSavestate"]
-[connection signal="select" from="keyCounterDialog/c/c/c/keyCounterWidthSelector" to="." method="_keyCounterWidthSelected"]
-[connection signal="select" from="keyCounterDialog/c/c/c/keyCounterColorSelector" to="." method="_keyCounterColorSelected"]
-[connection signal="select" from="goalDialog/c/c/c/goalTypeSelector" to="." method="_goalTypeSelected"]
+[connection signal="pressed" from="playerDialog/c/c/c/playTest" to="playerDialog" method="_playTest"]
+[connection signal="pressed" from="playerDialog/c/c/c/levelStart" to="playerDialog" method="_setLevelStart"]
+[connection signal="pressed" from="playerDialog/c/c/c/savestate" to="playerDialog" method="_setSavestate"]
+[connection signal="select" from="keyCounterDialog/c/c/c/keyCounterWidthSelector" to="keyCounterDialog" method="_keyCounterWidthSelected"]
+[connection signal="select" from="keyCounterDialog/c/c/c/keyCounterColorSelector" to="keyCounterDialog" method="_keyCounterColorSelected"]
+[connection signal="select" from="goalDialog/c/c/c/goalTypeSelector" to="goalDialog" method="_goalTypeSelected"]

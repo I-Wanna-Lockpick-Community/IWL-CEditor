@@ -4,7 +4,7 @@ class_name DoorDialog
 @onready var editor:Editor = get_node("/root/editor")
 @onready var main = get_parent()
 
-func focus(focused:Door, new:bool) -> void:
+func focus(focused:Door, new:bool, dontRedirect:bool) -> void:
 	%doorTypes.get_child(focused.type).button_pressed = true
 	%lockHandler.colorLink.visible = focused.type == Door.TYPE.SIMPLE
 	%spend.queue_redraw()
@@ -25,7 +25,7 @@ func focus(focused:Door, new:bool) -> void:
 	if new:
 		main.interact(%doorComplexNumberEdit.realEdit)
 		%lockHandler.setup(focused)
-		if focused.type == Door.TYPE.SIMPLE: main.focusComponent(focused.locks[0])
+		if focused.type == Door.TYPE.SIMPLE and !dontRedirect: main.focusComponent(focused.locks[0])
 
 func focusComponent(component:Lock, new:bool) -> void:
 	%doorColorSelector.visible = true

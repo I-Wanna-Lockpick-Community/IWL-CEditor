@@ -16,6 +16,12 @@ func _ready() -> void:
 	buttonType = LockTypeSelectorButton
 	super()
 
+func changedMods() -> void:
+	var lockTypes:Array[Lock.TYPE] = mods.lockTypes()
+	for button in buttons: button.visible = false
+	for lockType in lockTypes: buttons[lockType].visible = true
+	columns = len(lockTypes)
+
 class LockTypeSelectorButton extends SelectorButton:
 	var drawMain:RID
 

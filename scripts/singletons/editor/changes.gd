@@ -354,12 +354,12 @@ class GlobalObjectChange extends Change:
 class GlobalPropertyChange extends Change:
 	# changes a property in some singleton
 
-	var singleton:Node
+	var singleton:Variant
 	var property:StringName
 	var before:Variant
 	var after:Variant
 
-	func _init(_singleton:Node, _property:StringName, _after:Variant) -> void:
+	func _init(_singleton:Variant, _property:StringName, _after:Variant) -> void:
 		singleton = _singleton
 		property = _property
 		before = singleton.get(property)
@@ -367,7 +367,8 @@ class GlobalPropertyChange extends Change:
 		if before == after:
 			cancelled = true
 			return
-	
+		do()
+
 	func do() -> void: singleton.set(property, after)
 	func undo() -> void: singleton.set(property, before)
 

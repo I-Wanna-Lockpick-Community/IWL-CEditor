@@ -16,15 +16,18 @@ var interacted:PanelContainer # the number edit that is currently interacted
 
 var above:bool = false # display above the object instead
 
-func focus(object:GameObject) -> void:
+func _ready() -> void:
+	get_tree().call_group("modUI", "changedMods")
+
+func focus(object:GameObject, dontRedirect:bool=false) -> void:
 	var new:bool = object != focused
 	focused = object
 	editor.game.objectsParent.move_child(focused, -1)
 	showCorrectDialog()
 	if focused is KeyBulk: keyDialog.focus(focused, new)
-	elif focused is Door: doorDialog.focus(focused, new)
+	elif focused is Door: doorDialog.focus(focused, new, dontRedirect)
 	elif focused is PlayerSpawn: playerDialog.focus(focused, new)
-	elif focused is KeyCounter: keyCounterDialog.focus(focused, new)
+	elif focused is KeyCounter: keyCounterDialog.focus(focused, new, dontRedirect)
 	elif focused is Goal: goalDialog.focus(focused, new)
 
 func showCorrectDialog() -> void:
