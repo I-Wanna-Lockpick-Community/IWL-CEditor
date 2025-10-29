@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://3v1hcbfffaqy"
-path="res://.godot/imported/painted2x1.png-b96dd3f8e56df792e0de508984ee0e29.ctex"
+path="res://.godot/imported/painted1x2.png-aa185dd820295dd47a7d7dafca86ade3.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/game/door/aura/painted2x1.png"
-dest_files=["res://.godot/imported/painted2x1.png-b96dd3f8e56df792e0de508984ee0e29.ctex"]
+source_file="res://assets/game/door/aura/painted1x2.png"
+dest_files=["res://.godot/imported/painted1x2.png-aa185dd820295dd47a7d7dafca86ade3.ctex"]
 
 [params]
 

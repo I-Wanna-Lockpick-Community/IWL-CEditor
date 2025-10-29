@@ -16,13 +16,18 @@ const CRUMBLED_1X2:Texture2D = preload("res://assets/game/door/aura/crumbled1x2.
 const CRUMBLED_2X2:Texture2D = preload("res://assets/game/door/aura/crumbled2x2.png")
 const CRUMBLED_BASE:Texture2D = preload("res://assets/game/door/aura/crumbledBase.png")
 
-const FROZEN_MATERIAL:ShaderMaterial = preload("res://resources/materials/frozenDrawMaterial.tres")
+
+const PAINTED_1X1:Texture2D = preload("res://assets/game/door/aura/painted1x1.png")
+const PAINTED_1X2:Texture2D = preload("res://assets/game/door/aura/painted1x2.png")
+const PAINTED_2X2:Texture2D = preload("res://assets/game/door/aura/painted2x2.png")
+const PAINTED_BASE:Texture2D = preload("res://assets/game/door/aura/paintedBase.png")
 const PAINTED_MATERIAL:CanvasItemMaterial = preload("res://resources/materials/additiveMaterial.tres")
 
 const FROZEN_1X1:Texture2D = preload("res://assets/game/door/aura/frozen1x1.png")
 const FROZEN_1X2:Texture2D = preload("res://assets/game/door/aura/frozen1x2.png")
 const FROZEN_2X2:Texture2D = preload("res://assets/game/door/aura/frozen2x2.png")
 const FROZEN_3X2:Texture2D = preload("res://assets/game/door/aura/frozen3x2.png")
+const FROZEN_MATERIAL:ShaderMaterial = preload("res://resources/materials/frozenDrawMaterial.tres")
 
 const TEXTURE_RECT:Rect2 = Rect2(Vector2.ZERO,Vector2(64,64)) # size of all the door textures
 const CORNER_SIZE:Vector2 = Vector2(9,9) # size of door ninepatch corners
@@ -134,6 +139,12 @@ func _draw() -> void:
 		elif size == Vector2(64,64): RenderingServer.canvas_item_add_texture_rect(drawCrumbled,Rect2(Vector2.ZERO, size),CRUMBLED_2X2)
 		else:
 			RenderingServer.canvas_item_add_nine_patch(drawCrumbled,rect,TEXTURE_RECT,CRUMBLED_BASE,Vector2(16,18),Vector2(16,14),TILE,TILE,true)
+	if painted if game.playState == Game.PLAY_STATE.EDIT else gamePainted:
+		if size == Vector2(32,32): RenderingServer.canvas_item_add_texture_rect(drawPainted,Rect2(Vector2.ZERO, size),PAINTED_1X1)
+		elif size == Vector2(32,64): RenderingServer.canvas_item_add_texture_rect(drawPainted,Rect2(Vector2.ZERO, size),PAINTED_1X2)
+		elif size == Vector2(64,64): RenderingServer.canvas_item_add_texture_rect(drawPainted,Rect2(Vector2.ZERO, size),PAINTED_2X2)
+		else:
+			RenderingServer.canvas_item_add_texture_rect(drawPainted,rect,PAINTED_BASE,true)
 	if frozen if game.playState == Game.PLAY_STATE.EDIT else gameFrozen:
 		RenderingServer.canvas_item_set_instance_shader_parameter(drawFrozen, &"size", Vector2(0,0))
 		if size == Vector2(32,32): RenderingServer.canvas_item_add_texture_rect(drawFrozen,Rect2(Vector2.ZERO, size),FROZEN_1X1)
