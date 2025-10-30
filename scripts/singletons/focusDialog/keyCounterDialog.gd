@@ -12,7 +12,7 @@ func focus(focused:KeyCounter, new:bool, dontRedirect:bool) -> void:
 		%keyCounterHandler.setup(focused)
 		if !dontRedirect: main.focusComponent(focused.elements[-1])
 
-func focusComponent(component:Lock, _new:bool) -> void:
+func focusComponent(component:KeyCounterElement, _new:bool) -> void:
 	%keyCounterHandler.setSelect(component.index)
 	%keyCounterHandler.redrawButton(component.index)
 	%keyCounterColorSelector.visible = true

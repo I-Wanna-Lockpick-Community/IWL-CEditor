@@ -25,13 +25,14 @@ func addChange(change:Change) -> Change:
 func _process(_delta) -> void:
 	if saveBuffered and game.player.is_on_floor() and !game.player.nearDoor:
 		saveBuffered = false
-		assert(undoStack[-1] is not UndoSeparator)
-		undoStack.append(UndoSeparator.new(game.player.position))
+		if undoStack[-1] is not UndoSeparator: # could happen if something buffers save on the frame before a reset
+			undoStack.append(UndoSeparator.new(game.player.position))
 
 func undo() -> bool:
 	if len(undoStack) == 1: return false
 	if undoStack[-1] is UndoSeparator: undoStack.pop_back()
 	saveBuffered = false
+	game.player.pauseFrame = true
 	while true:
 		if undoStack[-1] is UndoSeparator:
 			game.player.position = undoStack[-1].position

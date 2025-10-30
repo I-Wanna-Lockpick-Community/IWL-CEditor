@@ -43,7 +43,7 @@ var masterShineDraw:RID
 var masterKeyDraw:RID
 var masterShineAngle:float = 0
 
-var firstFrame:bool = true # jank prevention
+var pauseFrame:bool = true # jank prevention
 
 var auraRed:bool = false
 var auraGreen:bool = false
@@ -107,8 +107,8 @@ func _physics_process(_delta:float) -> void:
 	elif moveDirection: %sprite.play("run")
 	else: %sprite.play("idle")
 
-	if firstFrame:
-		firstFrame = false
+	if pauseFrame:
+		pauseFrame = false
 	else:
 		nearDoor = false
 		for area in %near.get_overlapping_areas(): near(area)

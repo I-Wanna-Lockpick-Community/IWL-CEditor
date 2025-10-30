@@ -313,7 +313,7 @@ func propertyChangedInit(property:StringName) -> void:
 	if property in [&"count", &"type"]:
 		if type in [TYPE.BLANK, TYPE.ALL] and count.neq(1):
 			changes.addChange(Changes.PropertyChange.new(game,self,&"count",C.new(1)))
-		if type == TYPE.BLAST and count.neq(count.axis()) or count.eq(0):
+		if type == TYPE.BLAST and (count.neq(count.axis()) or count.eq(0)):
 			changes.addChange(Changes.PropertyChange.new(game,self,&"count",C.new(1) if count.eq(0) else count.axis()))
 
 func effectiveColor() -> Game.COLOR: # for calculations

@@ -461,10 +461,12 @@ func curseCheck(player:Player) -> void:
 		gameChanges.addChange(GameChanges.PropertyChange.new(game,self,&"curseColor",player.curseColor))
 		makeCurseParticles(curseColor, 1, 0.2, 0.5)
 		AudioManager.play(preload("res://resources/sounds/door/curse.wav"))
+		changes.bufferSave()
 	elif player.curseMode < 0 and cursed and curseColor == player.curseColor:
 		gameChanges.addChange(GameChanges.PropertyChange.new(game,self,&"cursed",false))
 		makeCurseParticles(Game.COLOR.BROWN, -1, 0.2, 0.5)
 		AudioManager.play(preload("res://resources/sounds/door/decurse.wav"))
+		changes.bufferSave()
 
 func makeCurseParticles(color:Game.COLOR, mode:int, scaleMin:float=1,scaleMax:float=1) -> void:
 	for y in floor(size.y/16):
