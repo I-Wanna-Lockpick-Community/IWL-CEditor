@@ -54,7 +54,7 @@ const EDITOR_PROPERTIES:Array[StringName] = [
 
 var color:Game.COLOR = Game.COLOR.WHITE
 var type:TYPE = TYPE.NORMAL
-var count:C = C.new(1)
+var count:C = C.ONE
 var infinite:bool = false
 
 var drawMain:RID
@@ -131,7 +131,7 @@ static func drawKey(_game:Game,keyDrawMain:RID,keyDrawGlitch:RID,keyOffset:Vecto
 
 func propertyChangedInit(property:StringName) -> void:
 	if property in [&"count", &"type"]:
-		if type not in [TYPE.NORMAL, TYPE.EXACT] and count.neq(1): changes.addChange(Changes.PropertyChange.new(game,self,&"count",C.new(1)))
+		if type not in [TYPE.NORMAL, TYPE.EXACT] and count.neq(1): changes.addChange(Changes.PropertyChange.new(game,self,&"count",C.ONE))
 
 # ==== PLAY ==== #
 enum ANIM_STATE {IDLE, FLASH}

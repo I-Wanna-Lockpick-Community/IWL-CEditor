@@ -120,7 +120,7 @@ func _lockConfigurationSelected(option:ConfigurationSelector.OPTION) -> void:
 
 func _blastLockSet() -> void:
 	if main.componentFocused is not Lock: return
-	changes.addChange(Changes.PropertyChange.new(editor.game,main.componentFocused,&"count",(C.I if %blastLockAxis.button_pressed else C.new(1)).times(-1 if %blastLockSign.button_pressed else 1)))
+	changes.addChange(Changes.PropertyChange.new(editor.game,main.componentFocused,&"count",(C.I if %blastLockAxis.button_pressed else C.ONE).times(-1 if %blastLockSign.button_pressed else 1)))
 	main.focused.queue_redraw()
 	changes.bufferSave()
 

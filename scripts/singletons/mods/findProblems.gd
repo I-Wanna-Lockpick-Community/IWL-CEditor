@@ -75,6 +75,8 @@ func findProblems(component:GameComponent) -> void:
 				noteProblem(&"C3", &"ExactLock", component, component.type == Lock.TYPE.EXACT)
 		Door:
 			findColorProblems(component, component.colorSpend)
+		KeyCounterElement:
+			findColorProblems(component, component.color)
 
 func findColorProblems(component:GameComponent, color:Game.COLOR) -> void:
 	if &"C2" in modsWindow.modsRemoved:

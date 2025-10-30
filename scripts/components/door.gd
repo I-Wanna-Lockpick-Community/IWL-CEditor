@@ -6,6 +6,10 @@ enum TYPE {SIMPLE, COMBO, GATE}
 
 const FRAME:Texture2D = preload("res://assets/game/door/frame.png")
 const FRAME_NEGATIVE:Texture2D = preload("res://assets/game/door/frameNegative.png")
+const FRAME_HIGH:Texture2D = preload("res://assets/game/door/frameHigh.png")
+const FRAME_MAIN:Texture2D = preload("res://assets/game/door/frameMain.png")
+const FRAME_DARK:Texture2D = preload("res://assets/game/door/frameDark.png")
+
 const SPEND_HIGH:Texture2D = preload("res://assets/game/door/spendHigh.png")
 const SPEND_MAIN:Texture2D = preload("res://assets/game/door/spendMain.png")
 const SPEND_DARK:Texture2D = preload("res://assets/game/door/spendDark.png")
@@ -43,7 +47,7 @@ const EDITOR_PROPERTIES:Array[StringName] = [
 ]
 
 var colorSpend:Game.COLOR = Game.COLOR.WHITE
-var copies:C = C.new(1)
+var copies:C = C.ONE
 var type:TYPE = TYPE.SIMPLE
 var frozen:bool = false
 var crumbled:bool = false
@@ -130,7 +134,12 @@ func _draw() -> void:
 				RenderingServer.canvas_item_add_nine_patch(drawMain,rect,TEXTURE_RECT,SPEND_MAIN,CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,Game.mainTone[baseColor()])
 				RenderingServer.canvas_item_add_nine_patch(drawMain,rect,TEXTURE_RECT,SPEND_DARK,CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,Game.darkTone[baseColor()])
 		# frame
-		if len(locks) > 0 and type == TYPE.SIMPLE and locks[0].count.sign() < 0: RenderingServer.canvas_item_add_nine_patch(drawMain,rect,TEXTURE_RECT,FRAME_NEGATIVE,CORNER_SIZE,CORNER_SIZE)
+		if game.playState != Game.PLAY_STATE.EDIT and ipow().across(game.player.complexMode).eq(0):
+			# temp; draw the rainbow
+			RenderingServer.canvas_item_add_nine_patch(drawMain,rect,TEXTURE_RECT,FRAME_HIGH,CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,Game.highTone[baseColor()].inverted())
+			RenderingServer.canvas_item_add_nine_patch(drawMain,rect,TEXTURE_RECT,FRAME_MAIN,CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,Game.mainTone[baseColor()].inverted())
+			RenderingServer.canvas_item_add_nine_patch(drawMain,rect,TEXTURE_RECT,FRAME_DARK,CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,Game.darkTone[baseColor()].inverted())
+		elif (len(locks) > 0 and type == TYPE.SIMPLE and locks[0].count.sign() < 0) != (ipow().sign() < 0): RenderingServer.canvas_item_add_nine_patch(drawMain,rect,TEXTURE_RECT,FRAME_NEGATIVE,CORNER_SIZE,CORNER_SIZE)
 		else: RenderingServer.canvas_item_add_nine_patch(drawMain,rect,TEXTURE_RECT,FRAME,CORNER_SIZE,CORNER_SIZE)
 	# auras
 	if crumbled if game.playState == Game.PLAY_STATE.EDIT else gameCrumbled:
@@ -201,7 +210,7 @@ func propertyChangedInit(property:StringName) -> void:
 				if !mods.active(&"NstdLockSize"):
 					for lock in locks: lock._coerceSize()
 				changes.addChange(Changes.PropertyChange.new(game,self,&"color",Game.COLOR.WHITE))
-				changes.addChange(Changes.PropertyChange.new(game,self,&"copies",C.new(1)))
+				changes.addChange(Changes.PropertyChange.new(game,self,&"copies",C.ONE))
 				changes.addChange(Changes.PropertyChange.new(game,self,&"frozen",false))
 				changes.addChange(Changes.PropertyChange.new(game,self,&"crumbled",false))
 				changes.addChange(Changes.PropertyChange.new(game,self,&"painted",false))
@@ -246,7 +255,7 @@ func removeLock(index:int) -> void:
 	changes.bufferSave()
 
 # ==== PLAY ==== #
-var gameCopies:C = C.new(1)
+var gameCopies:C = C.ONE
 var gameFrozen:bool = false
 var gameCrumbled:bool = false
 var gamePainted:bool = false
@@ -343,7 +352,7 @@ func tryOpen(player:Player) -> void:
 		cost = cost.plus(lock.getCost(player))
 	
 	gameChanges.addChange(GameChanges.KeyChange.new(game, effectiveColor(), player.key[effectiveColor()].minus(cost)))
-	gameChanges.addChange(GameChanges.PropertyChange.new(game, self, &"gameCopies", gameCopies.minus(1)))
+	gameChanges.addChange(GameChanges.PropertyChange.new(game, self, &"gameCopies", gameCopies.minus(ipow())))
 	
 	match type:
 		TYPE.SIMPLE:
@@ -480,6 +489,11 @@ func effectiveColor() -> Game.COLOR: # for calculations
 func baseColor() -> Game.COLOR: # for drawing
 	if cursed and curseColor != Game.COLOR.PURE: return curseColor
 	return colorSpend
+
+func ipow() -> C: # for complex view
+	if game.playState == Game.PLAY_STATE.EDIT: return C.ONE
+	if gameCopies.across(game.player.complexMode).neq(0): return gameCopies.across(game.player.complexMode).axis()
+	return gameCopies.across(game.player.complexMode.times(C.I).axibs()).axis()
 
 class Debris extends Node2D:
 	const FRAME:Texture2D = preload("res://assets/game/door/debris/frame.png")

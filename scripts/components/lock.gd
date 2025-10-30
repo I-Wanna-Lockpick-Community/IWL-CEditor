@@ -12,20 +12,20 @@ func getAvailableConfigurations() -> Array[Array]:
 	# SpecificA/H first, then SpecificB/V
 	var available:Array[Array] = []
 	if type != TYPE.NORMAL and type != TYPE.EXACT: return available
-	if count.isNonzeroReal():
-		if count.r.abs().eq(1): available.append([SIZE_TYPE.AnyS, CONFIGURATION.spr1A])
-		elif count.r.abs().eq(2): available.append([SIZE_TYPE.AnyH, CONFIGURATION.spr2H]); available.append([SIZE_TYPE.AnyV, CONFIGURATION.spr2V])
-		elif count.r.abs().eq(3): available.append([SIZE_TYPE.AnyH, CONFIGURATION.spr3H]); available.append([SIZE_TYPE.AnyV, CONFIGURATION.spr3V])
-		elif count.r.abs().eq(4): available.append([SIZE_TYPE.AnyM, CONFIGURATION.spr4A]); available.append([SIZE_TYPE.AnyL, CONFIGURATION.spr4B])
-		elif count.r.abs().eq(5): available.append([SIZE_TYPE.AnyM, CONFIGURATION.spr5A]); available.append([SIZE_TYPE.AnyL, CONFIGURATION.spr5B])
-		elif count.r.abs().eq(6): available.append([SIZE_TYPE.AnyM, CONFIGURATION.spr6A]); available.append([SIZE_TYPE.AnyL, CONFIGURATION.spr6B])
-		elif count.r.abs().eq(8): available.append([SIZE_TYPE.AnyL, CONFIGURATION.spr8A])
-		elif count.r.abs().eq(12): available.append([SIZE_TYPE.AnyL, CONFIGURATION.spr12A])
-		elif count.r.abs().eq(24): available.append([SIZE_TYPE.AnyXL, CONFIGURATION.spr24A])
-	elif count.isNonzeroImag():
-		if count.i.abs().eq(1): available.append([SIZE_TYPE.AnyS, CONFIGURATION.spr1A])
-		elif count.i.abs().eq(2): available.append([SIZE_TYPE.AnyH, CONFIGURATION.spr2H]); available.append([SIZE_TYPE.AnyV, CONFIGURATION.spr2V])
-		elif count.i.abs().eq(3): available.append([SIZE_TYPE.AnyH, CONFIGURATION.spr3H]); available.append([SIZE_TYPE.AnyV, CONFIGURATION.spr3V])
+	if effectiveCount().isNonzeroReal():
+		if effectiveCount().r.abs().eq(1): available.append([SIZE_TYPE.AnyS, CONFIGURATION.spr1A])
+		elif effectiveCount().r.abs().eq(2): available.append([SIZE_TYPE.AnyH, CONFIGURATION.spr2H]); available.append([SIZE_TYPE.AnyV, CONFIGURATION.spr2V])
+		elif effectiveCount().r.abs().eq(3): available.append([SIZE_TYPE.AnyH, CONFIGURATION.spr3H]); available.append([SIZE_TYPE.AnyV, CONFIGURATION.spr3V])
+		elif effectiveCount().r.abs().eq(4): available.append([SIZE_TYPE.AnyM, CONFIGURATION.spr4A]); available.append([SIZE_TYPE.AnyL, CONFIGURATION.spr4B])
+		elif effectiveCount().r.abs().eq(5): available.append([SIZE_TYPE.AnyM, CONFIGURATION.spr5A]); available.append([SIZE_TYPE.AnyL, CONFIGURATION.spr5B])
+		elif effectiveCount().r.abs().eq(6): available.append([SIZE_TYPE.AnyM, CONFIGURATION.spr6A]); available.append([SIZE_TYPE.AnyL, CONFIGURATION.spr6B])
+		elif effectiveCount().r.abs().eq(8): available.append([SIZE_TYPE.AnyL, CONFIGURATION.spr8A])
+		elif effectiveCount().r.abs().eq(12): available.append([SIZE_TYPE.AnyL, CONFIGURATION.spr12A])
+		elif effectiveCount().r.abs().eq(24): available.append([SIZE_TYPE.AnyXL, CONFIGURATION.spr24A])
+	elif effectiveCount().isNonzeroImag():
+		if effectiveCount().i.abs().eq(1): available.append([SIZE_TYPE.AnyS, CONFIGURATION.spr1A])
+		elif effectiveCount().i.abs().eq(2): available.append([SIZE_TYPE.AnyH, CONFIGURATION.spr2H]); available.append([SIZE_TYPE.AnyV, CONFIGURATION.spr2V])
+		elif effectiveCount().i.abs().eq(3): available.append([SIZE_TYPE.AnyH, CONFIGURATION.spr3H]); available.append([SIZE_TYPE.AnyV, CONFIGURATION.spr3V])
 	return available
 
 const ANY_RECT:Rect2 = Rect2(Vector2.ZERO,Vector2(50,50)) # rect of ANY
@@ -57,7 +57,7 @@ const PREDEFINED_LOCK_SPRITE_IMAGINARY:Array[Texture2D] = [
 	preload("res://assets/game/lock/predefined/3Vimaginary.png"), preload("res://assets/game/lock/predefined/3Vexacti.png"),
 ]
 func getPredefinedLockSprite() -> Texture2D:
-	if count.isNonzeroImag(): return PREDEFINED_LOCK_SPRITE_IMAGINARY[configuration*2+int(type==TYPE.EXACT)]
+	if effectiveCount().isNonzeroImag(): return PREDEFINED_LOCK_SPRITE_IMAGINARY[configuration*2+int(type==TYPE.EXACT)]
 	else: return PREDEFINED_LOCK_SPRITE_NORMAL[configuration*2+int(type==TYPE.EXACT)]
 
 const LOCK_FRAME:Array[Texture2D] = [
@@ -69,7 +69,7 @@ const LOCK_FRAME:Array[Texture2D] = [
 	preload("res://assets/game/lock/frame/AnyXLnormal.png"), preload("res://assets/game/lock/frame/AnyXLnegative.png"),
 	preload("res://assets/game/lock/frame/ANYnormal.png"), preload("res://assets/game/lock/frame/ANYnegative.png"),
 ]
-func getLockFrameSprite() -> Texture2D: return LOCK_FRAME[sizeType*2+int(count.sign()<0)]
+func getLockFrameSprite() -> Texture2D: return LOCK_FRAME[sizeType*2+int(effectiveCount().sign()<0)]
 
 const LOCK_FILL:Array[Texture2D] = [
 	preload("res://assets/game/lock/fill/AnySnormal.png"),
@@ -110,7 +110,7 @@ var color:Game.COLOR = Game.COLOR.WHITE
 var type:TYPE = TYPE.NORMAL
 var configuration:CONFIGURATION = CONFIGURATION.spr1A
 var sizeType:SIZE_TYPE = SIZE_TYPE.AnyS
-var count:C = C.new(1)
+var count:C = C.ONE
 var index:int
 
 var drawGlitch:RID
@@ -118,7 +118,7 @@ var drawScaled:RID
 var drawMain:RID
 
 func getConfigurationColor() -> Color:
-	if count.sign() < 0: return Color("#ebdfd3")
+	if effectiveCount().sign() < 0: return Color("#ebdfd3")
 	else: return Color("#2c2014")
 
 func _init(_parent:Door, _index:int) -> void:
@@ -141,6 +141,7 @@ func _draw() -> void:
 	RenderingServer.canvas_item_clear(drawScaled)
 	RenderingServer.canvas_item_clear(drawMain)
 	if !parent.active and game.playState == Game.PLAY_STATE.PLAY: return
+	if game.playState != Game.PLAY_STATE.EDIT and parent.ipow().across(game.player.complexMode).eq(0): return # draw the rainbow
 	var rect:Rect2 = Rect2(-getOffset(), size)
 	# fill
 	if parent.animState != Door.ANIM_STATE.RELOCK or parent.animPart > 2:
@@ -170,15 +171,15 @@ func _draw() -> void:
 	if configuration == CONFIGURATION.NONE:
 		match type:
 			TYPE.NORMAL,TYPE.EXACT:
-				var string:String = str(count.abs())
+				var string:String = str(effectiveCount().abs())
 				if string == "1": string = ""
-				if count.isNonzeroImag() && type == TYPE.NORMAL: string += "i"
+				if effectiveCount().isNonzeroImag() && type == TYPE.NORMAL: string += "i"
 				var lockOffsetX:float = 0
-				var showLock:bool = type == TYPE.EXACT || (!count.isNonzeroImag() && (size != Vector2(18,18) || string == ""))
+				var showLock:bool = type == TYPE.EXACT || (!effectiveCount().isNonzeroImag() && (size != Vector2(18,18) || string == ""))
 				if type == TYPE.EXACT and !showLock: string = "=" + string
 				var vertical:bool = size.x == 18 && size.y != 18 && string != ""
 
-				var symbolLast:bool = type == TYPE.EXACT and count.isNonzeroImag() and !vertical
+				var symbolLast:bool = type == TYPE.EXACT and effectiveCount().isNonzeroImag() and !vertical
 				if showLock and !vertical:
 					if type == TYPE.EXACT:
 						if symbolLast: lockOffsetX = 6
@@ -200,7 +201,7 @@ func _draw() -> void:
 					else: lockRect = Rect2(Vector2(startX+lockOffsetX/2,size.y/2)-SYMBOL_SIZE/2-getOffset(),Vector2(32,32))
 					var lockSymbol:Texture2D
 					if type == TYPE.NORMAL: lockSymbol = SYMBOL_NORMAL
-					elif count.isNonzeroImag(): lockSymbol = SYMBOL_EXACTI
+					elif effectiveCount().isNonzeroImag(): lockSymbol = SYMBOL_EXACTI
 					else: lockSymbol = SYMBOL_EXACT
 					RenderingServer.canvas_item_add_texture_rect(drawMain,lockRect,lockSymbol,false,getConfigurationColor())
 				if symbolLast: Game.FTALK.draw_string(drawMain,Vector2(startX,startY)-getOffset(),string,HORIZONTAL_ALIGNMENT_LEFT,-1,12,getConfigurationColor())
@@ -208,7 +209,7 @@ func _draw() -> void:
 			TYPE.BLANK: pass # nothing really
 			TYPE.BLAST:
 				var symbolRect:Rect2 = Rect2(Vector2((size-SYMBOL_SIZE)/2)-getOffset(),SYMBOL_SIZE)
-				if count.isNonzeroReal(): RenderingServer.canvas_item_add_texture_rect(drawMain,symbolRect,SYMBOL_BLAST,false,getConfigurationColor())
+				if effectiveCount().isNonzeroReal(): RenderingServer.canvas_item_add_texture_rect(drawMain,symbolRect,SYMBOL_BLAST,false,getConfigurationColor())
 				else: RenderingServer.canvas_item_add_texture_rect(drawMain,symbolRect,SYMBOL_BLASTI,false,getConfigurationColor())
 			TYPE.ALL:
 				var symbolRect:Rect2 = Rect2(Vector2((size-SYMBOL_SIZE)/2)-getOffset(),SYMBOL_SIZE)
@@ -269,7 +270,7 @@ func _setAutoConfiguration() -> void:
 func _setType(newType:TYPE):
 	changes.addChange(Changes.PropertyChange.new(game,self,&"type",newType))
 	if type == TYPE.BLANK:
-		changes.addChange(Changes.PropertyChange.new(game,self,&"count",C.new(1)))
+		changes.addChange(Changes.PropertyChange.new(game,self,&"count",C.ONE))
 		parent.queue_redraw()
 
 func receiveMouseInput(event:InputEventMouse) -> bool:
@@ -312,9 +313,9 @@ func propertyChangedInit(property:StringName) -> void:
 	if property in [&"count", &"sizeType", &"type"]: _setAutoConfiguration()
 	if property in [&"count", &"type"]:
 		if type in [TYPE.BLANK, TYPE.ALL] and count.neq(1):
-			changes.addChange(Changes.PropertyChange.new(game,self,&"count",C.new(1)))
+			changes.addChange(Changes.PropertyChange.new(game,self,&"count",C.ONE))
 		if type == TYPE.BLAST and (count.neq(count.axis()) or count.eq(0)):
-			changes.addChange(Changes.PropertyChange.new(game,self,&"count",C.new(1) if count.eq(0) else count.axis()))
+			changes.addChange(Changes.PropertyChange.new(game,self,&"count",C.ONE if count.eq(0) else count.axis()))
 
 func effectiveColor() -> Game.COLOR: # for calculations
 	if parent.cursed and parent.curseColor != Game.COLOR.PURE: return parent.curseColor
@@ -327,17 +328,20 @@ func baseColor() -> Game.COLOR: # for drawing
 # ==== PLAY ==== #
 func canOpen(player:Player) -> bool:
 	match type:
-		TYPE.NORMAL: return !player.key[effectiveColor()].across(count.axis()).reduce().lt(count.abs())
+		TYPE.NORMAL: return !player.key[effectiveColor()].across(effectiveCount().axis()).reduce().lt(effectiveCount().abs())
 		TYPE.BLANK: return player.key[effectiveColor()].eq(0)
 		TYPE.BLAST:
-			return player.key[effectiveColor()].axis().across(count.axis()).reduce().gt(0)
+			return player.key[effectiveColor()].axis().across(effectiveCount().axis()).reduce().gt(0)
 		TYPE.ALL: return player.key[effectiveColor()].neq(0)
-		TYPE.EXACT: return player.key[effectiveColor()].across(count.axibs()).eq(count)
+		TYPE.EXACT: return player.key[effectiveColor()].across(effectiveCount().axibs()).eq(effectiveCount())
 		_: return true
 
 func getCost(player:Player) -> C:
 	match type:
-		TYPE.NORMAL, TYPE.EXACT: return count
-		TYPE.BLAST: return player.key[effectiveColor()].across(count.axibs())
+		TYPE.NORMAL, TYPE.EXACT: return effectiveCount()
+		TYPE.BLAST: return player.key[effectiveColor()].across(effectiveCount().axibs())
 		TYPE.ALL: return player.key[effectiveColor()]
 		_: return C.ZERO
+
+func effectiveCount() -> C:
+	return count.times(parent.ipow())

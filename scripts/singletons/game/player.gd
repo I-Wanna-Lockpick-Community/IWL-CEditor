@@ -36,8 +36,9 @@ var nearDoor:bool = false # cant save if near a door
 
 var masterMode:C = C.ZERO
 var masterCycle:int = 0 # 0 = None, 1 = Master, 2 = Silver
+const MASTER_CYCLE_COLORS:Array[Game.COLOR] = [Game.COLOR.WHITE, Game.COLOR.MASTER, Game.COLOR.QUICKSILVER]
 
-var complexMode:C = C.new(1) # C(1,0) for real view, C(0,1) for i-view
+var complexMode:C = C.ONE # C(1,0) for real view, C(0,1) for i-view
 
 var masterShineDraw:RID
 var masterKeyDraw:RID
@@ -54,19 +55,24 @@ var curseMode:int = 0 # 0 = none, 1 = curse, -1 = uncurse
 var curseColor:Game.COLOR
 var drawCurse:CurseParticle
 
+var complexModeTextDraw:RID
+
 func _ready() -> void:
 	auraDraw = RenderingServer.canvas_item_create()
 	masterShineDraw = RenderingServer.canvas_item_create()
 	masterKeyDraw = RenderingServer.canvas_item_create()
+	complexModeTextDraw = RenderingServer.canvas_item_create()
 	drawCurse = CurseParticle.new(curseColor,curseMode)
 	RenderingServer.canvas_item_set_material(masterShineDraw, Game.ADDITIVE_MATERIAL)
 	drawCurse.z_index = 4
 	RenderingServer.canvas_item_set_z_index(auraDraw,6)
 	RenderingServer.canvas_item_set_z_index(masterShineDraw,6)
 	RenderingServer.canvas_item_set_z_index(masterKeyDraw,6)
+	RenderingServer.canvas_item_set_z_index(complexModeTextDraw,6)
 	RenderingServer.canvas_item_set_parent(auraDraw, get_canvas_item())
 	RenderingServer.canvas_item_set_parent(masterShineDraw, get_canvas_item())
 	RenderingServer.canvas_item_set_parent(masterKeyDraw, get_canvas_item())
+	RenderingServer.canvas_item_set_parent(complexModeTextDraw, get_canvas_item())
 	add_child(drawCurse)
 
 	for color in Game.COLORS:
@@ -131,6 +137,7 @@ func receiveKey(event:InputEventKey):
 		KEY_R: game.restart()
 		KEY_Z: if gameChanges.undo(): AudioManager.play(preload("res://resources/sounds/player/undo.wav")).pitch_scale = 0.6
 		KEY_X: cycleMaster()
+		KEY_S: complexSwitch()
 
 func _newlyInteracted(area:Area2D) -> void:
 	var object:GameObject = area.get_parent()
@@ -170,8 +177,7 @@ func cycleMaster() -> void:
 			return
 	if masterCycle != 0:
 		AudioManager.play(preload("res://resources/sounds/player/masterUnequip.wav"))
-	masterMode = C.ZERO
-	masterCycle = 0
+	dropMaster()
 
 func dropMaster() -> void:
 	masterMode = C.ZERO
@@ -197,11 +203,25 @@ func checkKeys() -> void:
 			curseMode = key[color].r.sign()
 			curseColor = color as Game.COLOR
 
+func complexSwitch() -> void:
+	if complexMode.eq(1): complexMode = C.I
+	else: complexMode = C.ONE
+
+	if complexMode.eq(C.I) and masterCycle and key[MASTER_CYCLE_COLORS[masterCycle]].across(C.I).neq(0):
+		masterMode = key[MASTER_CYCLE_COLORS[masterCycle]].across(C.I).axis()
+	elif complexMode.eq(1) and masterCycle and key[MASTER_CYCLE_COLORS[masterCycle]].across(1).neq(0):
+		masterMode = key[MASTER_CYCLE_COLORS[masterCycle]].across(1).axis()
+	elif masterCycle:
+		AudioManager.play(preload("res://resources/sounds/player/masterUnequip.wav"))
+		dropMaster()
+	for object in game.objects.values(): if object is Door: object.queue_redraw()
+	for component in game.components.values(): if component is Lock: component.queue_redraw()
 
 func _draw() -> void:
 	RenderingServer.canvas_item_clear(auraDraw)
 	RenderingServer.canvas_item_clear(masterShineDraw)
 	RenderingServer.canvas_item_clear(masterKeyDraw)
+	RenderingServer.canvas_item_clear(complexModeTextDraw)
 	# auras
 	if auraRed: RenderingServer.canvas_item_add_texture_rect(auraDraw,AURA_RECT,AURA_RED,false,AURA_DRAW_OPACITY)
 	if auraGreen: RenderingServer.canvas_item_add_texture_rect(auraDraw,AURA_RECT,AURA_GREEN,false,AURA_DRAW_OPACITY)
@@ -212,3 +232,5 @@ func _draw() -> void:
 		var masterDrawOpacity:Color = Color(Color.WHITE,masterShineScale*0.6)
 		RenderingServer.canvas_item_add_texture_rect(masterShineDraw,Rect2(Vector2(-32,-32)*masterShineScale,Vector2(64,64)*masterShineScale),HELD_SHINE,false,getMasterShineColor())
 		RenderingServer.canvas_item_add_texture_rect(masterKeyDraw,Rect2(Vector2(-16,-16),Vector2(32,32)),getHeldKeySprite(),false,masterDrawOpacity)
+	if complexMode.eq(C.I):
+		TextDraw.outlinedCentered(Game.FTALK,complexModeTextDraw,"I-View",Color.WHITE,Color.BLACK,12,Vector2(0,-10))

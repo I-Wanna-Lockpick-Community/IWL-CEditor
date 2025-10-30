@@ -67,7 +67,7 @@ func deinteract() -> void:
 	if !interacted: return
 	interacted.theme_type_variation = &"NumberEditPanelContainer"
 	if interacted is NumberEdit: interacted.bufferedNegative = false
-	elif interacted is AxialNumberEdit: interacted.bufferedSign = C.new(1)
+	elif interacted is AxialNumberEdit: interacted.bufferedSign = C.ONE
 	interacted.setValue(interacted.value,true)
 	interacted = null
 

@@ -9,7 +9,7 @@ signal valueSet(value:C)
 var newlyInteracted:bool = false
 
 var value:C = C.ZERO
-var bufferedSign:C = C.new(1) # since -0 (and 0i and -0i) cant exist, activate it when the number is set
+var bufferedSign:C = C.ONE # since -0 (and 0i and -0i) cant exist, activate it when the number is set
 var purpose:NumberEdit.PURPOSE = NumberEdit.PURPOSE.AXIAL
 
 func _gui_input(event:InputEvent) -> void:
@@ -18,7 +18,7 @@ func _gui_input(event:InputEvent) -> void:
 func setValue(_value:C, manual:bool=false) -> void:
 	value = _value
 	if bufferedSign.neq(1) and value.neq(0):
-		bufferedSign = C.new(1)
+		bufferedSign = C.ONE
 	if !value.abs().lt(1e17): value = value.axis().times(99999999999999999)
 	if !value.abs().gt(-1e17): value = value.axis().times(99999999999999999)
 	if bufferedSign.eq(-1): %drawText.text = "-0"
@@ -58,7 +58,7 @@ func receiveKey(key:InputEventKey):
 				if (value.r.gt(-10) and value.r.lt(0)): bufferedSign = C.new(-1)
 				elif (value.i.gt(0) and value.i.lt(10)): bufferedSign = C.I
 				elif (value.i.gt(-10) and value.i.lt(0)): bufferedSign = C.nI
-				if value.eq(0): bufferedSign = C.new(1)
+				if value.eq(0): bufferedSign = C.ONE
 				@warning_ignore("integer_division") setValue(C.new(value.divint(10)))
 			deNew()
 		KEY_I:
@@ -71,7 +71,7 @@ func receiveKey(key:InputEventKey):
 	if number != -1:
 		if newlyInteracted:
 			bufferedSign = value.axis()
-			if bufferedSign.eq(0): bufferedSign = C.new(1)
+			if bufferedSign.eq(0): bufferedSign = C.ONE
 			setValue(C.ZERO,true)
 		deNew()
 		if value.axis().eq(0): setValue(bufferedSign.times(number))

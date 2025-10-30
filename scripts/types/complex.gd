@@ -1,6 +1,7 @@
 extends RefCounted
 class_name C
 
+static var ONE:C = C.new(1)
 static var ZERO:C = C.new(0)
 static var I:C = C.new(0,1)
 static var nI:C = C.new(0,-1)
