@@ -102,17 +102,28 @@ const QUICKSILVER_TEXTURE:Array[Texture2D] = [
 	preload("res://assets/game/colorTexture/quicksilver0.png"),
 	preload("res://assets/game/colorTexture/quicksilver1.png"),
 	preload("res://assets/game/colorTexture/quicksilver2.png"),
-	preload("res://assets/game/colorTexture/quicksilver3.png")
+	preload("res://assets/game/colorTexture/quicksilver3.png"),
 ]
 func quicksilverTex() -> Texture2D: return QUICKSILVER_TEXTURE[goldIndex%4]
 const QUICKSILVER_KEY_TEXTURE:Array[Texture2D] = [
 	preload("res://assets/game/key/quicksilver/normal0.png"),
 	preload("res://assets/game/key/quicksilver/normal1.png"),
 	preload("res://assets/game/key/quicksilver/normal2.png"),
-	preload("res://assets/game/key/quicksilver/normal3.png")
-	# awaiting
+	preload("res://assets/game/key/quicksilver/normal3.png"),
+	preload("res://assets/game/key/quicksilver/exact0.png"),
+	preload("res://assets/game/key/quicksilver/exact1.png"),
+	preload("res://assets/game/key/quicksilver/exact2.png"),
+	preload("res://assets/game/key/quicksilver/exact3.png"),
+	preload("res://assets/game/key/quicksilver/star0.png"),
+	preload("res://assets/game/key/quicksilver/star1.png"),
+	preload("res://assets/game/key/quicksilver/star2.png"),
+	preload("res://assets/game/key/quicksilver/star3.png"),
+	preload("res://assets/game/key/quicksilver/unstar0.png"),
+	preload("res://assets/game/key/quicksilver/unstar1.png"),
+	preload("res://assets/game/key/quicksilver/unstar2.png"),
+	preload("res://assets/game/key/quicksilver/unstar3.png"),
 ]
-func quicksilverKeyTex(_type:KeyBulk.TYPE) -> Texture2D: return QUICKSILVER_KEY_TEXTURE[goldIndex%4]
+func quicksilverKeyTex(type:KeyBulk.TYPE) -> Texture2D: return QUICKSILVER_KEY_TEXTURE[goldIndex%4+KEYTYPE_TEXTURE_OFFSETS[type]*4]
 
 
 const ICE_KEY_TEXTURE:Array[Texture2D] = [

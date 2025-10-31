@@ -78,6 +78,8 @@ func _process(_delta) -> void:
 	game.tiles.z_index = 3 if mode == MODE.TILE and game.playState != Game.PLAY_STATE.PLAY else 0
 
 func _gui_input(event:InputEvent) -> void:
+	if !objectHovered: objectHovered = null
+	if !componentHovered: componentHovered = null
 	if event is InputEventMouse:
 		if game.playState == Game.PLAY_STATE.PLAY:
 			pass
