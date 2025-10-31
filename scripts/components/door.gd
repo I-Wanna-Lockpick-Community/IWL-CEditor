@@ -84,8 +84,8 @@ func _ready() -> void:
 	RenderingServer.canvas_item_set_material(drawPainted,PAINTED_MATERIAL.get_rid())
 	RenderingServer.canvas_item_set_material(drawFrozen,FROZEN_MATERIAL.get_rid())
 	RenderingServer.canvas_item_set_material(drawNegative,Game.NEGATIVE_MATERIAL.get_rid())
-	RenderingServer.canvas_item_set_z_index(drawCopies,1)
-	RenderingServer.canvas_item_set_z_index(drawNegative,1)
+	RenderingServer.canvas_item_set_z_index(drawCopies,3)
+	RenderingServer.canvas_item_set_z_index(drawNegative,3)
 	RenderingServer.canvas_item_set_parent(drawScaled,get_canvas_item())
 	RenderingServer.canvas_item_set_parent(drawMain,get_canvas_item())
 	RenderingServer.canvas_item_set_parent(drawGlitch,get_canvas_item())
@@ -134,11 +134,10 @@ func _draw() -> void:
 				RenderingServer.canvas_item_add_nine_patch(drawMain,rect,TEXTURE_RECT,SPEND_MAIN,CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,Game.mainTone[baseColor()])
 				RenderingServer.canvas_item_add_nine_patch(drawMain,rect,TEXTURE_RECT,SPEND_DARK,CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,Game.darkTone[baseColor()])
 		# frame
-		if game.playState != Game.PLAY_STATE.EDIT and ipow().across(game.player.complexMode).eq(0):
-			# temp; draw the rainbow
-			RenderingServer.canvas_item_add_nine_patch(drawMain,rect,TEXTURE_RECT,FRAME_HIGH,CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,Game.highTone[baseColor()].inverted())
-			RenderingServer.canvas_item_add_nine_patch(drawMain,rect,TEXTURE_RECT,FRAME_MAIN,CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,Game.mainTone[baseColor()].inverted())
-			RenderingServer.canvas_item_add_nine_patch(drawMain,rect,TEXTURE_RECT,FRAME_DARK,CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,Game.darkTone[baseColor()].inverted())
+		if drawComplex:
+			RenderingServer.canvas_item_add_nine_patch(drawMain,rect,TEXTURE_RECT,FRAME_HIGH,CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,Color.from_hsv(game.complexViewHue,0.4901960784,1))
+			RenderingServer.canvas_item_add_nine_patch(drawMain,rect,TEXTURE_RECT,FRAME_MAIN,CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,Color.from_hsv(game.complexViewHue,0.7058823529,0.9019607843))
+			RenderingServer.canvas_item_add_nine_patch(drawMain,rect,TEXTURE_RECT,FRAME_DARK,CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,Color.from_hsv(game.complexViewHue,1,0.7450980392))
 		elif (len(locks) > 0 and type == TYPE.SIMPLE and locks[0].count.sign() < 0) != (ipow().sign() < 0): RenderingServer.canvas_item_add_nine_patch(drawMain,rect,TEXTURE_RECT,FRAME_NEGATIVE,CORNER_SIZE,CORNER_SIZE)
 		else: RenderingServer.canvas_item_add_nine_patch(drawMain,rect,TEXTURE_RECT,FRAME,CORNER_SIZE,CORNER_SIZE)
 	# auras
@@ -214,7 +213,7 @@ func propertyChangedInit(property:StringName) -> void:
 				changes.addChange(Changes.PropertyChange.new(game,self,&"frozen",false))
 				changes.addChange(Changes.PropertyChange.new(game,self,&"crumbled",false))
 				changes.addChange(Changes.PropertyChange.new(game,self,&"painted",false))
-	if property == &"size" and type == TYPE.SIMPLE: locks[0]._simpleDoorUpdate()
+	if property == &"size" and type == TYPE.SIMPLE and locks.get(0): locks[0]._simpleDoorUpdate() # ghhghghhh TODO: figure this out
 
 func propertyChangedDo(property:StringName) -> void:
 	super(property)
@@ -272,6 +271,7 @@ var animPart:int = 0
 var gateAlpha:float = 1
 var gateOpen:bool = false
 var gateBufferCheck:Player = null
+var drawComplex:bool = false
 
 func _process(delta:float) -> void:
 	if cursed and active:
@@ -317,6 +317,7 @@ func _process(delta:float) -> void:
 		elif gateOpen and gateAlpha > 0:
 			gateAlpha = max(gateAlpha-delta*6, 0)
 			queue_redraw()
+	if drawComplex: queue_redraw()
 
 func start() -> void:
 	gameCopies = copies
@@ -336,6 +337,7 @@ func stop() -> void:
 	gateAlpha = 1
 	gateOpen = false
 	gateBufferCheck = null
+	drawComplex = false
 	super()
 
 func tryOpen(player:Player) -> void:
@@ -494,6 +496,10 @@ func ipow() -> C: # for complex view
 	if game.playState == Game.PLAY_STATE.EDIT: return C.ONE
 	if gameCopies.across(game.player.complexMode).neq(0): return gameCopies.across(game.player.complexMode).axis()
 	return gameCopies.across(game.player.complexMode.times(C.I).axibs()).axis()
+
+func complexCheck() -> void:
+	drawComplex = game.playState != Game.PLAY_STATE.EDIT and ipow().across(game.player.complexMode).eq(0)
+	queue_redraw()
 
 class Debris extends Node2D:
 	const FRAME:Texture2D = preload("res://assets/game/door/debris/frame.png")

@@ -3,12 +3,12 @@
 importer="font_data_dynamic"
 type="FontFile"
 uid="uid://cbdf0vwq4e3xt"
-path="res://.godot/imported/KhmerUI.ttf-c5d5e12518ace1e5139811a9012e7f84.fontdata"
+path="res://.godot/imported/khmerui.ttf-bcfbadfa34c23e12485c3610b049e319.fontdata"
 
 [deps]
 
-source_file="res://resources/fonts/KhmerUI.ttf"
-dest_files=["res://.godot/imported/KhmerUI.ttf-c5d5e12518ace1e5139811a9012e7f84.fontdata"]
+source_file="res://resources/fonts/khmerui.ttf"
+dest_files=["res://.godot/imported/khmerui.ttf-bcfbadfa34c23e12485c3610b049e319.fontdata"]
 
 [params]
 

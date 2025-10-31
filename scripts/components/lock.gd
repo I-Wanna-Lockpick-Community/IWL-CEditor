@@ -57,8 +57,8 @@ const PREDEFINED_LOCK_SPRITE_IMAGINARY:Array[Texture2D] = [
 	preload("res://assets/game/lock/predefined/3Vimaginary.png"), preload("res://assets/game/lock/predefined/3Vexacti.png"),
 ]
 func getPredefinedLockSprite() -> Texture2D:
-	if effectiveCount().isNonzeroImag(): return PREDEFINED_LOCK_SPRITE_IMAGINARY[configuration*2+int(type==TYPE.EXACT)]
-	else: return PREDEFINED_LOCK_SPRITE_NORMAL[configuration*2+int(type==TYPE.EXACT)]
+	if effectiveCount().isNonzeroImag(): return PREDEFINED_LOCK_SPRITE_IMAGINARY[effectiveConfiguration()*2+int(type==TYPE.EXACT)]
+	else: return PREDEFINED_LOCK_SPRITE_NORMAL[effectiveConfiguration()*2+int(type==TYPE.EXACT)]
 
 const LOCK_FRAME:Array[Texture2D] = [
 	preload("res://assets/game/lock/frame/AnySnormal.png"), preload("res://assets/game/lock/frame/AnySnegative.png"),
@@ -70,17 +70,6 @@ const LOCK_FRAME:Array[Texture2D] = [
 	preload("res://assets/game/lock/frame/ANYnormal.png"), preload("res://assets/game/lock/frame/ANYnegative.png"),
 ]
 func getLockFrameSprite() -> Texture2D: return LOCK_FRAME[sizeType*2+int(effectiveCount().sign()<0)]
-
-const LOCK_FILL:Array[Texture2D] = [
-	preload("res://assets/game/lock/fill/AnySnormal.png"),
-	preload("res://assets/game/lock/fill/AnyHnormal.png"),
-	preload("res://assets/game/lock/fill/AnyVnormal.png"),
-	preload("res://assets/game/lock/fill/AnyMnormal.png"),
-	preload("res://assets/game/lock/fill/AnyLnormal.png"),
-	preload("res://assets/game/lock/fill/AnyXLnormal.png"),
-	preload("res://assets/game/lock/fill/ANYnormal.png"),
-]
-func getLockFillSprite() -> Texture2D: return LOCK_FILL[sizeType]
 
 const SYMBOL_NORMAL = preload("res://assets/game/lock/symbols/normal.png")
 const SYMBOL_BLAST = preload("res://assets/game/lock/symbols/blast.png")
@@ -141,7 +130,6 @@ func _draw() -> void:
 	RenderingServer.canvas_item_clear(drawScaled)
 	RenderingServer.canvas_item_clear(drawMain)
 	if !parent.active and game.playState == Game.PLAY_STATE.PLAY: return
-	if game.playState != Game.PLAY_STATE.EDIT and parent.ipow().across(game.player.complexMode).eq(0): return # draw the rainbow
 	var rect:Rect2 = Rect2(-getOffset(), size)
 	# fill
 	if parent.animState != Door.ANIM_STATE.RELOCK or parent.animPart > 2:
@@ -159,16 +147,15 @@ func _draw() -> void:
 				RenderingServer.canvas_item_set_instance_shader_parameter(drawScaled, &"size", size)
 			RenderingServer.canvas_item_add_texture_rect(drawScaled,rect,texture,tileTexture)
 		elif baseColor() == Game.COLOR.GLITCH:
-			if sizeType == SIZE_TYPE.ANY: RenderingServer.canvas_item_add_nine_patch(drawGlitch,rect,ANY_RECT,getLockFillSprite(),CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,Game.mainTone[color])
-			else: RenderingServer.canvas_item_add_texture_rect(drawGlitch,rect,getLockFillSprite(),false,Game.mainTone[baseColor()])
+			RenderingServer.canvas_item_add_rect(drawGlitch,Rect2(rect.position+Vector2.ONE,rect.size-Vector2(2,2)),Game.mainTone[baseColor()])
 		else:
-			if sizeType == SIZE_TYPE.ANY: RenderingServer.canvas_item_add_nine_patch(drawMain,rect,ANY_RECT,getLockFillSprite(),CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,Game.mainTone[color])
-			else: RenderingServer.canvas_item_add_texture_rect(drawMain,rect,getLockFillSprite(),false,Game.mainTone[baseColor()])
+			RenderingServer.canvas_item_add_rect(drawMain,Rect2(rect.position+Vector2.ONE,rect.size-Vector2(2,2)),Game.mainTone[baseColor()])
+	if game.playState != Game.PLAY_STATE.EDIT and parent.ipow().across(game.player.complexMode).eq(0): return # no copies in this direction; go away
 	# frame
 	if sizeType == SIZE_TYPE.ANY: RenderingServer.canvas_item_add_nine_patch(drawMain,rect,ANY_RECT,getLockFrameSprite(),CORNER_SIZE,CORNER_SIZE)
 	else: RenderingServer.canvas_item_add_texture_rect(drawMain,rect,getLockFrameSprite())
 	# configuration
-	if configuration == CONFIGURATION.NONE:
+	if effectiveConfiguration() == CONFIGURATION.NONE:
 		match type:
 			TYPE.NORMAL,TYPE.EXACT:
 				var string:String = str(effectiveCount().abs())
@@ -258,14 +245,14 @@ func _comboDoorSizeChanged() -> void:
 		Vector2(82,82): newSizeType = SIZE_TYPE.AnyXL
 	changes.addChange(Changes.PropertyChange.new(game,self,&"sizeType",newSizeType))
 	changes.addChange(Changes.PropertyChange.new(game,self,&"configuration",CONFIGURATION.NONE))
-	
-func _setAutoConfiguration() -> void:
+
+func getAutoConfiguration() -> CONFIGURATION:
 	var newConfiguration:CONFIGURATION = CONFIGURATION.NONE
 	for option in getAvailableConfigurations():
 		if sizeType == option[0]:
 			newConfiguration = option[1]
 			break
-	changes.addChange(Changes.PropertyChange.new(game,self,&"configuration",newConfiguration))
+	return newConfiguration
 
 func _setType(newType:TYPE):
 	changes.addChange(Changes.PropertyChange.new(game,self,&"type",newType))
@@ -310,13 +297,14 @@ func _coerceSize() -> void:
 func propertyChangedInit(property:StringName) -> void:
 	if parent.type != Door.TYPE.SIMPLE:
 		if property == &"size": _comboDoorSizeChanged()
-	if property in [&"count", &"sizeType", &"type"]: _setAutoConfiguration()
+	if property in [&"count", &"sizeType", &"type"]: changes.addChange(Changes.PropertyChange.new(game,self,&"configuration",getAutoConfiguration()))
 	if property in [&"count", &"type"]:
 		if type in [TYPE.BLANK, TYPE.ALL] and count.neq(1):
 			changes.addChange(Changes.PropertyChange.new(game,self,&"count",C.ONE))
 		if type == TYPE.BLAST and (count.neq(count.axis()) or count.eq(0)):
 			changes.addChange(Changes.PropertyChange.new(game,self,&"count",C.ONE if count.eq(0) else count.axis()))
 
+# ==== PLAY ==== #
 func effectiveColor() -> Game.COLOR: # for calculations
 	if parent.cursed and parent.curseColor != Game.COLOR.PURE: return parent.curseColor
 	return color
@@ -325,7 +313,12 @@ func baseColor() -> Game.COLOR: # for drawing
 	if parent.cursed and parent.curseColor != Game.COLOR.PURE: return parent.curseColor
 	return color
 
-# ==== PLAY ==== #
+func effectiveConfiguration() -> CONFIGURATION:
+	if parent.ipow().neq(1):
+		if parent.type == Door.TYPE.SIMPLE: return getAutoConfiguration()
+		else: return CONFIGURATION.NONE
+	else: return configuration
+
 func canOpen(player:Player) -> bool:
 	match type:
 		TYPE.NORMAL: return !player.key[effectiveColor()].across(effectiveCount().axis()).reduce().lt(effectiveCount().abs())

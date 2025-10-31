@@ -265,9 +265,12 @@ var playState:PLAY_STATE = PLAY_STATE.EDIT:
 		%playCamera.enabled = playState == PLAY_STATE.PLAY
 		fastAnimSpeed = 0
 		fastAnimTimer = 0
+		complexViewHue = 0
 
 var fastAnimSpeed:float = 0 # 0: slowest, 1: fastest
 var fastAnimTimer:float = 0 # speed resets when this counts down to 0
+
+var complexViewHue:float = 0
 
 func _ready() -> void:
 	gameChanges.game = self
@@ -289,6 +292,8 @@ func _process(delta:float) -> void:
 		if fastAnimTimer <= 0:
 			fastAnimTimer = 0
 			fastAnimSpeed = 0
+	complexViewHue += delta*0.1764705882 # 0.75/255 per frame, 60fps
+	if complexViewHue >= 1: complexViewHue -= 1
 
 func fasterAnims() -> void:
 	fastAnimTimer = 1.6666666667 # 100 frames, 60fps

@@ -56,23 +56,30 @@ var curseColor:Game.COLOR
 var drawCurse:CurseParticle
 
 var complexModeTextDraw:RID
+var complexSwitchDraw:RID
+var complexSwitchAnim:bool = false
+var complexSwitchAngle:float = 0
 
 func _ready() -> void:
 	auraDraw = RenderingServer.canvas_item_create()
 	masterShineDraw = RenderingServer.canvas_item_create()
 	masterKeyDraw = RenderingServer.canvas_item_create()
 	complexModeTextDraw = RenderingServer.canvas_item_create()
+	complexSwitchDraw = RenderingServer.canvas_item_create()
 	drawCurse = CurseParticle.new(curseColor,curseMode)
 	RenderingServer.canvas_item_set_material(masterShineDraw, Game.ADDITIVE_MATERIAL)
+	RenderingServer.canvas_item_set_material(complexSwitchDraw, Game.ADDITIVE_MATERIAL)
 	drawCurse.z_index = 4
 	RenderingServer.canvas_item_set_z_index(auraDraw,6)
 	RenderingServer.canvas_item_set_z_index(masterShineDraw,6)
 	RenderingServer.canvas_item_set_z_index(masterKeyDraw,6)
 	RenderingServer.canvas_item_set_z_index(complexModeTextDraw,6)
+	RenderingServer.canvas_item_set_z_index(complexSwitchDraw,6)
 	RenderingServer.canvas_item_set_parent(auraDraw, get_canvas_item())
 	RenderingServer.canvas_item_set_parent(masterShineDraw, get_canvas_item())
 	RenderingServer.canvas_item_set_parent(masterKeyDraw, get_canvas_item())
 	RenderingServer.canvas_item_set_parent(complexModeTextDraw, get_canvas_item())
+	RenderingServer.canvas_item_set_parent(complexSwitchDraw, get_canvas_item())
 	add_child(drawCurse)
 
 	for color in Game.COLORS:
@@ -123,6 +130,9 @@ func _physics_process(_delta:float) -> void:
 func _process(delta:float) -> void:
 	masterShineAngle += delta*4.1887902048 # 4 degrees per frame, 60fps
 	masterShineAngle = fmod(masterShineAngle,TAU)
+	if complexSwitchAnim:
+		complexSwitchAngle += delta*5.2359877560 # 5 degrees per frame, 60fps
+		if complexSwitchAngle >= 1.5707963268: complexSwitchAnim = false
 	queue_redraw()
 
 	drawCurse.mode = curseMode
@@ -207,6 +217,11 @@ func complexSwitch() -> void:
 	if complexMode.eq(1): complexMode = C.I
 	else: complexMode = C.ONE
 
+	AudioManager.play(preload("res://resources/sounds/player/camera.wav"))
+	AudioManager.play(preload("res://resources/sounds/key/signflip.wav"))
+	complexSwitchAnim = true
+	complexSwitchAngle = 0
+
 	if complexMode.eq(C.I) and masterCycle and key[MASTER_CYCLE_COLORS[masterCycle]].across(C.I).neq(0):
 		masterMode = key[MASTER_CYCLE_COLORS[masterCycle]].across(C.I).axis()
 	elif complexMode.eq(1) and masterCycle and key[MASTER_CYCLE_COLORS[masterCycle]].across(1).neq(0):
@@ -214,7 +229,7 @@ func complexSwitch() -> void:
 	elif masterCycle:
 		AudioManager.play(preload("res://resources/sounds/player/masterUnequip.wav"))
 		dropMaster()
-	for object in game.objects.values(): if object is Door: object.queue_redraw()
+	for object in game.objects.values(): if object is Door: object.complexCheck()
 	for component in game.components.values(): if component is Lock: component.queue_redraw()
 
 func _draw() -> void:
@@ -222,6 +237,7 @@ func _draw() -> void:
 	RenderingServer.canvas_item_clear(masterShineDraw)
 	RenderingServer.canvas_item_clear(masterKeyDraw)
 	RenderingServer.canvas_item_clear(complexModeTextDraw)
+	RenderingServer.canvas_item_clear(complexSwitchDraw)
 	# auras
 	if auraRed: RenderingServer.canvas_item_add_texture_rect(auraDraw,AURA_RECT,AURA_RED,false,AURA_DRAW_OPACITY)
 	if auraGreen: RenderingServer.canvas_item_add_texture_rect(auraDraw,AURA_RECT,AURA_GREEN,false,AURA_DRAW_OPACITY)
@@ -233,4 +249,8 @@ func _draw() -> void:
 		RenderingServer.canvas_item_add_texture_rect(masterShineDraw,Rect2(Vector2(-32,-32)*masterShineScale,Vector2(64,64)*masterShineScale),HELD_SHINE,false,getMasterShineColor())
 		RenderingServer.canvas_item_add_texture_rect(masterKeyDraw,Rect2(Vector2(-16,-16),Vector2(32,32)),getHeldKeySprite(),false,masterDrawOpacity)
 	if complexMode.eq(C.I):
-		TextDraw.outlinedCentered(Game.FTALK,complexModeTextDraw,"I-View",Color.WHITE,Color.BLACK,12,Vector2(0,-10))
+		TextDraw.outlinedCentered(Game.FTALK,complexModeTextDraw,"I-View",Color.from_hsv(game.complexViewHue,0.4901960784,1),Color.BLACK,12,Vector2(0,-10))
+	# complex switch
+	if complexSwitchAnim:
+		var switchScale:float = sin(complexSwitchAngle)
+		RenderingServer.canvas_item_add_texture_rect(complexSwitchDraw,Rect2(Vector2(-64*switchScale,-64*switchScale),Vector2(128*switchScale,128*switchScale)),CurseParticle.TEXTURE_GENERIC,false,Color(Color.WHITE,cos(complexSwitchAngle)))
