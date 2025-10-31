@@ -4,15 +4,15 @@ class_name Player
 var game:Game
 
 const HELD_SHINE:Texture2D = preload("res://assets/game/player/held/shine.png")
-func getMasterShineColor() -> Color: return Color("#b4b432") if masterMode.reduce().gt(0) else Color("#3232b4")
+func getMasterShineColor() -> Color: return Color("#b4b432") if masterMode.sign() > 0 else Color("#3232b4")
 
 const HELD_MASTER:Texture2D = preload("res://assets/game/player/held/master.png")
 const HELD_QUICKSILVER:Texture2D = preload("res://assets/game/player/held/quicksilver.png")
 const HELD_MASTER_NEGATIVE:Texture2D = preload("res://assets/game/player/held/masterNegative.png")
 const HELD_QUICKSILVER_NEGATIVE:Texture2D = preload("res://assets/game/player/held/quicksilverNegative.png")
 func getHeldKeySprite() -> Texture2D:
-	if masterCycle == 1: return HELD_MASTER if masterMode.reduce().gt(0) else HELD_MASTER_NEGATIVE
-	else: return HELD_QUICKSILVER if masterMode.reduce().gt(0) else HELD_QUICKSILVER_NEGATIVE
+	if masterCycle == 1: return HELD_MASTER if masterMode.sign() > 0 else HELD_MASTER_NEGATIVE
+	else: return HELD_QUICKSILVER if masterMode.sign() > 0 else HELD_QUICKSILVER_NEGATIVE
 
 const AURA_RED:Texture2D = preload("res://assets/game/player/aura/red.png")
 const AURA_GREEN:Texture2D = preload("res://assets/game/player/aura/green.png")
@@ -174,7 +174,7 @@ func cycleMaster() -> void:
 		if relevantCount.neq(0):
 			masterCycle = 1
 			masterMode = relevantCount.axis()
-			if relevantCount.reduce().gt(0): AudioManager.play(preload("res://resources/sounds/player/masterEquip.wav"))
+			if relevantCount.sign() > 0: AudioManager.play(preload("res://resources/sounds/player/masterEquip.wav"))
 			else: AudioManager.play(preload("res://resources/sounds/player/masterNegativeEquip.wav"))
 			return
 	if masterCycle < 2: # SILVER
@@ -182,7 +182,7 @@ func cycleMaster() -> void:
 		if relevantCount.neq(0):
 			masterCycle = 2
 			masterMode = relevantCount.axis()
-			if relevantCount.reduce().gt(0): AudioManager.play(preload("res://resources/sounds/player/masterEquip.wav"))
+			if relevantCount.sign() > 0: AudioManager.play(preload("res://resources/sounds/player/masterEquip.wav"))
 			else: AudioManager.play(preload("res://resources/sounds/player/masterNegativeEquip.wav"))
 			return
 	if masterCycle != 0:
@@ -195,8 +195,8 @@ func dropMaster() -> void:
 
 func checkKeys() -> void:
 	match masterCycle:
-		1: if !key[Game.COLOR.MASTER].across(masterMode).reduce().gt(0): masterMode = C.ZERO; masterCycle = 0
-		2: if !key[Game.COLOR.QUICKSILVER].across(masterMode).reduce().gt(0): masterMode = C.ZERO; masterCycle = 0
+		1: if !key[Game.COLOR.MASTER].across(masterMode).sign() > 0: masterMode = C.ZERO; masterCycle = 0
+		2: if !key[Game.COLOR.QUICKSILVER].across(masterMode).sign() > 0: masterMode = C.ZERO; masterCycle = 0
 	
 	auraRed = !key[Game.COLOR.RED].lt(1)
 	auraGreen = !key[Game.COLOR.GREEN].lt(5)

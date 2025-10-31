@@ -58,3 +58,12 @@ func across(number) -> C:
 	return C.new(r.times(_n.r),i.times(_n.i))
 
 func divint(number:int) -> C: return C.new(r.divint(number),i.divint(number))
+
+func positive() -> bool: return r.gt(0) and i.gt(0)
+func negative() -> bool: return r.lt(0) and i.lt(0)
+func nonNegative() -> bool: return !r.lt(0) and !i.lt(0)
+func nonPositive() -> bool: return !r.gt(0) and !i.gt(0)
+func hasPositive() -> bool: return r.gt(0) or i.gt(0)
+func hasNegative() -> bool: return r.lt(0) or i.lt(0)
+func hasNonPositive() -> bool: return !r.lt(0) or !i.lt(0)
+func hasNonNegative() -> bool: return !r.lt(0) or !i.lt(0)

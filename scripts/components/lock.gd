@@ -416,17 +416,17 @@ func canOpen(player:Player) -> bool:
 		TYPE.NORMAL: return !player.key[effectiveColor()].across(effectiveCount().axis()).reduce().lt(effectiveCount().abs())
 		TYPE.BLANK: return player.key[effectiveColor()].eq(0)
 		TYPE.BLAST:
-			return player.key[effectiveColor()].axis().across(effectiveCount().axis()).reduce().gt(0)
+			return player.key[effectiveColor()].axis().across(effectiveCount().axis()).sign() > 0
 		TYPE.ALL: return player.key[effectiveColor()].neq(0)
 		TYPE.EXACT: return player.key[effectiveColor()].across(effectiveCount().axibs()).eq(effectiveCount())
 		_: return true
 
-func getCost(player:Player) -> C:
+func getCost(player:Player, ipow:C=parent.ipow()) -> C:
 	match type:
-		TYPE.NORMAL, TYPE.EXACT: return effectiveCount()
-		TYPE.BLAST: return player.key[effectiveColor()].across(effectiveCount().axibs())
+		TYPE.NORMAL, TYPE.EXACT: return effectiveCount(ipow)
+		TYPE.BLAST: return player.key[effectiveColor()].across(effectiveCount(ipow).axibs())
 		TYPE.ALL: return player.key[effectiveColor()]
 		_: return C.ZERO
 
-func effectiveCount() -> C:
-	return count.times(parent.ipow())
+func effectiveCount(ipow:C=parent.ipow()) -> C:
+	return count.times(ipow)

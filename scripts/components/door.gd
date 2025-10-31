@@ -355,6 +355,7 @@ func start() -> void:
 	animAlpha = 0
 	animPart = 0
 	propertyGameChangedDo(&"gateOpen")
+	complexCheck()
 	super()
 
 func stop() -> void:
@@ -371,7 +372,10 @@ func tryOpen(player:Player) -> void:
 	if type == TYPE.GATE: return
 	if animState != ANIM_STATE.IDLE: return
 	if gameFrozen or gameCrumbled or gamePainted: return
+
+	if player.key[Game.COLOR.DYNAMITE].neq(0) and tryDynamiteOpen(player): return
 	if player.masterCycle == 1 and tryMasterOpen(player): return
+	if player.masterCycle == 2 and tryQuicksilverOpen(player): return
 
 	for lock in locks:
 		if !lock.canOpen(player): return
@@ -400,7 +404,7 @@ func tryMasterOpen(player:Player) -> bool:
 	if hasColor(Game.COLOR.MASTER): return false
 	if hasColor(Game.COLOR.PURE): return false
 
-	var openedForwards:bool = gameCopies.across(player.masterMode).reduce().gt(0)
+	var openedForwards:bool = gameCopies.across(player.masterMode).sign() > 0
 	gameChanges.addChange(GameChanges.PropertyChange.new(game, self, &"gameCopies", gameCopies.minus(player.masterMode)))
 	gameChanges.addChange(GameChanges.KeyChange.new(game, Game.COLOR.MASTER, player.key[Game.COLOR.MASTER].minus(player.masterMode)))
 	
@@ -413,6 +417,62 @@ func tryMasterOpen(player:Player) -> bool:
 		addCopyAnimation()
 
 	player.dropMaster()
+	gameChanges.bufferSave()
+	return true
+
+func tryQuicksilverOpen(player:Player) -> bool:
+	if hasColor(Game.COLOR.QUICKSILVER): return false
+	if hasColor(Game.COLOR.PURE): return false
+
+	var cost:C = C.ZERO
+	for lock in locks:
+		cost = cost.plus(lock.getCost(player, player.masterMode))
+	
+	gameChanges.addChange(GameChanges.KeyChange.new(game, Game.COLOR.QUICKSILVER, player.key[Game.COLOR.QUICKSILVER].minus(player.masterMode)))
+	gameChanges.addChange(GameChanges.KeyChange.new(game, effectiveColor(), player.key[effectiveColor()].plus(cost)))
+
+	AudioManager.play(preload("res://resources/sounds/door/master.wav"))
+	relockAnimation()
+
+	game.setGlitch(effectiveColor())
+
+	player.dropMaster()
+	gameChanges.bufferSave()
+
+	return true
+
+func tryDynamiteOpen(player:Player) -> bool:
+	if hasColor(Game.COLOR.DYNAMITE): return false
+	if hasColor(Game.COLOR.PURE): return false
+
+	var openedForwards:bool
+	var openedBackwards:bool
+
+	if player.key[Game.COLOR.DYNAMITE].across(gameCopies.axis()).minus(gameCopies.abs()).nonNegative():
+		# if the door can open, open it
+		gameChanges.addChange(GameChanges.KeyChange.new(game, Game.COLOR.DYNAMITE, player.key[Game.COLOR.DYNAMITE].minus(gameCopies)))
+		gameChanges.addChange(GameChanges.PropertyChange.new(game, self, &"gameCopies", C.ZERO))
+		
+		openedForwards = true
+	else:
+		openedForwards = player.key[Game.COLOR.DYNAMITE].across(gameCopies.axis()).hasPositive()
+		openedBackwards = player.key[Game.COLOR.DYNAMITE].across(gameCopies.axis()).hasNonPositive()
+		print(player.key[Game.COLOR.DYNAMITE].across(gameCopies.axis()).hasNonPositive())
+
+		gameChanges.addChange(GameChanges.PropertyChange.new(game, self, &"gameCopies", gameCopies.minus(player.key[Game.COLOR.DYNAMITE])))
+		gameChanges.addChange(GameChanges.KeyChange.new(game, Game.COLOR.DYNAMITE, C.ZERO))
+
+	if openedForwards:
+		AudioManager.play(preload("res://resources/sounds/door/explode.wav"))
+		if gameCopies.eq(0): destroy()
+		else: relockAnimation()
+		add_child(ExplosionParticle.new(size/2,1))
+	if openedBackwards:
+		AudioManager.play(preload("res://resources/sounds/door/explodeNegative.wav"))
+		if !openedForwards:
+			addCopyAnimation()
+			add_child(ExplosionParticle.new(size/2,-1))
+
 	gameChanges.bufferSave()
 	return true
 
