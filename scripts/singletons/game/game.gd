@@ -141,6 +141,9 @@ const GRAFFITI_KEY_TEXTURE:Array[Texture2D] = [
 ]
 func graffitiKeyTex(type:KeyBulk.TYPE) -> Texture2D: return GRAFFITI_KEY_TEXTURE[KEYTYPE_TEXTURE_OFFSETS[type]]
 
+const EMPTY:Texture2D = preload("res://assets/empty.png")
+const FILLED:Texture2D = preload("res://assets/filled.png")
+
 
 
 const highTone:Array[Color] = [
@@ -242,8 +245,9 @@ var levelBounds:Rect2i = Rect2i(0,0,800,608):
 		%playCamera.set_limit.right = levelBounds.end.x
 		%playCamera.set_limit.bottom = levelBounds.end.y
 
-const GLITCH_MATERIAL:ShaderMaterial = preload("res://resources/materials/glitchDrawMaterial.tres")
-const UNSCALED_GLITCH_MATERIAL:ShaderMaterial = preload("res://resources/materials/unscaledGlitchDrawMaterial.tres") # to reduce shader parameters
+const GLITCH_MATERIAL:ShaderMaterial = preload("res://resources/materials/glitchDrawMaterial.tres") # uses texture pixel size
+const UNSCALED_GLITCH_MATERIAL:ShaderMaterial = preload("res://resources/materials/unscaledGlitchDrawMaterial.tres") # per pixel
+const SCALED_GLITCH_MATERIAL:ShaderMaterial = preload("res://resources/materials/scaledGlitchDrawMaterial.tres") # uses size input
 const PIXELATED_MATERIAL:ShaderMaterial = preload("res://resources/materials/pixelatedDrawMaterial.tres")
 const ADDITIVE_MATERIAL:CanvasItemMaterial = preload("res://resources/materials/additiveMaterial.tres")
 const SUBTRACTIVE_MATERIAL:CanvasItemMaterial = preload("res://resources/materials/subtractiveMaterial.tres")
@@ -319,7 +323,9 @@ func playTest(spawn:PlayerSpawn) -> void:
 	for object in objects.values():
 		object.start()
 		object.queue_redraw()
-	for component in components.values(): component.queue_redraw()
+	for component in components.values():
+		component.start()
+		component.queue_redraw()
 
 func pauseTest() -> void:
 	playState = PLAY_STATE.PAUSED
@@ -335,9 +341,16 @@ func stopTest() -> void:
 	for object in objects.values():
 		object.stop()
 		object.queue_redraw()
-	for component in components.values(): component.queue_redraw()
+	for component in components.values():
+		component.stop()
+		component.queue_redraw()
 
 func restart() -> void:
 	stopTest()
 	await get_tree().process_frame # to be safe
 	playTest(latestSpawn)
+
+func setGlitch(color:COLOR) -> void:
+	for object in objects.values():
+		if object is KeyBulk or object is Door:
+			object.setGlitch(color)

@@ -20,7 +20,6 @@ const CRUMBLED_1X2:Texture2D = preload("res://assets/game/door/aura/crumbled1x2.
 const CRUMBLED_2X2:Texture2D = preload("res://assets/game/door/aura/crumbled2x2.png")
 const CRUMBLED_BASE:Texture2D = preload("res://assets/game/door/aura/crumbledBase.png")
 
-
 const PAINTED_1X1:Texture2D = preload("res://assets/game/door/aura/painted1x1.png")
 const PAINTED_1X2:Texture2D = preload("res://assets/game/door/aura/painted1x2.png")
 const PAINTED_2X2:Texture2D = preload("res://assets/game/door/aura/painted2x2.png")
@@ -33,9 +32,21 @@ const FROZEN_2X2:Texture2D = preload("res://assets/game/door/aura/frozen2x2.png"
 const FROZEN_3X2:Texture2D = preload("res://assets/game/door/aura/frozen3x2.png")
 const FROZEN_MATERIAL:ShaderMaterial = preload("res://resources/materials/frozenDrawMaterial.tres")
 
+const GLITCH_HIGH:Texture2D = preload("res://assets/game/door/glitch/high.png")
+const GLITCH_MAIN:Texture2D = preload("res://assets/game/door/glitch/main.png")
+const GLITCH_DARK:Texture2D = preload("res://assets/game/door/glitch/dark.png")
+const MASTER_GLITCH:Texture2D = preload("res://assets/game/door/glitch/master.png")
+const PURE_GLITCH:Texture2D = preload("res://assets/game/door/glitch/pure.png")
+const STONE_GLITCH:Texture2D = preload("res://assets/game/door/glitch/stone.png")
+const DYNAMITE_GLITCH:Texture2D = preload("res://assets/game/door/glitch/dynamite.png")
+const QUICKSILVER_GLITCH:Texture2D = preload("res://assets/game/door/glitch/quicksilver.png")
+
+
 const TEXTURE_RECT:Rect2 = Rect2(Vector2.ZERO,Vector2(64,64)) # size of all the door textures
 const CORNER_SIZE:Vector2 = Vector2(9,9) # size of door ninepatch corners
+const GLITCH_CORNER_SIZE:Vector2 = Vector2(16,16) # except glitchdraw is a different size
 const TILE:RenderingServer.NinePatchAxisMode = RenderingServer.NinePatchAxisMode.NINE_PATCH_TILE # just to save characters
+const STRETCH:RenderingServer.NinePatchAxisMode = RenderingServer.NinePatchAxisMode.NINE_PATCH_STRETCH # just to save characters
 
 const CREATE_PARAMETERS:Array[StringName] = [
 	&"position"
@@ -54,8 +65,8 @@ var crumbled:bool = false
 var painted:bool = false
 
 var drawScaled:RID
-var drawMain:RID
 var drawGlitch:RID
+var drawMain:RID
 var drawCrumbled:RID
 var drawPainted:RID
 var drawFrozen:RID
@@ -73,8 +84,8 @@ func _init() -> void: size = Vector2(32,32)
 
 func _ready() -> void:
 	drawScaled = RenderingServer.canvas_item_create()
-	drawMain = RenderingServer.canvas_item_create()
 	drawGlitch = RenderingServer.canvas_item_create()
+	drawMain = RenderingServer.canvas_item_create()
 	drawCrumbled = RenderingServer.canvas_item_create()
 	drawPainted = RenderingServer.canvas_item_create()
 	drawFrozen = RenderingServer.canvas_item_create()
@@ -87,8 +98,8 @@ func _ready() -> void:
 	RenderingServer.canvas_item_set_z_index(drawCopies,3)
 	RenderingServer.canvas_item_set_z_index(drawNegative,3)
 	RenderingServer.canvas_item_set_parent(drawScaled,get_canvas_item())
-	RenderingServer.canvas_item_set_parent(drawMain,get_canvas_item())
 	RenderingServer.canvas_item_set_parent(drawGlitch,get_canvas_item())
+	RenderingServer.canvas_item_set_parent(drawMain,get_canvas_item())
 	RenderingServer.canvas_item_set_parent(drawCrumbled, %auraParent.get_canvas_item())
 	RenderingServer.canvas_item_set_parent(drawPainted, %auraParent.get_canvas_item())
 	RenderingServer.canvas_item_set_parent(drawFrozen, %auraParent.get_canvas_item())
@@ -98,8 +109,8 @@ func _ready() -> void:
 
 func _draw() -> void:
 	RenderingServer.canvas_item_clear(drawScaled)
-	RenderingServer.canvas_item_clear(drawMain)
 	RenderingServer.canvas_item_clear(drawGlitch)
+	RenderingServer.canvas_item_clear(drawMain)
 	RenderingServer.canvas_item_clear(drawCrumbled)
 	RenderingServer.canvas_item_clear(drawPainted)
 	RenderingServer.canvas_item_clear(drawFrozen)
@@ -129,6 +140,20 @@ func _draw() -> void:
 				RenderingServer.canvas_item_add_nine_patch(drawGlitch,rect,TEXTURE_RECT,SPEND_HIGH,CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,Game.highTone[Game.COLOR.GLITCH])
 				RenderingServer.canvas_item_add_nine_patch(drawGlitch,rect,TEXTURE_RECT,SPEND_MAIN,CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,Game.mainTone[Game.COLOR.GLITCH])
 				RenderingServer.canvas_item_add_nine_patch(drawGlitch,rect,TEXTURE_RECT,SPEND_DARK,CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,Game.darkTone[Game.COLOR.GLITCH])
+				if glitchMimic != Game.COLOR.GLITCH:
+					var glitchTexture:Texture2D
+					match glitchMimic:
+						Game.COLOR.MASTER: glitchTexture = MASTER_GLITCH
+						Game.COLOR.PURE: glitchTexture = PURE_GLITCH
+						Game.COLOR.STONE: glitchTexture = STONE_GLITCH
+						Game.COLOR.DYNAMITE: glitchTexture = DYNAMITE_GLITCH
+						Game.COLOR.QUICKSILVER: glitchTexture = QUICKSILVER_GLITCH
+					if glitchTexture:
+						RenderingServer.canvas_item_add_nine_patch(drawMain,rect,TEXTURE_RECT,glitchTexture,GLITCH_CORNER_SIZE,GLITCH_CORNER_SIZE,TILE,TILE)
+					else:
+						RenderingServer.canvas_item_add_nine_patch(drawMain,rect,TEXTURE_RECT,GLITCH_HIGH,GLITCH_CORNER_SIZE,GLITCH_CORNER_SIZE,TILE,TILE,true,Game.highTone[glitchMimic])
+						RenderingServer.canvas_item_add_nine_patch(drawMain,rect,TEXTURE_RECT,GLITCH_MAIN,GLITCH_CORNER_SIZE,GLITCH_CORNER_SIZE,TILE,TILE,true,Game.mainTone[glitchMimic])
+						RenderingServer.canvas_item_add_nine_patch(drawMain,rect,TEXTURE_RECT,GLITCH_DARK,GLITCH_CORNER_SIZE,GLITCH_CORNER_SIZE,TILE,TILE,true,Game.darkTone[glitchMimic])
 			else:
 				RenderingServer.canvas_item_add_nine_patch(drawMain,rect,TEXTURE_RECT,SPEND_HIGH,CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,Game.highTone[baseColor()])
 				RenderingServer.canvas_item_add_nine_patch(drawMain,rect,TEXTURE_RECT,SPEND_MAIN,CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,Game.mainTone[baseColor()])
@@ -260,7 +285,7 @@ var gameCrumbled:bool = false
 var gamePainted:bool = false
 var cursed:bool = false
 var curseColor:Game.COLOR
-var curseTimer:float = 0
+var glitchMimic:Game.COLOR = Game.COLOR.GLITCH
 
 enum ANIM_STATE {IDLE, ADD_COPY, RELOCK}
 var animState:ANIM_STATE = ANIM_STATE.IDLE
@@ -271,6 +296,7 @@ var animPart:int = 0
 var gateAlpha:float = 1
 var gateOpen:bool = false
 var gateBufferCheck:Player = null
+var curseTimer:float = 0
 var drawComplex:bool = false
 
 func _process(delta:float) -> void:
@@ -338,6 +364,7 @@ func stop() -> void:
 	gateOpen = false
 	gateBufferCheck = null
 	drawComplex = false
+	glitchMimic = Game.COLOR.GLITCH
 	super()
 
 func tryOpen(player:Player) -> void:
@@ -362,6 +389,8 @@ func tryOpen(player:Player) -> void:
 			elif effectiveColor() == Game.COLOR.MASTER and locks[0].effectiveColor() == Game.COLOR.MASTER: AudioManager.play(preload("res://resources/sounds/door/master.wav"))
 			else: AudioManager.play(preload("res://resources/sounds/door/simple.wav"))
 		TYPE.COMBO: AudioManager.play(preload("res://resources/sounds/door/combo.wav"))
+
+	game.setGlitch(effectiveColor())
 
 	if gameCopies.eq(0): destroy()
 	else: relockAnimation()
@@ -485,10 +514,11 @@ func makeCurseParticles(color:Game.COLOR, mode:int, scaleMin:float=1,scaleMax:fl
 			add_child(CurseParticle.Temporary.new(color, mode, Vector2(x,y)*16+Vector2.ONE*randf_range(4,12), randf_range(scaleMin,scaleMax)))
 
 func effectiveColor() -> Game.COLOR: # for calculations
-	if cursed and curseColor != Game.COLOR.PURE: return curseColor
-	return colorSpend
+	var base:Game.COLOR = baseColor()
+	if base == Game.COLOR.GLITCH: return glitchMimic
+	return base
 
-func baseColor() -> Game.COLOR: # for drawing
+func baseColor() -> Game.COLOR: # before glitch; for drawing
 	if cursed and curseColor != Game.COLOR.PURE: return curseColor
 	return colorSpend
 
@@ -500,6 +530,14 @@ func ipow() -> C: # for complex view
 func complexCheck() -> void:
 	drawComplex = game.playState != Game.PLAY_STATE.EDIT and ipow().across(game.player.complexMode).eq(0)
 	queue_redraw()
+
+func setGlitch(setColor:Game.COLOR) -> void:
+	if !cursed:
+		gameChanges.addChange(GameChanges.PropertyChange.new(game, self, &"glitchMimic", setColor))
+		for lock in locks:
+			gameChanges.addChange(GameChanges.PropertyChange.new(game, lock, &"glitchMimic", setColor))
+			lock.queue_redraw()
+		queue_redraw()
 
 class Debris extends Node2D:
 	const FRAME:Texture2D = preload("res://assets/game/door/debris/frame.png")

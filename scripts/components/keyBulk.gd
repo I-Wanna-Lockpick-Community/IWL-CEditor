@@ -134,6 +134,8 @@ func propertyChangedInit(property:StringName) -> void:
 		if type not in [TYPE.NORMAL, TYPE.EXACT] and count.neq(1): changes.addChange(Changes.PropertyChange.new(game,self,&"count",C.ONE))
 
 # ==== PLAY ==== #
+var glitchMimic:Game.COLOR = Game.COLOR.GLITCH
+
 enum ANIM_STATE {IDLE, FLASH}
 var animState:ANIM_STATE = ANIM_STATE.IDLE
 var animAlpha:float = 0
@@ -145,6 +147,10 @@ func _process(delta:float) -> void:
 			animAlpha -= delta*6
 			if animAlpha <= 0: animState = ANIM_STATE.IDLE
 			queue_redraw()
+
+func stop() -> void:
+	glitchMimic = Game.COLOR.GLITCH
+	super()
 
 func collect(player:Player) -> void:
 	match type:
@@ -172,6 +178,10 @@ func collect(player:Player) -> void:
 			_:
 				if count.sign() < 0: AudioManager.play(preload("res://resources/sounds/key/negative.wav"))
 				else: AudioManager.play(preload("res://resources/sounds/key/normal.wav"))
+
+func setGlitch(setColor:Game.COLOR) -> void:
+	gameChanges.addChange(GameChanges.PropertyChange.new(game, self, &"glitchMimic", setColor))
+	queue_redraw()
 
 func flashAnimation() -> void:
 	animState = ANIM_STATE.FLASH

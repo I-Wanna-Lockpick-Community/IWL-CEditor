@@ -18,7 +18,9 @@ func setup(_door:Door) -> void:
 	colorLink.visible = door.type == Door.TYPE.SIMPLE
 	remove.visible = len(buttons) > 0
 
-func addComponent() -> void: door.addLock()
+func addComponent() -> void:
+	if door.type == Door.TYPE.SIMPLE: changes.addChange(Changes.PropertyChange.new(editor.game,door,&"type",Door.TYPE.COMBO)) # precoerce so that lock sizes are accurate for placing
+	door.addLock()
 func removeComponent() -> void: door.removeLock(selected)
 
 static func buttonType() -> GDScript: return LockHandlerButton

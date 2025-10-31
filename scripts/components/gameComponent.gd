@@ -19,3 +19,6 @@ func propertyChangedInit(_property:StringName) -> void: pass
 func propertyChangedDo(_property:StringName) -> void:
 	if editor and editor.findProblems: editor.findProblems.findProblems(self)
 func propertyGameChangedDo(_property:StringName) -> void: pass
+
+func start() -> void: pass
+func stop() -> void: pass
