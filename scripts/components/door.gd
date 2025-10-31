@@ -140,9 +140,9 @@ func _draw() -> void:
 				RenderingServer.canvas_item_add_nine_patch(drawGlitch,rect,TEXTURE_RECT,SPEND_HIGH,CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,Game.highTone[Game.COLOR.GLITCH])
 				RenderingServer.canvas_item_add_nine_patch(drawGlitch,rect,TEXTURE_RECT,SPEND_MAIN,CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,Game.mainTone[Game.COLOR.GLITCH])
 				RenderingServer.canvas_item_add_nine_patch(drawGlitch,rect,TEXTURE_RECT,SPEND_DARK,CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,Game.darkTone[Game.COLOR.GLITCH])
-				if glitchMimic != Game.COLOR.GLITCH:
+				if effectiveColor() != Game.COLOR.GLITCH:
 					var glitchTexture:Texture2D
-					match glitchMimic:
+					match effectiveColor():
 						Game.COLOR.MASTER: glitchTexture = MASTER_GLITCH
 						Game.COLOR.PURE: glitchTexture = PURE_GLITCH
 						Game.COLOR.STONE: glitchTexture = STONE_GLITCH
@@ -151,9 +151,9 @@ func _draw() -> void:
 					if glitchTexture:
 						RenderingServer.canvas_item_add_nine_patch(drawMain,rect,TEXTURE_RECT,glitchTexture,GLITCH_CORNER_SIZE,GLITCH_CORNER_SIZE,TILE,TILE)
 					else:
-						RenderingServer.canvas_item_add_nine_patch(drawMain,rect,TEXTURE_RECT,GLITCH_HIGH,GLITCH_CORNER_SIZE,GLITCH_CORNER_SIZE,TILE,TILE,true,Game.highTone[glitchMimic])
-						RenderingServer.canvas_item_add_nine_patch(drawMain,rect,TEXTURE_RECT,GLITCH_MAIN,GLITCH_CORNER_SIZE,GLITCH_CORNER_SIZE,TILE,TILE,true,Game.mainTone[glitchMimic])
-						RenderingServer.canvas_item_add_nine_patch(drawMain,rect,TEXTURE_RECT,GLITCH_DARK,GLITCH_CORNER_SIZE,GLITCH_CORNER_SIZE,TILE,TILE,true,Game.darkTone[glitchMimic])
+						RenderingServer.canvas_item_add_nine_patch(drawMain,rect,TEXTURE_RECT,GLITCH_HIGH,GLITCH_CORNER_SIZE,GLITCH_CORNER_SIZE,TILE,TILE,true,Game.highTone[effectiveColor()])
+						RenderingServer.canvas_item_add_nine_patch(drawMain,rect,TEXTURE_RECT,GLITCH_MAIN,GLITCH_CORNER_SIZE,GLITCH_CORNER_SIZE,TILE,TILE,true,Game.mainTone[effectiveColor()])
+						RenderingServer.canvas_item_add_nine_patch(drawMain,rect,TEXTURE_RECT,GLITCH_DARK,GLITCH_CORNER_SIZE,GLITCH_CORNER_SIZE,TILE,TILE,true,Game.darkTone[effectiveColor()])
 			else:
 				RenderingServer.canvas_item_add_nine_patch(drawMain,rect,TEXTURE_RECT,SPEND_HIGH,CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,Game.highTone[baseColor()])
 				RenderingServer.canvas_item_add_nine_patch(drawMain,rect,TEXTURE_RECT,SPEND_MAIN,CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,Game.mainTone[baseColor()])
@@ -286,6 +286,7 @@ var gamePainted:bool = false
 var cursed:bool = false
 var curseColor:Game.COLOR
 var glitchMimic:Game.COLOR = Game.COLOR.GLITCH
+var curseGlitchMimic:Game.COLOR = Game.COLOR.GLITCH
 
 enum ANIM_STATE {IDLE, ADD_COPY, RELOCK}
 var animState:ANIM_STATE = ANIM_STATE.IDLE
@@ -366,6 +367,7 @@ func stop() -> void:
 	gateBufferCheck = null
 	drawComplex = false
 	glitchMimic = Game.COLOR.GLITCH
+	curseGlitchMimic = Game.COLOR.GLITCH
 	super()
 
 func tryOpen(player:Player) -> void:
@@ -564,6 +566,10 @@ func curseCheck(player:Player) -> void:
 		changes.bufferSave()
 	elif player.curseMode < 0 and cursed and curseColor == player.curseColor:
 		gameChanges.addChange(GameChanges.PropertyChange.new(game,self,&"cursed",false))
+		if curseColor == Game.COLOR.GLITCH:
+			gameChanges.addChange(GameChanges.PropertyChange.new(game,self,&"curseGlitchMimic",Game.COLOR.GLITCH))
+			for lock in locks:
+				gameChanges.addChange(GameChanges.PropertyChange.new(game,lock,&"curseGlitchMimic",Game.COLOR.GLITCH))
 		makeCurseParticles(Game.COLOR.BROWN, -1, 0.2, 0.5)
 		AudioManager.play(preload("res://resources/sounds/door/decurse.wav"))
 		changes.bufferSave()
@@ -575,7 +581,7 @@ func makeCurseParticles(color:Game.COLOR, mode:int, scaleMin:float=1,scaleMax:fl
 
 func effectiveColor() -> Game.COLOR: # for calculations
 	var base:Game.COLOR = baseColor()
-	if base == Game.COLOR.GLITCH: return glitchMimic
+	if base == Game.COLOR.GLITCH: return curseGlitchMimic if cursed else glitchMimic
 	return base
 
 func baseColor() -> Game.COLOR: # before glitch; for drawing
@@ -596,6 +602,12 @@ func setGlitch(setColor:Game.COLOR) -> void:
 		gameChanges.addChange(GameChanges.PropertyChange.new(game, self, &"glitchMimic", setColor))
 		for lock in locks:
 			gameChanges.addChange(GameChanges.PropertyChange.new(game, lock, &"glitchMimic", setColor))
+			lock.queue_redraw()
+		queue_redraw()
+	elif curseColor == Game.COLOR.GLITCH:
+		gameChanges.addChange(GameChanges.PropertyChange.new(game, self, &"curseGlitchMimic", setColor))
+		for lock in locks:
+			gameChanges.addChange(GameChanges.PropertyChange.new(game, lock, &"curseGlitchMimic", setColor))
 			lock.queue_redraw()
 		queue_redraw()
 

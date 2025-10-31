@@ -221,16 +221,16 @@ func _draw() -> void:
 			RenderingServer.canvas_item_set_material(drawGlitch,Game.SCALED_GLITCH_MATERIAL.get_rid())
 			RenderingServer.canvas_item_set_instance_shader_parameter(drawGlitch, &"size", size)
 			RenderingServer.canvas_item_add_rect(drawGlitch,Rect2(rect.position+Vector2.ONE,rect.size-Vector2(2,2)),Game.mainTone[baseColor()])
-			if glitchMimic != Game.COLOR.GLITCH:
+			if effectiveColor() != Game.COLOR.GLITCH:
 				var glitchTexture:Texture2D
-				match glitchMimic:
+				match effectiveColor():
 					Game.COLOR.MASTER: glitchTexture = GLITCH_FILL_MASTER[sizeType]
 					Game.COLOR.PURE: glitchTexture = GLITCH_FILL_PURE[sizeType]
 					Game.COLOR.STONE: glitchTexture = GLITCH_FILL_STONE[sizeType]
 					Game.COLOR.DYNAMITE: glitchTexture = GLITCH_FILL_DYNAMITE[sizeType]
 					Game.COLOR.QUICKSILVER: glitchTexture = GLITCH_FILL_QUICKSILVER[sizeType]
 				if glitchTexture: RenderingServer.canvas_item_add_texture_rect(drawMain,rect,glitchTexture)
-				elif sizeType != SIZE_TYPE.ANY: RenderingServer.canvas_item_add_texture_rect(drawMain,rect,GLITCH_FILL[sizeType],false,Game.mainTone[glitchMimic])
+				elif sizeType != SIZE_TYPE.ANY: RenderingServer.canvas_item_add_texture_rect(drawMain,rect,GLITCH_FILL[sizeType],false,Game.mainTone[effectiveColor()])
 		else:
 			RenderingServer.canvas_item_add_rect(drawMain,Rect2(rect.position+Vector2.ONE,rect.size-Vector2(2,2)),Game.mainTone[baseColor()])
 	if game.playState != Game.PLAY_STATE.EDIT and parent.ipow().across(game.player.complexMode).eq(0): return # no copies in this direction; go away
@@ -392,13 +392,15 @@ func propertyChangedInit(property:StringName) -> void:
 
 # ==== PLAY ==== #
 var glitchMimic:Game.COLOR = Game.COLOR.GLITCH
+var curseGlitchMimic:Game.COLOR = Game.COLOR.GLITCH
 
 func stop() -> void:
 	glitchMimic = Game.COLOR.GLITCH
+	curseGlitchMimic = Game.COLOR.GLITCH
 
 func effectiveColor() -> Game.COLOR: # for calculations
 	var base:Game.COLOR = baseColor()
-	if base == Game.COLOR.GLITCH: return glitchMimic
+	if base == Game.COLOR.GLITCH: return curseGlitchMimic if parent.cursed else glitchMimic
 	return base
 
 func baseColor() -> Game.COLOR: # before glitch; for drawing
