@@ -27,6 +27,7 @@ func setTexts() -> void:
 func getProblemName() -> String:
 	match [modId, type]:
 		[&"NstdLockSize", &"NstdLockSize"]: return "Nonstandard Lock Size"
+		[&"MoreLockConfigs", &"NstdLockConfig"]: return "Nonstandard Lock Configuration"
 
 		[&"C2", &"DynamiteColor"]: return "Dynamite Color"
 		[&"C2", &"QuicksilverColor"]: return "Quicksilver Color"

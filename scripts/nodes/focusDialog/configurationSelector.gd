@@ -2,6 +2,8 @@ extends HBoxContainer
 class_name ConfigurationSelector
 # selector for lock size and configuration; manages lock sizing
 
+@onready var editor:Editor = get_node("/root/editor")
+
 const SPECIFIC_A:Texture2D = preload("res://assets/ui/focusDialog/lockConfiguration/SpecificA.png")
 const SPECIFIC_B:Texture2D = preload("res://assets/ui/focusDialog/lockConfiguration/SpecificB.png")
 const SPECIFIC_H:Texture2D = preload("res://assets/ui/focusDialog/lockConfiguration/SpecificH.png")
@@ -57,11 +59,12 @@ func setup(lock:Lock) -> void:
 	var specificBAvailable:bool = false
 	for configuration in lock.getAvailableConfigurations():
 		match configuration[1]:
-			Lock.CONFIGURATION.spr1A, Lock.CONFIGURATION.spr4A, Lock.CONFIGURATION.spr5A, Lock.CONFIGURATION.spr6A, Lock.CONFIGURATION.spr8A, Lock.CONFIGURATION.spr12A, Lock.CONFIGURATION.spr24A:
+			Lock.CONFIGURATION.spr1A, Lock.CONFIGURATION.spr4A, Lock.CONFIGURATION.spr5A, Lock.CONFIGURATION.spr6A, Lock.CONFIGURATION.spr8A, Lock.CONFIGURATION.spr12A, Lock.CONFIGURATION.spr24A, \
+			Lock.CONFIGURATION.spr7A, Lock.CONFIGURATION.spr9A, Lock.CONFIGURATION.spr10A, Lock.CONFIGURATION.spr11A, Lock.CONFIGURATION.spr13A:
 				buttons[OPTION.SpecificA].icon = SPECIFIC_A
 				specificAAvailable = true
 				if configuration[1] == lock.configuration: setSelect(OPTION.SpecificA)
-			Lock.CONFIGURATION.spr4B, Lock.CONFIGURATION.spr5B, Lock.CONFIGURATION.spr6B:
+			Lock.CONFIGURATION.spr4B, Lock.CONFIGURATION.spr5B, Lock.CONFIGURATION.spr6B, Lock.CONFIGURATION.spr9B, Lock.CONFIGURATION.spr24B:
 				buttons[OPTION.SpecificB].icon = SPECIFIC_B
 				specificBAvailable = true
 				if configuration[1] == lock.configuration: setSelect(OPTION.SpecificB)
@@ -85,6 +88,9 @@ func setup(lock:Lock) -> void:
 			Lock.SIZE_TYPE.AnyL: setSelect(OPTION.AnyL)
 			Lock.SIZE_TYPE.AnyXL: setSelect(OPTION.AnyXL)
 			Lock.SIZE_TYPE.ANY: setSelect(OPTION.ANY)
+
+func changedMods() -> void:
+	if editor.focusDialog.componentFocused is Lock: setup(editor.focusDialog.componentFocused)
 
 class ConfigurationSelectorButton extends Button:
 	@onready var editor:Editor = get_node("/root/editor")

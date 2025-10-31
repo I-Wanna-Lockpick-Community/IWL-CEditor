@@ -9,6 +9,11 @@ static var mods:Dictionary[StringName, Mod] = {
 		"Allows lock sizes on combo doors other than the ones supported by the basegame",
 		[&"NstdLockSize"]
 	),
+	&"MoreLockConfigs": Mod.new(
+		"More Lock Configurations",
+		"Adds predefined lock configurations for 7, 9, 10, 11, and 13 locks, as well as an alternative configuration for 24 locks.\nDesigns by JustImagineIt and themetah",
+		[&"NstdLockConfig"]
+	),
 	&"InfCopies": Mod.new(
 		"Infinite Copy Doors",
 		"Allows doors to have infinite copies",

@@ -71,6 +71,11 @@ func findProblems(component:GameComponent) -> void:
 			findColorProblems(component, component.color)
 			if &"NstdLockSize" in modsWindow.modsRemoved:
 				noteProblem(&"NstdLockSize", &"NstdLockSize", component, component.parent.type != Door.TYPE.SIMPLE and component.size not in Lock.SIZES)
+			if &"MoreLockConfigs" in modsWindow.modsRemoved:
+				noteProblem(&"MoreLockConfigs", &"NstdLockConfig", component, component.parent.type != Door.TYPE.SIMPLE and component.configuration in [
+					Lock.CONFIGURATION.spr7A, Lock.CONFIGURATION.spr9A, Lock.CONFIGURATION.spr9B, Lock.CONFIGURATION.spr10A, Lock.CONFIGURATION.spr11A, Lock.CONFIGURATION.spr13A,
+					Lock.CONFIGURATION.spr24B
+				])
 			if &"C3" in modsWindow.modsRemoved:
 				noteProblem(&"C3", &"ExactLock", component, component.type == Lock.TYPE.EXACT)
 		Door:

@@ -5,7 +5,7 @@ const TYPES:int = 5
 enum TYPE {NORMAL, BLANK, BLAST, ALL, EXACT}
 enum SIZE_TYPE {AnyS, AnyH, AnyV, AnyM, AnyL, AnyXL, ANY}
 const SIZES:Array[Vector2] = [Vector2(18,18), Vector2(50,18), Vector2(18,50), Vector2(38,38), Vector2(50,50), Vector2(82,82)]
-enum CONFIGURATION {spr1A, spr2H, spr2V, spr3H, spr3V, spr4A, spr4B, spr5A, spr5B, spr6A, spr6B, spr8A, spr12A, spr24A, NONE}
+enum CONFIGURATION {spr1A, spr2H, spr2V, spr3H, spr3V, spr4A, spr4B, spr5A, spr5B, spr6A, spr6B, spr8A, spr12A, spr24A, spr7A, spr9A, spr9B, spr10A, spr11A, spr13A, spr24B, NONE}
 
 func getAvailableConfigurations() -> Array[Array]:
 	# returns Array[Array[SIZE_TYPE, CONFIGURATION]]
@@ -21,7 +21,15 @@ func getAvailableConfigurations() -> Array[Array]:
 		elif effectiveCount().r.abs().eq(6): available.append([SIZE_TYPE.AnyM, CONFIGURATION.spr6A]); available.append([SIZE_TYPE.AnyL, CONFIGURATION.spr6B])
 		elif effectiveCount().r.abs().eq(8): available.append([SIZE_TYPE.AnyL, CONFIGURATION.spr8A])
 		elif effectiveCount().r.abs().eq(12): available.append([SIZE_TYPE.AnyL, CONFIGURATION.spr12A])
-		elif effectiveCount().r.abs().eq(24): available.append([SIZE_TYPE.AnyXL, CONFIGURATION.spr24A])
+		elif effectiveCount().r.abs().eq(24):
+			available.append([SIZE_TYPE.AnyXL, CONFIGURATION.spr24A])
+			if mods.active("MoreLockConfigs"): available.append([SIZE_TYPE.AnyXL, CONFIGURATION.spr24B])
+		elif mods.active("MoreLockConfigs"):
+			if effectiveCount().r.abs().eq(7): available.append([SIZE_TYPE.AnyL, CONFIGURATION.spr7A])
+			elif effectiveCount().r.abs().eq(9): available.append([SIZE_TYPE.AnyL, CONFIGURATION.spr9A]); available.append([SIZE_TYPE.AnyL, CONFIGURATION.spr9B])
+			elif effectiveCount().r.abs().eq(10): available.append([SIZE_TYPE.AnyL, CONFIGURATION.spr10A])
+			elif effectiveCount().r.abs().eq(11): available.append([SIZE_TYPE.AnyL, CONFIGURATION.spr11A])
+			elif effectiveCount().r.abs().eq(13): available.append([SIZE_TYPE.AnyL, CONFIGURATION.spr13A])
 	elif effectiveCount().isNonzeroImag():
 		if effectiveCount().i.abs().eq(1): available.append([SIZE_TYPE.AnyS, CONFIGURATION.spr1A])
 		elif effectiveCount().i.abs().eq(2): available.append([SIZE_TYPE.AnyH, CONFIGURATION.spr2H]); available.append([SIZE_TYPE.AnyV, CONFIGURATION.spr2V])
@@ -47,7 +55,15 @@ const PREDEFINED_SPRITE_NORMAL:Array[Texture2D] = [
 	preload("res://assets/game/lock/predefined/6Bnormal.png"), preload("res://assets/game/lock/predefined/6Bexact.png"),
 	preload("res://assets/game/lock/predefined/8Anormal.png"), preload("res://assets/game/lock/predefined/8Aexact.png"),
 	preload("res://assets/game/lock/predefined/12Anormal.png"), preload("res://assets/game/lock/predefined/12Aexact.png"),
-	preload("res://assets/game/lock/predefined/24Anormal.png"), preload("res://assets/game/lock/predefined/24Aexact.png")
+	preload("res://assets/game/lock/predefined/24Anormal.png"), preload("res://assets/game/lock/predefined/24Aexact.png"),
+	# MoreLockConfigs
+	preload("res://assets/game/lock/predefined/7Anormal.png"), preload("res://assets/game/lock/predefined/7Aexact.png"),
+	preload("res://assets/game/lock/predefined/9Anormal.png"), preload("res://assets/game/lock/predefined/9Aexact.png"),
+	preload("res://assets/game/lock/predefined/9Bnormal.png"), preload("res://assets/game/lock/predefined/9Bexact.png"),
+	preload("res://assets/game/lock/predefined/10Anormal.png"), preload("res://assets/game/lock/predefined/10Aexact.png"),
+	preload("res://assets/game/lock/predefined/11Anormal.png"), preload("res://assets/game/lock/predefined/11Aexact.png"),
+	preload("res://assets/game/lock/predefined/13Anormal.png"), preload("res://assets/game/lock/predefined/13Aexact.png"),
+	preload("res://assets/game/lock/predefined/24Bnormal.png"), preload("res://assets/game/lock/predefined/24Bexact.png"),
 ]
 const PREDEFINED_SPRITE_IMAGINARY:Array[Texture2D] = [
 	preload("res://assets/game/lock/predefined/1Aimaginary.png"), preload("res://assets/game/lock/predefined/1Aexacti.png"),
@@ -321,6 +337,9 @@ func getAutoConfiguration() -> CONFIGURATION:
 			break
 	return newConfiguration
 
+func _setAutoConfiguration() -> void:
+	changes.addChange(Changes.PropertyChange.new(game,self,&"configuration",getAutoConfiguration()))
+
 func _setType(newType:TYPE):
 	changes.addChange(Changes.PropertyChange.new(game,self,&"type",newType))
 	if type == TYPE.BLANK:
@@ -364,7 +383,7 @@ func _coerceSize() -> void:
 func propertyChangedInit(property:StringName) -> void:
 	if parent.type != Door.TYPE.SIMPLE:
 		if property == &"size": _comboDoorSizeChanged()
-	if property in [&"count", &"sizeType", &"type"]: changes.addChange(Changes.PropertyChange.new(game,self,&"configuration",getAutoConfiguration()))
+	if property in [&"count", &"sizeType", &"type"]: _setAutoConfiguration()
 	if property in [&"count", &"type"]:
 		if type in [TYPE.BLANK, TYPE.ALL] and count.neq(1):
 			changes.addChange(Changes.PropertyChange.new(game,self,&"count",C.ONE))

@@ -44,6 +44,20 @@ func _saveChanges():
 	changes.addChange(Changes.GlobalPropertyChange.new(mods,&"activeVersion",tempActiveVersion))
 	for mod in mods.mods.values():
 		changes.addChange(Changes.GlobalPropertyChange.new(mod,&"active",mod.tempActive))
+	for mod in modsAdded: addMod(mod)
+	for mod in modsRemoved: removeMod(mod)
 	changes.bufferSave()
 	get_tree().call_group("modUI", "changedMods")
 	queue_free()
+
+func addMod(mod:StringName):
+	match mod:
+		&"MoreLockConfigs":
+			for component in editor.game.components.values():
+				if component is Lock and component.parent.type == Door.TYPE.SIMPLE: component._setAutoConfiguration()
+
+func removeMod(mod:StringName):
+	match mod:
+		&"MoreLockConfigs":
+			for component in editor.game.components.values():
+				if component is Lock and component.parent.type == Door.TYPE.SIMPLE: component._setAutoConfiguration()

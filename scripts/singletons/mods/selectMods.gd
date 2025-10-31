@@ -7,7 +7,7 @@ class_name SelectMods
 
 # the way the picker is laid out
 static var ModTree:Array = [
-	&"NstdLockSize", &"InfCopies", &"NoneColor",
+	&"NstdLockSize", &"MoreLockConfigs", &"InfCopies", &"NoneColor",
 	SubTree.new("I Wanna Lockpick: Continued", [&"C1",&"C2",&"C3",&"C4",&"C5"])
 ]
 
@@ -90,6 +90,7 @@ func _modpackSelected(index:int, manual:bool=false) -> void:
 	if !manual: bufferSave()
 
 func _modsDefocused() -> void:
+	if !has_node("%mods"): return
 	%mods.deselect_all()
 	setInfoModpack(modsWindow.tempActiveModpack)
 	bufferSave()

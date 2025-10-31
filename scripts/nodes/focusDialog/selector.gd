@@ -1,5 +1,5 @@
 extends GridContainer
-class_name Selector
+class_name Selector # configurationSelector is not a selector
 
 @onready var editor:Editor = get_node("/root/editor")
 
