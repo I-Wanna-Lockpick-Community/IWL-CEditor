@@ -208,7 +208,7 @@ func _draw() -> void:
 	if parent.animState != Door.ANIM_STATE.RELOCK or parent.animPart > 2:
 		var texture:Texture2D
 		var tileTexture:bool = false
-		match baseColor():
+		match colorAfterCurse():
 			Game.COLOR.MASTER: texture = game.masterTex()
 			Game.COLOR.PURE: texture = game.pureTex()
 			Game.COLOR.STONE: texture = game.stoneTex()
@@ -219,13 +219,13 @@ func _draw() -> void:
 				RenderingServer.canvas_item_set_material(drawScaled,Game.PIXELATED_MATERIAL.get_rid())
 				RenderingServer.canvas_item_set_instance_shader_parameter(drawScaled, &"size", size)
 			RenderingServer.canvas_item_add_texture_rect(drawScaled,rect,texture,tileTexture)
-		elif baseColor() == Game.COLOR.GLITCH:
+		elif colorAfterCurse() == Game.COLOR.GLITCH:
 			RenderingServer.canvas_item_set_material(drawGlitch,Game.SCALED_GLITCH_MATERIAL.get_rid())
 			RenderingServer.canvas_item_set_instance_shader_parameter(drawGlitch, &"size", size-Vector2(2,2))
-			RenderingServer.canvas_item_add_rect(drawGlitch,Rect2(rect.position+Vector2.ONE,rect.size-Vector2(2,2)),Game.mainTone[baseColor()])
-			if effectiveColor() != Game.COLOR.GLITCH:
+			RenderingServer.canvas_item_add_rect(drawGlitch,Rect2(rect.position+Vector2.ONE,rect.size-Vector2(2,2)),Game.mainTone[colorAfterCurse()])
+			if colorAfterGlitch() != Game.COLOR.GLITCH:
 				var glitchTexture:Texture2D
-				match effectiveColor():
+				match colorAfterGlitch():
 					Game.COLOR.MASTER: glitchTexture = GLITCH_FILL_MASTER[sizeType]
 					Game.COLOR.PURE: glitchTexture = GLITCH_FILL_PURE[sizeType]
 					Game.COLOR.STONE: glitchTexture = GLITCH_FILL_STONE[sizeType]
@@ -233,11 +233,11 @@ func _draw() -> void:
 					Game.COLOR.QUICKSILVER: glitchTexture = GLITCH_FILL_QUICKSILVER[sizeType]
 				if sizeType == SIZE_TYPE.ANY:
 					if glitchTexture: RenderingServer.canvas_item_add_nine_patch(drawMain,rect,GLITCH_ANY_RECT,glitchTexture,GLITCH_CORNER_SIZE,GLITCH_CORNER_SIZE,TILE,TILE)
-					else: RenderingServer.canvas_item_add_nine_patch(drawMain,rect,GLITCH_ANY_RECT,GLITCH_FILL[sizeType],GLITCH_CORNER_SIZE,GLITCH_CORNER_SIZE,TILE,TILE,true,Game.mainTone[effectiveColor()])
+					else: RenderingServer.canvas_item_add_nine_patch(drawMain,rect,GLITCH_ANY_RECT,GLITCH_FILL[sizeType],GLITCH_CORNER_SIZE,GLITCH_CORNER_SIZE,TILE,TILE,true,Game.mainTone[colorAfterGlitch()])
 				elif glitchTexture: RenderingServer.canvas_item_add_texture_rect(drawMain,rect,glitchTexture)
-				else: RenderingServer.canvas_item_add_texture_rect(drawMain,rect,GLITCH_FILL[sizeType],false,Game.mainTone[effectiveColor()])
+				else: RenderingServer.canvas_item_add_texture_rect(drawMain,rect,GLITCH_FILL[sizeType],false,Game.mainTone[colorAfterGlitch()])
 		else:
-			RenderingServer.canvas_item_add_rect(drawMain,Rect2(rect.position+Vector2.ONE,rect.size-Vector2(2,2)),Game.mainTone[baseColor()])
+			RenderingServer.canvas_item_add_rect(drawMain,Rect2(rect.position+Vector2.ONE,rect.size-Vector2(2,2)),Game.mainTone[colorAfterCurse()])
 	if game.playState != Game.PLAY_STATE.EDIT and parent.ipow().across(game.player.complexMode).eq(0): return # no copies in this direction; go away
 	# frame
 	if sizeType == SIZE_TYPE.ANY: RenderingServer.canvas_item_add_nine_patch(drawMain,rect,ANY_RECT,getLockFrameSprite(),CORNER_SIZE,CORNER_SIZE)
@@ -403,14 +403,20 @@ func stop() -> void:
 	glitchMimic = Game.COLOR.GLITCH
 	curseGlitchMimic = Game.COLOR.GLITCH
 
-func effectiveColor() -> Game.COLOR: # for calculations
-	var base:Game.COLOR = baseColor()
+func colorAfterCurse() -> Game.COLOR:
+	if parent.cursed and parent.curseColor != Game.COLOR.PURE: return parent.curseColor
+	return color
+
+func colorAfterGlitch() -> Game.COLOR:
+	var base:Game.COLOR = colorAfterCurse()
 	if base == Game.COLOR.GLITCH: return curseGlitchMimic if parent.cursed else glitchMimic
 	return base
 
-func baseColor() -> Game.COLOR: # before glitch; for drawing
-	if parent.cursed and parent.curseColor != Game.COLOR.PURE: return parent.curseColor
-	return color
+func colorAfterAurabreaker() -> Game.COLOR:
+	if parent.gameFrozen: return Game.COLOR.ICE
+	if parent.gameCrumbled: return Game.COLOR.MUD
+	if parent.gamePainted: return Game.COLOR.GRAFFITI
+	return colorAfterGlitch()
 
 func effectiveConfiguration() -> CONFIGURATION:
 	if parent.ipow().neq(1):
@@ -420,19 +426,19 @@ func effectiveConfiguration() -> CONFIGURATION:
 
 func canOpen(player:Player) -> bool:
 	match type:
-		TYPE.NORMAL: return !player.key[effectiveColor()].across(effectiveCount().axis()).reduce().lt(effectiveCount().abs())
-		TYPE.BLANK: return player.key[effectiveColor()].eq(0)
+		TYPE.NORMAL: return !player.key[colorAfterAurabreaker()].across(effectiveCount().axis()).reduce().lt(effectiveCount().abs())
+		TYPE.BLANK: return player.key[colorAfterAurabreaker()].eq(0)
 		TYPE.BLAST:
-			return player.key[effectiveColor()].axis().across(effectiveCount().axis()).sign() > 0
-		TYPE.ALL: return player.key[effectiveColor()].neq(0)
-		TYPE.EXACT: return player.key[effectiveColor()].across(effectiveCount().axibs()).eq(effectiveCount())
+			return player.key[colorAfterAurabreaker()].axis().across(effectiveCount().axis()).sign() > 0
+		TYPE.ALL: return player.key[colorAfterAurabreaker()].neq(0)
+		TYPE.EXACT: return player.key[colorAfterAurabreaker()].across(effectiveCount().axibs()).eq(effectiveCount())
 		_: return true
 
 func getCost(player:Player, ipow:C=parent.ipow()) -> C:
 	match type:
 		TYPE.NORMAL, TYPE.EXACT: return effectiveCount(ipow)
-		TYPE.BLAST: return player.key[effectiveColor()].across(effectiveCount(ipow).axibs())
-		TYPE.ALL: return player.key[effectiveColor()]
+		TYPE.BLAST: return player.key[colorAfterAurabreaker()].across(effectiveCount(ipow).axibs())
+		TYPE.ALL: return player.key[colorAfterAurabreaker()]
 		_: return C.ZERO
 
 func effectiveCount(ipow:C=parent.ipow()) -> C:

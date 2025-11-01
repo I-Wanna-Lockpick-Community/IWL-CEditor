@@ -125,7 +125,7 @@ func _draw() -> void:
 		RenderingServer.canvas_item_add_texture_rect(drawMain,rect,GATE_FILL,true,Color(Color.WHITE,lerp(0.35,1.0,gateAlpha)))
 	else:
 		if animState != ANIM_STATE.RELOCK or animPart > 2:
-			match baseColor():
+			match colorAfterCurse():
 				Game.COLOR.MASTER: texture = game.masterTex()
 				Game.COLOR.PURE: texture = game.pureTex()
 				Game.COLOR.STONE: texture = game.stoneTex()
@@ -136,13 +136,13 @@ func _draw() -> void:
 					RenderingServer.canvas_item_set_material(drawScaled,Game.PIXELATED_MATERIAL.get_rid())
 					RenderingServer.canvas_item_set_instance_shader_parameter(drawScaled, &"size", size)
 				RenderingServer.canvas_item_add_texture_rect(drawScaled,rect,texture,tileTexture)
-			elif baseColor() == Game.COLOR.GLITCH:
+			elif colorAfterCurse() == Game.COLOR.GLITCH:
 				RenderingServer.canvas_item_add_nine_patch(drawGlitch,rect,TEXTURE_RECT,SPEND_HIGH,CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,Game.highTone[Game.COLOR.GLITCH])
 				RenderingServer.canvas_item_add_nine_patch(drawGlitch,rect,TEXTURE_RECT,SPEND_MAIN,CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,Game.mainTone[Game.COLOR.GLITCH])
 				RenderingServer.canvas_item_add_nine_patch(drawGlitch,rect,TEXTURE_RECT,SPEND_DARK,CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,Game.darkTone[Game.COLOR.GLITCH])
-				if effectiveColor() != Game.COLOR.GLITCH:
+				if colorAfterGlitch() != Game.COLOR.GLITCH:
 					var glitchTexture:Texture2D
-					match effectiveColor():
+					match colorAfterGlitch():
 						Game.COLOR.MASTER: glitchTexture = MASTER_GLITCH
 						Game.COLOR.PURE: glitchTexture = PURE_GLITCH
 						Game.COLOR.STONE: glitchTexture = STONE_GLITCH
@@ -151,13 +151,13 @@ func _draw() -> void:
 					if glitchTexture:
 						RenderingServer.canvas_item_add_nine_patch(drawMain,rect,TEXTURE_RECT,glitchTexture,GLITCH_CORNER_SIZE,GLITCH_CORNER_SIZE,TILE,TILE)
 					else:
-						RenderingServer.canvas_item_add_nine_patch(drawMain,rect,TEXTURE_RECT,GLITCH_HIGH,GLITCH_CORNER_SIZE,GLITCH_CORNER_SIZE,TILE,TILE,true,Game.highTone[effectiveColor()])
-						RenderingServer.canvas_item_add_nine_patch(drawMain,rect,TEXTURE_RECT,GLITCH_MAIN,GLITCH_CORNER_SIZE,GLITCH_CORNER_SIZE,TILE,TILE,true,Game.mainTone[effectiveColor()])
-						RenderingServer.canvas_item_add_nine_patch(drawMain,rect,TEXTURE_RECT,GLITCH_DARK,GLITCH_CORNER_SIZE,GLITCH_CORNER_SIZE,TILE,TILE,true,Game.darkTone[effectiveColor()])
+						RenderingServer.canvas_item_add_nine_patch(drawMain,rect,TEXTURE_RECT,GLITCH_HIGH,GLITCH_CORNER_SIZE,GLITCH_CORNER_SIZE,TILE,TILE,true,Game.highTone[colorAfterGlitch()])
+						RenderingServer.canvas_item_add_nine_patch(drawMain,rect,TEXTURE_RECT,GLITCH_MAIN,GLITCH_CORNER_SIZE,GLITCH_CORNER_SIZE,TILE,TILE,true,Game.mainTone[colorAfterGlitch()])
+						RenderingServer.canvas_item_add_nine_patch(drawMain,rect,TEXTURE_RECT,GLITCH_DARK,GLITCH_CORNER_SIZE,GLITCH_CORNER_SIZE,TILE,TILE,true,Game.darkTone[colorAfterGlitch()])
 			else:
-				RenderingServer.canvas_item_add_nine_patch(drawMain,rect,TEXTURE_RECT,SPEND_HIGH,CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,Game.highTone[baseColor()])
-				RenderingServer.canvas_item_add_nine_patch(drawMain,rect,TEXTURE_RECT,SPEND_MAIN,CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,Game.mainTone[baseColor()])
-				RenderingServer.canvas_item_add_nine_patch(drawMain,rect,TEXTURE_RECT,SPEND_DARK,CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,Game.darkTone[baseColor()])
+				RenderingServer.canvas_item_add_nine_patch(drawMain,rect,TEXTURE_RECT,SPEND_HIGH,CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,Game.highTone[colorAfterCurse()])
+				RenderingServer.canvas_item_add_nine_patch(drawMain,rect,TEXTURE_RECT,SPEND_MAIN,CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,Game.mainTone[colorAfterCurse()])
+				RenderingServer.canvas_item_add_nine_patch(drawMain,rect,TEXTURE_RECT,SPEND_DARK,CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,Game.darkTone[colorAfterCurse()])
 		# frame
 		if drawComplex:
 			RenderingServer.canvas_item_add_nine_patch(drawMain,rect,TEXTURE_RECT,FRAME_HIGH,CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,Color.from_hsv(game.complexViewHue,0.4901960784,1))
@@ -373,11 +373,16 @@ func stop() -> void:
 func tryOpen(player:Player) -> void:
 	if type == TYPE.GATE: return
 	if animState != ANIM_STATE.IDLE: return
-	if gameFrozen or gameCrumbled or gamePainted: return
-
-	if player.key[Game.COLOR.DYNAMITE].neq(0) and tryDynamiteOpen(player): return
-	if player.masterCycle == 1 and tryMasterOpen(player): return
-	if player.masterCycle == 2 and tryQuicksilverOpen(player): return
+	if gameFrozen or gameCrumbled or gamePainted:
+		if hasColor(Game.COLOR.PURE): return
+		if int(gameFrozen) + int(gameCrumbled) + int(gamePainted) > 1: return
+		if gameFrozen and player.key[Game.COLOR.ICE].eq(0): return
+		if gameCrumbled and player.key[Game.COLOR.MUD].eq(0): return
+		if gamePainted and player.key[Game.COLOR.GRAFFITI].eq(0): return
+	else:
+		if player.key[Game.COLOR.DYNAMITE].neq(0) and tryDynamiteOpen(player): return
+		if player.masterCycle == 1 and tryMasterOpen(player): return
+		if player.masterCycle == 2 and tryQuicksilverOpen(player): return
 
 	for lock in locks:
 		if !lock.canOpen(player): return
@@ -386,17 +391,18 @@ func tryOpen(player:Player) -> void:
 	for lock in locks:
 		cost = cost.plus(lock.getCost(player))
 	
-	gameChanges.addChange(GameChanges.KeyChange.new(game, effectiveColor(), player.key[effectiveColor()].minus(cost)))
+	gameChanges.addChange(GameChanges.KeyChange.new(game, colorAfterAurabreaker(), player.key[colorAfterAurabreaker()].minus(cost)))
 	gameChanges.addChange(GameChanges.PropertyChange.new(game, self, &"gameCopies", gameCopies.minus(ipow())))
 	
-	match type:
-		TYPE.SIMPLE:
-			if locks[0].type == Lock.TYPE.BLAST: AudioManager.play(preload("res://resources/sounds/door/blast.wav"))
-			elif effectiveColor() == Game.COLOR.MASTER and locks[0].effectiveColor() == Game.COLOR.MASTER: AudioManager.play(preload("res://resources/sounds/door/master.wav"))
-			else: AudioManager.play(preload("res://resources/sounds/door/simple.wav"))
-		TYPE.COMBO: AudioManager.play(preload("res://resources/sounds/door/combo.wav"))
-
-	game.setGlitch(effectiveColor())
+	if gameFrozen or gameCrumbled or gamePainted: AudioManager.play(preload("res://resources/sounds/door/deaura.wav"))
+	else:
+		match type:
+			TYPE.SIMPLE:
+				if locks[0].type == Lock.TYPE.BLAST: AudioManager.play(preload("res://resources/sounds/door/blast.wav"))
+				elif colorAfterAurabreaker() == Game.COLOR.MASTER and locks[0].colorAfterAurabreaker() == Game.COLOR.MASTER: AudioManager.play(preload("res://resources/sounds/door/master.wav"))
+				else: AudioManager.play(preload("res://resources/sounds/door/simple.wav"))
+			TYPE.COMBO: AudioManager.play(preload("res://resources/sounds/door/combo.wav"))
+		game.setGlitch(colorAfterAurabreaker())
 
 	if gameCopies.eq(0): destroy()
 	else: relockAnimation()
@@ -431,12 +437,12 @@ func tryQuicksilverOpen(player:Player) -> bool:
 		cost = cost.plus(lock.getCost(player, player.masterMode))
 	
 	gameChanges.addChange(GameChanges.KeyChange.new(game, Game.COLOR.QUICKSILVER, player.key[Game.COLOR.QUICKSILVER].minus(player.masterMode)))
-	gameChanges.addChange(GameChanges.KeyChange.new(game, effectiveColor(), player.key[effectiveColor()].plus(cost)))
+	gameChanges.addChange(GameChanges.KeyChange.new(game, colorAfterGlitch(), player.key[colorAfterGlitch()].plus(cost)))
 
 	AudioManager.play(preload("res://resources/sounds/door/master.wav"))
 	relockAnimation()
 
-	game.setGlitch(effectiveColor())
+	game.setGlitch(colorAfterGlitch())
 
 	player.dropMaster()
 	gameChanges.bufferSave()
@@ -479,14 +485,14 @@ func tryDynamiteOpen(player:Player) -> bool:
 	return true
 
 func hasColor(color:Game.COLOR) -> bool:
-	if effectiveColor() == color: return true
-	for lock in locks: if lock.effectiveColor() == color: return true
+	if colorAfterGlitch() == color: return true
+	for lock in locks: if lock.colorAfterGlitch() == color: return true
 	return false
 
 func destroy() -> void:
 	gameChanges.addChange(GameChanges.PropertyChange.new(game, self, &"active", false))
-	var color:Game.COLOR = baseColor()
-	if type == TYPE.SIMPLE: color = locks[0].baseColor()
+	var color:Game.COLOR = colorAfterCurse()
+	if type == TYPE.SIMPLE: color = locks[0].colorAfterCurse()
 	makeDebris(Debris, color)
 
 func addCopyAnimation() -> void:
@@ -496,8 +502,8 @@ func addCopyAnimation() -> void:
 	animPart = 0
 	game.fasterAnims()
 	addCopySound = AudioManager.play(preload("res://resources/sounds/door/addCopy.wav"))
-	var color:Game.COLOR = baseColor()
-	if type == TYPE.SIMPLE: color = locks[0].baseColor()
+	var color:Game.COLOR = colorAfterCurse()
+	if type == TYPE.SIMPLE: color = locks[0].colorAfterCurse()
 	makeDebris(AddCopyDebris, color)
 
 func relockAnimation() -> void:
@@ -507,8 +513,8 @@ func relockAnimation() -> void:
 	animPart = 0
 	game.fasterAnims()
 	for lock in locks: lock.queue_redraw()
-	var color:Game.COLOR = baseColor()
-	if type == TYPE.SIMPLE: color = locks[0].baseColor()
+	var color:Game.COLOR = colorAfterCurse()
+	if type == TYPE.SIMPLE: color = locks[0].colorAfterCurse()
 	makeDebris(RelockDebris, color)
 
 func makeDebris(debrisType:GDScript, debrisColor:Game.COLOR) -> void:
@@ -579,14 +585,20 @@ func makeCurseParticles(color:Game.COLOR, mode:int, scaleMin:float=1,scaleMax:fl
 		for x in floor(size.x/16):
 			add_child(CurseParticle.Temporary.new(color, mode, Vector2(x,y)*16+Vector2.ONE*randf_range(4,12), randf_range(scaleMin,scaleMax)))
 
-func effectiveColor() -> Game.COLOR: # for calculations
-	var base:Game.COLOR = baseColor()
+func colorAfterCurse() -> Game.COLOR:
+	if cursed and curseColor != Game.COLOR.PURE: return curseColor
+	return colorSpend
+
+func colorAfterGlitch() -> Game.COLOR:
+	var base:Game.COLOR = colorAfterCurse()
 	if base == Game.COLOR.GLITCH: return curseGlitchMimic if cursed else glitchMimic
 	return base
 
-func baseColor() -> Game.COLOR: # before glitch; for drawing
-	if cursed and curseColor != Game.COLOR.PURE: return curseColor
-	return colorSpend
+func colorAfterAurabreaker() -> Game.COLOR:
+	if gameFrozen: return Game.COLOR.ICE
+	if gameCrumbled: return Game.COLOR.MUD
+	if gamePainted: return Game.COLOR.GRAFFITI
+	return colorAfterGlitch()
 
 func ipow() -> C: # for complex view
 	if game.playState == Game.PLAY_STATE.EDIT: return C.ONE
