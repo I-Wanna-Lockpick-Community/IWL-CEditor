@@ -79,15 +79,15 @@ func getPredefinedLockSprite() -> Texture2D:
 	else: return PREDEFINED_SPRITE_NORMAL[effectiveConfiguration()*2+int(type==TYPE.EXACT)]
 
 const FRAME:Array[Texture2D] = [
-	preload("res://assets/game/lock/frame/AnySnormal.png"), preload("res://assets/game/lock/frame/AnySnegative.png"),
-	preload("res://assets/game/lock/frame/AnyHnormal.png"), preload("res://assets/game/lock/frame/AnyHnegative.png"),
-	preload("res://assets/game/lock/frame/AnyVnormal.png"), preload("res://assets/game/lock/frame/AnyVnegative.png"),
-	preload("res://assets/game/lock/frame/AnyMnormal.png"), preload("res://assets/game/lock/frame/AnyMnegative.png"),
-	preload("res://assets/game/lock/frame/AnyLnormal.png"), preload("res://assets/game/lock/frame/AnyLnegative.png"),
-	preload("res://assets/game/lock/frame/AnyXLnormal.png"), preload("res://assets/game/lock/frame/AnyXLnegative.png"),
-	preload("res://assets/game/lock/frame/ANYnormal.png"), preload("res://assets/game/lock/frame/ANYnegative.png"),
+	preload("res://assets/game/lock/frame/AnySnormal.png"), preload("res://assets/game/lock/frame/AnySnegative.png"), preload("res://assets/game/lock/frame/AnySnot.png"), preload("res://assets/game/lock/frame/AnySnotNegative.png"),
+	preload("res://assets/game/lock/frame/AnyHnormal.png"), preload("res://assets/game/lock/frame/AnyHnegative.png"), preload("res://assets/game/lock/frame/AnyHnot.png"), preload("res://assets/game/lock/frame/AnyHnotNegative.png"),
+	preload("res://assets/game/lock/frame/AnyVnormal.png"), preload("res://assets/game/lock/frame/AnyVnegative.png"), preload("res://assets/game/lock/frame/AnyVnot.png"), preload("res://assets/game/lock/frame/AnyVnotNegative.png"),
+	preload("res://assets/game/lock/frame/AnyMnormal.png"), preload("res://assets/game/lock/frame/AnyMnegative.png"), preload("res://assets/game/lock/frame/AnyMnot.png"), preload("res://assets/game/lock/frame/AnyMnotNegative.png"),
+	preload("res://assets/game/lock/frame/AnyLnormal.png"), preload("res://assets/game/lock/frame/AnyLnegative.png"), preload("res://assets/game/lock/frame/AnyLnot.png"), preload("res://assets/game/lock/frame/AnyLnotNegative.png"),
+	preload("res://assets/game/lock/frame/AnyXLnormal.png"), preload("res://assets/game/lock/frame/AnyXLnegative.png"), preload("res://assets/game/lock/frame/AnyXLnot.png"), preload("res://assets/game/lock/frame/AnyXLnotNegative.png"),
+	preload("res://assets/game/lock/frame/ANYnormal.png"), preload("res://assets/game/lock/frame/ANYnegative.png"), preload("res://assets/game/lock/frame/ANYnot.png"), preload("res://assets/game/lock/frame/ANYnotNegative.png")
 ]
-func getLockFrameSprite() -> Texture2D: return FRAME[sizeType*2+int(effectiveCount().sign()<0)]
+func getLockFrameSprite() -> Texture2D: return FRAME[sizeType*4+int(effectiveCount().sign()<0)+int(negated)*2]
 
 const SYMBOL_NORMAL = preload("res://assets/game/lock/symbols/normal.png")
 const SYMBOL_BLAST = preload("res://assets/game/lock/symbols/blast.png")
@@ -163,8 +163,8 @@ const CREATE_PARAMETERS:Array[StringName] = [
 ]
 const EDITOR_PROPERTIES:Array[StringName] = [
 	&"id", &"position", &"size",
-	&"parentId", &"color", &"type", &"configuration", &"sizeType", &"count",
-	&"index" # implciit
+	&"parentId", &"color", &"type", &"configuration", &"sizeType", &"count", &"negated",
+	&"index" # implcit
 ]
 
 var parent:Door
@@ -174,11 +174,13 @@ var type:TYPE = TYPE.NORMAL
 var configuration:CONFIGURATION = CONFIGURATION.spr1A
 var sizeType:SIZE_TYPE = SIZE_TYPE.AnyS
 var count:C = C.ONE
+var negated:bool = false
 var index:int
 
 var drawGlitch:RID
 var drawScaled:RID
 var drawMain:RID
+var drawConfiguration:RID
 
 func getConfigurationColor() -> Color:
 	if effectiveCount().sign() < 0: return Color("#ebdfd3")
@@ -193,17 +195,26 @@ func _ready() -> void:
 	drawGlitch = RenderingServer.canvas_item_create()
 	drawScaled = RenderingServer.canvas_item_create()
 	drawMain = RenderingServer.canvas_item_create()
+	drawConfiguration = RenderingServer.canvas_item_create()
 	RenderingServer.canvas_item_set_parent(drawGlitch,get_canvas_item())
 	RenderingServer.canvas_item_set_parent(drawScaled,get_canvas_item())
 	RenderingServer.canvas_item_set_parent(drawMain,get_canvas_item())
+	RenderingServer.canvas_item_set_parent(drawConfiguration,get_canvas_item())
 	game.connect(&"goldIndexChanged",queue_redraw)
 
 func _draw() -> void:
 	RenderingServer.canvas_item_clear(drawGlitch)
 	RenderingServer.canvas_item_clear(drawScaled)
 	RenderingServer.canvas_item_clear(drawMain)
+	RenderingServer.canvas_item_clear(drawConfiguration)
 	if !parent.active and game.playState == Game.PLAY_STATE.PLAY: return
 	var rect:Rect2 = Rect2(-getOffset(), size)
+	if negated:
+		RenderingServer.canvas_item_set_transform(drawScaled,Transform2D(PI,size-getOffset()*2))
+		RenderingServer.canvas_item_set_transform(drawConfiguration,Transform2D(PI,size-getOffset()*2))
+	else:
+		RenderingServer.canvas_item_set_transform(drawScaled,Transform2D.IDENTITY)
+		RenderingServer.canvas_item_set_transform(drawConfiguration,Transform2D.IDENTITY)
 	# fill
 	if parent.animState != Door.ANIM_STATE.RELOCK or parent.animPart > 2:
 		var texture:Texture2D
@@ -278,7 +289,8 @@ func _draw() -> void:
 					if type == TYPE.NORMAL: lockSymbol = SYMBOL_NORMAL
 					elif effectiveCount().isNonzeroImag(): lockSymbol = SYMBOL_EXACTI
 					else: lockSymbol = SYMBOL_EXACT
-					RenderingServer.canvas_item_add_texture_rect(drawMain,lockRect,lockSymbol,false,getConfigurationColor())
+					if negated: lockRect = Rect2(size-lockRect.position-lockRect.size-getOffset()*2,lockRect.size)
+					RenderingServer.canvas_item_add_texture_rect(drawConfiguration,lockRect,lockSymbol,false,getConfigurationColor())
 				if symbolLast: Game.FTALK.draw_string(drawMain,Vector2(startX,startY)-getOffset(),string,HORIZONTAL_ALIGNMENT_LEFT,-1,12,getConfigurationColor())
 				else: Game.FTALK.draw_string(drawMain,Vector2(startX+lockOffsetX,startY)-getOffset(),string,HORIZONTAL_ALIGNMENT_LEFT,-1,12,getConfigurationColor())
 			TYPE.BLANK: pass # nothing really
@@ -289,7 +301,7 @@ func _draw() -> void:
 			TYPE.ALL:
 				var symbolRect:Rect2 = Rect2(Vector2((size-SYMBOL_SIZE)/2)-getOffset(),SYMBOL_SIZE)
 				RenderingServer.canvas_item_add_texture_rect(drawMain,symbolRect,SYMBOL_ALL,false,getConfigurationColor())
-	else: RenderingServer.canvas_item_add_texture_rect(drawMain,rect,getPredefinedLockSprite(),false,getConfigurationColor())
+	else: RenderingServer.canvas_item_add_texture_rect(drawConfiguration,rect,getPredefinedLockSprite(),false,getConfigurationColor())
 
 func getDrawPosition() -> Vector2: return position + parent.position - getOffset()
 
@@ -425,21 +437,24 @@ func effectiveConfiguration() -> CONFIGURATION:
 	else: return configuration
 
 func canOpen(player:Player) -> bool:
+	var can:bool = true
 	match type:
-		TYPE.NORMAL: return !player.key[colorAfterAurabreaker()].across(effectiveCount().axis()).reduce().lt(effectiveCount().abs())
-		TYPE.BLANK: return player.key[colorAfterAurabreaker()].eq(0)
+		TYPE.NORMAL: can = !player.key[colorAfterAurabreaker()].across(effectiveCount().axis()).reduce().lt(effectiveCount().abs())
+		TYPE.BLANK: can = player.key[colorAfterAurabreaker()].eq(0)
 		TYPE.BLAST:
-			return player.key[colorAfterAurabreaker()].axis().across(effectiveCount().axis()).sign() > 0
-		TYPE.ALL: return player.key[colorAfterAurabreaker()].neq(0)
-		TYPE.EXACT: return player.key[colorAfterAurabreaker()].across(effectiveCount().axibs()).eq(effectiveCount())
-		_: return true
+			can = player.key[colorAfterAurabreaker()].axis().across(effectiveCount().axis()).sign() > 0
+		TYPE.ALL: can = player.key[colorAfterAurabreaker()].neq(0)
+		TYPE.EXACT: can = player.key[colorAfterAurabreaker()].across(effectiveCount().axibs()).eq(effectiveCount())
+	return can != negated
 
 func getCost(player:Player, ipow:C=parent.ipow()) -> C:
+	var cost:C = C.ZERO
 	match type:
-		TYPE.NORMAL, TYPE.EXACT: return effectiveCount(ipow)
-		TYPE.BLAST: return player.key[colorAfterAurabreaker()].across(effectiveCount(ipow).axibs())
-		TYPE.ALL: return player.key[colorAfterAurabreaker()]
-		_: return C.ZERO
+		TYPE.NORMAL, TYPE.EXACT: cost = effectiveCount(ipow)
+		TYPE.BLAST: cost = player.key[colorAfterAurabreaker()].across(effectiveCount(ipow).axibs())
+		TYPE.ALL: cost = player.key[colorAfterAurabreaker()]
+	if negated: return cost.times(-1)
+	return cost
 
 func effectiveCount(ipow:C=parent.ipow()) -> C:
 	return count.times(ipow)

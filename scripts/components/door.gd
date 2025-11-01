@@ -95,8 +95,8 @@ func _ready() -> void:
 	RenderingServer.canvas_item_set_material(drawPainted,PAINTED_MATERIAL.get_rid())
 	RenderingServer.canvas_item_set_material(drawFrozen,FROZEN_MATERIAL.get_rid())
 	RenderingServer.canvas_item_set_material(drawNegative,Game.NEGATIVE_MATERIAL.get_rid())
-	RenderingServer.canvas_item_set_z_index(drawCopies,3)
-	RenderingServer.canvas_item_set_z_index(drawNegative,3)
+	RenderingServer.canvas_item_set_z_index(drawCopies,1)
+	RenderingServer.canvas_item_set_z_index(drawNegative,1)
 	RenderingServer.canvas_item_set_parent(drawScaled,get_canvas_item())
 	RenderingServer.canvas_item_set_parent(drawGlitch,get_canvas_item())
 	RenderingServer.canvas_item_set_parent(drawMain,get_canvas_item())
@@ -553,9 +553,23 @@ func auraCheck(player:Player) -> void:
 		gameChanges.addChange(GameChanges.PropertyChange.new(game,self,&"gamePainted",false))
 		makeDebris(Debris, Game.COLOR.ORANGE)
 		deAuraed = true
-	if deAuraed:
+	var auraed:bool = false
+	if player.auraMaroon and !gameFrozen:
+		gameChanges.addChange(GameChanges.PropertyChange.new(game,self,&"gameFrozen",true))
+		makeDebris(Debris, Game.COLOR.WHITE)
+		auraed = true
+	if player.auraForest and !gameCrumbled:
+		gameChanges.addChange(GameChanges.PropertyChange.new(game,self,&"gameCrumbled",true))
+		makeDebris(Debris, Game.COLOR.BROWN)
+		auraed = true
+	if player.auraNavy and !gamePainted:
+		gameChanges.addChange(GameChanges.PropertyChange.new(game,self,&"gamePainted",true))
+		makeDebris(Debris, Game.COLOR.ORANGE)
+		auraed = true
+	if deAuraed or auraed:
 		AudioManager.play(preload("res://resources/sounds/door/deaura.wav"))
 		changes.bufferSave()
+
 
 func isAllColor(color:Game.COLOR) -> bool:
 	if colorSpend != color: return false

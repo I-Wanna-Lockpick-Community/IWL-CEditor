@@ -17,6 +17,9 @@ func getHeldKeySprite() -> Texture2D:
 const AURA_RED:Texture2D = preload("res://assets/game/player/aura/red.png")
 const AURA_GREEN:Texture2D = preload("res://assets/game/player/aura/green.png")
 const AURA_BLUE:Texture2D = preload("res://assets/game/player/aura/blue.png")
+const AURA_MAROON:Texture2D = preload("res://assets/game/player/aura/maroon.png")
+const AURA_FOREST:Texture2D = preload("res://assets/game/player/aura/forest.png")
+const AURA_NAVY:Texture2D = preload("res://assets/game/player/aura/navy.png")
 const AURA_DRAW_OPACITY:Color = Color(Color.WHITE,0.5)
 const AURA_RECT:Rect2 = Rect2(Vector2(-32,-32),Vector2(64,64))
 
@@ -49,6 +52,9 @@ var pauseFrame:bool = true # jank prevention
 var auraRed:bool = false
 var auraGreen:bool = false
 var auraBlue:bool = false
+var auraMaroon:bool = false
+var auraForest:bool = false
+var auraNavy:bool = false
 var auraDraw:RID
 
 var curseMode:int = 0 # 0 = none, 1 = curse, -1 = uncurse
@@ -198,9 +204,12 @@ func checkKeys() -> void:
 		1: if !key[Game.COLOR.MASTER].across(masterMode).sign() > 0: masterMode = C.ZERO; masterCycle = 0
 		2: if !key[Game.COLOR.QUICKSILVER].across(masterMode).sign() > 0: masterMode = C.ZERO; masterCycle = 0
 	
-	auraRed = !key[Game.COLOR.RED].lt(1)
-	auraGreen = !key[Game.COLOR.GREEN].lt(5)
-	auraBlue = !key[Game.COLOR.BLUE].lt(3)
+	auraRed = key[Game.COLOR.RED].gt(0) and !key[Game.COLOR.RED].minus(key[Game.COLOR.MAROON]).lt(1)
+	auraGreen = key[Game.COLOR.GREEN].gt(0) and !key[Game.COLOR.GREEN].minus(key[Game.COLOR.FOREST]).lt(5)
+	auraBlue = key[Game.COLOR.BLUE].gt(0) and !key[Game.COLOR.BLUE].minus(key[Game.COLOR.NAVY]).lt(3)
+	auraMaroon = key[Game.COLOR.MAROON].gt(0) and !key[Game.COLOR.MAROON].minus(key[Game.COLOR.RED]).lt(1)
+	auraForest = key[Game.COLOR.FOREST].gt(0) and !key[Game.COLOR.FOREST].minus(key[Game.COLOR.GREEN]).lt(5)
+	auraNavy = key[Game.COLOR.NAVY].gt(0) and !key[Game.COLOR.NAVY].minus(key[Game.COLOR.BLUE]).lt(3)
 
 	curseMode = 0
 	var highestSeen:Q = Q.ZERO
@@ -240,8 +249,11 @@ func _draw() -> void:
 	RenderingServer.canvas_item_clear(complexSwitchDraw)
 	# auras
 	if auraRed: RenderingServer.canvas_item_add_texture_rect(auraDraw,AURA_RECT,AURA_RED,false,AURA_DRAW_OPACITY)
+	if auraMaroon: RenderingServer.canvas_item_add_texture_rect(auraDraw,AURA_RECT,AURA_MAROON,false,AURA_DRAW_OPACITY)
 	if auraGreen: RenderingServer.canvas_item_add_texture_rect(auraDraw,AURA_RECT,AURA_GREEN,false,AURA_DRAW_OPACITY)
+	if auraForest: RenderingServer.canvas_item_add_texture_rect(auraDraw,AURA_RECT,AURA_FOREST,false,AURA_DRAW_OPACITY)
 	if auraBlue: RenderingServer.canvas_item_add_texture_rect(auraDraw,AURA_RECT,AURA_BLUE,false,AURA_DRAW_OPACITY)
+	if auraNavy: RenderingServer.canvas_item_add_texture_rect(auraDraw,AURA_RECT,AURA_NAVY,false,AURA_DRAW_OPACITY)
 	# held
 	if masterCycle != 0:
 		var masterShineScale:float = 0.8 + 0.2*sin(masterShineAngle)

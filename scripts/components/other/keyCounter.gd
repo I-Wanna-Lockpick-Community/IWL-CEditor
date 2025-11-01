@@ -38,7 +38,6 @@ var starAngle:float = 0
 
 func _init() -> void :
 	size = Vector2(WIDTHS[0],63)
-	z_index = 2
 
 func _ready() -> void:
 	drawMain = RenderingServer.canvas_item_create()

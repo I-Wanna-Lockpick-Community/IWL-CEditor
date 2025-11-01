@@ -43,6 +43,7 @@ func focusComponent(component:Lock, new:bool) -> void:
 	%blastLockSign.button_pressed = component.count.sign() < 0
 	%blastLockAxis.button_pressed = component.count.isNonzeroImag()
 	%lockHandler.redrawButton(component.index)
+	%lockNegated.button_pressed = component.negated
 	if new:
 		main.interact(%doorAxialNumberEdit)
 
@@ -52,7 +53,8 @@ func receiveKey(event:InputEvent) -> bool:
 		KEY_B: _lockTypeSelected(Lock.TYPE.BLANK)
 		KEY_X: _lockTypeSelected(Lock.TYPE.BLAST)
 		KEY_A: _lockTypeSelected(Lock.TYPE.ALL)
-		KEY_E: _lockTypeSelected(Lock.TYPE.EXACT)
+		KEY_E: if mods.active(&"C3"): _lockTypeSelected(Lock.TYPE.EXACT)
+		KEY_N: if mods.active(&"C1"): _lockNegatedSet(!%lockNegated.button_pressed)
 		KEY_C:
 			if main.componentFocused: editor.quickSet.startQuick(QuickSet.QUICK.COLOR, main.componentFocused)
 			else: editor.quickSet.startQuick(QuickSet.QUICK.COLOR, main.focused)
@@ -124,7 +126,6 @@ func _blastLockSet() -> void:
 	main.focused.queue_redraw()
 	changes.bufferSave()
 
-
 func _frozenSet(value:bool):
 	if main.focused is not Door: return
 	changes.addChange(Changes.PropertyChange.new(editor.game,main.focused,&"frozen",value))
@@ -138,4 +139,9 @@ func _crumbledSet(value:bool):
 func _paintedSet(value:bool):
 	if main.focused is not Door: return
 	changes.addChange(Changes.PropertyChange.new(editor.game,main.focused,&"painted",value))
+	changes.bufferSave()
+
+func _lockNegatedSet(value:bool):
+	if main.componentFocused is not Lock: return
+	changes.addChange(Changes.PropertyChange.new(editor.game,main.componentFocused,&"negated",value))
 	changes.bufferSave()

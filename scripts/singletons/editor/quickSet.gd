@@ -82,9 +82,9 @@ func evaluateQuick() -> void:
 	completeMatch = ""
 	match quick:
 		QUICK.COLOR:
-			if matchesId(Game.COLORS): matched = input.to_int(); matchComment = "(id)"
-			elif COLORS_ONELETTER.check(input): matched = COLORS_ONELETTER.result; matchComment = "(abbreviation)"
-			elif COLORS_NAME.check(input): matched = COLORS_NAME.result; matchComment = "(name)"; completeMatch = COLORS_NAME.completeMatch
+			if matchesId(Game.COLORS) and input.to_int() in mods.colors(): matched = input.to_int(); matchComment = "(id)"
+			elif COLORS_ONELETTER.check(input) and COLORS_ONELETTER.result in mods.colors(): matched = COLORS_ONELETTER.result; matchComment = "(abbreviation)"
+			elif COLORS_NAME.check(input) and COLORS_NAME.result in mods.colors(): matched = COLORS_NAME.result; matchComment = "(name)"; completeMatch = COLORS_NAME.completeMatch
 
 func receiveKey(event:InputEventKey) -> void:
 	if event.keycode >= 32 and event.keycode < 128:
