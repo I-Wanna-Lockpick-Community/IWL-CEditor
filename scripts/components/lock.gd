@@ -38,6 +38,8 @@ func getAvailableConfigurations() -> Array[Array]:
 
 const ANY_RECT:Rect2 = Rect2(Vector2.ZERO,Vector2(50,50)) # rect of ANY
 const CORNER_SIZE:Vector2 = Vector2(2,2) # size of ANY's corners
+const GLITCH_ANY_RECT:Rect2 = Rect2(Vector2.ZERO,Vector2(82,82))
+const GLITCH_CORNER_SIZE:Vector2 = Vector2(9,9)
 const TILE:RenderingServer.NinePatchAxisMode = RenderingServer.NinePatchAxisMode.NINE_PATCH_TILE # just to save characters
 const STRETCH:RenderingServer.NinePatchAxisMode = RenderingServer.NinePatchAxisMode.NINE_PATCH_STRETCH # just to save characters
 
@@ -102,7 +104,7 @@ const GLITCH_FILL:Array[Texture2D] = [
 	preload("res://assets/game/lock/fill/AnyMglitch.png"),
 	preload("res://assets/game/lock/fill/AnyLglitch.png"),
 	preload("res://assets/game/lock/fill/AnyXLglitch.png"),
-	null
+	preload("res://assets/game/lock/fill/ANYglitch.png")
 ]
 
 const GLITCH_FILL_MASTER:Array[Texture2D] = [
@@ -112,7 +114,7 @@ const GLITCH_FILL_MASTER:Array[Texture2D] = [
 	preload("res://assets/game/lock/fill/AnyMglitchMaster.png"),
 	preload("res://assets/game/lock/fill/AnyLglitchMaster.png"),
 	preload("res://assets/game/lock/fill/AnyXLglitchMaster.png"),
-	null
+	preload("res://assets/game/lock/fill/ANYglitchMaster.png")
 ]
 const GLITCH_FILL_PURE:Array[Texture2D] = [
 	preload("res://assets/game/lock/fill/AnySglitchPure.png"),
@@ -121,7 +123,7 @@ const GLITCH_FILL_PURE:Array[Texture2D] = [
 	preload("res://assets/game/lock/fill/AnyMglitchPure.png"),
 	preload("res://assets/game/lock/fill/AnyLglitchPure.png"),
 	preload("res://assets/game/lock/fill/AnyXLglitchPure.png"),
-	null
+	preload("res://assets/game/lock/fill/ANYglitchPure.png")
 ]
 const GLITCH_FILL_STONE:Array[Texture2D] = [
 	preload("res://assets/game/lock/fill/AnySglitchStone.png"),
@@ -130,7 +132,7 @@ const GLITCH_FILL_STONE:Array[Texture2D] = [
 	preload("res://assets/game/lock/fill/AnyMglitchStone.png"),
 	preload("res://assets/game/lock/fill/AnyLglitchStone.png"),
 	preload("res://assets/game/lock/fill/AnyXLglitchStone.png"),
-	null
+	preload("res://assets/game/lock/fill/ANYglitchStone.png")
 ]
 const GLITCH_FILL_DYNAMITE:Array[Texture2D] = [
 	preload("res://assets/game/lock/fill/AnySglitchDynamite.png"),
@@ -139,7 +141,7 @@ const GLITCH_FILL_DYNAMITE:Array[Texture2D] = [
 	preload("res://assets/game/lock/fill/AnyMglitchDynamite.png"),
 	preload("res://assets/game/lock/fill/AnyLglitchDynamite.png"),
 	preload("res://assets/game/lock/fill/AnyXLglitchDynamite.png"),
-	null
+	preload("res://assets/game/lock/fill/ANYglitchDynamite.png")
 ]
 const GLITCH_FILL_QUICKSILVER:Array[Texture2D] = [
 	preload("res://assets/game/lock/fill/AnySglitchQuicksilver.png"),
@@ -148,7 +150,7 @@ const GLITCH_FILL_QUICKSILVER:Array[Texture2D] = [
 	preload("res://assets/game/lock/fill/AnyMglitchQuicksilver.png"),
 	preload("res://assets/game/lock/fill/AnyLglitchQuicksilver.png"),
 	preload("res://assets/game/lock/fill/AnyXLglitchQuicksilver.png"),
-	null
+	preload("res://assets/game/lock/fill/ANYglitchQuicksilver.png")
 ]
 
 func getOffset() -> Vector2:
@@ -219,7 +221,7 @@ func _draw() -> void:
 			RenderingServer.canvas_item_add_texture_rect(drawScaled,rect,texture,tileTexture)
 		elif baseColor() == Game.COLOR.GLITCH:
 			RenderingServer.canvas_item_set_material(drawGlitch,Game.SCALED_GLITCH_MATERIAL.get_rid())
-			RenderingServer.canvas_item_set_instance_shader_parameter(drawGlitch, &"size", size)
+			RenderingServer.canvas_item_set_instance_shader_parameter(drawGlitch, &"size", size-Vector2(2,2))
 			RenderingServer.canvas_item_add_rect(drawGlitch,Rect2(rect.position+Vector2.ONE,rect.size-Vector2(2,2)),Game.mainTone[baseColor()])
 			if effectiveColor() != Game.COLOR.GLITCH:
 				var glitchTexture:Texture2D
@@ -229,8 +231,11 @@ func _draw() -> void:
 					Game.COLOR.STONE: glitchTexture = GLITCH_FILL_STONE[sizeType]
 					Game.COLOR.DYNAMITE: glitchTexture = GLITCH_FILL_DYNAMITE[sizeType]
 					Game.COLOR.QUICKSILVER: glitchTexture = GLITCH_FILL_QUICKSILVER[sizeType]
-				if glitchTexture: RenderingServer.canvas_item_add_texture_rect(drawMain,rect,glitchTexture)
-				elif sizeType != SIZE_TYPE.ANY: RenderingServer.canvas_item_add_texture_rect(drawMain,rect,GLITCH_FILL[sizeType],false,Game.mainTone[effectiveColor()])
+				if sizeType == SIZE_TYPE.ANY:
+					if glitchTexture: RenderingServer.canvas_item_add_nine_patch(drawMain,rect,GLITCH_ANY_RECT,glitchTexture,GLITCH_CORNER_SIZE,GLITCH_CORNER_SIZE,TILE,TILE)
+					else: RenderingServer.canvas_item_add_nine_patch(drawMain,rect,GLITCH_ANY_RECT,GLITCH_FILL[sizeType],GLITCH_CORNER_SIZE,GLITCH_CORNER_SIZE,TILE,TILE,true,Game.mainTone[effectiveColor()])
+				elif glitchTexture: RenderingServer.canvas_item_add_texture_rect(drawMain,rect,glitchTexture)
+				else: RenderingServer.canvas_item_add_texture_rect(drawMain,rect,GLITCH_FILL[sizeType],false,Game.mainTone[effectiveColor()])
 		else:
 			RenderingServer.canvas_item_add_rect(drawMain,Rect2(rect.position+Vector2.ONE,rect.size-Vector2(2,2)),Game.mainTone[baseColor()])
 	if game.playState != Game.PLAY_STATE.EDIT and parent.ipow().across(game.player.complexMode).eq(0): return # no copies in this direction; go away
