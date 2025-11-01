@@ -75,6 +75,7 @@ func startQuick(_quick:QUICK, _component:GameComponent) -> void:
 func cancel() -> void:
 	quick = QUICK.NONE
 	text = ""
+	completeMatch = ""
 
 func evaluateQuick() -> void:
 	matched = -1
@@ -110,6 +111,10 @@ func apply() -> void:
 			if component is Door or component is Lock: editor.focusDialog.doorDialog._doorColorSelected(matched)
 
 func matchesId(values:int) -> bool: return input.is_valid_int() and input.to_int() >= 0 and input.to_int() < values
+
+func applyOrCancel() -> void:
+	if matched != -1: apply()
+	cancel()
 
 class MatchSet extends RefCounted:
 	var rule:MATCH_RULE

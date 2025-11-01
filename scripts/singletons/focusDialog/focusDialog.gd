@@ -41,8 +41,8 @@ func showCorrectDialog() -> void:
 
 func defocus() -> void:
 	if !focused: return
+	editor.quickSet.applyOrCancel()
 	focused = null
-	editor.quickSet.cancel()
 	deinteract()
 	defocusComponent()
 

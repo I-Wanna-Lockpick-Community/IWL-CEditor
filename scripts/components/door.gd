@@ -578,6 +578,7 @@ func isAllColor(color:Game.COLOR) -> bool:
 
 func curseCheck(player:Player) -> void:
 	if hasColor(Game.COLOR.PURE): return
+	if gameFrozen or gameCrumbled or gamePainted: return
 	if player.curseMode > 0 and !isAllColor(player.curseColor) and (!cursed or curseColor != player.curseColor):
 		gameChanges.addChange(GameChanges.PropertyChange.new(game,self,&"cursed",true))
 		gameChanges.addChange(GameChanges.PropertyChange.new(game,self,&"curseColor",player.curseColor))

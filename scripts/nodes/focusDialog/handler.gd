@@ -7,7 +7,7 @@ class_name Handler
 var buttons:Array[HandlerButton] = []
 var add:Button
 var remove:Button
-var selected:int
+var selected:int = -1
 
 var manuallySetting:bool = false # dont send signal (hacky)
 
@@ -62,7 +62,9 @@ func removeButton(index:int=selected) -> void:
 	button.queue_free()
 	for i in range(index, len(buttons)):
 		buttons[i].index -= 1
-	if len(buttons) == 0: remove.visible = false
+	if len(buttons) == 0:
+		remove.visible = false
+		selected = -1
 	else: setSelect(len(buttons)-1)
 	changes.bufferSave()
 

@@ -30,6 +30,11 @@ func _select(button:Button) -> void:
 	super(button)
 	if !manuallySetting: editor.focusDialog.focusComponent(keyCounter.elements[selected])
 
+func deselect() -> void:
+	if selected == -1: return
+	buttons[selected].button_pressed = false
+	selected = -1
+
 class KeyCounterHandlerButton extends HandlerButton:
 	
 	var element:KeyCounterElement

@@ -44,6 +44,7 @@
 [sub_resource type="ButtonGroup" id="ButtonGroup_h1xy2"]
 
 [sub_resource type="ButtonGroup" id="ButtonGroup_7tfe2"]
+allow_unpress = true
 
 [node name="focusDialog" type="Control"]
 layout_mode = 3
@@ -123,6 +124,7 @@ stretch_mode = 0
 
 [node name="doorDialog" type="Control" parent="."]
 unique_name_in_owner = true
+visible = false
 anchors_preset = 0
 script = ExtResource("11_drywk")
 
