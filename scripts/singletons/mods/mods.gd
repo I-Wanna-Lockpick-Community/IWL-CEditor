@@ -176,7 +176,7 @@ static var mods:Dictionary[StringName, Mod] = {
 	&"CosmicColor": Mod.new(
 		"Cosmic Color",
 		"Adds the Cosmic color. Added by Bored",
-		[&"CosmicColor"]
+		{}
 	)
 }
 
