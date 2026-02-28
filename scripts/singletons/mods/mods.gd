@@ -173,6 +173,11 @@ static var mods:Dictionary[StringName, Mod] = {
 			return component.reciprocal
 		, "Reciprocal Key")}
 	),
+	&"CosmicColor": Mod.new(
+		"Cosmic Color",
+		"Adds the Cosmic color. Added by Bored",
+		[&"CosmicColor"]
+	)
 }
 
 static var modpacks:Dictionary[StringName, Modpack] = {
@@ -279,6 +284,7 @@ func colors() -> Array[Game.COLOR]:
 	if active(&"DarkAuraColors"): array.append_array([Game.COLOR.MAROON, Game.COLOR.FOREST, Game.COLOR.NAVY])
 	if active( &"AuraBreakerColors"): array.append_array([Game.COLOR.ICE, Game.COLOR.MUD, Game.COLOR.GRAFFITI])
 	if active(&"NoneColor"): array.append(Game.COLOR.NONE)
+	if active(&"CosmicColor"): array.append(Game.COLOR.COSMIC)
 	if active(&"ErrorColor"): array.append(Game.COLOR.ERROR)
 	return array
 

@@ -6,7 +6,7 @@ var spacers:Array[Control]
 const ICON:Texture2D = preload("res://assets/ui/settings/iconPlaceholder.png")
 
 const DEFAULT_MATCHES:Array[String] = [
-	"Q", "W", "E", "R", "T", "A", "S", "D", "F", "G", "Z", "X", "V", "B", "QW", "EQ", "QR", "DQ", "FQ", "EW", "RW", "AW", "ER", "ET"
+	"Q", "W", "E", "R", "T", "A", "S", "D", "F", "G", "Z", "X", "V", "B", "QW", "EQ", "QR", "DQ", "FQ", "EW", "RW", "AW", "ER", "ET", "SR"
 ]
 
 static var matches:Array[String] = []
