@@ -52,7 +52,7 @@ func _ready() -> void:
 	shapedText = ts.create_shaped_text()
 
 func setValue(value:PackedInt64Array) -> void:
-	text = M.str(value)
+	text = M.strDistributeFraction(value)
 	if text == "ERROR": text = "0/0"
 	parseText(true)
 	buildText()
@@ -364,10 +364,10 @@ func receiveKey(key:InputEventKey) -> bool:
 					numberCaptureCursor(cursorSelectedNumber)
 		KEY_TAB:
 			if Input.is_key_pressed(KEY_SHIFT):
-				for number in range(numbers,0,-1): if numberStarts[number-1] < cursorStart:
-					numberCaptureCursor(numberStarts[number-1]); return true
+				for number in range(numbers-1,-1,-1): if numberStarts[number] < cursorStart:
+					numberCaptureCursor(number); return true
 			else:
-				for number in numbers: if numberEnds[number] > cursorEnd:
+				for number in range(numbers): if numberEnds[number] > cursorEnd:
 					numberCaptureCursor(number); return true
 			return false
 		KEY_A:
@@ -379,6 +379,7 @@ func receiveKey(key:InputEventKey) -> bool:
 				CURSOR_MODE.NORMAL:
 					if cursorEnd == cursorStart:
 						var prevStart:int = cursorStart
+						if cursorStart == 0: return false
 						Changes.addChange(Changes.GlobalPropertyChange.new(self, &"cursorStart", previousPointOfInterest() if Input.is_key_pressed(KEY_CTRL) else cursorStart - 1))
 						Changes.addChange(Changes.GlobalPropertyChange.new(self, &"cursorEnd", cursorStart))
 						Changes.addChange(Changes.NumberEditTextChange.new(self, text.erase(cursorStart, prevStart-cursorStart)))

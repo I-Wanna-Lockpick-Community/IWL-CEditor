@@ -168,7 +168,7 @@ func _draw() -> void:
 				elif M.eq(count, M.I): RenderingServer.canvas_item_add_texture_rect(drawSymbol,rect,POSROTOR_SYMBOL)
 				elif M.eq(count, M.nI): RenderingServer.canvas_item_add_texture_rect(drawSymbol,rect,NEGROTOR_SYMBOL)
 		KeyBulk.TYPE.OPERATOR:
-			drawOperationSymbol(drawAdditional,drawAdditionalGlitch,Vector2.ZERO,baseAltColor(),operation,glitchMimic)
+			drawOperationSymbol(drawAdditional,drawAdditionalGlitch,Vector2.ZERO,getAltColor(COLOR_STEP.DRAW_BASE),operation,glitchMimic)
 	if infinite:
 		if glistening:
 			RenderingServer.canvas_item_add_texture_rect(drawSymbol,Rect2(Vector2(MULTITYPEOFFSET,-MULTITYPEOFFSET), size),INFINITE_SYMBOL)
@@ -352,18 +352,6 @@ func hasInitialColor(checkColor:Game.COLOR) -> bool:
 	return color == checkColor or (type == TYPE.OPERATOR and altColor == checkColor)
 
 enum COLOR_STEP {INITIAL, Error, DRAW_BASE, Glitch, FINAL}
-
-func effectiveColor() -> Game.COLOR:
-	if color == Game.COLOR.GLITCH: return glitchMimic
-	return baseColor()
-
-func baseAltColor() -> Game.COLOR:
-	if altColor == Game.COLOR.ERROR: return errorMimic
-	return altColor
-
-func effectiveAltColor() -> Game.COLOR:
-	if altColor == Game.COLOR.GLITCH: return glitchMimic
-	return baseAltColor()
 
 func getColor(step:COLOR_STEP) -> Game.COLOR:
 	var resultColor:Game.COLOR = color

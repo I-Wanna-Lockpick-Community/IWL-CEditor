@@ -464,19 +464,20 @@ func toIpow(n:PackedInt64Array) -> int:
 func toInt(n:PackedInt64Array) -> int:
 	return n[0]
 
-func str(n:PackedInt64Array) -> String:
-	return strWithInf(n,ZERO)
+func str(n:PackedInt64Array) -> String: return strWithInf(n,ZERO)
+
+func strDistributeFraction(n:PackedInt64Array) -> String: return strWithInfDistributeFraction(n,ZERO)
 
 func strWithInf(n:PackedInt64Array,infAxes:PackedInt64Array) -> String:
 	var rComponent:String
 	var iComponent:String = ""
-	var rnum = toInt(rnumer(n))
-	var inum = toInt(irnumer(n))
-	if infAxes[0]: rComponent = "-~" if rnum < 0 else "~"
+	var rnum:int = toInt(rnumer(n))
+	var inum:int = toInt(irnumer(n))
+	if ex(r(infAxes)): rComponent = "-~" if rnum < 0 else "~"
 	elif rnum: rComponent = str(rnum)
 	if inum:
 		if inum > 0 and rnum: iComponent += "+"
-		if infAxes[1]: iComponent += "-~i" if inum < 0 else "~i"
+		if ex(i(infAxes)): iComponent += "-~i" if inum < 0 else "~i"
 		else: iComponent += str(inum) + "i"
 	if system & SYSTEM.FRACTIONS:
 		var den:int = toInt(denom(n))
@@ -487,6 +488,30 @@ func strWithInf(n:PackedInt64Array,infAxes:PackedInt64Array) -> String:
 				iComponent += ")"
 			iComponent += "/" + str(den)
 	if !rnum and !inum: return "0"
+	return rComponent + iComponent
+
+func strWithInfDistributeFraction(n:PackedInt64Array,infAxes:PackedInt64Array) -> String:
+	if !(system & SYSTEM.FRACTIONS): return strWithInf(n, infAxes)
+	if nex(denom(n)): return "ERROR"
+	var rComponent:String
+	var iComponent:String = ""
+	var rnum:int = toInt(rnumer(n))
+	var inum:int = toInt(irnumer(n))
+	if !rnum and !inum: return "0"
+	if ex(r(infAxes)): rComponent = "-~" if rnum < 0 else "~"
+	elif rnum:
+		var rpart:PackedInt64Array = simplify(r(n))
+		var rdenom:int = toInt(denom(rpart))
+		rComponent = str(toInt(numer(rpart)))
+		if rdenom != 1: rComponent += "/" + str(rdenom)
+	if inum:
+		if inum > 0 and rnum: iComponent += "+"
+		if ex(i(infAxes)): iComponent += "-~i" if inum < 0 else "~i"
+		else:
+			var ipart:PackedInt64Array = simplify(ir(n))
+			var idenom:int = toInt(denom(ipart))
+			iComponent += str(toInt(numer(ipart))) + "i"
+			if idenom != 1: iComponent += "/" + str(idenom)
 	return rComponent + iComponent
 
 ## greatest (positive) common divisor
