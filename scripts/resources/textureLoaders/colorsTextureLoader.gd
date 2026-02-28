@@ -7,6 +7,7 @@ static func colorFrames(color:Game.COLOR) -> int:
 	match color:
 		Game.COLOR.MASTER, Game.COLOR.PURE, Game.COLOR.QUICKSILVER: return 4
 		Game.COLOR.DYNAMITE: return 12
+		Game.COLOR.COSMIC: return 8
 		_: return 1
 
 var textures:Dictionary[Game.COLOR,GameTextureLoader] = {} # dictionary[color,textureloader]
