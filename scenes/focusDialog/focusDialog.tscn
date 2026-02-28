@@ -28,7 +28,6 @@
 [ext_resource type="Texture2D" uid="uid://cpqsyj5t7vigm" path="res://assets/game/door/aura/crumbled1x1.png" id="20_vn3na"]
 [ext_resource type="Texture2D" uid="uid://bar7rrr1p3a1h" path="res://assets/ui/focusDialog/lockBooleans/negated.png" id="21_bfxh1"]
 [ext_resource type="Texture2D" uid="uid://dy8u44tdg6vrv" path="res://assets/game/door/aura/painted1x1.png" id="21_drywk"]
-[ext_resource type="Script" path="res://scripts/nodes/focusDialog/axialNumberEdit.gd" id="21_k4n5y"]
 [ext_resource type="Texture2D" uid="uid://brhnpnqvdifb8" path="res://assets/ui/focusDialog/lockBooleans/armament.png" id="22_4u2vc"]
 [ext_resource type="Texture2D" uid="uid://dyhbxvexn1w26" path="res://assets/ui/focusDialog/blastLockSettings/negative.png" id="22_hh12n"]
 [ext_resource type="Script" uid="uid://cgjhnhjwymb8g" path="res://scripts/resources/controlExplanation.gd" id="22_s5h3h"]

@@ -36,9 +36,6 @@ const GLITCH_HIGH:Texture2D = preload("res://assets/game/door/glitch/high.png")
 const GLITCH_MAIN:Texture2D = preload("res://assets/game/door/glitch/main.png")
 const GLITCH_DARK:Texture2D = preload("res://assets/game/door/glitch/dark.png")
 
-const STARRED_SYMBOL_ON:Texture2D = preload("res://assets/game/door/symbols/starOn.png")
-const STARRED_SYMBOL_OFF:Texture2D = preload("res://assets/game/door/symbols/starOff.png")
-
 static var GLITCH:ColorsTextureLoader = ColorsTextureLoader.new("res://assets/game/door/glitch/$c.png",Game.TEXTURED_COLORS, false, false, {capitalised=false})
 
 static var ERROR_FX:IndexTextureLoader = IndexTextureLoader.new("res://assets/game/key/error/fx.png", 3)
@@ -49,7 +46,6 @@ const GLITCH_CORNER_SIZE:Vector2 = Vector2(16,16) # except glitchdraw is a diffe
 const TILE:RenderingServer.NinePatchAxisMode = RenderingServer.NinePatchAxisMode.NINE_PATCH_TILE # just to save characters
 const STRETCH:RenderingServer.NinePatchAxisMode = RenderingServer.NinePatchAxisMode.NINE_PATCH_STRETCH # just to save characters
 
-const SYMBOL_RECT:Rect2 = Rect2(Vector2.ZERO,Vector2(25,25)) # size of symbol textures
 const CREATE_PARAMETERS:Array[StringName] = [
 	&"position"
 ]
@@ -73,12 +69,6 @@ var oscillate:bool = false
 
 func getColors() -> Array[Game.COLOR]: return [colorSpend]
 
-var starred:int = 0 # 0 = not starred, 1 = starred + open, -1 = starred + no open
-var starredColor:Game.COLOR = Game.COLOR.WHITE 
-var starredSpendKey:PackedInt64Array = M.ZERO
-var starredSpendGlisten:PackedInt64Array = M.ZERO
-
-
 var drawDropShadow:RID
 var drawScaled:RID # also draws aura breaker fills
 var drawAuraBreaker:RID
@@ -90,8 +80,6 @@ var drawPainted:RID
 var drawFrozen:RID
 var drawCopies:RID
 var drawNegative:RID
-var drawSymbolsVariable:RID # shares name with function
-var hasArmament:bool = true
 
 var locks:Array[Lock] = []
 var remoteLocks:Array[RemoteLock] = []
@@ -115,13 +103,11 @@ func _ready() -> void:
 	drawFrozen = RenderingServer.canvas_item_create()
 	drawCopies = RenderingServer.canvas_item_create()
 	drawNegative = RenderingServer.canvas_item_create()
-	drawSymbolsVariable = RenderingServer.canvas_item_create()
 	RenderingServer.canvas_item_set_material(drawGlitch,Game.GLITCH_MATERIAL.get_rid())
 	RenderingServer.canvas_item_set_material(drawNegative,Game.NEGATIVE_MATERIAL.get_rid())
 	RenderingServer.canvas_item_set_z_index(drawDropShadow,-3)
 	RenderingServer.canvas_item_set_z_index(drawCopies,2)
 	RenderingServer.canvas_item_set_z_index(drawNegative,2)
-	RenderingServer.canvas_item_set_z_index(drawSymbolsVariable,2)
 	RenderingServer.canvas_item_set_parent(drawDropShadow,get_canvas_item())
 	RenderingServer.canvas_item_set_parent(drawScaled,get_canvas_item())
 	RenderingServer.canvas_item_set_parent(drawAuraBreaker,get_canvas_item())
@@ -133,7 +119,6 @@ func _ready() -> void:
 	RenderingServer.canvas_item_set_parent(drawFrozen, %auraParent.get_canvas_item())
 	RenderingServer.canvas_item_set_parent(drawCopies,get_canvas_item())
 	RenderingServer.canvas_item_set_parent(drawNegative,get_canvas_item())
-	RenderingServer.canvas_item_set_parent(drawSymbolsVariable,get_canvas_item())
 	RenderingServer.canvas_item_set_self_modulate(drawError, "#ffffffaa")
 	RenderingServer.canvas_item_set_material(drawError,Game.ADDITIVE_MATERIAL)
 	Game.connect(&"goldIndexChanged",queue_redraw)
@@ -150,7 +135,6 @@ func _freed() -> void:
 	RenderingServer.free_rid(drawFrozen)
 	RenderingServer.free_rid(drawCopies)
 	RenderingServer.free_rid(drawNegative)
-	RenderingServer.free_rid(drawSymbolsVariable)
 
 func convertNumbers(from:M.SYSTEM) -> void:
 	Changes.addChange(Changes.ComponentConvertNumberChange.new(self, from, &"copies"))
@@ -169,7 +153,6 @@ func _draw() -> void:
 	RenderingServer.canvas_item_clear(drawFrozen)
 	RenderingServer.canvas_item_clear(drawCopies)
 	RenderingServer.canvas_item_clear(drawNegative)
-	RenderingServer.canvas_item_clear(drawSymbolsVariable)
 	if !active and Game.playState == Game.PLAY_STATE.PLAY: return
 	if type != TYPE.GATE: RenderingServer.canvas_item_add_rect(drawDropShadow,Rect2(Vector2(3,3),size),Game.DROP_SHADOW_COLOR)
 	drawDoor(drawScaled,drawAuraBreaker,drawGlitch,drawMain,
@@ -200,7 +183,6 @@ func _draw() -> void:
 		if M.neq(gameCopies, M.ONE) or M.ex(infCopies): TextDraw.outlinedCentered(Game.FKEYX,drawCopies,"×"+M.strWithInf(gameCopies,infCopies),COPIES_COLOR,COPIES_OUTLINE_COLOR,20,Vector2(size.x/2,-8))
 	else:
 		if M.neq(copies, M.ONE) or M.ex(infCopies): TextDraw.outlinedCentered(Game.FKEYX,drawCopies,"×"+M.strWithInf(copies,infCopies),COPIES_COLOR,COPIES_OUTLINE_COLOR,20,Vector2(size.x/2,-8))
-	drawSymbols(drawSymbolsVariable,starred,size)
 
 static func drawDoor(doorDrawScaled:RID,doorDrawAuraBreaker:RID,doorDrawGlitch:RID,doorDrawMain:RID,
 	doorSize:Vector2,
@@ -286,12 +268,6 @@ static func drawAuras(objectDrawCrumbled:RID,objectDrawPainted:RID,objectDrawFro
 			RenderingServer.canvas_item_add_rect(objectDrawFrozen,rect,Color.WHITE)
 		else: RenderingServer.canvas_item_set_material(objectDrawFrozen,Game.NO_MATERIAL.get_rid())
 
-func drawSymbols(objectDrawSymbols:RID,objectIsStarred:int,doorSize:Vector2) -> void:
-	if objectIsStarred == 1:
-		RenderingServer.canvas_item_add_texture_rect(objectDrawSymbols,Rect2(Vector2(doorSize[0]/2-12, doorSize[1]-12),Vector2(24,24)),STARRED_SYMBOL_ON)
-	elif objectIsStarred == -1:
-		RenderingServer.canvas_item_add_texture_rect(objectDrawSymbols,Rect2(Vector2(doorSize[0]/2-12, doorSize[1]-12),Vector2(24,24)),STARRED_SYMBOL_OFF)
-		
 func receiveMouseInput(event:InputEventMouse) -> bool:
 	# resizing
 	if !editor.edgeResizing or editor.componentDragged: return false
@@ -485,10 +461,6 @@ func start() -> void:
 	gameCrumbled = crumbled
 	gamePainted = painted
 	animState = ANIM_STATE.IDLE
-	starred = 0
-	starredSpendGlisten = M.ZERO
-	starredSpendKey = M.ZERO
-	starredColor = Game.COLOR.WHITE
 	animTimer = 0
 	animAlpha = 0
 	animPart = 0
@@ -499,10 +471,6 @@ func start() -> void:
 			gateBufferCheck = true
 		else: gateCheck(Game.player, true)
 	propertyGameChangedDo(&"gateOpen")
-	for lock in locks:
-		if lock.armament:
-			hasArmament = true
-			break
 	super()
 
 # avoids 1 frame delay
@@ -520,11 +488,6 @@ func stop() -> void:
 	errorMimic = Game.COLOR.ERROR
 	curseErrorMimic = Game.COLOR.ERROR
 	justOpened = false
-	starred = 0
-	starredSpendGlisten = M.ZERO
-	starredSpendKey = M.ZERO
-	starredColor = Game.COLOR.WHITE
-	hasArmament = false
 	super()
 
 func tryOpen(player:Player) -> void:
@@ -541,21 +504,35 @@ func tryOpen(player:Player) -> void:
 		if player.explodey and tryDynamiteOpen(player): return
 		if player.masterCycle == 1 and tryMasterOpen(player): return
 		if player.masterCycle == 2 and tryQuicksilverOpen(player): return
-		if player.masterCycle == 3 and tryCosmicOpen(player): return
+
 	if M.ex(gameCopies): # although nothing (yet) can make a door 0 copy without destroying it
-		if starred == -1: return
-		if not calculateCanOpen(player) and starred != 1: return
-	if starred == 1:
-		if calculateCanOpen(player, 1):
-			player.changeGlisten(starredColor, M.sub(player.glisten[starredColor], M.add(starredSpendGlisten, calculateGlistenCosts(player, ipow(), 1))))
-			player.changeKeys(starredColor, M.sub(player.key[starredColor],M.add(starredSpendKey, calculateCosts(player, ipow(), 1))))
-		else: return
-	else:
-		if calculateCanOpen(player):
-			var spendColor:Game.COLOR = getColor(COLOR_STEP.FINAL)
-			player.changeGlisten(spendColor, M.sub(player.glisten[spendColor], calculateGlistenCosts(player)))
-			player.changeKeys(spendColor, M.sub(player.key[spendColor], calculateCosts(player)))
-		else: return
+		var willCrash:bool = false
+		var wontOpen:bool = false
+		for lock in locks:
+			if !lock.canOpen(player):
+				if lock.getColor(Lock.COLOR_STEP.EFFECTIVE) == Game.COLOR.NONE: willCrash = true
+				else: return
+			elif lock.getColor(Lock.COLOR_STEP.EFFECTIVE) == Game.COLOR.NONE: wontOpen = true
+		for lock in remoteLocks:
+			if !lock.satisfied: return
+		if willCrash: Game.crash(); return
+		if wontOpen: return
+	var cost:PackedInt64Array = M.ZERO
+	var glistenCost:PackedInt64Array = M.ZERO
+	for lock in locks:
+		if lock.type == lock.TYPE.GLISTENING:
+			glistenCost = M.add(cost, lock.getCost(player))
+		else:
+			cost = M.add(cost, lock.getCost(player))
+	for lock in remoteLocks:
+		if lock.type == Lock.TYPE.GLISTENING:
+			glistenCost = M.add(cost, lock.cost)
+		else:
+			cost = M.add(cost, lock.cost)
+	
+	var spendColor:Game.COLOR = getColor(COLOR_STEP.FINAL)
+	player.changeGlisten(spendColor, M.sub(player.glisten[spendColor], glistenCost))
+	player.changeKeys(spendColor, M.sub(player.key[spendColor],cost))
 	
 	GameChanges.addChange(GameChanges.PropertyChange.new(self, &"gameCopies", M.sub(gameCopies, M.across(ipow(), M.sub(M.allAxes(), infCopies)))))
 	
@@ -597,14 +574,22 @@ func tryQuicksilverOpen(player:Player) -> bool:
 	if hasEffectiveColor(Game.COLOR.QUICKSILVER): return false
 	if hasEffectiveColor(Game.COLOR.PURE): return false
 
+	var cost:PackedInt64Array = M.ZERO
+	var glistenCost:PackedInt64Array = M.ZERO
+	for lock in locks:
+		if lock.type == lock.TYPE.GLISTENING:
+			glistenCost = M.add(cost, lock.getCost(player, player.masterMode))
+		else:
+			cost = M.add(cost, lock.getCost(player, player.masterMode))
+	for lock in remoteLocks:
+		if lock.type == Lock.TYPE.GLISTENING:
+			glistenCost = M.add(cost, lock.cost)
+		else:
+			cost = M.add(cost, lock.cost)
 	player.changeKeys(Game.COLOR.QUICKSILVER, M.sub(player.key[Game.COLOR.QUICKSILVER], player.masterMode))
 	var spendColor:Game.COLOR = getColor(COLOR_STEP.FINAL)
-	if starred != 0:
-		player.changeGlisten(starredColor, M.sub(player.glisten[starredColor], M.add(starredSpendGlisten, calculateGlistenCosts(player, player.masterMode, 1))))
-		player.changeKeys(starredColor, M.sub(player.key[starredColor],M.add(starredSpendKey, calculateCosts(player, player.masterMode, 1))))
-	else:
-		player.changeGlisten(spendColor, M.sub(player.glisten[spendColor], calculateGlistenCosts(player, player.masterMode)))
-		player.changeKeys(spendColor, M.sub(player.key[spendColor],calculateCosts(player, player.masterMode)))
+	player.changeGlisten(spendColor, M.sub(player.glisten[spendColor], glistenCost))
+	player.changeKeys(spendColor, M.sub(player.key[spendColor],cost))
 
 	AudioManager.play(preload("res://resources/sounds/door/master.wav"))
 	relockAnimation()
@@ -649,62 +634,6 @@ func tryDynamiteOpen(player:Player) -> bool:
 
 	GameChanges.bufferSave()
 	return true
-
-func tryCosmicOpen(player:Player) -> bool:
-	if hasEffectiveColor(Game.COLOR.COSMIC): return false
-	if hasEffectiveColor(Game.COLOR.PURE): return false
-	if starred == 0 and player.masterMode == M.ONE:
-		player.changeKeys(Game.COLOR.COSMIC, M.sub(player.key[Game.COLOR.COSMIC], player.masterMode))
-		if calculateCanOpen(player, -1): GameChanges.addChange(GameChanges.PropertyChange.new(self, &"starred", 1))
-		else: GameChanges.addChange(GameChanges.PropertyChange.new(self, &"starred", -1))
-		GameChanges.addChange(GameChanges.PropertyChange.new(self, &"starredSpendKey", calculateCosts(player, ipow(), -1)))
-		GameChanges.addChange(GameChanges.PropertyChange.new(self, &"starredSpendGlisten", calculateGlistenCosts(player, ipow(), -1)))
-		GameChanges.addChange(GameChanges.PropertyChange.new(self, &"starredColor", getColor(COLOR_STEP.FINAL)))
-		GameChanges.addChange(GameChanges.PropertyChange.new(self, &"starredipow", ipow()))
-		relockAnimation()
-		GameChanges.bufferSave()
-		return true
-	elif starred != 0 and player.masterMode == M.nONE:
-		player.changeKeys(Game.COLOR.COSMIC, M.sub(player.key[Game.COLOR.COSMIC], player.masterMode))
-		GameChanges.addChange(GameChanges.PropertyChange.new(self, &"starred", 0))
-		relockAnimation()
-		GameChanges.bufferSave()
-		return true
-	else: return false # hopefully unreachable
-
-
-# 0 = normal
-# 1 = only armaments
-# -1 = all but armaments
-func calculateCanOpen(player:Player, armamentFilterMode:int = 0) -> bool:
-	var willCrash:bool = false
-	var canOpen:bool = true
-	if M.ex(gameCopies): # although nothing (yet) can make a door 0 copy without destroying it
-		for lock in locks:
-			if !lock.canOpen(player):
-				if lock.getColor(Lock.COLOR_STEP.EFFECTIVE) == Game.COLOR.NONE: willCrash = true
-				else: 
-					if (armamentFilterMode == 0 or (armamentFilterMode == -1 and !lock.armament) or (armamentFilterMode == 1 and lock.armament)):
-						canOpen = false
-			elif lock.getColor(Lock.COLOR_STEP.EFFECTIVE) == Game.COLOR.NONE: canOpen = false
-		for lock in remoteLocks:
-			if !lock.satisfied and (armamentFilterMode == 0 or (armamentFilterMode == -1 and !lock.armament) or (armamentFilterMode == 1 and lock.armament)): canOpen = false
-		if willCrash: Game.crash(); return false
-	return canOpen
-
-# same
-#please dont split these else they might as well not be seperate functions
-func calculateCosts(player:Player, costIpow:PackedInt64Array=ipow(), armamentFilterMode:int = 0) -> PackedInt64Array:
-	var cost:PackedInt64Array = M.ZERO
-	for lock in locks: if lock.type != lock.TYPE.GLISTENING and (armamentFilterMode == 0 or (armamentFilterMode == -1 and !lock.armament) or (armamentFilterMode == 1 and lock.armament)): cost = M.add(cost, lock.getCost(player, costIpow))
-	for lock in remoteLocks: if lock.type != Lock.TYPE.GLISTENING and (armamentFilterMode == 0 or (armamentFilterMode == -1 and !lock.armament) or (armamentFilterMode == 1 and lock.armament)): cost = M.add(cost, lock.getCost(player))
-	return cost
-
-func calculateGlistenCosts(player:Player, costIpow:PackedInt64Array=ipow(), armamentFilterMode:int = 0) -> PackedInt64Array:
-	var cost:PackedInt64Array = M.ZERO
-	for lock in locks: if lock.type == lock.TYPE.GLISTENING and (armamentFilterMode == 0 or (armamentFilterMode == -1 and !lock.armament) or (armamentFilterMode == 1 and lock.armament)): cost = M.add(cost, lock.getCost(player, costIpow))
-	for lock in remoteLocks: if lock.type == Lock.TYPE.GLISTENING and (armamentFilterMode == 0 or (armamentFilterMode == -1 and !lock.armament) or (armamentFilterMode == 1 and lock.armament)): cost = M.add(cost, lock.getCost(player))
-	return cost
 
 func hasEffectiveColor(color:Game.COLOR) -> bool:
 	if getColor(COLOR_STEP.EFFECTIVE) == color: return true
@@ -781,7 +710,6 @@ func gateCheck(player:Player, starting:bool=false) -> void:
 func auraCheck(player:Player) -> void:
 	if type == TYPE.GATE: return
 	if animState != ANIM_STATE.IDLE: return
-	if starred != 0: return
 	var deAuraed:bool = false
 	if player.auraRed and gameFrozen and !hasEffectiveColor(Game.COLOR.MAROON):
 		GameChanges.addChange(GameChanges.PropertyChange.new(self,&"gameFrozen",false))
@@ -824,7 +752,6 @@ func isAllBaseColor(color:Game.COLOR) -> bool:
 
 func curseCheck(player:Player) -> void:
 	if type == TYPE.GATE: return
-	if starred != 0: return
 	if animState != ANIM_STATE.IDLE: return
 	if hasEffectiveColor(Game.COLOR.PURE): return
 	var willCurse:bool = player.curseMode > 0 and (!cursed or (curseColor != player.curseColor and curseColor != Game.COLOR.PURE))
@@ -898,7 +825,7 @@ func complexCheck() -> void:
 	queue_redraw()
 
 func setGlitch(setColor:Game.COLOR) -> void:
-	var curseUnaffected:bool = (!cursed or curseColor == Game.COLOR.PURE) and starred == 0
+	var curseUnaffected:bool = !cursed or curseColor == Game.COLOR.PURE
 	if curseUnaffected and hasInitialColor(Game.COLOR.GLITCH): GameChanges.addChange(GameChanges.PropertyChange.new(self, &"glitchMimic", setColor))
 	elif curseColor == Game.COLOR.GLITCH: GameChanges.addChange(GameChanges.PropertyChange.new(self, &"curseGlitchMimic", setColor))
 	for lock in locks:
@@ -910,7 +837,7 @@ func setGlitch(setColor:Game.COLOR) -> void:
 		Game.player.bufferCheckKeys() # if armaments
 
 func setError(setColor:Game.COLOR) -> void:
-	var curseUnaffected:bool = (!cursed or curseColor == Game.COLOR.PURE) and starred == 0
+	var curseUnaffected:bool = !cursed or curseColor == Game.COLOR.PURE
 	if curseUnaffected and hasInitialColor(Game.COLOR.ERROR): GameChanges.addChange(GameChanges.PropertyChange.new(self, &"errorMimic", setColor))
 	elif curseColor == Game.COLOR.ERROR: GameChanges.addChange(GameChanges.PropertyChange.new(self, &"curseErrorMimic", setColor))
 	for lock in locks:
