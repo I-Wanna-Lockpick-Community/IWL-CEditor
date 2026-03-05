@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://byjryn3fm7r45"
-path="res://.godot/imported/forcefulLarge.png-bec8414572f4c45b1adeb9e9d7f81361.ctex"
+uid="uid://dxo7w10qni4ec"
+path="res://.godot/imported/normal.png-cdbd3fd3d18b8f52cc88e592883a430a.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/game/lock/background/forcefulLarge.png"
-dest_files=["res://.godot/imported/forcefulLarge.png-bec8414572f4c45b1adeb9e9d7f81361.ctex"]
+source_file="res://assets/ui/focusDialog/lockBooleans/normal.png"
+dest_files=["res://.godot/imported/normal.png-cdbd3fd3d18b8f52cc88e592883a430a.ctex"]
 
 [params]
 

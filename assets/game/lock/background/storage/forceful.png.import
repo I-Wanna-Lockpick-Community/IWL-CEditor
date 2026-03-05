@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://shouw58kdg3"
-path="res://.godot/imported/starry.png-604368360e822b265d4c7be70ce49287.ctex"
+uid="uid://33hx0fv4d4ly"
+path="res://.godot/imported/forceful.png-0b364f6a86956c848e5592289d119103.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/game/lock/background/starry.png"
-dest_files=["res://.godot/imported/starry.png-604368360e822b265d4c7be70ce49287.ctex"]
+source_file="res://assets/game/lock/background/storage/forceful.png"
+dest_files=["res://.godot/imported/forceful.png-0b364f6a86956c848e5592289d119103.ctex"]
 
 [params]
 

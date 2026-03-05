@@ -38,9 +38,11 @@
 [ext_resource type="Texture2D" uid="uid://c1sixdrnoyq7f" path="res://assets/ui/focusDialog/numberEdit/infinite.png" id="25_hb0ue"]
 [ext_resource type="Script" uid="uid://bg8oswa2bhdsv" path="res://scripts/nodes/focusDialog/goalTypeSelector.gd" id="26_1rcup"]
 [ext_resource type="Texture2D" uid="uid://bne4fu6f8mfgx" path="res://assets/ui/focusDialog/lockBooleans/starry.png" id="27_rrq8c"]
+[ext_resource type="Texture2D" uid="uid://dxo7w10qni4ec" path="res://assets/ui/focusDialog/lockBooleans/normal.png" id="28_56xck"]
 [ext_resource type="Texture2D" uid="uid://cekqcy03yh1v5" path="res://assets/ui/focusDialog/lockBooleans/weak.png" id="28_ljt45"]
 [ext_resource type="Texture2D" uid="uid://cln0osp8um3ti" path="res://assets/ui/focusDialog/numberEdit/partialBlast.png" id="29_di8ev"]
 [ext_resource type="Script" uid="uid://dihumic7k5rec" path="res://scripts/singletons/focusDialog/keyCounterDialog.gd" id="30_bfxh1"]
+[ext_resource type="Texture2D" uid="uid://qciqomi4lpp8" path="res://assets/ui/focusDialog/lockBooleans/forceful.png" id="30_buutc"]
 [ext_resource type="Script" uid="uid://2iqmgcrc5wpq" path="res://scripts/nodes/focusDialog/doorsHandler.gd" id="31_xwnfa"]
 [ext_resource type="Script" uid="uid://b0shfyjnfk7ih" path="res://scripts/singletons/focusDialog/goalDialog.gd" id="33_di8ev"]
 [ext_resource type="Texture2D" uid="uid://cv1qa4bwwetr5" path="res://assets/ui/focusDialog/numberEdit/parenthesis.png" id="38_lm5cw"]
@@ -409,18 +411,37 @@ layout_mode = 2
 icon = ExtResource("23_ft2jg")
 metadata/explanation = SubResource("Resource_ljt45")
 
-[node name="lockSpendsStar" type="Button" parent="doorDialog/c/lock/c/c/lockSettings" unique_id=769716352 groups=["explained"]]
+[node name="lockSettings2" type="HBoxContainer" parent="doorDialog/c/lock/c/c" unique_id=1560010955]
+unique_name_in_owner = true
+layout_mode = 2
+alignment = 1
+
+[node name="lockSpendsNone" type="Button" parent="doorDialog/c/lock/c/c/lockSettings2" unique_id=205919500 groups=["explained"]]
+unique_name_in_owner = true
+layout_mode = 2
+toggle_mode = true
+icon = ExtResource("28_ljt45")
+metadata/explanation = SubResource("Resource_mscoq")
+
+[node name="lockSpendsNormal" type="Button" parent="doorDialog/c/lock/c/c/lockSettings2" unique_id=242004130 groups=["explained"]]
+unique_name_in_owner = true
+layout_mode = 2
+toggle_mode = true
+icon = ExtResource("28_56xck")
+metadata/explanation = SubResource("Resource_mscoq")
+
+[node name="lockSpendsStar" type="Button" parent="doorDialog/c/lock/c/c/lockSettings2" unique_id=769716352 groups=["explained"]]
 unique_name_in_owner = true
 layout_mode = 2
 toggle_mode = true
 icon = ExtResource("27_rrq8c")
 metadata/explanation = SubResource("Resource_mscoq")
 
-[node name="lockSpendsNormal" type="Button" parent="doorDialog/c/lock/c/c/lockSettings" unique_id=205919500 groups=["explained"]]
+[node name="lockSpendsAll" type="Button" parent="doorDialog/c/lock/c/c/lockSettings2" unique_id=2096938309 groups=["explained"]]
 unique_name_in_owner = true
 layout_mode = 2
 toggle_mode = true
-icon = ExtResource("28_ljt45")
+icon = ExtResource("30_buutc")
 metadata/explanation = SubResource("Resource_mscoq")
 
 [node name="doorAuraSettings" type="HBoxContainer" parent="doorDialog/c/lock/c/c" unique_id=16192028]
@@ -819,8 +840,10 @@ default_color = Color(0.8352941, 0.8352941, 0.8352941, 1)
 [connection signal="toggled" from="doorDialog/c/lock/c/c/lockSettings/lockNegated" to="doorDialog" method="_lockNegatedSet"]
 [connection signal="toggled" from="doorDialog/c/lock/c/c/lockSettings/lockArmament" to="doorDialog" method="_lockArmamentSet"]
 [connection signal="pressed" from="doorDialog/c/lock/c/c/lockSettings/remoteLockConvert" to="doorDialog" method="_remoteLockConvert"]
-[connection signal="toggled" from="doorDialog/c/lock/c/c/lockSettings/lockSpendsStar" to="doorDialog" method="_lockSpendsStar"]
-[connection signal="toggled" from="doorDialog/c/lock/c/c/lockSettings/lockSpendsNormal" to="doorDialog" method="_lockSpendsNormal"]
+[connection signal="toggled" from="doorDialog/c/lock/c/c/lockSettings2/lockSpendsNone" to="doorDialog" method="_lockSpendsNone"]
+[connection signal="toggled" from="doorDialog/c/lock/c/c/lockSettings2/lockSpendsNormal" to="doorDialog" method="_lockSpendsNormal"]
+[connection signal="toggled" from="doorDialog/c/lock/c/c/lockSettings2/lockSpendsStar" to="doorDialog" method="_lockSpendsStar"]
+[connection signal="toggled" from="doorDialog/c/lock/c/c/lockSettings2/lockSpendsAll" to="doorDialog" method="_lockSpendsAll"]
 [connection signal="toggled" from="doorDialog/c/lock/c/c/doorAuraSettings/frozen" to="doorDialog" method="_frozenSet"]
 [connection signal="toggled" from="doorDialog/c/lock/c/c/doorAuraSettings/crumbled" to="doorDialog" method="_crumbledSet"]
 [connection signal="toggled" from="doorDialog/c/lock/c/c/doorAuraSettings/painted" to="doorDialog" method="_paintedSet"]

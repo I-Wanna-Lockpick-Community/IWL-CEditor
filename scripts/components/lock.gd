@@ -101,10 +101,9 @@ const ARMAMENT:Array[Texture2D] = [
 const ARMAMENT_RECT:Rect2 = Rect2(Vector2.ZERO, Vector2(18,18))
 const ARMAMENT_CORNER_SIZE:Vector2 = Vector2(5,5)
 
-const BACKGROUND_STARRY = preload("res://assets/game/lock/background/starryTile.png")
+const BACKGROUND_STARRY = preload("res://assets/game/lock/background/starry.png")
 const BACKGROUND_WEAK = preload("res://assets/game/lock/background/weak.png")
 const BACKGROUND_FORCEFUL = preload("res://assets/game/lock/background/forceful.png")
-const BACKGROUND_STARRY_LARGE = preload("res://assets/game/lock/background/starryLarge.png")
 
 static func offsetFromType(getSizeType:SIZE_TYPE) -> Vector2:
 	match getSizeType:
@@ -245,9 +244,14 @@ static func drawLock(lockDrawScaled:RID, lockDrawAuraBreaker:RID, lockDrawGlitch
 			Door.drawAuras(lockDrawAuraBreaker,lockDrawAuraBreaker,lockDrawAuraBreaker,tempColor==Game.COLOR.ICE,tempColor==Game.COLOR.MUD,tempColor==Game.COLOR.GRAFFITI,rect)
 		else:
 			RenderingServer.canvas_item_add_rect(lockDrawMain,Rect2(rect.position+Vector2.ONE,rect.size-Vector2(2,2)),Game.mainTone[tempColor])
-	if spendTypes == SPEND_TYPES.STAR: RenderingServer.canvas_item_add_texture_rect(lockDrawMain, rect, BACKGROUND_STARRY, true, Game.darkTone[lockBaseColor])
-	if spendTypes == SPEND_TYPES.NONE: RenderingServer.canvas_item_add_texture_rect(lockDrawMain, rect, BACKGROUND_WEAK, true, Game.darkTone[lockBaseColor])
-	if spendTypes == SPEND_TYPES.ALL: RenderingServer.canvas_item_add_texture_rect(lockDrawMain, rect, BACKGROUND_FORCEFUL, true, Game.darkTone[lockBaseColor])
+	# background (spend types)
+	var bgColor:Color
+	# lighter if negative, darker if positive
+	if negative: bgColor = Color("#ffffff66")
+	else: bgColor = Color("#00000066")
+	if spendTypes == SPEND_TYPES.STAR: RenderingServer.canvas_item_add_texture_rect(lockDrawMain, rect, BACKGROUND_STARRY, true, bgColor)
+	if spendTypes == SPEND_TYPES.NONE: RenderingServer.canvas_item_add_texture_rect(lockDrawMain, rect, BACKGROUND_WEAK, true, bgColor)
+	if spendTypes == SPEND_TYPES.ALL: RenderingServer.canvas_item_add_texture_rect(lockDrawMain, rect, BACKGROUND_FORCEFUL, true, bgColor)
 	if noCopies: return # no copies in this direction; go away
 	# frame
 	RenderingServer.canvas_item_add_nine_patch(lockDrawMain,rect,ANY_RECT,FRAME_HIGH,CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,frameHigh)

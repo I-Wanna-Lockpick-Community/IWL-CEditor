@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://6ew1ppujit1l"
-path="res://.godot/imported/starryTile.png-64b338b943178b3fd6a768d3f2f7573d.ctex"
+uid="uid://qciqomi4lpp8"
+path="res://.godot/imported/forceful.png-61b40b01c2e4caea9b7bf675517b613c.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/game/lock/background/starryTile.png"
-dest_files=["res://.godot/imported/starryTile.png-64b338b943178b3fd6a768d3f2f7573d.ctex"]
+source_file="res://assets/ui/focusDialog/lockBooleans/forceful.png"
+dest_files=["res://.godot/imported/forceful.png-61b40b01c2e4caea9b7bf675517b613c.ctex"]
 
 [params]
 

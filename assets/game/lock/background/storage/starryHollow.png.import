@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bcwmjgv5pdr1m"
-path="res://.godot/imported/weakLarge.png-73b7cc946476a40ff7f895c1d73b8390.ctex"
+uid="uid://bjxeb8c7p1ueu"
+path="res://.godot/imported/starryHollow.png-189df42fc0c5bbe4c3a6501046e3ede4.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/game/lock/background/weakLarge.png"
-dest_files=["res://.godot/imported/weakLarge.png-73b7cc946476a40ff7f895c1d73b8390.ctex"]
+source_file="res://assets/game/lock/background/storage/starryHollow.png"
+dest_files=["res://.godot/imported/starryHollow.png-189df42fc0c5bbe4c3a6501046e3ede4.ctex"]
 
 [params]
 
