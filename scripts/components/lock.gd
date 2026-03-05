@@ -474,13 +474,13 @@ func getColor(step:COLOR_STEP) -> Game.COLOR:
 
 	if step < COLOR_STEP.Error: return resultColor
 	var checkColor:Game.COLOR = resultColor # error and glitch act independently
-	if checkColor == Game.COLOR.ERROR: resultColor = parent.curseErrorMimic if curseAffected else errorMimic
+	if checkColor == Game.COLOR.ERROR: resultColor = parent.curseMimic if curseAffected else errorMimic
 
 	# DRAW_BASE
 	# the step used for drawing
 
 	if step < COLOR_STEP.Glitch: return resultColor
-	if checkColor == Game.COLOR.GLITCH: resultColor = parent.curseGlitchMimic if curseAffected else glitchMimic
+	if checkColor == Game.COLOR.GLITCH: resultColor = parent.curseMimic if curseAffected else glitchMimic
 
 	# EFFECTIVE
 	# the step used for normal immunities

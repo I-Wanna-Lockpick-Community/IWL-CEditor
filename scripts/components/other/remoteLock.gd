@@ -195,9 +195,8 @@ func deletedInit() -> void:
 var cursed:bool = false
 var curseColor:Game.COLOR
 var glitchMimic:Game.COLOR = Game.COLOR.GLITCH
-var curseGlitchMimic:Game.COLOR = Game.COLOR.GLITCH
 var errorMimic:Game.COLOR = Game.COLOR.ERROR
-var curseErrorMimic:Game.COLOR = Game.COLOR.ERROR
+var curseMimic:Game.COLOR = Game.COLOR.GLITCH
 var satisfied:bool = false
 var cost:PackedInt64Array = M.ZERO
 var gameFrozen:bool = false
@@ -230,9 +229,9 @@ func start() -> void:
 func stop() -> void:
 	cursed = false
 	glitchMimic = Game.COLOR.GLITCH
-	curseGlitchMimic = Game.COLOR.GLITCH
+	curseMimic = Game.COLOR.GLITCH
 	errorMimic = Game.COLOR.ERROR
-	curseErrorMimic = Game.COLOR.ERROR
+	curseMimic = Game.COLOR.ERROR
 	satisfied = false
 	cost = M.ZERO
 	curseTimer = 0
@@ -277,13 +276,13 @@ func getColor(step:Lock.COLOR_STEP) -> Game.COLOR:
 
 	if step < Lock.COLOR_STEP.Error: return resultColor
 	var checkColor:Game.COLOR = resultColor # error and glitch act independently
-	if checkColor == Game.COLOR.ERROR: resultColor = curseErrorMimic if curseAffected else errorMimic
+	if checkColor == Game.COLOR.ERROR: resultColor = curseMimic if curseAffected else errorMimic
 
 	# DRAW_BASE
 	# the step used for drawing
 
 	if step < Lock.COLOR_STEP.Glitch: return resultColor
-	if checkColor == Game.COLOR.GLITCH: resultColor = curseGlitchMimic if curseAffected else glitchMimic
+	if checkColor == Game.COLOR.GLITCH: resultColor = curseMimic if curseAffected else glitchMimic
 
 	# EFFECTIVE
 	# the step used for normal immunities
@@ -316,11 +315,11 @@ func checkDoors() -> void:
 
 func setGlitch(setColor:Game.COLOR) -> void:
 	if !cursed or curseColor == Game.COLOR.PURE: GameChanges.addChange(GameChanges.PropertyChange.new(self, &"glitchMimic", setColor))
-	else: GameChanges.addChange(GameChanges.PropertyChange.new(self, &"curseGlitchMimic", setColor))
+	else: GameChanges.addChange(GameChanges.PropertyChange.new(self, &"curseMimic", setColor))
 	queue_redraw()
 func setError(setColor:Game.COLOR) -> void:
 	if !cursed or curseColor == Game.COLOR.PURE: GameChanges.addChange(GameChanges.PropertyChange.new(self, &"errorMimic", setColor))
-	else: GameChanges.addChange(GameChanges.PropertyChange.new(self, &"curseErrorMimic", setColor))
+	else: GameChanges.addChange(GameChanges.PropertyChange.new(self, &"curseMimic", setColor))
 	queue_redraw()
 
 func curseCheck(player:Player) -> void:
@@ -334,9 +333,9 @@ func curseCheck(player:Player) -> void:
 	elif player.curseMode < 0 and cursed and curseColor == player.curseColor:
 		GameChanges.addChange(GameChanges.PropertyChange.new(self,&"cursed",false))
 		if curseColor == Game.COLOR.GLITCH:
-			GameChanges.addChange(GameChanges.PropertyChange.new(self,&"curseGlitchMimic",Game.COLOR.GLITCH))
+			GameChanges.addChange(GameChanges.PropertyChange.new(self,&"curseMimic",Game.COLOR.GLITCH))
 		if curseColor == Game.COLOR.ERROR:
-			GameChanges.addChange(GameChanges.PropertyChange.new(self,&"curseErrorMimic",Game.COLOR.ERROR))
+			GameChanges.addChange(GameChanges.PropertyChange.new(self,&"curseMimic",Game.COLOR.ERROR))
 		makeCurseParticles(Game.COLOR.BROWN, -1, 0.2, 0.5)
 		AudioManager.play(preload("res://resources/sounds/door/decurse.wav"))
 		GameChanges.bufferSave()

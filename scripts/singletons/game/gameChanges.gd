@@ -48,6 +48,7 @@ func undo() -> bool:
 		if undoStack[-1] is UndoSeparator:
 			Game.player.position = undoStack[-1].position
 			Game.player.dropMaster()
+			Game.player.bufferCheckKeys()
 			return true
 		var change = undoStack.pop_back()
 		change.undo()
@@ -98,11 +99,8 @@ class UndoSeparator extends RefCounted:
 				return
 			do()
 	
-	func do() -> void: Game.player.get(array())[color] = GameChanges.copy(after); update()
-	func undo() -> void: Game.player.get(array())[color] = GameChanges.copy(before); update()
-
-	func update() -> void:
-		Game.player.bufferCheckKeys()
+	func do() -> void: Game.player.get(array())[color] = GameChanges.copy(after)
+	func undo() -> void: Game.player.get(array())[color] = GameChanges.copy(before)
 
 	func _to_string() -> String:
 		return "<ColorChange:"+str(color)+"."+array()+"->"+str(after)+">"

@@ -101,8 +101,8 @@ func effects(object:GameObject) -> String:
 		if object.curseColor == Game.COLOR.BROWN: string += "\nCursed!"
 		else:
 			string += "\nCursed " + Game.COLOR_NAMES[object.curseColor] + "!"
-			if object.curseColor == Game.COLOR.GLITCH: string += " (Mimic: " + Game.COLOR_NAMES[object.curseGlitchMimic] + ")"
-			elif object.curseColor == Game.COLOR.ERROR: string += " (Mimic: " + Game.COLOR_NAMES[object.curseErrorMimic] + ")"
+			if object.curseColor == Game.COLOR.GLITCH: string += " (Mimic: " + Game.COLOR_NAMES[object.curseMimic] + ")"
+			elif object.curseColor == Game.COLOR.ERROR: string += " (Mimic: " + Game.COLOR_NAMES[object.curseMimic] + ")"
 	if object.gameFrozen: string += "\nFrozen! (1xRed)"
 	if object.gameCrumbled: string += "\nEroded! (5xGreen)"
 	if object.gamePainted: string += "\nPainted! (3xBlue)"

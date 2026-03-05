@@ -224,7 +224,6 @@ func collect(player:Player) -> void:
 	for object in Game.objects.values():
 		if object is KeyBulk and object.infinite and object.partialInfiniteCount > 0:
 			GameChanges.addChange(GameChanges.PropertyChange.new(object, &"partialInfiniteCount", object.partialInfiniteCount - 1))
-	GameChanges.bufferSave()
 
 	if color == Game.COLOR.MASTER: # not effectiveColor; doesnt trigger on glitch master
 		AudioManager.play(preload("res://resources/sounds/key/master.wav"))
@@ -239,6 +238,8 @@ func collect(player:Player) -> void:
 				else: AudioManager.play(preload("res://resources/sounds/key/normal.wav"))
 	
 	Game.setError(collectColor)
+	Game.player.bufferCheckKeys()
+	GameChanges.bufferSave()
 
 func setGlitch(setColor:Game.COLOR) -> void:
 	if hasInitialColor(Game.COLOR.GLITCH): GameChanges.addChange(GameChanges.PropertyChange.new(self, &"glitchMimic", setColor))
