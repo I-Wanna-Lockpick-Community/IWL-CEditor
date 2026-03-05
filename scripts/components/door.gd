@@ -523,14 +523,14 @@ func tryOpen(player:Player) -> void:
 		STAR_STATE.STARRED_LOCKED: return
 		STAR_STATE.STARRED_UNLOCKED:
 			if M.nex(gameCopies) or checkCanOpen(player, false, true):
-				player.changeGlisten(starredColor, M.sub(player.glisten[starredColor], M.add(starredSpendGlisten, calculateCosts(player, ipow(), true, false, true))))
-				player.changeKeys(starredColor, M.sub(player.key[starredColor],M.add(starredSpendKey, calculateCosts(player, ipow(), false, false, true))))
+				player.changeGlisten(starredColor, M.sub(player.glisten[starredColor], M.add(starredSpendGlisten, calculateCosts(player, ipow(), true, false, true))),true)
+				player.changeKeys(starredColor, M.sub(player.key[starredColor],M.add(starredSpendKey, calculateCosts(player, ipow(), false, false, true))),true)
 			else: return
 		STAR_STATE.UNSTARRED:
 			if M.nex(gameCopies) or checkCanOpen(player):
 				var spendColor:Game.COLOR = getColor(COLOR_STEP.FINAL)
-				player.changeGlisten(spendColor, M.sub(player.glisten[spendColor], calculateCosts(player, ipow(), true)))
-				player.changeKeys(spendColor, M.sub(player.key[spendColor], calculateCosts(player)))
+				player.changeGlisten(spendColor, M.sub(player.glisten[spendColor], calculateCosts(player, ipow(), true)),true)
+				player.changeKeys(spendColor, M.sub(player.key[spendColor], calculateCosts(player)),true)
 			else: return
 	
 	GameChanges.addChange(GameChanges.PropertyChange.new(self, &"gameCopies", M.sub(gameCopies, M.across(ipow(), M.sub(M.allAxes(), infCopies)))))
@@ -576,11 +576,11 @@ func tryQuicksilverOpen(player:Player) -> bool:
 	player.changeKeys(Game.COLOR.QUICKSILVER, M.sub(player.key[Game.COLOR.QUICKSILVER], player.masterMode))
 	var spendColor:Game.COLOR = getColor(COLOR_STEP.FINAL)
 	if starred != 0:
-		player.changeGlisten(starredColor, M.sub(player.glisten[starredColor], M.add(starredSpendGlisten, calculateCosts(player, player.masterMode, true, false))))
-		player.changeKeys(starredColor, M.sub(player.key[starredColor],M.add(starredSpendKey, calculateCosts(player, player.masterMode, false, false))))
+		player.changeGlisten(starredColor, M.sub(player.glisten[starredColor], M.add(starredSpendGlisten, calculateCosts(player, player.masterMode, true, false))),true)
+		player.changeKeys(starredColor, M.sub(player.key[starredColor],M.add(starredSpendKey, calculateCosts(player, player.masterMode, false, false))),true)
 	else:
-		player.changeGlisten(spendColor, M.sub(player.glisten[spendColor], calculateCosts(player, player.masterMode, true)))
-		player.changeKeys(spendColor, M.sub(player.key[spendColor],calculateCosts(player, player.masterMode)))
+		player.changeGlisten(spendColor, M.sub(player.glisten[spendColor], calculateCosts(player, player.masterMode, true)), true)
+		player.changeKeys(spendColor, M.sub(player.key[spendColor],calculateCosts(player, player.masterMode)),true)
 
 	AudioManager.play(preload("res://resources/sounds/door/master.wav"))
 	relockAnimation()
@@ -666,8 +666,15 @@ func checkCanOpen(player:Player, checkNonarmamentLocks:bool=true, checkArmamentL
 
 func calculateCosts(player:Player, costIpow:PackedInt64Array=ipow(), forGlisten:bool=false, checkNonarmamentLocks:bool=true, checkArmamentLocks:bool=true) -> PackedInt64Array:
 	var cost:PackedInt64Array = M.ZERO
-	for lock in locks: if ((lock.type == Lock.TYPE.GLISTENING) == forGlisten) and (checkArmamentLocks if lock.armament else checkNonarmamentLocks): cost = M.add(cost, lock.getCost(player, costIpow))
-	for lock in remoteLocks: if ((lock.type == Lock.TYPE.GLISTENING) == forGlisten) and (checkArmamentLocks if lock.armament else checkNonarmamentLocks): cost = M.add(cost, lock.getCost(player))
+	var colorStarred = player.star[getColor(COLOR_STEP.FINAL)]
+	for lock in locks: 
+		if ((lock.type == Lock.TYPE.GLISTENING) == forGlisten) and (checkArmamentLocks if lock.armament else checkNonarmamentLocks): 
+			if (lock.spendType == Lock.SPEND_TYPES.STAR and not colorStarred) or (lock.spendType == Lock.SPEND_TYPES.NORMAL and colorStarred) or (lock.spendType == Lock.SPEND_TYPES.NONE): pass
+			else: cost = M.add(cost, lock.getCost(player, costIpow))
+	for lock in remoteLocks: 
+		if ((lock.type == Lock.TYPE.GLISTENING) == forGlisten) and (checkArmamentLocks if lock.armament else checkNonarmamentLocks): 
+			if (lock.spendType == Lock.SPEND_TYPES.STAR and not colorStarred) or (lock.spendType == Lock.SPEND_TYPES.NORMAL and colorStarred) or (lock.spendType == Lock.SPEND_TYPES.NONE): pass
+			else: cost = M.add(cost, lock.getCost(player))
 	return cost
 
 func hasEffectiveColor(color:Game.COLOR) -> bool:

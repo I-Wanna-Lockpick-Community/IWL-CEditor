@@ -55,7 +55,10 @@ func focusComponent(component:GameComponent, _new:bool) -> void: # Lock or Remot
 	if component is Lock:
 		%lockConfigurationSelector.visible = main.focused.type != Door.TYPE.SIMPLE
 		%lockConfigurationSelector.setup(component)
+		%lockSpendsStar.button_pressed = component.spendType == Lock.SPEND_TYPES.STAR or component.spendType == Lock.SPEND_TYPES.ALL
+		%lockSpendsNormal.button_pressed = component.spendType == Lock.SPEND_TYPES.NORMAL or component.spendType == Lock.SPEND_TYPES.ALL
 	%lockSettings.visible = true
+	
 	
 	%remoteLockConvert.visible = Mods.active(&"C1") and component is not RemoteLock
 
@@ -237,6 +240,26 @@ func _lockNegatedSet(value:bool) -> void:
 	if main.componentFocused is not Lock and main.focused is not RemoteLock: return
 	var lock:GameComponent = main.componentFocused if main.componentFocused is Lock else main.focused
 	Changes.addChange(Changes.PropertyChange.new(lock,&"negated",value))
+	Changes.bufferSave()
+
+func _lockSpendsStar(value:bool) -> void:
+	if main.componentFocused is not Lock and main.focused is not RemoteLock: return
+	var lock:GameComponent = main.componentFocused if main.componentFocused is Lock else main.focused
+	match lock.spendType:
+		Lock.SPEND_TYPES.NONE: if value: Changes.addChange(Changes.PropertyChange.new(lock,&"spendType",Lock.SPEND_TYPES.STAR))
+		Lock.SPEND_TYPES.STAR: if !value: Changes.addChange(Changes.PropertyChange.new(lock,&"spendType",Lock.SPEND_TYPES.NONE))
+		Lock.SPEND_TYPES.NORMAL: if value: Changes.addChange(Changes.PropertyChange.new(lock,&"spendType",Lock.SPEND_TYPES.ALL))
+		Lock.SPEND_TYPES.ALL: if !value: Changes.addChange(Changes.PropertyChange.new(lock,&"spendType",Lock.SPEND_TYPES.NORMAL))
+	Changes.bufferSave()
+
+func _lockSpendsNormal(value:bool) -> void:
+	if main.componentFocused is not Lock and main.focused is not RemoteLock: return
+	var lock:GameComponent = main.componentFocused if main.componentFocused is Lock else main.focused
+	match lock.spendType:
+		Lock.SPEND_TYPES.NONE: if value: Changes.addChange(Changes.PropertyChange.new(lock,&"spendType",Lock.SPEND_TYPES.NORMAL))
+		Lock.SPEND_TYPES.NORMAL: if !value: Changes.addChange(Changes.PropertyChange.new(lock,&"spendType",Lock.SPEND_TYPES.NONE))
+		Lock.SPEND_TYPES.STAR: if value: Changes.addChange(Changes.PropertyChange.new(lock,&"spendType",Lock.SPEND_TYPES.ALL))
+		Lock.SPEND_TYPES.ALL: if !value:  Changes.addChange(Changes.PropertyChange.new(lock,&"spendType",Lock.SPEND_TYPES.STAR))
 	Changes.bufferSave()
 
 func partialBlastNumeratorSet(value:PackedInt64Array) -> void:
