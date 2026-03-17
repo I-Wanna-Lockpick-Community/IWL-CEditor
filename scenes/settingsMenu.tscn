@@ -672,6 +672,11 @@ layout_mode = 2
 label = "Multiply By i"
 action = &"numberTimesI"
 
+[node name="numberEvaluate" parent="c/editorSettings/c2/c/hotkeys/componentFocused/c/numberInputSelected/c" unique_id=427433704 instance=ExtResource("6_dkncv")]
+layout_mode = 2
+label = "Evaluate Expression"
+action = &"numberEvaluate"
+
 [node name="l" type="Label" parent="c/editorSettings/c2/c/hotkeys/componentFocused/c" unique_id=1496993694]
 layout_mode = 2
 text = "Key Focused"
@@ -710,7 +715,7 @@ label = "Toggle Curse Type"
 action = &"focusKeyCurse"
 prerequisite = &"CurseKeys"
 
-[node name="focusKeyOperator" parent="c/editorSettings/c2/c/hotkeys/componentFocused/c/keyFocused/c" unique_id=427433704 instance=ExtResource("6_dkncv")]
+[node name="focusKeyOperator" parent="c/editorSettings/c2/c/hotkeys/componentFocused/c/keyFocused/c" unique_id=910100364 instance=ExtResource("6_dkncv")]
 layout_mode = 2
 label = "Set Operator Type"
 action = &"focusKeyOperator"

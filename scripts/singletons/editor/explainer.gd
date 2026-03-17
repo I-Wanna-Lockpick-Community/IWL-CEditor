@@ -7,8 +7,8 @@ const ARROWS_LR:String = "[img]res://assets/ui/explainer/arrowsLR.png[/img]"
 const ARROWS_UD:String = "[img]res://assets/ui/explainer/arrowsUD.png[/img]"
 const ARROWS:String = "[img]res://assets/ui/explainer/arrows.png[/img]"
 
-var explainedControl:Control
-var controlExplanation:ControlExplanation
+var explainedControls:Array[Control]
+var controlExplanations:Array[ControlExplanation]
 
 var editor:Editor
 
@@ -20,13 +20,14 @@ func _ready() -> void:
 func _process(_delta:float) -> void: updateText()
 
 func _explain(control:Control) -> void:
-	explainedControl = control
-	controlExplanation = control.get_meta(&"explanation")
+	explainedControls.append(control)
+	controlExplanations.append(control.get_meta(&"explanation"))
 
 func _deexplain(control:Control) -> void:
-	if explainedControl == control:
-		explainedControl = null
-		controlExplanation = null
+	var found:int = explainedControls.find(control)
+	if found != -1:
+		explainedControls.pop_at(found)
+		controlExplanations.pop_at(found)
 
 func addControl(control:Control, explanation:ControlExplanation) -> void:
 	control.set_meta(&"explanation", explanation)
@@ -35,7 +36,7 @@ func addControl(control:Control, explanation:ControlExplanation) -> void:
 
 func updateText() -> void:
 	var string:String = ""
-	var control:String = str(controlExplanation) + " " if controlExplanation else ""
+	var control:String = str(controlExplanations[-1]) + " " if controlExplanations else ""
 	if !editor: return
 	if editor.exportWindow:
 		string += "In Export Menu " + control

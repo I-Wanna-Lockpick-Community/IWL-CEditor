@@ -65,7 +65,7 @@ func receiveKey(event:InputEventKey) -> bool:
 func changedMods() -> void:
 	%keyGlisteningToggle.visible = Mods.active(&"Glistening")
 	if main.focused is KeyBulk:
-		%keyPartialInfinite.visible = Mods.active(&"PartialInfKey") and main.focused.infinite
+		%keyPartialInfinite.visible = Mods.active(&"PartialInfKeys") and main.focused.infinite
 		%keyReciprocal.visible = main.focused.type == KeyBulk.TYPE.ROTOR && Mods.active(&"OperatorKeys")
 
 func _keyColorSelected(color:Game.COLOR) -> void:

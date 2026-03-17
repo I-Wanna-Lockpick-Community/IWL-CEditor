@@ -105,7 +105,11 @@ text = "Room ID:"
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 1
-script = null
+type = 2
+
+[node name="sideCont" parent="c/c/c/roomGMX/c/roomIDEdit/c2/side" parent_id_path=PackedInt32Array(231119399, 325404340) index="0" unique_id=403701460]
+offset_left = 13.0
+offset_right = 21.0
 
 [node name="clarifier" type="TextureRect" parent="c/c/c/roomGMX/c" unique_id=1156228869]
 layout_mode = 2
@@ -127,7 +131,11 @@ text = "Tile ID Iterator:"
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 1
-script = null
+type = 2
+
+[node name="sideCont" parent="c/c/c/roomGMX/c2/idIterStartEdit/c2/side" parent_id_path=PackedInt32Array(1652895115, 325404340) index="0" unique_id=403701460]
+offset_left = 13.0
+offset_right = 21.0
 
 [node name="clarifier" type="TextureRect" parent="c/c/c/roomGMX/c2" unique_id=468702284]
 layout_mode = 2
@@ -165,3 +173,6 @@ use_native_dialog = true
 [connection signal="item_selected" from="c/c/c/c2/exportType" to="." method="_setType"]
 [connection signal="pressed" from="c/c/c/export" to="." method="_export"]
 [connection signal="file_selected" from="pathDialog" to="." method="_setPath"]
+
+[editable path="c/c/c/roomGMX/c/roomIDEdit"]
+[editable path="c/c/c/roomGMX/c2/idIterStartEdit"]

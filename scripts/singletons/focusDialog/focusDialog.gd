@@ -9,11 +9,12 @@ class_name FocusDialog
 @onready var keyCounterDialog:KeyCounterDialog = %keyCounterDialog
 @onready var goalDialog:GoalDialog = %goalDialog
 
-
 var focused:GameObject # the object that is currently focused
 var componentFocused:GameComponent # you can focus both a door and a lock at the same time so
 var activeDialog:Control
 var bufferFocus:bool = false
+
+var focusOffsetAmount:float = 0
 
 var interacted:NumberEdit # the number edit that is currently interacted
 var numberEdits:Array[NumberEdit] = []
@@ -25,6 +26,7 @@ func _ready() -> void:
 
 func focus(object:GameObject, dontRedirect:bool=false) -> void:
 	var new:bool = object != focused
+	if new: focusOffsetAmount = -8
 	focused = object
 	Game.objectsParent.move_child(focused, -1)
 	showCorrectDialog()
@@ -134,12 +136,13 @@ const EDGE_MARGIN:float = 4
 const OBJECT_MARGIN:float = 16 # between the dialog and the object; where the speech bubbler goes
 const SPEECH_BUBBLER_MARGIN:float = 10 # between speech bubbler and edge of dialog
 
-func _process(_delta:float) -> void:
+func _process(delta:float) -> void:
 	if bufferFocus:
 		if componentFocused: focusComponent(componentFocused)
 		elif focused: focus(focused)
 		bufferFocus = false
 	if focused and activeDialog:
+		focusOffsetAmount += (-focusOffsetAmount)*delta*25
 		visible = true
 		# position the dialog every frame (could be optimised but i dont care)
 		var flip:bool = false
@@ -147,12 +150,15 @@ func _process(_delta:float) -> void:
 		var halfWidth:float = activeDialog.get_child(0).size.x/2
 		activeDialog.get_child(0).position = Vector2(-halfWidth,0)
 		var height:float = activeDialog.get_child(0).size.y
-		position = Game.editor.worldspaceToScreenspace(focused.getDrawPosition() + Vector2(focused.size.x/2,focused.size.y)) + Vector2(0,OBJECT_MARGIN)
+
+		var objectMargin:float = focusOffsetAmount + OBJECT_MARGIN
+
+		position = Game.editor.worldspaceToScreenspace(focused.getDrawPosition() + Vector2(focused.size.x/2,focused.size.y)) + Vector2(0,objectMargin)
 		
-		if above and position.y - height - 2*OBJECT_MARGIN - focused.size.y*Game.editor.cameraZoom < Game.editor.gameCont.position.y + EDGE_MARGIN: flip = true
+		if above and position.y - height - 2*objectMargin - focused.size.y*Game.editor.cameraZoom < Game.editor.gameCont.position.y + EDGE_MARGIN: flip = true
 		elif !above and position.y + height > Game.editor.gameCont.position.y + Game.editor.gameCont.size.y - EDGE_MARGIN: flip = true
 
-		if above != flip: position = Game.editor.worldspaceToScreenspace(focused.getDrawPosition() + Vector2(focused.size.x/2,0)) + Vector2(0,-OBJECT_MARGIN)
+		if above != flip: position = Game.editor.worldspaceToScreenspace(focused.getDrawPosition() + Vector2(focused.size.x/2,0)) + Vector2(0,-objectMargin)
 		%speechBubbler.rotation_degrees = 0 if above != flip else 180
 		if flip != above: activeDialog.get_child(0).position.y = -height
 		else: activeDialog.get_child(0).position.y = 0

@@ -361,16 +361,11 @@ func restart() -> void:
 		if editor: playTest(latestSpawn)
 	else: playGame.restart()
 
-func setGlitch(color:COLOR) -> void:
-	if color == Game.COLOR.NONE: return
+func setMimic(mimicType:Game.COLOR, setColor:Game.COLOR) -> void:
+	if setColor == Game.COLOR.NONE: return
 	for object in objects.values():
 		if object.get_script() in [KeyBulk, Door, RemoteLock]:
-			object.setGlitch(color)
-func setError(color:COLOR) -> void:
-	if color == Game.COLOR.NONE: return
-	for object in objects.values():
-		if object.get_script() in [KeyBulk, Door, RemoteLock]:
-			object.setError(color)
+			object.setMimic(mimicType, setColor)
 
 func play() -> void:
 	if !levelStart: return Saving.errorPopup("No level start found,\nCannot play level.", "Play Error")

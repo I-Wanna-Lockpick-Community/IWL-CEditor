@@ -96,10 +96,8 @@ func focusComponent(component:GameComponent, new:bool) -> void: # Lock or Remote
 
 func receiveKey(event:InputEvent) -> bool:
 	var blastSettings:bool = !main.interacted and main.componentFocused and main.componentFocused.type == Lock.TYPE.BLAST
-	if Editor.eventIs(event, &"numberNegate"):
-		if blastSettings: _blastLockSignSet(!%blastLockSign.button_pressed)
-	elif Editor.eventIs(event, &"numberTimesI"):
-		if blastSettings: _blastLockAxisSet(!%blastLockAxis.button_pressed)
+	if Editor.eventIs(event, &"numberNegate") and blastSettings: _blastLockSignSet(!%blastLockSign.button_pressed)
+	elif Editor.eventIs(event, &"numberTimesI") and blastSettings: _blastLockAxisSet(!%blastLockAxis.button_pressed)
 	elif main.focused is RemoteLock or main.componentFocused is Lock:
 		var lock:GameComponent = main.focused if main.focused is RemoteLock else main.componentFocused
 		if Editor.eventIs(event, &"focusLockNormal"): _lockTypeSelected(Lock.TYPE.NORMAL)

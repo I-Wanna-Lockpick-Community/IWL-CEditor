@@ -163,7 +163,7 @@ func _ready() -> void:
 	RenderingServer.canvas_item_set_parent(drawConfiguration,get_canvas_item())
 	RenderingServer.canvas_item_set_self_modulate(drawError, "#ffffffaa")
 	RenderingServer.canvas_item_set_material(drawError,Game.ADDITIVE_MATERIAL)
-	Game.connect(&"goldIndexChanged",func(): if color in Game.ANIMATED_COLORS or armament: queue_redraw())
+	Game.connect(&"goldIndexChanged",func(): if getColor(COLOR_STEP.DRAW_BASE) in Game.ANIMATED_COLORS: queue_redraw())
 
 func _freed() -> void:
 	RenderingServer.free_rid(drawScaled)
@@ -469,21 +469,22 @@ func getColor(step:COLOR_STEP) -> Game.COLOR:
 
 	if step < COLOR_STEP.Error: return resultColor
 	var checkColor:Game.COLOR = resultColor # error and glitch act independently
-	if checkColor == Game.COLOR.ERROR: resultColor = parent.curseErrorMimic if curseAffected else errorMimic
+	if checkColor == Game.COLOR.ERROR: resultColor = parent.curseMimic if curseAffected else errorMimic
 
 	# DRAW_BASE
 	# the step used for drawing
 
 	if step < COLOR_STEP.Glitch: return resultColor
-	if checkColor == Game.COLOR.GLITCH: resultColor = parent.curseGlitchMimic if curseAffected else glitchMimic
+	if checkColor == Game.COLOR.GLITCH: resultColor = parent.curseMimic if curseAffected else glitchMimic
 
 	# EFFECTIVE
 	# the step used for normal immunities
 
 	if step < COLOR_STEP.AuraBreaker: return resultColor
-	if parent.gameFrozen: resultColor = Game.COLOR.ICE
-	if parent.gameCrumbled: resultColor = Game.COLOR.MUD
-	if parent.gamePainted: resultColor = Game.COLOR.GRAFFITI
+	if !armament:
+		if parent.gameFrozen: resultColor = Game.COLOR.ICE
+		if parent.gameCrumbled: resultColor = Game.COLOR.MUD
+		if parent.gamePainted: resultColor = Game.COLOR.GRAFFITI
 
 	# FINAL
 	# the step used for check and cost

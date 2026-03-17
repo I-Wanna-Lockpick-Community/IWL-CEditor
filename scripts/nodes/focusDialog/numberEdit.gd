@@ -28,9 +28,10 @@ var numberValues:Array[int] = []
 var numberSemiNegative:Array[bool] = [] # if a number's sign is currently inaccurate, from flipping a +/- without reparsing. saves a bit of performance
 var texts:Array[String] = [""] # one at the start and one after each number. may be empty
 var currentExpression:Array = []
-var expressionErrored:bool = false
-var result:PackedInt64Array
+var expressionError:ERROR = ERROR.NONE
+var result:PackedInt64Array = M.ZERO
 var isZeroI:bool = false
+var baseForm:BASE_FORM = BASE_FORM.FACTORED
 
 var shapedText:RID
 @onready var ts = TextServerManager.get_primary_interface()
@@ -38,23 +39,36 @@ var mouseDragStart:int = -1 # the character a mouse drag started on; -1 for not 
 
 enum TYPE {ALL, AXIAL, NONNEGATIVE_INTEGER}
 
-@export var type:TYPE = TYPE.ALL
+enum ERROR {NONE, SYNTAX, NUMBER, ZERO}
+const ERROR_COLOR:Color = Color("#ff0066")
+
+enum BASE_FORM {FACTORED, DISTRIBUTED}
+
+@export var type:TYPE = TYPE.ALL:
+	set(value):
+		type = value
+		updateRestrictionDisplay()
 @export var allowZeroI:bool = false:
 	set(value):
 		allowZeroI = value
 		if !allowZeroI: isZeroI = false
-@export var allowZero:bool = true
-## the parent. usually focusDialog
-@export var context:Node
+		updateRestrictionDisplay()
+@export var allowZero:bool = true:
+	set(value):
+		allowZero = value
+		updateRestrictionDisplay()
 
 func _ready() -> void:
-	context.numberEdits.append(self)
+	owner.numberEdits.append(self) # the scene root
 	shapedText = ts.create_shaped_text()
+	updateRestrictionDisplay()
 
-func setValue(value:PackedInt64Array) -> void:
-	text = M.strDistributeFraction(value)
+func setValue(value:PackedInt64Array, manual:bool=true) -> void:
+	match baseForm:
+		BASE_FORM.FACTORED: text = M.str(value)
+		BASE_FORM.DISTRIBUTED: text = M.strDistributeFraction(value)
 	if text == "ERROR": text = "0/0"
-	parseText(true)
+	parseText(manual)
 	buildText()
 
 func setZeroI() -> void:
@@ -62,15 +76,61 @@ func setZeroI() -> void:
 	parseText(true)
 	buildText()
 
+func convertNumbers(from:M.SYSTEM) -> void:
+	Changes.addChange(Changes.ConvertNumberChange.new(self, from, &"result"))
+	updateRestrictionDisplay()
+
+func updateRestrictionDisplay() -> void:
+	var explanation:String = "{ Number Edit ("
+	match type:
+		TYPE.ALL:
+			if M.system & M.SYSTEM.FRACTIONS:
+				match baseForm:
+					BASE_FORM.FACTORED:
+						%type.texture = preload("res://assets/ui/focusDialog/numberEdit/restrictions/complexRational.png")
+						%changeBaseForm.icon = preload("res://assets/ui/focusDialog/numberEdit/restrictions/complexRationalB.png")
+					BASE_FORM.DISTRIBUTED:
+						%type.texture = preload("res://assets/ui/focusDialog/numberEdit/restrictions/complexRationalB.png")
+						%changeBaseForm.icon = preload("res://assets/ui/focusDialog/numberEdit/restrictions/complexRational.png")
+				explanation += "Complex rational"
+			else:
+				%type.texture = preload("res://assets/ui/focusDialog/numberEdit/restrictions/complex.png")
+				explanation += "Complex"
+		TYPE.AXIAL:
+			if M.system & M.SYSTEM.FRACTIONS:
+				%type.texture = preload("res://assets/ui/focusDialog/numberEdit/restrictions/axialRational.png")
+				explanation += "Axial rational"
+			else:
+				%type.texture = preload("res://assets/ui/focusDialog/numberEdit/restrictions/axial.png")
+				explanation += "Axial"
+		TYPE.NONNEGATIVE_INTEGER:
+			if allowZero:
+				%type.texture = preload("res://assets/ui/focusDialog/numberEdit/restrictions/nonnegativeInteger.png")
+				explanation += "Nonnegative integer"
+			else:
+				%type.texture = preload("res://assets/ui/focusDialog/numberEdit/restrictions/positiveInteger.png")
+				explanation += "Positive integer"
+	if !allowZero: explanation += " nonzero"
+	explanation += " number) }"
+	%restriction.get_meta(&"explanation").explanation = explanation
+	%changeBaseForm.visible = M.system & M.SYSTEM.FRACTIONS and type == TYPE.ALL
+	%nonzero.visible = !allowZero and type != TYPE.NONNEGATIVE_INTEGER
+	%zeroi.visible = allowZeroI
+	%sideCont.size = Vector2.ZERO
+
 func interact(last:bool=false) -> void:
-	theme_type_variation = &"NumberEditPanelContainerError" if expressionErrored else &"NumberEditPanelContainerSelected"
+	theme_type_variation = &"NumberEditPanelContainerError" if expressionError else &"NumberEditPanelContainerSelected"
 	if numbers: numberCaptureCursor(numbers-1 if last else 0)
 	%cursor.visible = true
+	%side.visible = true
+	updateRestrictionDisplay()
 
 func deinteract() -> void:
 	setValue(result)
 	theme_type_variation = &"NumberEditPanelContainer"
+	baseForm = BASE_FORM.FACTORED
 	%cursor.visible = false
+	%side.visible = false
 
 func parseText(manual:bool=false) -> void:
 	textLen = len(text)
@@ -139,21 +199,23 @@ func parseText(manual:bool=false) -> void:
 	evaluate(manual)
 
 func evaluate(manual:bool=false) -> void:
-	expressionErrored = false
+	expressionError = ERROR.NONE
 	result = evaluateExpression(currentExpression)
 	isZeroI = allowZeroI and text == "0i"
-	if !allowZero and !isZeroI and M.nex(result): expressionErrored = true
-	if !expressionErrored:
+	if !allowZero and !isZeroI and M.nex(result) and expressionError != ERROR.SYNTAX: expressionError = ERROR.ZERO
+	if !expressionError:
 		if !manual:
 			match type:
 				TYPE.ALL: valueSet.emit(result)
 				TYPE.AXIAL:
 					if M.isAxial(result): valueSet.emit(result)
-					else: expressionErrored = true
+					else: expressionError = ERROR.NUMBER
 				TYPE.NONNEGATIVE_INTEGER:
 					if M.isReal(result) and M.isInteger(result) and M.gte(result, M.ZERO): valueSet.emit(result)
-					else: expressionErrored = true
-	theme_type_variation = (&"NumberEditPanelContainerError" if expressionErrored else &"NumberEditPanelContainerSelected") if context.interacted == self else &"NumberEditPanelContainer"
+					else: expressionError = ERROR.NUMBER
+	theme_type_variation = (&"NumberEditPanelContainerError" if expressionError else &"NumberEditPanelContainerSelected") if owner.interacted == self else &"NumberEditPanelContainer"
+	%type.modulate = ERROR_COLOR if expressionError == ERROR.NUMBER else Color.WHITE
+	%nonzero.modulate = ERROR_COLOR if expressionError == ERROR.ZERO else Color.WHITE
 
 enum TOKEN {NUMBER, LBRACKET, RBRACKET, CROSS, DASH, X, SLASH, I, UNKNOWN}
 enum STEP {VALUE, BRACKET, AXIS, PRODUCT, SUM} # symbol in the parsing expression grammar
@@ -303,7 +365,7 @@ func evaluateExpression(expression:Array) -> PackedInt64Array:
 		EXPRESSION.DIVIDE: return M.divide(evaluateExpression(expression[1]), evaluateExpression(expression[2]))
 		EXPRESSION.CONSTANT: return expression[1]
 		EXPRESSION.ERROR, _:
-			expressionErrored = true
+			expressionError = ERROR.SYNTAX
 			return M.ZERO
 
 func buildText() -> void:
@@ -319,86 +381,87 @@ func buildText() -> void:
 
 func receiveKey(key:InputEventKey) -> bool:
 	Game.editor.grab_focus()
-	match key.keycode:
-		KEY_RIGHT:
-			cursorMode = CURSOR_MODE.NORMAL
-			if Input.is_key_pressed(KEY_SHIFT):
-				if Input.is_key_pressed(KEY_CTRL): cursorEnd = nextPointOfInterest()
-				else: cursorEnd = min(textLen, cursorEnd+1)
-			else:
-				if cursorEnd > cursorStart: cursorStart = cursorEnd
-				elif cursorStart < textLen:
-					if Input.is_key_pressed(KEY_CTRL): cursorStart = nextPointOfInterest()
-					else: cursorStart += 1
-					cursorEnd = cursorStart
-					numberCaptureCursor(numberAtIndex(cursorStart))
-			placeCursor()
-		KEY_LEFT:
-			cursorMode = CURSOR_MODE.NORMAL
-			if Input.is_key_pressed(KEY_SHIFT):
-				if Input.is_key_pressed(KEY_CTRL): cursorStart = previousPointOfInterest()
-				else: cursorStart = max(0, cursorStart-1)
-			else:
-				if cursorEnd > cursorStart: cursorEnd = cursorStart
-				elif cursorStart > 0:
+	if Editor.eventIs(key, &"numberEvaluate"): setValue(result)
+	else:
+		match key.keycode:
+			KEY_RIGHT:
+				cursorMode = CURSOR_MODE.NORMAL
+				if Input.is_key_pressed(KEY_SHIFT):
+					if Input.is_key_pressed(KEY_CTRL): cursorEnd = nextPointOfInterest()
+					else: cursorEnd = min(textLen, cursorEnd+1)
+				else:
+					if cursorEnd > cursorStart: cursorStart = cursorEnd
+					elif cursorStart < textLen:
+						if Input.is_key_pressed(KEY_CTRL): cursorStart = nextPointOfInterest()
+						else: cursorStart += 1
+						cursorEnd = cursorStart
+						numberCaptureCursor(numberAtIndex(cursorStart))
+				placeCursor()
+			KEY_LEFT:
+				cursorMode = CURSOR_MODE.NORMAL
+				if Input.is_key_pressed(KEY_SHIFT):
 					if Input.is_key_pressed(KEY_CTRL): cursorStart = previousPointOfInterest()
-					else: cursorStart -= 1
-					cursorEnd = cursorStart
-					numberCaptureCursor(numberAtIndex(cursorStart))
-			placeCursor()
-		KEY_UP:
-			match cursorMode:
-				CURSOR_MODE.NORMAL:
-					for number in numbers:
-						if numberStarts[number] >= cursorStart && numberEnds[number] <= cursorEnd: changeNumber(number, 1)
-				CURSOR_MODE.NUMBER:
-					changeNumber(cursorSelectedNumber, 1)
-					numberCaptureCursor(cursorSelectedNumber)
-		KEY_DOWN:
-			match cursorMode:
-				CURSOR_MODE.NORMAL:
-					for number in numbers:
-						if numberStarts[number] >= cursorStart && numberEnds[number] <= cursorEnd: changeNumber(number, -1)
-				CURSOR_MODE.NUMBER:
-					changeNumber(cursorSelectedNumber, -1)
-					numberCaptureCursor(cursorSelectedNumber)
-		KEY_TAB:
-			if Input.is_key_pressed(KEY_SHIFT):
-				for number in range(numbers-1,-1,-1): if numberStarts[number] < cursorStart:
-					numberCaptureCursor(number); return true
-			else:
-				for number in range(numbers): if numberEnds[number] > cursorEnd:
-					numberCaptureCursor(number); return true
-			return false
-		KEY_A:
-			if Input.is_key_pressed(KEY_CTRL):
-				selectAll()
-		KEY_BACKSPACE:
-			if text == "": return true
-			match cursorMode:
-				CURSOR_MODE.NORMAL:
-					if cursorEnd == cursorStart:
-						var prevStart:int = cursorStart
-						if cursorStart == 0: return false
-						Changes.addChange(Changes.GlobalPropertyChange.new(self, &"cursorStart", previousPointOfInterest() if Input.is_key_pressed(KEY_CTRL) else cursorStart - 1))
-						Changes.addChange(Changes.GlobalPropertyChange.new(self, &"cursorEnd", cursorStart))
-						Changes.addChange(Changes.NumberEditTextChange.new(self, text.erase(cursorStart, prevStart-cursorStart)))
-						placeCursor()
-					else:
-						Changes.addChange(Changes.NumberEditTextChange.new(self, text.erase(cursorStart, cursorEnd - cursorStart)))
-						Changes.addChange(Changes.GlobalPropertyChange.new(self, &"cursorEnd", cursorStart))
-						placeCursor()
-				CURSOR_MODE.NUMBER:
-					if numberValues[cursorSelectedNumber] == 0 or Input.is_key_pressed(KEY_CTRL):
-						cursorMode = CURSOR_MODE.NORMAL
-						Changes.addChange(Changes.NumberEditTextChange.new(self, text.erase(cursorStart, cursorEnd - cursorStart)))
-						Changes.addChange(Changes.GlobalPropertyChange.new(self, &"cursorEnd", cursorStart))
-						placeCursor()
-					else:
-						setNumber(cursorSelectedNumber, 0)
+					else: cursorStart = max(0, cursorStart-1)
+				else:
+					if cursorEnd > cursorStart: cursorEnd = cursorStart
+					elif cursorStart > 0:
+						if Input.is_key_pressed(KEY_CTRL): cursorStart = previousPointOfInterest()
+						else: cursorStart -= 1
+						cursorEnd = cursorStart
+						numberCaptureCursor(numberAtIndex(cursorStart))
+				placeCursor()
+			KEY_UP:
+				match cursorMode:
+					CURSOR_MODE.NORMAL:
+						for number in numbers:
+							if numberStarts[number] >= cursorStart && numberEnds[number] <= cursorEnd: changeNumber(number, 1)
+					CURSOR_MODE.NUMBER:
+						changeNumber(cursorSelectedNumber, 1)
 						numberCaptureCursor(cursorSelectedNumber)
-		KEY_ENTER: setValue(result)
-		_: return false
+			KEY_DOWN:
+				match cursorMode:
+					CURSOR_MODE.NORMAL:
+						for number in numbers:
+							if numberStarts[number] >= cursorStart && numberEnds[number] <= cursorEnd: changeNumber(number, -1)
+					CURSOR_MODE.NUMBER:
+						changeNumber(cursorSelectedNumber, -1)
+						numberCaptureCursor(cursorSelectedNumber)
+			KEY_TAB:
+				if Input.is_key_pressed(KEY_SHIFT):
+					for number in range(numbers-1,-1,-1): if numberStarts[number] < cursorStart:
+						numberCaptureCursor(number); return true
+				else:
+					for number in range(numbers): if numberEnds[number] > cursorEnd:
+						numberCaptureCursor(number); return true
+				return false
+			KEY_A:
+				if Input.is_key_pressed(KEY_CTRL):
+					selectAll()
+			KEY_BACKSPACE:
+				if text == "": return true
+				match cursorMode:
+					CURSOR_MODE.NORMAL:
+						if cursorEnd == cursorStart:
+							var prevStart:int = cursorStart
+							if cursorStart == 0: return false
+							Changes.addChange(Changes.GlobalPropertyChange.new(self, &"cursorStart", previousPointOfInterest() if Input.is_key_pressed(KEY_CTRL) else cursorStart - 1))
+							Changes.addChange(Changes.GlobalPropertyChange.new(self, &"cursorEnd", cursorStart))
+							Changes.addChange(Changes.NumberEditTextChange.new(self, text.erase(cursorStart, prevStart-cursorStart)))
+							placeCursor()
+						else:
+							Changes.addChange(Changes.NumberEditTextChange.new(self, text.erase(cursorStart, cursorEnd - cursorStart)))
+							Changes.addChange(Changes.GlobalPropertyChange.new(self, &"cursorEnd", cursorStart))
+							placeCursor()
+					CURSOR_MODE.NUMBER:
+						if numberValues[cursorSelectedNumber] == 0 or Input.is_key_pressed(KEY_CTRL):
+							cursorMode = CURSOR_MODE.NORMAL
+							Changes.addChange(Changes.NumberEditTextChange.new(self, text.erase(cursorStart, cursorEnd - cursorStart)))
+							Changes.addChange(Changes.GlobalPropertyChange.new(self, &"cursorEnd", cursorStart))
+							placeCursor()
+						else:
+							setNumber(cursorSelectedNumber, 0)
+							numberCaptureCursor(cursorSelectedNumber)
+			_: return false
 	return true
 
 func receiveUnhandledKey(key:InputEventKey) -> bool:
@@ -407,6 +470,15 @@ func receiveUnhandledKey(key:InputEventKey) -> bool:
 		match cursorMode:
 			CURSOR_MODE.NORMAL:
 				var character:String = char(key.unicode)
+				if cursorStart == 0 and cursorEnd == textLen:
+					if Editor.eventIs(key, &"numberNegate"):
+						setValue(M.times(result,M.nONE), false)
+						selectAll()
+						return true
+					elif Editor.eventIs(key, &"numberTimesI"):
+						setValue(M.times(result,M.I), false)
+						selectAll()
+						return true
 				if cursorEnd > cursorStart:
 					Changes.addChange(Changes.NumberEditTextChange.new(self, text.erase(cursorStart, cursorEnd - cursorStart), false))
 				elif "0123456789".contains(character):
@@ -430,12 +502,21 @@ func receiveUnhandledKey(key:InputEventKey) -> bool:
 				placeCursor()
 			CURSOR_MODE.NUMBER:
 				var character:String = char(key.unicode)
-				if Editor.eventIs(key, &"numberTimesI"): pass
-				elif Editor.eventIs(key, &"numberNegate"):
+				if Editor.eventIs(key, &"numberNegate"):
 					setNumber(cursorSelectedNumber, -numberValues[cursorSelectedNumber])
 					numberCaptureCursor(cursorSelectedNumber)
+				elif Editor.eventIs(key, &"numberTimesI"):
+					var textAfter:String = texts[cursorSelectedNumber+1]
+					if textAfter and textAfter[0] == "i":
+						Changes.addChange(Changes.NumberEditNumberChange.new(self, cursorSelectedNumber+1, &"texts", textAfter.substr(1)))
+						setNumber(cursorSelectedNumber, -numberValues[cursorSelectedNumber])
+						numberCaptureCursor(cursorSelectedNumber)
+					else:
+						Changes.addChange(Changes.NumberEditNumberChange.new(self, cursorSelectedNumber+1, &"texts", "i" + textAfter))
+						buildText()
+					parseText()
 				elif "0123456789".contains(character):
-					setNumber(cursorSelectedNumber, character.to_int())
+					setNumber(cursorSelectedNumber, (-1 if numberValues[cursorSelectedNumber] < 0 else 1)*character.to_int())
 					Changes.addChange(Changes.GlobalPropertyChange.new(self, &"cursorStart", numberEnds[cursorSelectedNumber]))
 					Changes.addChange(Changes.GlobalPropertyChange.new(self, &"cursorEnd", cursorStart))
 					cursorMode = CURSOR_MODE.NORMAL
@@ -450,7 +531,7 @@ func _gui_input(event:InputEvent) -> void:
 	var mouseIndex:int = ts.shaped_text_hit_test_position(shapedText, mouseX)
 	if event is InputEventMouseMotion or event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
 		if Editor.isLeftClick(event):
-			if context.interacted != self: context.interact(self)
+			if owner.interacted != self: owner.interact(self)
 			mouseDragStart = mouseIndex
 		if mouseDragStart != -1:
 			var mouseDragEnd:int = mouseIndex
@@ -462,11 +543,11 @@ func _gui_input(event:InputEvent) -> void:
 				cursorEnd = mouseDragStart
 			cursorMode = CURSOR_MODE.NORMAL
 			placeCursor()
-		if Editor.isLeftUnclick(event):
-			mouseDragStart = -1
-			if cursorStart == cursorEnd: numberCaptureCursor(numberAtIndex(mouseIndex, true))
 	var numberAtMouse:int = numberAtIndex(mouseIndex, true)
 	var tooFar:bool = mouseX > ts.shaped_text_get_width(shapedText)
+	if Editor.isLeftUnclick(event):
+			mouseDragStart = -1
+			if cursorStart == cursorEnd and !tooFar: numberCaptureCursor(numberAtMouse)
 	mouse_default_cursor_shape = Control.CURSOR_VSPLIT if mouseDragStart == -1 and numberAtMouse != -1 and !tooFar else Control.CURSOR_IBEAM
 	if numberAtMouse != -1 and event is InputEventMouseButton and event.pressed and !tooFar:
 		match event.button_index:
@@ -476,7 +557,7 @@ func _gui_input(event:InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 		numberCaptureCursor(numberAtMouse)
 		placeCursor()
-
+		if self not in Explainer.explainedControls: Explainer._explain(self) # idk why it breaks explain
 
 # not sure how powerful i want these to be
 ## for ctrl+right
@@ -517,14 +598,14 @@ func numberCheckSign(number:int, to:int) -> int:
 	var numberText:String = texts[number] # the text before the number
 	if len(numberText) == 0: return to
 	if numberText[-1] == "-":
-		if numberValues[number] <= 0:
-			numberText[-1] = "+" # TODO: this
-			Changes.addChange(Changes.NumberEditNumberChange.new(self, number, &"numberText", numberText))
+		if to <= 0:
+			numberText[-1] = "+"
+			Changes.addChange(Changes.NumberEditNumberChange.new(self, number, &"texts", numberText))
 			Changes.addChange(Changes.NumberEditNumberChange.new(self, number, &"numberSemiNegative", !numberSemiNegative[number]))
 			return -to
-	elif numberValues[number] < 0 and numberText[-1] == "+":
+	elif to < 0 and numberText[-1] == "+":
 		numberText[-1] = "-"
-		Changes.addChange(Changes.NumberEditNumberChange.new(self, number, &"numberText", numberText))
+		Changes.addChange(Changes.NumberEditNumberChange.new(self, number, &"texts", numberText))
 		Changes.addChange(Changes.NumberEditNumberChange.new(self, number, &"numberSemiNegative", !numberSemiNegative[number]))
 		return -to
 	return to
@@ -545,13 +626,23 @@ func numberAtIndex(index:int, strict:bool=false) -> int:
 		for number in numbers: if index >= numberStarts[number] and index <= numberEnds[number]: return number
 	return -1
 
+const CURSOR_MARGIN:int = 15
+
 func placeCursor() -> void:
-	cursorStart = clamp(cursorStart, 0, len(text))
-	cursorEnd = clamp(cursorEnd, 0, len(text))
+	cursorStart = clamp(cursorStart, 0, textLen)
+	cursorEnd = clamp(cursorEnd, 0, textLen)
 	%cursor.position.x = FNUMBEREDIT.get_string_size(text.substr(0,cursorStart)).x - 1
 	%cursor.size.x = FNUMBEREDIT.get_string_size(text.substr(0,cursorEnd)).x - %cursor.position.x + 1
 	var cursorEndPos:float = %cursor.position.x + %cursor.size.x
-	if cursorEndPos + %drawText.position.x + 20 > size.x:
-		%drawText.position.x = size.x - cursorEndPos - 20
-	if %cursor.position.x + %drawText.position.x < 20:
-		%drawText.position.x = min(0, -%cursor.position.x + 20)
+	if cursorEndPos + %drawText.position.x + CURSOR_MARGIN > size.x:
+		%drawText.position.x = size.x - cursorEndPos - CURSOR_MARGIN
+	if %cursor.position.x + %drawText.position.x < CURSOR_MARGIN:
+		%drawText.position.x = min(0, -%cursor.position.x + CURSOR_MARGIN)
+
+func _baseFormChanged():
+	match baseForm:
+		BASE_FORM.FACTORED: baseForm = BASE_FORM.DISTRIBUTED
+		BASE_FORM.DISTRIBUTED: baseForm = BASE_FORM.FACTORED
+	updateRestrictionDisplay()
+	setValue(result)
+	if cursorMode == CURSOR_MODE.NUMBER: numberCaptureCursor(cursorSelectedNumber)

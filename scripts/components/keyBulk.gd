@@ -45,8 +45,8 @@ const GLISTENING_SYMBOL:Texture2D = preload("res://assets/game/key/symbols/glist
 static var TEXTURE:KeyColorsTextureLoader = KeyColorsTextureLoader.new("res://assets/game/key/$c/$t.png", TEXTURE_COLORS, true, false, {capitalised=false})
 static var GLITCH:KeyColorsTextureLoader = KeyColorsTextureLoader.new("res://assets/game/key/$c/glitch$t.png", TEXTURE_COLORS, false, false, {capitalised=true})
 
-static var OPERATION_TEXTURE:OperatorColorsTextureLoader = OperatorColorsTextureLoader.new("res://assets/game/key/$c/operator/$t.png", TEXTURE_COLORS, true, false, {capitalised=false})
-static var OPERATION_GLITCH:OperatorColorsTextureLoader = OperatorColorsTextureLoader.new("res://assets/game/key/$c/operator/glitch$t.png", TEXTURE_COLORS, false, false, {capitalised=true})
+static var OPERATION_TEXTURE:OperatorColorsTextureLoader = OperatorColorsTextureLoader.new("res://assets/game/key/$c/operand/$t.png", TEXTURE_COLORS, true, false, {capitalised=false})
+static var OPERATION_GLITCH:OperatorColorsTextureLoader = OperatorColorsTextureLoader.new("res://assets/game/key/$c/operand/glitch$t.png", TEXTURE_COLORS, false, false, {capitalised=true})
 
 const FKEYBULK:Font = preload("res://resources/fonts/fKeyBulk.fnt")
 
@@ -106,8 +106,8 @@ func _ready() -> void:
 	Game.connect(&"goldIndexChanged",func():if hasAnimatedColor(): queue_redraw())
 
 func hasAnimatedColor() -> bool:
-	if color in Game.ANIMATED_COLORS: return true
-	if type == TYPE.OPERATOR and altColor in Game.ANIMATED_COLORS: return true
+	if getColor(COLOR_STEP.DRAW_BASE) in Game.ANIMATED_COLORS: return true
+	if type == TYPE.OPERATOR and getAltColor(COLOR_STEP.DRAW_BASE) in Game.ANIMATED_COLORS: return true
 	return false
 
 func _freed() -> void:
@@ -317,7 +317,6 @@ func collect(player:Player) -> void:
 	for object in Game.objects.values():
 		if object is KeyBulk and object.infinite and object.partialInfiniteCount > 0:
 			GameChanges.addChange(GameChanges.PropertyChange.new(object, &"partialInfiniteCount", object.partialInfiniteCount - 1))
-	GameChanges.bufferSave()
 
 	if color == Game.COLOR.MASTER: # not effectiveColor; doesnt trigger on glitch master
 		AudioManager.play(preload("res://resources/sounds/key/master.wav"))
@@ -331,13 +330,16 @@ func collect(player:Player) -> void:
 				if M.negative(M.sign(count)): AudioManager.play(preload("res://resources/sounds/key/negative.wav"))
 				else: AudioManager.play(preload("res://resources/sounds/key/normal.wav"))
 	
-	Game.setError(collectColor)
+	Game.setMimic(Game.COLOR.ERROR, collectColor)
+	Game.player.bufferCheckKeys()
+	GameChanges.bufferSave()
 
-func setGlitch(setColor:Game.COLOR) -> void:
-	if hasInitialColor(Game.COLOR.GLITCH): GameChanges.addChange(GameChanges.PropertyChange.new(self, &"glitchMimic", setColor))
-	queue_redraw()
-func setError(setColor:Game.COLOR) -> void:
-	if hasInitialColor(Game.COLOR.ERROR): GameChanges.addChange(GameChanges.PropertyChange.new(self, &"errorMimic", setColor))
+func setMimic(mimicType:Game.COLOR, setColor:Game.COLOR) -> void:
+	var property:StringName
+	match mimicType:
+		Game.COLOR.GLITCH: property = &"glitchMimic"
+		Game.COLOR.ERROR: property = &"errorMimic"
+	if hasInitialColor(mimicType): GameChanges.addChange(GameChanges.PropertyChange.new(self, property, setColor))
 	queue_redraw()
 
 func flashAnimation() -> void:

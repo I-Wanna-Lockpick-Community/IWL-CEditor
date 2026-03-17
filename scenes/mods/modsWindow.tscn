@@ -28,6 +28,7 @@ script = ExtResource("1_3smad")
 
 [node name="selectMods" type="PanelContainer" parent="." unique_id=98303778]
 unique_name_in_owner = true
+visible = false
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -211,7 +212,6 @@ text = "Next
 
 [node name="findProblems" type="PanelContainer" parent="." unique_id=710830694]
 unique_name_in_owner = true
-visible = false
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -239,9 +239,14 @@ horizontal_alignment = 1
 [node name="sep" type="HSeparator" parent="findProblems/c/c/c" unique_id=1267527869]
 layout_mode = 2
 
-[node name="modsAdded" type="VBoxContainer" parent="findProblems/c/c/c" unique_id=2091972464]
+[node name="c" type="ScrollContainer" parent="findProblems/c/c/c" unique_id=176964904]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="modsAdded" type="VBoxContainer" parent="findProblems/c/c/c/c" unique_id=2091972464]
 unique_name_in_owner = true
 layout_mode = 2
+size_flags_horizontal = 3
 size_flags_vertical = 3
 
 [node name="sep" type="VSeparator" parent="findProblems/c/c" unique_id=1156270631]
@@ -259,9 +264,14 @@ horizontal_alignment = 1
 [node name="sep" type="HSeparator" parent="findProblems/c/c/c2" unique_id=1682927640]
 layout_mode = 2
 
-[node name="modsRemoved" type="VBoxContainer" parent="findProblems/c/c/c2" unique_id=829854323]
+[node name="c" type="ScrollContainer" parent="findProblems/c/c/c2" unique_id=224779031]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="modsRemoved" type="VBoxContainer" parent="findProblems/c/c/c2/c" unique_id=829854323]
 unique_name_in_owner = true
 layout_mode = 2
+size_flags_horizontal = 3
 size_flags_vertical = 3
 
 [node name="sep" type="VSeparator" parent="findProblems/c" unique_id=354090211]

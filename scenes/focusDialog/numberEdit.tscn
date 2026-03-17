@@ -3,8 +3,28 @@
 [ext_resource type="Theme" uid="uid://bvfthh0vm4fbp" path="res://resources/uiTheme.tres" id="1_r568y"]
 [ext_resource type="Script" uid="uid://s2dd7w8ce34d" path="res://scripts/nodes/focusDialog/numberEdit.gd" id="2_xys7f"]
 [ext_resource type="FontVariation" uid="uid://s8hoox1x423q" path="res://resources/fonts/fNumberEdit.tres" id="3_sax1w"]
+[ext_resource type="Texture2D" uid="uid://dhgve1atblewf" path="res://assets/ui/focusDialog/numberEdit/restrictions/complexRational.png" id="4_1pxev"]
+[ext_resource type="Texture2D" uid="uid://la85kt7w7edo" path="res://assets/ui/focusDialog/numberEdit/restrictions/noZero.png" id="5_1pxev"]
+[ext_resource type="Texture2D" uid="uid://b3gkjk33cski0" path="res://assets/ui/focusDialog/numberEdit/restrictions/zeroI.png" id="6_5c4sp"]
+[ext_resource type="Script" uid="uid://cgjhnhjwymb8g" path="res://scripts/resources/controlExplanation.gd" id="6_amhd8"]
+[ext_resource type="Texture2D" uid="uid://dpqxiojndel7f" path="res://assets/ui/focusDialog/numberEdit/restrictions/complexRationalB.png" id="7_5c4sp"]
 
-[node name="numberEdit" type="PanelContainer" unique_id=231119399]
+[sub_resource type="Resource" id="Resource_5c4sp"]
+script = ExtResource("6_amhd8")
+explanation = "{ Number Edit [img]res://assets/ui/explainer/mmb.png[/img][img]res://assets/ui/explainer/arrowsUD.png[/img]±1 [%s]×-1 [%s]×i [Tab]Next [%s]Evaluate }"
+hotkeys = Array[StringName]([&"numberNegate", &"numberTimesI", &"numberEvaluate"])
+metadata/_custom_type_script = "uid://cgjhnhjwymb8g"
+
+[sub_resource type="Resource" id="Resource_d2j70"]
+script = ExtResource("6_amhd8")
+metadata/_custom_type_script = "uid://cgjhnhjwymb8g"
+
+[sub_resource type="Resource" id="Resource_eo48x"]
+script = ExtResource("6_amhd8")
+explanation = "{ Number Edit (0i valid) }"
+metadata/_custom_type_script = "uid://cgjhnhjwymb8g"
+
+[node name="numberEdit" type="PanelContainer" unique_id=231119399 groups=["explained", "hasNumbers"]]
 custom_minimum_size = Vector2(70, 18)
 offset_right = 70.0
 offset_bottom = 18.0
@@ -13,6 +33,7 @@ mouse_default_cursor_shape = 1
 theme = ExtResource("1_r568y")
 theme_type_variation = &"NumberEditPanelContainer"
 script = ExtResource("2_xys7f")
+metadata/explanation = SubResource("Resource_5c4sp")
 
 [node name="c" type="Control" parent="." unique_id=1333043490]
 clip_contents = true
@@ -42,3 +63,70 @@ offset_right = 1.0
 offset_bottom = 16.0
 mouse_filter = 2
 color = Color(0, 1, 1, 0.6666667)
+
+[node name="c2" type="Control" parent="." unique_id=488696293]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="side" type="Control" parent="c2" unique_id=325404340]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+grow_horizontal = 0
+
+[node name="sideCont" type="PanelContainer" parent="c2/side" unique_id=403701460]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 24)
+layout_mode = 1
+offset_left = 4.0
+offset_top = -5.0
+offset_right = 114.0
+offset_bottom = 19.0
+theme_type_variation = &"DialogPanelContainer"
+
+[node name="c2" type="MarginContainer" parent="c2/side/sideCont" unique_id=968912357]
+layout_mode = 2
+theme_override_constants/margin_left = 2
+theme_override_constants/margin_top = 2
+theme_override_constants/margin_right = 2
+theme_override_constants/margin_bottom = 2
+
+[node name="c" type="VBoxContainer" parent="c2/side/sideCont/c2" unique_id=1505657986]
+layout_mode = 2
+
+[node name="restriction" type="HBoxContainer" parent="c2/side/sideCont/c2/c" unique_id=172368647 groups=["explained"]]
+unique_name_in_owner = true
+layout_mode = 2
+metadata/explanation = SubResource("Resource_d2j70")
+
+[node name="type" type="TextureRect" parent="c2/side/sideCont/c2/c/restriction" unique_id=1299738022]
+unique_name_in_owner = true
+layout_mode = 2
+texture = ExtResource("4_1pxev")
+stretch_mode = 3
+
+[node name="nonzero" type="TextureRect" parent="c2/side/sideCont/c2/c/restriction" unique_id=1604953531]
+unique_name_in_owner = true
+layout_mode = 2
+texture = ExtResource("5_1pxev")
+stretch_mode = 3
+
+[node name="zeroi" type="TextureRect" parent="c2/side/sideCont/c2/c/restriction" unique_id=825559832 groups=["explained"]]
+unique_name_in_owner = true
+layout_mode = 2
+texture = ExtResource("6_5c4sp")
+stretch_mode = 3
+metadata/explanation = SubResource("Resource_eo48x")
+
+[node name="changeBaseForm" type="Button" parent="c2/side/sideCont/c2/c" unique_id=738210166]
+unique_name_in_owner = true
+visible = false
+modulate = Color(0.7708398, 0.7708394, 0.77083945, 1)
+layout_mode = 2
+size_flags_horizontal = 0
+icon = ExtResource("7_5c4sp")
+
+[connection signal="pressed" from="c2/side/sideCont/c2/c/changeBaseForm" to="." method="_baseFormChanged"]

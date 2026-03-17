@@ -222,6 +222,8 @@ func _physics_process(_delta:float) -> void:
 
 	move_and_slide()
 
+	position = position.round()
+
 	if moveDirection and !cameraMode: %sprite.flip_h = moveDirection < 0
 
 	if velocity.y <= -0.05*FPS: %sprite.play("jump")

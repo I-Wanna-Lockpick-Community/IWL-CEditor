@@ -87,7 +87,7 @@ height = 67.0
 size = Vector2(12, 67)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_f1ej7"]
-size = Vector2(12, 1)
+size = Vector2(11, 1)
 
 [node name="player" type="CharacterBody2D" unique_id=369799050]
 collision_layer = 0

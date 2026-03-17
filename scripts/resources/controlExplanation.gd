@@ -1,7 +1,8 @@
 extends Resource
 class_name ControlExplanation
 
-@export var explanation:String
+## "%s"s are replaced with hotkeys
+@export_multiline var explanation:String
 @export var hotkeys:Array[StringName]
 
 func _init(_explanation:String="", _hotkeys:Array[StringName]=[]) -> void:

@@ -71,7 +71,6 @@ hotkeys = Array[StringName]([&"focusLockNegated"])
 script = ExtResource("22_s5h3h")
 explanation = "[%s]Toggle armament"
 hotkeys = Array[StringName]([&"focusLockArmament"])
-metadata/_custom_type_script = "uid://lwocqakgt4qr"
 
 [sub_resource type="Resource" id="Resource_ljt45"]
 script = ExtResource("22_s5h3h")
@@ -109,7 +108,6 @@ thickness = 2
 script = ExtResource("22_s5h3h")
 explanation = "[%s]×-1"
 hotkeys = Array[StringName]([&"numberNegate"])
-metadata/_custom_type_script = "uid://lwocqakgt4qr"
 
 [sub_resource type="Resource" id="Resource_rmnx8"]
 script = ExtResource("22_s5h3h")
@@ -397,7 +395,6 @@ metadata/_custom_type_script = "uid://c70juj2p5s6yd"
 
 [node name="lockSettings" type="HBoxContainer" parent="doorDialog/c/lock/c/c" unique_id=453563631]
 unique_name_in_owner = true
-visible = false
 layout_mode = 2
 alignment = 1
 
