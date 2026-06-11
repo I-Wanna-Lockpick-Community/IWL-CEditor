@@ -55,7 +55,7 @@ const CREATE_PARAMETERS:Array[StringName] = [
 ]
 const PROPERTIES:Array[StringName] = [
 	&"id", &"position", &"size",
-	&"color", &"type", &"count", &"infinite", &"glistening", &"un", &"reciprocal", &"altColor", &"operation"
+	&"color", &"type", &"count", &"infinite", &"glistening", &"un", &"altColor", &"operation"
 ]
 
 static var ARRAYS:Dictionary[StringName,Variant] = {}
