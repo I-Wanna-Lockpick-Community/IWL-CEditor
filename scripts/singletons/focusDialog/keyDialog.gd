@@ -68,12 +68,12 @@ func changedMods() -> void:
 		%keyPartialInfinite.visible = Mods.active(&"PartialInfKeys") and main.focused.infinite
 		%keyReciprocal.visible = main.focused.type == KeyBulk.TYPE.ROTOR && Mods.active(&"OperatorKeys")
 
-func _keyColorSelected(color:Colors.C) -> void:
+func _keyColorSelected(color:C.olors) -> void:
 	if main.focused is not KeyBulk: return
 	Changes.addChange(Changes.PropertyChange.new(main.focused,&"color",color))
 	Changes.bufferSave()
 
-func _keyAltColorSelected(color:Colors.C) -> void:
+func _keyAltColorSelected(color:C.olors) -> void:
 	if main.focused is not KeyBulk: return
 	Changes.addChange(Changes.PropertyChange.new(main.focused,&"altColor",color))
 	Changes.bufferSave()

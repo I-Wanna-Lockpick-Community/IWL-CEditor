@@ -73,8 +73,8 @@ func _elementsChanged() -> void:
 		index += 1
 
 func _swapElements(first:int, second:int) -> void: # TODO:DEJANK
-	var firstColor:Colors.C = elements[first].color
-	var secondColor:Colors.C = elements[second].color
+	var firstColor:C.olors = elements[first].color
+	var secondColor:C.olors = elements[second].color
 	editor.componentDragged = elements[second]
 	editor.focusDialog.componentFocused = elements[second]
 	Changes.addChange(Changes.PropertyChange.new(elements[first],&"color",secondColor))
@@ -89,9 +89,9 @@ func removeElement(index:int) -> void:
 	Changes.addChange(Changes.DeleteComponentChange.new(elements[index]))
 	Changes.bufferSave()
 
-func nextColor() -> Colors.C:
+func nextColor() -> C.olors:
 	# make sure to change this when implementing Mods
-	if len(elements) < 2: return Colors.C.WHITE
+	if len(elements) < 2: return C.olors.WHITE
 	return Mods.nextColor(elements[-2].color)
 
 func reindexElements() -> void:

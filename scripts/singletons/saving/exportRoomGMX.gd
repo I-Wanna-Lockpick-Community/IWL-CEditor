@@ -142,7 +142,7 @@ static func exportFile(_file:FileAccess) -> void:
 					if object.configuration != Lock.CONFIGURATION.NONE: spriteName += Lock.CONFIGURATION_NAMES[object.configuration]
 					else: spriteName += Lock.SIZE_TYPE_NAMES[object.sizeType]
 					code += "sprite = %s;&#xA;" % spriteName
-				if object.color != Colors.C.WHITE: code += "color = color_%s;&#xA;" % COLOR_NAMES[object.color].to_upper()
+				if object.color != C.olors.WHITE: code += "color = color_%s;&#xA;" % COLOR_NAMES[object.color].to_upper()
 				if object.type != Lock.TYPE.NORMAL: code += "type = lock_%s;&#xA;" % Lock.TYPE_NAMES[object.type].to_upper()
 				if M.neq(M.r(object.count), M.ONE): code += "count = %s;&#xA;" % M.str(M.r(object.count))
 				if M.ex(M.i(object.count)): code += "icount = %s;&#xA;" % M.str(M.ir(object.count))

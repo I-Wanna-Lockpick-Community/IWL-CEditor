@@ -2,14 +2,14 @@ extends GameTextureLoader
 class_name ColorsTextureLoader
 # recursive
 
-var textures:Dictionary[Colors.C,GameTextureLoader] = {} # dictionary[color,textureloader]
+var textures:Dictionary[C.olors,GameTextureLoader] = {} # dictionary[color,textureloader]
 
 ## initialise the subloader
 func initLoader(path:String,frames:int,_params:Dictionary) -> GameTextureLoader:
 	return GoldIndexTextureLoader.new(path, frames)
 
-func colorSelect(color:Colors.ColorDef) -> bool: return color.doorTexture
-func colorFrames(color:Colors.ColorDef) -> int: return color.doorTextureFrames
+func colorSelect(color:C.ColorDef) -> bool: return color.doorTexture
+func colorFrames(color:C.ColorDef) -> int: return color.doorTextureFrames
 
 ## replaces $c in path with color name, and if there are more than 1 frames, puts the frame index before the .
 func _init(path:String, useIndices:bool=true, capitalised:bool=false, params:Dictionary={}) -> void:

@@ -52,10 +52,10 @@ func _saveChanges():
 
 	if !Mods.objectAvailable(Game.editor.otherObjects.selected): Game.editor.otherObjects.objectSelected(PlayerSpawn, true)
 	
-	var availableColors:Array[Colors.C] = Mods.colors()
+	var availableColors:Array[C.olors] = Mods.colors()
 	for playerSpawn in Game.objects.values().filter(func(object): return object is PlayerSpawn):
 		if playerSpawn == Game.levelStart: continue
-		if &"CurseKeys" in modsRemoved: Changes.addChange(Changes.ArrayElementChange.new(playerSpawn,&"curse",Colors.C.BROWN,true))
+		if &"CurseKeys" in modsRemoved: Changes.addChange(Changes.ArrayElementChange.new(playerSpawn,&"curse",C.olors.BROWN,true))
 		for color in Colors.COLORS:
 			if color in availableColors: continue
 			playerSpawn.resetColor(color)

@@ -8,7 +8,7 @@ var spacers:Array[Control]
 func _ready() -> void:
 	columns = 8
 	options = range(Colors.COLORS)
-	defaultValue = Colors.C.WHITE
+	defaultValue = C.olors.WHITE
 	buttonType = ColorSelectorButton
 	super()
 	for button in buttons:
@@ -19,7 +19,7 @@ func onlyConfigurableColors() -> void:
 		if !color.toneConfigurable: buttons[color.id].visible = false
 
 func changedMods() -> void:
-	var colors:Array[Colors.C] = Mods.colors()
+	var colors:Array[C.olors] = Mods.colors()
 	for button in buttons: button.visible = false
 	for color in colors: buttons[color].visible = true
 	if len(colors) < 15: columns = 7
@@ -39,14 +39,14 @@ func changedMods() -> void:
 class ColorSelectorButton extends SelectorButton:
 	var drawMain:RID
 
-	func _init(_value:Colors.C, _selector:Selector):
+	func _init(_value:C.olors, _selector:Selector):
 		custom_minimum_size = Vector2(20,20)
 		z_index = 1
 		super(_value, _selector)
 	
 	func _ready() -> void:
 		drawMain = RenderingServer.canvas_item_create()
-		if value == Colors.C.GLITCH:
+		if value == C.olors.GLITCH:
 			RenderingServer.canvas_item_set_material(drawMain,Game.GLITCH_MATERIAL.get_rid())
 		RenderingServer.canvas_item_set_z_index(drawMain,-1)
 		RenderingServer.canvas_item_set_parent(drawMain,get_canvas_item())
@@ -59,5 +59,5 @@ class ColorSelectorButton extends SelectorButton:
 		RenderingServer.canvas_item_clear(drawMain)
 		var rect:Rect2 = Rect2(Vector2.ONE, size-Vector2(2,2))
 		if Colors.getDef(value).doorTexture: RenderingServer.canvas_item_add_texture_rect(drawMain,rect,Game.COLOR_TEXTURES.current([value]))
-		elif value == Colors.C.NONE: RenderingServer.canvas_item_add_texture_rect(drawMain,rect,NONE_COLOR)
+		elif value == C.olors.NONE: RenderingServer.canvas_item_add_texture_rect(drawMain,rect,NONE_COLOR)
 		else: RenderingServer.canvas_item_add_rect(drawMain,rect,Game.mainTone[value])

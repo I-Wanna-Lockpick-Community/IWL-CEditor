@@ -36,7 +36,7 @@ func _keyCounterWidthSelected(width:KeyCounter.WIDTH):
 	Changes.addChange(Changes.PropertyChange.new(main.focused,&"size",Vector2(KeyCounter.WIDTH_AMOUNT[width],main.focused.size.y)))
 	Changes.bufferSave()
 
-func _keyCounterColorSelected(color:Colors.C) -> void:
+func _keyCounterColorSelected(color:C.olors) -> void:
 	if main.focused is not KeyCounter: return
 	Changes.addChange(Changes.PropertyChange.new(main.componentFocused,&"color",color))
 	Changes.bufferSave()

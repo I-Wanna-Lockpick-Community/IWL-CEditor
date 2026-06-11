@@ -12,7 +12,7 @@ enum OPERATION {SET, ADD, SUBTRACT, MULTIPLY, DIVIDE, MODULO}
 const OPERATION_NAMES:Array[String] = ["Set", "Add", "Subtract", "Multiply", "Divide", "Modulo"]
 
 # colors that use textures
-const TEXTURE_COLORS:Array[Colors.C] = [Colors.C.MASTER, Colors.C.PURE, Colors.C.STONE, Colors.C.DYNAMITE, Colors.C.QUICKSILVER, Colors.C.ICE, Colors.C.MUD, Colors.C.GRAFFITI, Colors.C.ERROR, Colors.C.COSMIC]
+const TEXTURE_COLORS:Array[C.olors] = [C.olors.MASTER, C.olors.PURE, C.olors.STONE, C.olors.DYNAMITE, C.olors.QUICKSILVER, C.olors.ICE, C.olors.MUD, C.olors.GRAFFITI, C.olors.ERROR, C.olors.COSMIC]
 
 static var FILL:KeyTextureLoader = KeyTextureLoader.new("res://assets/game/key/$t/fill.png")
 static var FRAME:KeyTextureLoader = KeyTextureLoader.new("res://assets/game/key/$t/frame.png")
@@ -60,17 +60,17 @@ const PROPERTIES:Array[StringName] = [
 
 static var ARRAYS:Dictionary[StringName,Variant] = {}
 
-var color:Colors.C = Colors.C.WHITE
+var color:C.olors = C.olors.WHITE
 var type:TYPE = TYPE.NORMAL
 var count:PackedInt64Array = M.ONE
 var infinite:int = 0
 var glistening:bool = false # whether the key affects glistening count or not
-var altColor:Colors.C = Colors.C.WHITE
+var altColor:C.olors = C.olors.WHITE
 var operation:OPERATION = OPERATION.SET
 var un:bool = false # whether a star or curse key is an unstar or uncurse key
 var reciprocal:bool = false # whether a rotor key is reciprocal or not
 
-func getColors() -> Array[Colors.C]:
+func getColors() -> Array[C.olors]:
 	if type == TYPE.OPERATOR: return [color, altColor]
 	return [color]
 
@@ -124,16 +124,16 @@ func convertNumbers(from:M.SYSTEM) -> void:
 
 func outlineTex() -> Texture2D: return getOutlineTexture(color, type, un, operation)
 
-static func getOutlineTexture(keyColor:Colors.C, keyType:TYPE=TYPE.NORMAL, keyUn:bool=false, keyOperation:OPERATION=OPERATION.SET) -> Texture2D:
+static func getOutlineTexture(keyColor:C.olors, keyType:TYPE=TYPE.NORMAL, keyUn:bool=false, keyOperation:OPERATION=OPERATION.SET) -> Texture2D:
 	var textureType:KeyTextureLoader.TYPE = keyTextureType(keyType,keyUn)
 	match keyColor:
-		Colors.C.MASTER:
+		C.olors.MASTER:
 			match textureType:
 				KeyTextureLoader.TYPE.NORMAL: return preload("res://assets/game/key/master/outlineMask.png")
 				KeyTextureLoader.TYPE.EXACT: return preload("res://assets/game/key/master/outlineMaskExact.png")
-		Colors.C.QUICKSILVER:
+		C.olors.QUICKSILVER:
 			return QUICKSILVER_OUTLINE_MASK.current([textureType])
-		Colors.C.DYNAMITE:
+		C.olors.DYNAMITE:
 			if textureType == KeyTextureLoader.TYPE.NORMAL: return preload("res://assets/game/key/dynamite/outlineMask.png")
 	if textureType == KeyTextureLoader.TYPE.OPERATOR: return OPERATOR_OUTLINE_MASK.current([keyOperation])
 	return OUTLINE_MASK.current([textureType])
@@ -150,7 +150,7 @@ func _draw() -> void:
 	var rect:Rect2 = Rect2(Vector2.ZERO, size)
 	RenderingServer.canvas_item_add_texture_rect(drawDropShadow,Rect2(Vector2(3,3),size),getOutlineTexture(color,type,un,operation),false,Game.DROP_SHADOW_COLOR)
 	drawKey(drawGlitch,drawMain,Vector2.ZERO,getColor(COLOR_STEP.DRAW_BASE),type,un,glitchMimic,partialInfiniteAlpha)
-	if color == Colors.C.ERROR:
+	if color == C.olors.ERROR:
 		var errorrect:Rect2 = Rect2(Vector2(randi_range(-5,5),randi_range(-5,5)),size)
 		RenderingServer.canvas_item_add_texture_rect(drawError,errorrect,ERROR_FX.current([randi_range(0,2)]))
 	if animState == ANIM_STATE.FLASH: RenderingServer.canvas_item_add_texture_rect(drawSymbol,rect,outlineTex(),false,Color(Color.WHITE,animAlpha))
@@ -196,18 +196,18 @@ static func keyTextureType(keyType:TYPE, keyUn:bool) -> KeyTextureLoader.TYPE:
 		TYPE.OPERATOR: return KeyTextureLoader.TYPE.OPERATOR
 		_: return KeyTextureLoader.TYPE.NORMAL
 
-static func drawKey(keyDrawGlitch:RID,keyDrawMain:RID, keyOffset:Vector2,keyColor:Colors.C,keyType:TYPE=TYPE.NORMAL,keyUn:bool=false,keyGlitchMimic:Colors.C=Colors.C.GLITCH,keyPartialInfiniteAlpha:float=1) -> void:
+static func drawKey(keyDrawGlitch:RID,keyDrawMain:RID, keyOffset:Vector2,keyColor:C.olors,keyType:TYPE=TYPE.NORMAL,keyUn:bool=false,keyGlitchMimic:C.olors=C.olors.GLITCH,keyPartialInfiniteAlpha:float=1) -> void:
 	var rect:Rect2 = Rect2(keyOffset, Vector2(32,32))
 	var textureType:KeyTextureLoader.TYPE = keyTextureType(keyType, keyUn)
 	RenderingServer.canvas_item_set_modulate(keyDrawMain, Color(Color.WHITE, keyPartialInfiniteAlpha))
 	RenderingServer.canvas_item_set_modulate(keyDrawGlitch, Color(Color.WHITE, keyPartialInfiniteAlpha))
 	if keyColor in TEXTURE_COLORS:
 		RenderingServer.canvas_item_add_texture_rect(keyDrawMain,rect,TEXTURE.current([keyColor,textureType]))
-	elif keyColor == Colors.C.GLITCH:
+	elif keyColor == C.olors.GLITCH:
 		RenderingServer.canvas_item_add_texture_rect(keyDrawGlitch,rect,FRAME_GLITCH.current([textureType]))
 		RenderingServer.canvas_item_add_texture_rect(keyDrawGlitch,rect,FILL.current([textureType]),false,Game.mainTone[keyColor])
 		if textureType == TYPE.CURSE: RenderingServer.canvas_item_add_texture_rect(keyDrawGlitch,rect,CURSE_FILL_DARK,false,Game.darkTone[keyColor])
-		if keyGlitchMimic != Colors.C.GLITCH:
+		if keyGlitchMimic != C.olors.GLITCH:
 			if keyGlitchMimic in TEXTURE_COLORS: RenderingServer.canvas_item_add_texture_rect(keyDrawMain,rect,GLITCH.current([keyGlitchMimic,textureType]))
 			else: RenderingServer.canvas_item_add_texture_rect(keyDrawMain,rect,FILL_GLITCH.current([textureType]),false,Game.mainTone[keyGlitchMimic])
 	else:
@@ -215,14 +215,14 @@ static func drawKey(keyDrawGlitch:RID,keyDrawMain:RID, keyOffset:Vector2,keyColo
 		RenderingServer.canvas_item_add_texture_rect(keyDrawMain,rect,FILL.current([textureType]),false,Game.mainTone[keyColor])
 		if keyType == TYPE.CURSE and !keyUn: RenderingServer.canvas_item_add_texture_rect(keyDrawMain,rect,CURSE_FILL_DARK,false,Game.darkTone[keyColor])
 
-static func drawOperationSymbol(keyDrawAdditonal:RID, keyDrawGlitch:RID, keyOffset:Vector2, partColor:Colors.C, keyMode:OPERATION=OPERATION.SET,keyGlitchMimic:Colors.C=Colors.C.GLITCH):
+static func drawOperationSymbol(keyDrawAdditonal:RID, keyDrawGlitch:RID, keyOffset:Vector2, partColor:C.olors, keyMode:OPERATION=OPERATION.SET,keyGlitchMimic:C.olors=C.olors.GLITCH):
 	var rect:Rect2 = Rect2(keyOffset, Vector2(32,32))
 	if partColor in TEXTURE_COLORS:
 		RenderingServer.canvas_item_add_texture_rect(keyDrawAdditonal,rect,OPERATION_TEXTURE.current([partColor,keyMode]))
-	elif partColor == Colors.C.GLITCH:
+	elif partColor == C.olors.GLITCH:
 		RenderingServer.canvas_item_add_texture_rect(keyDrawGlitch,rect,OPERATOR_FRAME_GLITCH.current([keyMode]))
 		RenderingServer.canvas_item_add_texture_rect(keyDrawGlitch,rect,OPERATOR_FILL.current([keyMode]),false,Game.mainTone[partColor])
-		if keyGlitchMimic != Colors.C.GLITCH:
+		if keyGlitchMimic != C.olors.GLITCH:
 			if keyGlitchMimic in TEXTURE_COLORS: RenderingServer.canvas_item_add_texture_rect(keyDrawAdditonal,rect,OPERATION_GLITCH.current([keyGlitchMimic,keyMode]))
 			else: 
 				RenderingServer.canvas_item_add_texture_rect(keyDrawAdditonal,rect,OPERATOR_FILL_GLITCH.current([keyMode]),false,Game.mainTone[keyGlitchMimic])
@@ -241,8 +241,8 @@ func propertyChangedInit(property:StringName) -> void:
 		if !reciprocal and M.eq(count, M.ONE): Changes.addChange(Changes.PropertyChange.new(self,&"count",M.nONE))
 
 # ==== PLAY ==== #
-var glitchMimic:Colors.C = Colors.C.GLITCH
-var errorMimic:Colors.C = Colors.C.ERROR
+var glitchMimic:C.olors = C.olors.GLITCH
+var errorMimic:C.olors = C.olors.ERROR
 var partialInfiniteCount:int = 0
 
 enum ANIM_STATE {IDLE, FLASH}
@@ -266,16 +266,16 @@ func _process(delta:float) -> void:
 			queue_redraw()
 
 func stop() -> void:
-	glitchMimic = Colors.C.GLITCH
-	errorMimic = Colors.C.ERROR
+	glitchMimic = C.olors.GLITCH
+	errorMimic = C.olors.ERROR
 	partialInfiniteCount = 0
 	partialInfiniteAlpha = 1
 	super()
 
 func collect(player:Player) -> void:
 	if partialInfiniteCount: return
-	var collectColor:Colors.C = getColor(COLOR_STEP.FINAL)
-	var collectAltColor:Colors.C = getAltColor(COLOR_STEP.FINAL) # for operator
+	var collectColor:C.olors = getColor(COLOR_STEP.FINAL)
+	var collectAltColor:C.olors = getAltColor(COLOR_STEP.FINAL) # for operator
 
 	if glistening:
 		match type:
@@ -318,7 +318,7 @@ func collect(player:Player) -> void:
 		if object is KeyBulk and object.infinite and object.partialInfiniteCount > 0:
 			GameChanges.addChange(GameChanges.PropertyChange.new(object, &"partialInfiniteCount", object.partialInfiniteCount - 1))
 
-	if color == Colors.C.MASTER: # not effectiveColor; doesnt trigger on glitch master
+	if color == C.olors.MASTER: # not effectiveColor; doesnt trigger on glitch master
 		AudioManager.play(preload("res://resources/sounds/key/master.wav"))
 	else:
 		match type:
@@ -330,15 +330,15 @@ func collect(player:Player) -> void:
 				if M.negative(M.sign(count)): AudioManager.play(preload("res://resources/sounds/key/negative.wav"))
 				else: AudioManager.play(preload("res://resources/sounds/key/normal.wav"))
 	
-	Game.setMimic(Colors.C.ERROR, collectColor)
+	Game.setMimic(C.olors.ERROR, collectColor)
 	Game.player.bufferCheckKeys()
 	GameChanges.bufferSave()
 
-func setMimic(mimicType:Colors.C, setColor:Colors.C) -> void:
+func setMimic(mimicType:C.olors, setColor:C.olors) -> void:
 	var property:StringName
 	match mimicType:
-		Colors.C.GLITCH: property = &"glitchMimic"
-		Colors.C.ERROR: property = &"errorMimic"
+		C.olors.GLITCH: property = &"glitchMimic"
+		C.olors.ERROR: property = &"errorMimic"
 	if hasInitialColor(mimicType): GameChanges.addChange(GameChanges.PropertyChange.new(self, property, setColor))
 	queue_redraw()
 
@@ -350,38 +350,38 @@ func propertyGameChangedDo(property:StringName) -> void:
 	if property == &"active":
 		%interact.process_mode = PROCESS_MODE_INHERIT if active else PROCESS_MODE_DISABLED
 
-func hasInitialColor(checkColor:Colors.C) -> bool:
+func hasInitialColor(checkColor:C.olors) -> bool:
 	return color == checkColor or (type == TYPE.OPERATOR and altColor == checkColor)
 
 enum COLOR_STEP {INITIAL, Error, DRAW_BASE, Glitch, FINAL}
 
-func getColor(step:COLOR_STEP) -> Colors.C:
-	var resultColor:Colors.C = color
+func getColor(step:COLOR_STEP) -> C.olors:
+	var resultColor:C.olors = color
 
 	if step < COLOR_STEP.Error: return resultColor
-	if resultColor == Colors.C.ERROR: return errorMimic
+	if resultColor == C.olors.ERROR: return errorMimic
 
 	# DRAW_BASE
 	# the step used for drawing
 
 	if step < COLOR_STEP.Glitch: return resultColor
-	if resultColor == Colors.C.GLITCH: return glitchMimic
+	if resultColor == C.olors.GLITCH: return glitchMimic
 
 	# FINAL
 	# the step used for spending
 	return resultColor
 
-func getAltColor(step:COLOR_STEP) -> Colors.C:
-	var resultColor:Colors.C = altColor
+func getAltColor(step:COLOR_STEP) -> C.olors:
+	var resultColor:C.olors = altColor
 
 	if step < COLOR_STEP.Error: return resultColor
-	if resultColor == Colors.C.ERROR: return errorMimic
+	if resultColor == C.olors.ERROR: return errorMimic
 
 	# DRAW_BASE
 	# the step used for drawing
 
 	if step < COLOR_STEP.Glitch: return resultColor
-	if resultColor == Colors.C.GLITCH: return glitchMimic
+	if resultColor == C.olors.GLITCH: return glitchMimic
 
 	# FINAL
 	# the step used for spending

@@ -1,9 +1,10 @@
 extends Node
+class_name C
 
 var COLORS:int = 0
 var DEFINITIONS:Array[ColorDef] = []
 
-enum C {MASTER, WHITE, ORANGE, PURPLE, RED, GREEN, BLUE, PINK, CYAN, BLACK, BROWN, PURE, GLITCH, STONE, DYNAMITE, QUICKSILVER, MAROON, FOREST, NAVY, ICE, MUD, GRAFFITI, NONE, ERROR, COSMIC}
+enum olors {MASTER, WHITE, ORANGE, PURPLE, RED, GREEN, BLUE, PINK, CYAN, BLACK, BROWN, PURE, GLITCH, STONE, DYNAMITE, QUICKSILVER, MAROON, FOREST, NAVY, ICE, MUD, GRAFFITI, NONE, ERROR, COSMIC}
 
 func _init() -> void:
 	# only add at the end, please!
@@ -45,8 +46,8 @@ func _init() -> void:
 	defineColor("Cosmic",		Color("#240a44"), Color("#19072f"), Color("#110521")).texturedKeys().animatedDoors(8, true) \
 				   .brightTones(Color("#340e62"), Color("#240a44"), Color("#19072f"))
 
-func getDef(color:C) -> ColorDef: return DEFINITIONS[color]
-func getName(color:C) -> String: return DEFINITIONS[color].name
+func getDef(color:C.olors) -> ColorDef: return DEFINITIONS[color]
+func getName(color:C.olors) -> String: return DEFINITIONS[color].name
 
 
 func defineColor(_name:String, _highTone:Color, _mainTone:Color, _darkTone:Color) -> ColorDef:

@@ -75,7 +75,7 @@ class LockHandlerButton extends HandlerButton:
 		RenderingServer.canvas_item_clear(drawMain)
 		if deleted or !lock: return
 		var rect:Rect2 = Rect2(Vector2.ONE, size-Vector2(2,2))
-		if lock.color == Colors.C.GLITCH: RenderingServer.canvas_item_set_material(drawMain, Game.GLITCH_MATERIAL)
+		if lock.color == C.olors.GLITCH: RenderingServer.canvas_item_set_material(drawMain, Game.GLITCH_MATERIAL)
 		else: RenderingServer.canvas_item_set_material(drawMain, Game.NO_MATERIAL)
 		if Colors.getDef(lock.color).doorTexture: RenderingServer.canvas_item_add_texture_rect(drawMain,rect,Game.COLOR_TEXTURES.current([lock.color]))
 		else: RenderingServer.canvas_item_add_rect(drawMain,rect,Game.mainTone[lock.color])

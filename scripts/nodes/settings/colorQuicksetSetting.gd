@@ -18,7 +18,7 @@ func _ready() -> void:
 	super()
 
 func changedMods() -> void:
-	var colors:Array[Colors.C] = Mods.colors()
+	var colors:Array[C.olors] = Mods.colors()
 	for button in buttons: button.visible = false
 	for color in colors: buttons[color].visible = true
 	for button in buttons: button.check()
@@ -37,14 +37,14 @@ func changedMods() -> void:
 class ColorQuickSettingButton extends QuicksetSettingButton:
 	var drawMain:RID
 
-	func _init(_value:Colors.C, _quicksetSetting:QuicksetSetting):
+	func _init(_value:C.olors, _quicksetSetting:QuicksetSetting):
 		custom_minimum_size = Vector2(72,24)
 		super(_value, _quicksetSetting)
 		icon = ICON
 	
 	func _ready() -> void:
 		drawMain = RenderingServer.canvas_item_create()
-		if value == Colors.C.GLITCH:
+		if value == C.olors.GLITCH:
 			RenderingServer.canvas_item_set_material(drawMain,Game.GLITCH_MATERIAL.get_rid())
 		RenderingServer.canvas_item_set_z_index(drawMain,1)
 		RenderingServer.canvas_item_set_parent(drawMain,get_canvas_item())
@@ -58,5 +58,5 @@ class ColorQuickSettingButton extends QuicksetSettingButton:
 		RenderingServer.canvas_item_clear(drawMain)
 		var rect:Rect2 = Rect2(Vector2(2,2), Vector2(20,20))
 		if Colors.getDef(value).doorTexture: RenderingServer.canvas_item_add_texture_rect(drawMain,rect,Game.COLOR_TEXTURES.current([value]))
-		elif value == Colors.C.NONE: RenderingServer.canvas_item_add_texture_rect(drawMain,rect,ColorSelector.NONE_COLOR)
+		elif value == C.olors.NONE: RenderingServer.canvas_item_add_texture_rect(drawMain,rect,ColorSelector.NONE_COLOR)
 		else: RenderingServer.canvas_item_add_rect(drawMain,rect,Game.mainTone[value])

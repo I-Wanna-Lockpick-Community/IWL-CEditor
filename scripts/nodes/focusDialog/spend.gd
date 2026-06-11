@@ -15,7 +15,7 @@ func _draw() -> void:
 	RenderingServer.canvas_item_clear(drawMain)
 	if door is not Door: return
 	var rect:Rect2 = Rect2(position+Vector2.ONE, size-Vector2(2,2))
-	if door.colorSpend == Colors.C.GLITCH: RenderingServer.canvas_item_set_material(drawMain, Game.GLITCH_MATERIAL)
+	if door.colorSpend == C.olors.GLITCH: RenderingServer.canvas_item_set_material(drawMain, Game.GLITCH_MATERIAL)
 	else: RenderingServer.canvas_item_set_material(drawMain, Game.NO_MATERIAL)
 	if door.type == Door.TYPE.GATE:
 		RenderingServer.canvas_item_add_texture_rect(drawMain,rect,GATE_FILL,true)

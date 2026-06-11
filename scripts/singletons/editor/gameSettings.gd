@@ -27,7 +27,7 @@ func _ready() -> void:
 	toneButtonGroup.pressed.connect(_toneSelected)
 	%presets.get_popup().id_pressed.connect(_setPreset)
 	%colorSelector.onlyConfigurableColors()
-	_colorSelected(Colors.C.WHITE)
+	_colorSelected(C.olors.WHITE)
 
 func opened(configFile:ConfigFile) -> void:
 	%volume.value = configFile.get_value("game", "volume", 0.5)
@@ -86,7 +86,7 @@ func _toneSelected(button:Button) -> void:
 		"Dark": selectedTone = Game.darkTone
 	updateLabels()
 
-func _colorSelected(color:Colors.C) -> void:
+func _colorSelected(color:C.olors) -> void:
 	%colorEditLabel.text = "Editing '" + Colors.getName(color) + "'"
 	updateLabels()
 
@@ -141,7 +141,7 @@ func _draw() -> void:
 	RenderingServer.canvas_item_clear(doorDrawAuraBreaker)
 	RenderingServer.canvas_item_clear(doorDrawMain)
 	KeyBulk.drawKey(keyDrawMain,keyDrawMain,Vector2.ZERO,%colorSelector.selected)
-	Door.drawDoor(doorDrawScaled,doorDrawAuraBreaker,doorDrawMain,doorDrawMain,Vector2(32,32),%colorSelector.selected,Colors.C.GLITCH,Door.TYPE.COMBO,1)
+	Door.drawDoor(doorDrawScaled,doorDrawAuraBreaker,doorDrawMain,doorDrawMain,Vector2(32,32),%colorSelector.selected,C.olors.GLITCH,Door.TYPE.COMBO,1)
 
 func _hideTimerSet(toggled_on:bool) -> void:
 	Game.hideTimer = toggled_on
