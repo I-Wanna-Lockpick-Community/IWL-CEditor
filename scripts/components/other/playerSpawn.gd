@@ -39,18 +39,18 @@ var drawMain:RID
 
 func _init() -> void:
 	size = Vector2(32,32)
-	for color in Game.COLORS:
-		# if color == Game.COLOR.STONE:
+	for color in Colors.COLORS:
+		# if color == C.olors.STONE:
 		key.append(M.ZERO)
 		star.append(false)
-		curse.append(color == Game.COLOR.BROWN)
+		curse.append(color == C.olors.BROWN)
 		glisten.append(M.ZERO)
 
 func resetColors() -> void:
-	for color in Game.COLORS:
+	for color in Colors.COLORS:
 		resetColor(color)
 
-func resetColor(color:Game.COLOR) -> void:
+func resetColor(color:C.olors) -> void:
 	Changes.addChange(Changes.ArrayElementChange.new(self,&"key",color,M.ZERO))
 	Changes.addChange(Changes.ArrayElementChange.new(self,&"star",color,false))
 	Changes.addChange(Changes.ArrayElementChange.new(self,&"curse",color,false))

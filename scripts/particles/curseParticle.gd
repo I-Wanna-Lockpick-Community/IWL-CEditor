@@ -6,13 +6,13 @@ const TEXTURE_BROWN:Texture2D = preload("res://assets/game/player/curse/brown.pn
 const TEXTURE_GENERIC:Texture2D = preload("res://assets/game/player/curse/generic.png")
 const DRAW_RECT:Rect2 = Rect2(Vector2(-64,-64),Vector2(128,128))
 
-var color:Game.COLOR
+var color:C.olors
 var rotateSpeed:float # by default 2.5 degrees per frame, 60fps
 @export var mode:int
 
 var drawMain:RID
 
-func _init(_color:Game.COLOR,_mode:int,_position:Vector2=Vector2.ZERO,_rotateSpeed:float=2.6179938780,_scale:float=0.6) -> void:
+func _init(_color:C.olors,_mode:int,_position:Vector2=Vector2.ZERO,_rotateSpeed:float=2.6179938780,_scale:float=0.6) -> void:
 	color = _color
 	mode = _mode
 	position = _position
@@ -30,7 +30,7 @@ func _process(delta:float) -> void:
 func _draw() -> void:
 	RenderingServer.canvas_item_clear(drawMain)
 	if mode == 0: return
-	if color == Game.COLOR.BROWN:
+	if color == C.olors.BROWN:
 		if mode > 0:
 			RenderingServer.canvas_item_set_material(drawMain,Game.SUBTRACTIVE_MATERIAL)
 			RenderingServer.canvas_item_add_texture_rect(drawMain,DRAW_RECT,TEXTURE_BROWN_POSITIVE)
@@ -44,12 +44,12 @@ func _draw() -> void:
 
 func getCurseColor() -> Color:
 	match color:
-		Game.COLOR.MASTER: return Color("#eee8a0")
-		Game.COLOR.PURE: return Color("#dbf6f7")
-		Game.COLOR.GLITCH: return Color("#969696")
-		Game.COLOR.STONE: return Color("#7e8892")
-		Game.COLOR.QUICKSILVER: return Color("#cccccc")
-		Game.COLOR.DYNAMITE: return Color("#b97328")
+		C.olors.MASTER: return Color("#eee8a0")
+		C.olors.PURE: return Color("#dbf6f7")
+		C.olors.GLITCH: return Color("#969696")
+		C.olors.STONE: return Color("#7e8892")
+		C.olors.QUICKSILVER: return Color("#cccccc")
+		C.olors.DYNAMITE: return Color("#b97328")
 		_: return Game.mainTone[color]
 
 class Temporary extends CurseParticle:
@@ -58,7 +58,7 @@ class Temporary extends CurseParticle:
 	var alphaAngle:float
 	var targetScale:Vector2
 
-	func _init(_color:Game.COLOR,_mode:int,_position:Vector2=Vector2.ZERO,_targetScale:float=randf_range(0.2,0.3)) -> void:
+	func _init(_color:C.olors,_mode:int,_position:Vector2=Vector2.ZERO,_targetScale:float=randf_range(0.2,0.3)) -> void:
 		super(_color, _mode, _position, 0, 0)
 		position = _position
 		direction = randf_range(0,TAU)

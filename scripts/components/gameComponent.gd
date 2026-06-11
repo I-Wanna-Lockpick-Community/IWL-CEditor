@@ -32,4 +32,4 @@ func _notification(what: int) -> void:
 
 func _freed() -> void: pass
 
-func getColors() -> Array[Game.COLOR]: return []
+func getColors() -> Array[C.olors]: return []

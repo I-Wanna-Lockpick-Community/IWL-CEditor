@@ -85,16 +85,16 @@ class UndoSeparator extends RefCounted:
 	# like key and star
 	static func array() -> StringName: return &""
 
-	var color:Game.COLOR
+	var color:C.olors
 	var after:Variant
 	var before:Variant
 
-	func _init(_color:Game.COLOR, _after:Variant, activate:bool=true) -> void:
+	func _init(_color:C.olors, _after:Variant, activate:bool=true) -> void:
 		color = _color
 		after = GameChanges.copy(_after)
 		if activate:
 			before = GameChanges.copy(Game.player.get(array())[color])
-			if before == after or color == Game.COLOR.NONE:
+			if before == after or color == C.olors.NONE:
 				cancelled = true
 				return
 			do()

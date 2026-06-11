@@ -26,19 +26,19 @@ func _ready() -> void:
 	RenderingServer.canvas_item_set_parent(doorDrawMain, %doorPreview.get_canvas_item())
 	toneButtonGroup.pressed.connect(_toneSelected)
 	%presets.get_popup().id_pressed.connect(_setPreset)
-	%colorSelector.onlyFlatColors()
-	_colorSelected(Game.COLOR.WHITE)
+	%colorSelector.onlyConfigurableColors()
+	_colorSelected(C.olors.WHITE)
 
 func opened(configFile:ConfigFile) -> void:
 	%volume.value = configFile.get_value("game", "volume", 0.5)
 	%fullscreen.button_pressed = configFile.get_value("game", "fullscreen", false)
 	%smoothingMode.button_pressed = configFile.get_value("game", "smoothingMode", false)
 	%simpleLocks.button_pressed = configFile.get_value("game", "simpleLocks", false)
-	for color in Game.COLORS:
-		if color in Game.NONFLAT_COLORS: continue
-		Game.highTone[color] = configFile.get_value("game", "highTone"+str(color), Game.DEFAULT_HIGH[color])
-		Game.mainTone[color] = configFile.get_value("game", "mainTone"+str(color), Game.DEFAULT_MAIN[color])
-		Game.darkTone[color] = configFile.get_value("game", "darkTone"+str(color), Game.DEFAULT_DARK[color])
+	for color in Colors.DEFINITIONS:
+		if !color.toneConfigurable: continue
+		color.highTone = configFile.get_value("game", "highTone"+str(color.id), color.DEFAULT_HIGH)
+		color.mainTone = configFile.get_value("game", "mainTone"+str(color.id), color.DEFAULT_MAIN)
+		color.darkTone = configFile.get_value("game", "darkTone"+str(color.id), color.DEFAULT_DARK)
 	updateLabels()
 	%hideTimer.button_pressed = configFile.get_value("game", "hideTimer", false)
 	%autoRun.button_pressed = configFile.get_value("game", "autoRun", true)
@@ -53,11 +53,11 @@ func closed(configFile:ConfigFile) -> void:
 	configFile.set_value("game", "fullscreen", %fullscreen.button_pressed)
 	configFile.set_value("game", "smoothingMode", %smoothingMode.button_pressed)
 	configFile.set_value("game", "simpleLocks", %simpleLocks.button_pressed)
-	for color in Game.COLORS:
-		if color in Game.NONFLAT_COLORS: continue
-		configFile.set_value("game", "highTone"+str(color), Game.highTone[color])
-		configFile.set_value("game", "mainTone"+str(color), Game.mainTone[color])
-		configFile.set_value("game", "darkTone"+str(color), Game.darkTone[color])
+	for color in Colors.DEFINITIONS:
+		if !color.toneConfigurable: continue
+		configFile.set_value("game", "highTone"+str(color.id), color.highTone)
+		configFile.set_value("game", "mainTone"+str(color.id), color.mainTone)
+		configFile.set_value("game", "darkTone"+str(color.id), color.darkTone)
 	configFile.set_value("game", "hideTimer", %hideTimer.button_pressed)
 	configFile.set_value("game", "autoRun", Game.autoRun)
 	configFile.set_value("game", "fullJumps", %fullJumps.button_pressed)
@@ -86,8 +86,8 @@ func _toneSelected(button:Button) -> void:
 		"Dark": selectedTone = Game.darkTone
 	updateLabels()
 
-func _colorSelected(color:Game.COLOR) -> void:
-	%colorEditLabel.text = "Editing '" + Game.COLOR_NAMES[color] + "'"
+func _colorSelected(color:C.olors) -> void:
+	%colorEditLabel.text = "Editing '" + Colors.getName(color) + "'"
 	updateLabels()
 
 func updateLabels() -> void:
@@ -122,23 +122,17 @@ func _setTonesToMain() -> void:
 	updateLabels()
 
 func _setPreset(id:int) -> void:
-	match id:
-		0: # default
-			Game.highTone.assign(Game.DEFAULT_HIGH)
-			Game.mainTone.assign(Game.DEFAULT_MAIN)
-			Game.darkTone.assign(Game.DEFAULT_DARK)
-		1: # bright
-			Game.highTone.assign(Game.BRIGHT_HIGH)
-			Game.mainTone.assign(Game.BRIGHT_MAIN)
-			Game.darkTone.assign(Game.BRIGHT_DARK)
-	#var string = ""
-	#for color in Game.COLORS:
-	#	string += "\n// " + Game.COLOR_NAMES[color]
-	#	var upper = Game.COLOR_NAMES[color].to_upper()
-	#	string += "\nglobal.highTone[color_" + upper + "] = make_color_rgb(" + str(Game.highTone[color].r8) + "," + str(Game.highTone[color].g8) + "," + str(Game.highTone[color].b8) + ");"
-	#	string += "\nglobal.mainTone[color_" + upper + "] = make_color_rgb(" + str(Game.mainTone[color].r8) + "," + str(Game.mainTone[color].g8) + "," + str(Game.mainTone[color].b8) + ");"
-	#	string += "\nglobal.darkTone[color_" + upper + "] = make_color_rgb(" + str(Game.darkTone[color].r8) + "," + str(Game.darkTone[color].g8) + "," + str(Game.darkTone[color].b8) + ");"
-	#DisplayServer.clipboard_set(string)
+	print(id)
+	for color in Colors.DEFINITIONS:
+		match id:
+			0: # default
+				color.highTone = color.DEFAULT_HIGH
+				color.mainTone = color.DEFAULT_MAIN
+				color.darkTone = color.DEFAULT_DARK
+			1: # bright
+				color.highTone = color.BRIGHT_HIGH
+				color.mainTone = color.BRIGHT_MAIN
+				color.darkTone = color.BRIGHT_DARK
 	updateLabels()
 
 func _draw() -> void:
@@ -147,7 +141,7 @@ func _draw() -> void:
 	RenderingServer.canvas_item_clear(doorDrawAuraBreaker)
 	RenderingServer.canvas_item_clear(doorDrawMain)
 	KeyBulk.drawKey(keyDrawMain,keyDrawMain,Vector2.ZERO,%colorSelector.selected)
-	Door.drawDoor(doorDrawScaled,doorDrawAuraBreaker,doorDrawMain,doorDrawMain,Vector2(32,32),%colorSelector.selected,Game.COLOR.GLITCH,Door.TYPE.COMBO,1)
+	Door.drawDoor(doorDrawScaled,doorDrawAuraBreaker,doorDrawMain,doorDrawMain,Vector2(32,32),%colorSelector.selected,C.olors.GLITCH,Door.TYPE.COMBO,1)
 
 func _hideTimerSet(toggled_on:bool) -> void:
 	Game.hideTimer = toggled_on

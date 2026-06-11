@@ -22,6 +22,7 @@ buses/default_bus_layout="res://resources/sounds/defaultBusLayout.tres"
 
 [autoload]
 
+Colors="*uid://fliyhflpya43"
 Changes="*res://scripts/singletons/editor/changes.gd"
 GameChanges="*res://scripts/singletons/game/gameChanges.gd"
 Mods="*res://scripts/singletons/mods/mods.gd"

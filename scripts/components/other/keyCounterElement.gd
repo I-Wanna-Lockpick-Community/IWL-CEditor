@@ -20,10 +20,10 @@ const STAR_COLOR:Color = Color("#ffffb4")
 
 var parent:KeyCounter
 var parentId:int
-var color:Game.COLOR = Game.COLOR.WHITE
+var color:C.olors = C.olors.WHITE
 var index:int
 
-func getColors() -> Array[Game.COLOR]: return [color]
+func getColors() -> Array[C.olors]: return [color]
 
 var drawStar:RID
 var drawGlitch:RID
@@ -55,7 +55,7 @@ func _draw() -> void:
 	RenderingServer.canvas_item_clear(drawStar)
 	RenderingServer.canvas_item_clear(drawGlitch)
 	RenderingServer.canvas_item_clear(drawMain)
-	if color == Game.COLOR.NONE: return
+	if color == C.olors.NONE: return
 	if Game.player and Game.player.star[color]:
 		RenderingServer.canvas_item_set_transform(drawStar,Transform2D(parent.starAngle,Vector2(16,16)))
 		RenderingServer.canvas_item_add_texture_rect(drawStar,Rect2(Vector2(-25.6,-25.6),Vector2(51.2,51.2)),STAR,false,STAR_COLOR)
@@ -67,7 +67,7 @@ func _draw() -> void:
 func _process(_delta:float) -> void:
 	queue_redraw()
 	drawCurse.color = color
-	drawCurse.scale = Vector2.ONE * (0.4 if color == Game.COLOR.BROWN else 0.5)
+	drawCurse.scale = Vector2.ONE * (0.4 if color == C.olors.BROWN else 0.5)
 	drawCurse.mode = 1 if Mods.active(&"CurseKeys") and Game.player and Game.player.curse[color] else 0
 	drawCurse.queue_redraw()
 

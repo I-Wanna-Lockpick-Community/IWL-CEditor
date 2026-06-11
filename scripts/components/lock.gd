@@ -6,7 +6,7 @@ enum TYPE {NORMAL, BLANK, BLAST, ALL, EXACT, GLISTENING, REMAINDER}
 const TYPE_NAMES:Array[String] = ["Normal", "Blank", "Blast", "All", "Exact", "Glistening", "Remainder"]
 const SIZE_TYPES:int = 7
 enum SIZE_TYPE {AnyS, AnyH, AnyV, AnyM, AnyL, AnyXL, ANY}
-const SIZE_TYPE_NAMES:Array[String] = ["AnyS", "AnyH", "AnyV", "AnyM", "AnyL", "AnyXL", "Any"]
+const SIZE_TYPE_NAMES:Array[String] = ["AnyS", "AnyH", "AnyV", "AnyM", "AnyL", "AnyXL", "ANY"]
 const SIZES:Array[Vector2] = [Vector2(18,18), Vector2(50,18), Vector2(18,50), Vector2(38,38), Vector2(50,50), Vector2(82,82)]
 enum CONFIGURATION {spr1A, spr2H, spr2V, spr3H, spr3V, spr4A, spr4B, spr5A, spr5B, spr6A, spr6B, spr8A, spr12A, spr24A, spr7A, spr9A, spr9B, spr10A, spr11A, spr13A, spr24B, NONE}
 const CONFIGURATION_NAMES:Array[String] = ["1A", "2H", "2V", "3H", "3V", "4A", "4B", "5A", "5B", "6A", "6B", "8A", "12A", "24A", "7A", "9A", "9B", "10A", "11A", "13A", "24B"]
@@ -87,7 +87,7 @@ const SYMBOL_REMAINDER = preload("res://assets/game/lock/symbols/remainder.png")
 const SYMBOL_SIZE:Vector2 = Vector2(32,32)
 
 static var GLITCH_FILL:LockTextureLoader = LockTextureLoader.new("res://assets/game/lock/fill/$tglitch.png")
-static var GLITCH_FILL_TEXTURE:LockColorsTextureLoader = LockColorsTextureLoader.new("res://assets/game/lock/fill/$tglitch$c.png",Game.TEXTURED_COLORS,false,true)
+static var GLITCH_FILL_TEXTURE:LockColorsTextureLoader = LockColorsTextureLoader.new("res://assets/game/lock/fill/$tglitch$c.png",false,true)
 
 static var ERROR_FX:IndexTextureLoader = IndexTextureLoader.new("res://assets/game/key/error/fx.png", 3)
 
@@ -119,7 +119,7 @@ static var ARRAYS:Dictionary[StringName,Variant] = {}
 
 var parent:Door
 var parentId:int
-var color:Game.COLOR = Game.COLOR.WHITE
+var color:C.olors = C.olors.WHITE
 var type:TYPE = TYPE.NORMAL
 var configuration:CONFIGURATION = CONFIGURATION.spr1A
 var sizeType:SIZE_TYPE = SIZE_TYPE.AnyS
@@ -132,7 +132,7 @@ var armament:bool = false
 var index:int
 var displayIndex:int # split into armaments and nonarmaments
 
-func getColors() -> Array[Game.COLOR]: return [color]
+func getColors() -> Array[C.olors]: return [color]
 
 var drawScaled:RID
 var drawAuraBreaker:RID
@@ -163,7 +163,7 @@ func _ready() -> void:
 	RenderingServer.canvas_item_set_parent(drawConfiguration,get_canvas_item())
 	RenderingServer.canvas_item_set_self_modulate(drawError, "#ffffffaa")
 	RenderingServer.canvas_item_set_material(drawError,Game.ADDITIVE_MATERIAL)
-	Game.connect(&"goldIndexChanged",func(): if getColor(COLOR_STEP.DRAW_BASE) in Game.ANIMATED_COLORS: queue_redraw())
+	Game.connect(&"goldIndexChanged",func(): if Colors.getDef(getColor(COLOR_STEP.DRAW_BASE)).doorTextureFrames > 1: queue_redraw())
 
 func _freed() -> void:
 	RenderingServer.free_rid(drawScaled)
@@ -194,12 +194,12 @@ func _draw() -> void:
 		parent.animState != Door.ANIM_STATE.RELOCK or parent.animPart > 2,
 		Game.playState == Game.PLAY_STATE.PLAY and parent.drawComplex
 	)
-	if getColor(COLOR_STEP.BASE) == Game.COLOR.ERROR:
+	if getColor(COLOR_STEP.BASE) == C.olors.ERROR:
 		RenderingServer.canvas_item_add_texture_rect(drawError,Rect2(-offsetFromType(sizeType), size),ERROR_FX.current([randi_range(0,2)]))
 
 static func drawLock(lockDrawScaled:RID, lockDrawAuraBreaker:RID, lockDrawGlitch:RID, lockDrawMain:RID, lockDrawConfiguration:RID,
 	lockSize:Vector2,
-	lockBaseColor:Game.COLOR, lockGlitchColor:Game.COLOR,
+	lockBaseColor:C.olors, lockGlitchColor:C.olors,
 	lockType:TYPE,
 	lockConfiguration:CONFIGURATION,
 	lockSizeType:SIZE_TYPE,
@@ -220,28 +220,25 @@ static func drawLock(lockDrawScaled:RID, lockDrawAuraBreaker:RID, lockDrawGlitch
 		RenderingServer.canvas_item_set_transform(lockDrawScaled,Transform2D.IDENTITY)
 		RenderingServer.canvas_item_set_transform(lockDrawConfiguration,Transform2D.IDENTITY)
 	# fill
-	var tempColor = lockBaseColor
-	if lockBaseColor == Game.COLOR.ERROR:
-		tempColor = lockGlitchColor
 	if drawFill:
-		if tempColor in Game.TEXTURED_COLORS:
-			var tileTexture:bool = tempColor in Game.TILED_TEXTURED_COLORS
-			RenderingServer.canvas_item_add_texture_rect(lockDrawScaled,rect,Game.COLOR_TEXTURES.current([tempColor]),tileTexture)
-		elif tempColor == Game.COLOR.GLITCH:
+		if Colors.getDef(lockBaseColor).doorTexture:
+			var tileTexture:bool = Colors.getDef(lockBaseColor).doorTextureTile
+			RenderingServer.canvas_item_add_texture_rect(lockDrawScaled,rect,Game.COLOR_TEXTURES.current([lockBaseColor]),tileTexture)
+		elif lockBaseColor == C.olors.GLITCH:
 			RenderingServer.canvas_item_set_material(lockDrawGlitch,Game.GLITCH_MATERIAL.get_rid())
-			RenderingServer.canvas_item_add_rect(lockDrawGlitch,Rect2(rect.position+Vector2.ONE,rect.size-Vector2(2,2)),Game.mainTone[tempColor])
-			if lockGlitchColor != Game.COLOR.GLITCH:
+			RenderingServer.canvas_item_add_rect(lockDrawGlitch,Rect2(rect.position+Vector2.ONE,rect.size-Vector2(2,2)),Game.mainTone[lockBaseColor])
+			if lockGlitchColor != C.olors.GLITCH:
 				if lockSizeType == SIZE_TYPE.ANY:
-					if lockGlitchColor in Game.TEXTURED_COLORS: RenderingServer.canvas_item_add_nine_patch(lockDrawMain,rect,GLITCH_ANY_RECT,GLITCH_FILL_TEXTURE.current([lockGlitchColor,lockSizeType]),GLITCH_CORNER_SIZE,GLITCH_CORNER_SIZE,TILE,TILE)
+					if Colors.getDef(lockGlitchColor).doorTexture: RenderingServer.canvas_item_add_nine_patch(lockDrawMain,rect,GLITCH_ANY_RECT,GLITCH_FILL_TEXTURE.current([lockGlitchColor,lockSizeType]),GLITCH_CORNER_SIZE,GLITCH_CORNER_SIZE,TILE,TILE)
 					else: RenderingServer.canvas_item_add_nine_patch(lockDrawMain,rect,GLITCH_ANY_RECT,GLITCH_FILL.current([lockSizeType]),GLITCH_CORNER_SIZE,GLITCH_CORNER_SIZE,TILE,TILE,true,Game.mainTone[lockGlitchColor])
-				elif lockGlitchColor in Game.TEXTURED_COLORS: RenderingServer.canvas_item_add_texture_rect(lockDrawMain,rect,GLITCH_FILL_TEXTURE.current([lockGlitchColor,lockSizeType]))
+				elif Colors.getDef(lockGlitchColor).doorTexture: RenderingServer.canvas_item_add_texture_rect(lockDrawMain,rect,GLITCH_FILL_TEXTURE.current([lockGlitchColor,lockSizeType]))
 				else: RenderingServer.canvas_item_add_texture_rect(lockDrawMain,rect,GLITCH_FILL.current([lockSizeType]),false,Game.mainTone[lockGlitchColor])
-		elif tempColor in [Game.COLOR.ICE, Game.COLOR.MUD, Game.COLOR.GRAFFITI]:
+		elif lockBaseColor in [C.olors.ICE, C.olors.MUD, C.olors.GRAFFITI]:
 			RenderingServer.canvas_item_set_material(lockDrawScaled,Game.NO_MATERIAL.get_rid())
-			RenderingServer.canvas_item_add_rect(lockDrawScaled,Rect2(rect.position+Vector2.ONE,rect.size-Vector2(2,2)),Game.mainTone[tempColor])
-			Door.drawAuras(lockDrawAuraBreaker,lockDrawAuraBreaker,lockDrawAuraBreaker,tempColor==Game.COLOR.ICE,tempColor==Game.COLOR.MUD,tempColor==Game.COLOR.GRAFFITI,rect)
+			RenderingServer.canvas_item_add_rect(lockDrawScaled,Rect2(rect.position+Vector2.ONE,rect.size-Vector2(2,2)),Game.mainTone[lockBaseColor])
+			Door.drawAuras(lockDrawAuraBreaker,lockDrawAuraBreaker,lockDrawAuraBreaker,lockBaseColor==C.olors.ICE,lockBaseColor==C.olors.MUD,lockBaseColor==C.olors.GRAFFITI,rect)
 		else:
-			RenderingServer.canvas_item_add_rect(lockDrawMain,Rect2(rect.position+Vector2.ONE,rect.size-Vector2(2,2)),Game.mainTone[tempColor])
+			RenderingServer.canvas_item_add_rect(lockDrawMain,Rect2(rect.position+Vector2.ONE,rect.size-Vector2(2,2)),Game.mainTone[lockBaseColor])
 	if noCopies: return # no copies in this direction; go away
 	# frame
 	RenderingServer.canvas_item_add_nine_patch(lockDrawMain,rect,ANY_RECT,FRAME_HIGH,CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,frameHigh)
@@ -449,42 +446,42 @@ func propertyChangedDo(property:StringName) -> void:
 	if property == &"armament" and parent: parent.reindexLocks()
 
 # ==== PLAY ==== #
-var glitchMimic:Game.COLOR = Game.COLOR.GLITCH
-var errorMimic:Game.COLOR = Game.COLOR.ERROR
+var glitchMimic:C.olors = C.olors.GLITCH
+var errorMimic:C.olors = C.olors.ERROR
 func stop() -> void:
-	glitchMimic = Game.COLOR.GLITCH
-	errorMimic = Game.COLOR.ERROR
+	glitchMimic = C.olors.GLITCH
+	errorMimic = C.olors.ERROR
 
 enum COLOR_STEP {INITIAL, Curse, BASE, Error, DRAW_BASE, Glitch, EFFECTIVE, AuraBreaker, FINAL}
 
-func getColor(step:COLOR_STEP) -> Game.COLOR:
-	var resultColor:Game.COLOR = color
+func getColor(step:COLOR_STEP) -> C.olors:
+	var resultColor:C.olors = color
 
 	if step < COLOR_STEP.Curse: return resultColor
-	var curseAffected:bool = parent.cursed and parent.curseColor != Game.COLOR.PURE and !armament
+	var curseAffected:bool = parent.cursed and parent.curseColor != C.olors.PURE and !armament
 	if curseAffected: resultColor = parent.curseColor
 	
 	# BASE
 	# redundancy checks go here, like cant freeze if all ice
 
 	if step < COLOR_STEP.Error: return resultColor
-	var checkColor:Game.COLOR = resultColor # error and glitch act independently
-	if checkColor == Game.COLOR.ERROR: resultColor = parent.curseMimic if curseAffected else errorMimic
+	var checkColor:C.olors = resultColor # error and glitch act independently
+	if checkColor == C.olors.ERROR: resultColor = parent.curseMimic if curseAffected else errorMimic
 
 	# DRAW_BASE
 	# the step used for drawing
 
 	if step < COLOR_STEP.Glitch: return resultColor
-	if checkColor == Game.COLOR.GLITCH: resultColor = parent.curseMimic if curseAffected else glitchMimic
+	if checkColor == C.olors.GLITCH: resultColor = parent.curseMimic if curseAffected else glitchMimic
 
 	# EFFECTIVE
 	# the step used for normal immunities
 
 	if step < COLOR_STEP.AuraBreaker: return resultColor
 	if !armament:
-		if parent.gameFrozen: resultColor = Game.COLOR.ICE
-		if parent.gameCrumbled: resultColor = Game.COLOR.MUD
-		if parent.gamePainted: resultColor = Game.COLOR.GRAFFITI
+		if parent.gameFrozen: resultColor = C.olors.ICE
+		if parent.gameCrumbled: resultColor = C.olors.MUD
+		if parent.gamePainted: resultColor = C.olors.GRAFFITI
 
 	# FINAL
 	# the step used for check and cost

@@ -52,7 +52,7 @@ class DoorsHandlerButton extends HandlerButton:
 		RenderingServer.canvas_item_clear(drawMain)
 		if deleted: return
 		var rect:Rect2 = Rect2(Vector2.ONE, size-Vector2(2,2))
-		if door.colorSpend == Game.COLOR.GLITCH: RenderingServer.canvas_item_set_material(drawMain, Game.GLITCH_MATERIAL)
+		if door.colorSpend == C.olors.GLITCH: RenderingServer.canvas_item_set_material(drawMain, Game.GLITCH_MATERIAL)
 		else: RenderingServer.canvas_item_set_material(drawMain, Game.NO_MATERIAL)
-		if door.colorSpend in Game.TEXTURED_COLORS: RenderingServer.canvas_item_add_texture_rect(drawMain,rect,Game.COLOR_TEXTURES.current([door.colorSpend]))
+		if Colors.getDef(door.colorSpend).doorTexture: RenderingServer.canvas_item_add_texture_rect(drawMain,rect,Game.COLOR_TEXTURES.current([door.colorSpend]))
 		else: RenderingServer.canvas_item_add_rect(drawMain,rect,Game.mainTone[door.colorSpend])

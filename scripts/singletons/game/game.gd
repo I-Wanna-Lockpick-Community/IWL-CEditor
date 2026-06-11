@@ -6,20 +6,11 @@ static var NON_OBJECT_COMPONENTS:Array[GDScript] = [Lock, KeyCounterElement]
 static var RECTANGLE_COMPONENTS:Array[GDScript] = [Door, Lock, KeyCounter, RemoteLock, PlaceholderObject, FloatingTile]
 static var RESIZABLE_COMPONENTS:Array[GDScript] = [Door, Lock, KeyCounter, RemoteLock, PlaceholderObject, FloatingTile]
 
-const COLORS:int = 25
-enum COLOR {MASTER, WHITE, ORANGE, PURPLE, RED, GREEN, BLUE, PINK, CYAN, BLACK, BROWN, PURE, GLITCH, STONE, DYNAMITE, QUICKSILVER, MAROON, FOREST, NAVY, ICE, MUD, GRAFFITI, NONE, ERROR, COSMIC}
-const COLOR_NAMES:Array[String] = ["Master", "White", "Orange", "Purple", "Red", "Green", "Blue", "Pink", "Cyan", "Black", "Brown", "Pure", "Glitch", "Stone", 
-"Dynamite", "Quicksilver", "Maroon", "Forest", "Navy", "Ice", "Mud", "Graffiti", "None", "Error", "Cosmic"]
-const NONFLAT_COLORS:Array[COLOR] = [COLOR.MASTER, COLOR.PURE, COLOR.GLITCH, COLOR.STONE, COLOR.DYNAMITE, COLOR.QUICKSILVER, COLOR.NONE, COLOR.ERROR, COLOR.COSMIC] # colors that cant be edited in colorblind settings
-const ANIMATED_COLORS:Array[COLOR] = [COLOR.MASTER, COLOR.PURE, COLOR.DYNAMITE, COLOR.QUICKSILVER, COLOR.ERROR, COLOR.COSMIC]
-const TEXTURED_COLORS:Array[COLOR] = [COLOR.MASTER, COLOR.PURE, COLOR.STONE, COLOR.DYNAMITE, COLOR.QUICKSILVER, COLOR.ERROR, COLOR.COSMIC]
-const TILED_TEXTURED_COLORS:Array[COLOR] = [COLOR.DYNAMITE, COLOR.ERROR, COLOR.COSMIC]
-
 enum COLOR_STEP {Initial, CURSE, ERROR, DrawBase, GLITCH, AURA_BREAKER, Calculate}
 
 const DROP_SHADOW_COLOR:Color = Color(Color.BLACK, 0.35)
 
-static var COLOR_TEXTURES:ColorsTextureLoader = ColorsTextureLoader.new("res://assets/game/colorTexture/$c.png",TEXTURED_COLORS)
+static var COLOR_TEXTURES:ColorsTextureLoader = ColorsTextureLoader.new("res://assets/game/colorTexture/$c.png")
 
 const EMPTY:Texture2D = preload("res://assets/empty.png")
 const FILLED:Texture2D = preload("res://assets/filled.png")
@@ -361,8 +352,8 @@ func restart() -> void:
 		if editor: playTest(latestSpawn)
 	else: playGame.restart()
 
-func setMimic(mimicType:Game.COLOR, setColor:Game.COLOR) -> void:
-	if setColor == Game.COLOR.NONE: return
+func setMimic(mimicType:C.olors, setColor:C.olors) -> void:
+	if setColor == C.olors.NONE: return
 	for object in objects.values():
 		if object.get_script() in [KeyBulk, Door, RemoteLock]:
 			object.setMimic(mimicType, setColor)
