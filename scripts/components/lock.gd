@@ -13,6 +13,8 @@ const CONFIGURATION_NAMES:Array[String] = ["1A", "2H", "2V", "3H", "3V", "4A", "
 const PREDEFINED_REAL:Array[CONFIGURATION] = [CONFIGURATION.spr1A, CONFIGURATION.spr2H, CONFIGURATION.spr2V, CONFIGURATION.spr3H, CONFIGURATION.spr3V, CONFIGURATION.spr4A, CONFIGURATION.spr4B, CONFIGURATION.spr5A, CONFIGURATION.spr5B, CONFIGURATION.spr6A, CONFIGURATION.spr6B, CONFIGURATION.spr8A, CONFIGURATION.spr12A, CONFIGURATION.spr24A, CONFIGURATION.spr7A, CONFIGURATION.spr9A, CONFIGURATION.spr9B, CONFIGURATION.spr10A, CONFIGURATION.spr11A, CONFIGURATION.spr13A, CONFIGURATION.spr24B]
 const PREDEFINED_IMAGINARY:Array[CONFIGURATION] = [CONFIGURATION.spr1A, CONFIGURATION.spr2H, CONFIGURATION.spr2V, CONFIGURATION.spr3H, CONFIGURATION.spr3V]
 
+enum SPEND_TYPES {NONE, NORMAL, STAR, ALL}
+
 func getAvailableConfigurations() -> Array[Array]: return availableConfigurations(effectiveCount(), type)
 
 static func availableConfigurations(lockCount:PackedInt64Array, lockType:TYPE) -> Array[Array]:
@@ -100,6 +102,10 @@ const ARMAMENT:Array[Texture2D] = [
 const ARMAMENT_RECT:Rect2 = Rect2(Vector2.ZERO, Vector2(18,18))
 const ARMAMENT_CORNER_SIZE:Vector2 = Vector2(5,5)
 
+const BACKGROUND_STARRY = preload("res://assets/game/lock/background/starry.png")
+const BACKGROUND_WEAK = preload("res://assets/game/lock/background/weak.png")
+const BACKGROUND_FORCEFUL = preload("res://assets/game/lock/background/forceful.png")
+
 static func offsetFromType(getSizeType:SIZE_TYPE) -> Vector2:
 	match getSizeType:
 		SIZE_TYPE.AnyM: return Vector2(3, 3)
@@ -112,7 +118,7 @@ const CREATE_PARAMETERS:Array[StringName] = [
 ]
 const PROPERTIES:Array[StringName] = [
 	&"id", &"position", &"size",
-	&"parentId", &"color", &"type", &"sizeType", &"count", &"configuration", &"zeroI", &"isPartial", &"denominator", &"negated", &"armament",
+	&"parentId", &"color", &"type", &"sizeType", &"count", &"configuration", &"zeroI", &"isPartial", &"denominator", &"negated", &"armament", &"spendType",
 	&"index", &"displayIndex" # implcit
 ]
 static var ARRAYS:Dictionary[StringName,Variant] = {}
@@ -131,6 +137,8 @@ var negated:bool = false
 var armament:bool = false
 var index:int
 var displayIndex:int # split into armaments and nonarmaments
+# in my mind, two buttons to toggle "spends star" and "spends normal" is more intuitive than 4 buttons which toggle
+var spendType = SPEND_TYPES.NORMAL
 
 func getColors() -> Array[C.olors]: return [color]
 
@@ -192,7 +200,8 @@ func _draw() -> void:
 		getFrameDarkColor(isNegative(), negated),
 		isNegative(),
 		parent.animState != Door.ANIM_STATE.RELOCK or parent.animPart > 2,
-		Game.playState == Game.PLAY_STATE.PLAY and parent.drawComplex
+		Game.playState == Game.PLAY_STATE.PLAY and parent.drawComplex,
+		spendType
 	)
 	if getColor(COLOR_STEP.BASE) == C.olors.ERROR:
 		RenderingServer.canvas_item_add_texture_rect(drawError,Rect2(-offsetFromType(sizeType), size),ERROR_FX.current([randi_range(0,2)]))
@@ -210,7 +219,8 @@ static func drawLock(lockDrawScaled:RID, lockDrawAuraBreaker:RID, lockDrawGlitch
 	lockNegated:bool,
 	lockArmament:bool,
 	frameHigh:Color,frameMain:Color,frameDark:Color,
-	negative:bool, drawFill:bool=true, noCopies:bool=false
+	negative:bool, drawFill:bool=true, noCopies:bool=false,
+	spendTypes:SPEND_TYPES=SPEND_TYPES.NORMAL
 ) -> void:
 	var rect:Rect2 = Rect2(-offsetFromType(lockSizeType), lockSize)
 	if lockNegated:
@@ -239,6 +249,14 @@ static func drawLock(lockDrawScaled:RID, lockDrawAuraBreaker:RID, lockDrawGlitch
 			Door.drawAuras(lockDrawAuraBreaker,lockDrawAuraBreaker,lockDrawAuraBreaker,lockBaseColor==C.olors.ICE,lockBaseColor==C.olors.MUD,lockBaseColor==C.olors.GRAFFITI,rect)
 		else:
 			RenderingServer.canvas_item_add_rect(lockDrawMain,Rect2(rect.position+Vector2.ONE,rect.size-Vector2(2,2)),Game.mainTone[lockBaseColor])
+	# background (spend types)
+	var bgColor:Color
+	# lighter if negative, darker if positive
+	if negative: bgColor = Color("#ffffff66")
+	else: bgColor = Color("#00000066")
+	if spendTypes == SPEND_TYPES.STAR: RenderingServer.canvas_item_add_texture_rect(lockDrawMain, rect, BACKGROUND_STARRY, true, bgColor)
+	if spendTypes == SPEND_TYPES.NONE: RenderingServer.canvas_item_add_texture_rect(lockDrawMain, rect, BACKGROUND_WEAK, true, bgColor)
+	if spendTypes == SPEND_TYPES.ALL: RenderingServer.canvas_item_add_texture_rect(lockDrawMain, rect, BACKGROUND_FORCEFUL, true, bgColor)
 	if noCopies: return # no copies in this direction; go away
 	# frame
 	RenderingServer.canvas_item_add_nine_patch(lockDrawMain,rect,ANY_RECT,FRAME_HIGH,CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,frameHigh)
@@ -440,7 +458,7 @@ static func lockPropertyChangedInit(lock:GameComponent, property:StringName) -> 
 
 	if property == &"isPartial" and !lock.isPartial:
 		Changes.addChange(Changes.PropertyChange.new(lock,&"denominator", M.ONE if M.isComplex(lock.count) or M.nex(lock.count) or lock.type == TYPE.ALL else M.axis(lock.count)))
-
+ 
 func propertyChangedDo(property:StringName) -> void:
 	if property in [&"count", &"denominator"] and parent: parent.queue_redraw()
 	if property == &"armament" and parent: parent.reindexLocks()

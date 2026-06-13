@@ -24,6 +24,7 @@ func focus(focused:GameObject, new:bool, dontRedirect:bool) -> void: # Door or R
 		%doorCopiesEdit.allowZero = Mods.active(&"ZeroCopyDoors")
 		if !main.componentFocused:
 			%lockSettings.visible = false
+			%lockSettings2.visible = false
 			%doorAxialNumberEdit.visible = false
 			%doorBooleans.visible = focused.type != Door.TYPE.GATE
 			%doorCopySettings.visible = focused.type != Door.TYPE.GATE
@@ -57,6 +58,7 @@ func focusComponent(component:GameComponent, new:bool) -> void: # Lock or Remote
 		%lockConfigurationSelector.visible = main.focused.type != Door.TYPE.SIMPLE
 		%lockConfigurationSelector.setup(component)
 	%lockSettings.visible = true
+	%lockSettings2.visible = true
 	
 	%remoteLockConvert.visible = Mods.active(&"RemoteLocks") and component is not RemoteLock
 
@@ -87,6 +89,10 @@ func focusComponent(component:GameComponent, new:bool) -> void: # Lock or Remote
 	if component is Lock: %lockHandler.redrawButton(component.index)
 	%lockNegated.button_pressed = component.negated
 	%lockArmament.button_pressed = component.armament
+	%lockSpendsStar.button_pressed = component.spendType == Lock.SPEND_TYPES.STAR
+	%lockSpendsNormal.button_pressed = component.spendType == Lock.SPEND_TYPES.NORMAL
+	%lockSpendsAll.button_pressed = component.spendType == Lock.SPEND_TYPES.ALL
+	%lockSpendsNone.button_pressed = component.spendType == Lock.SPEND_TYPES.NONE
 	if main.interacted and !main.interacted.is_visible_in_tree(): main.deinteract()
 	if %doorAxialNumberEdit.visible:
 		if !main.interacted: main.interact(%doorAxialNumberEdit)
@@ -239,7 +245,31 @@ func _lockNegatedSet(value:bool) -> void:
 	Changes.addChange(Changes.PropertyChange.new(lock,&"negated",value))
 	Changes.bufferSave()
 
-func _partialBlastNumeratorSet(value:PackedInt64Array) -> void:
+func _lockSpendsStar(value:bool) -> void:
+	if main.componentFocused is not Lock and main.focused is not RemoteLock: return
+	var lock:GameComponent = main.componentFocused if main.componentFocused is Lock else main.focused
+	if value: Changes.addChange(Changes.PropertyChange.new(lock,&"spendType",Lock.SPEND_TYPES.STAR))
+	Changes.bufferSave()
+
+func _lockSpendsNormal(value:bool) -> void:
+	if main.componentFocused is not Lock and main.focused is not RemoteLock: return
+	var lock:GameComponent = main.componentFocused if main.componentFocused is Lock else main.focused
+	if value: Changes.addChange(Changes.PropertyChange.new(lock,&"spendType",Lock.SPEND_TYPES.NORMAL))
+	Changes.bufferSave()
+
+func _lockSpendsAll(value:bool) -> void:
+	if main.componentFocused is not Lock and main.focused is not RemoteLock: return
+	var lock:GameComponent = main.componentFocused if main.componentFocused is Lock else main.focused
+	if value: Changes.addChange(Changes.PropertyChange.new(lock,&"spendType",Lock.SPEND_TYPES.ALL))
+	Changes.bufferSave()
+
+func _lockSpendsNone(value:bool) -> void:
+	if main.componentFocused is not Lock and main.focused is not RemoteLock: return
+	var lock:GameComponent = main.componentFocused if main.componentFocused is Lock else main.focused
+	if value: Changes.addChange(Changes.PropertyChange.new(lock,&"spendType",Lock.SPEND_TYPES.NONE))
+	Changes.bufferSave()
+
+func partialBlastNumeratorSet(value:PackedInt64Array) -> void:
 	if main.componentFocused is not Lock and main.focused is not RemoteLock: return
 	var lock:GameComponent = main.componentFocused if main.componentFocused is Lock else main.focused
 	Changes.addChange(Changes.PropertyChange.new(lock,&"count",value))
