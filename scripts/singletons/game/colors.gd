@@ -4,6 +4,7 @@ class_name C
 var COLORS:int = 0
 var DEFINITIONS:Array[ColorDef] = []
 
+# reference this as C.olors so that it can be a constant expression, but reference everything else as Colors.[thing]
 enum olors {MASTER, WHITE, ORANGE, PURPLE, RED, GREEN, BLUE, PINK, CYAN, BLACK, BROWN, PURE, GLITCH, STONE, DYNAMITE, QUICKSILVER, MAROON, FOREST, NAVY, ICE, MUD, GRAFFITI, NONE, ERROR, COSMIC}
 
 func _init() -> void:
