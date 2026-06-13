@@ -142,7 +142,7 @@ func _process(delta:float) -> void:
 		elif focused: focus(focused)
 		bufferFocus = false
 	if focused and activeDialog:
-		focusOffsetAmount += (-focusOffsetAmount)*delta*25
+		focusOffsetAmount += (-focusOffsetAmount)*min(1, delta*25)
 		visible = true
 		# position the dialog every frame (could be optimised but i dont care)
 		var flip:bool = false

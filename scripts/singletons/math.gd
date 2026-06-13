@@ -311,13 +311,16 @@ func trunc(n:PackedInt64Array) -> PackedInt64Array:
 func floor(n:PackedInt64Array) -> PackedInt64Array:
 	match system:
 		SYSTEM.COMPLEX: return n
-		SYSTEM.FRACTIONS, _: return [intDiv(n[0],n[2]), intDiv(n[1],n[2]), 1]
+		SYSTEM.FRACTIONS, _:
+			if isError(n): return ERROR
+			return [intDiv(n[0],n[2]), intDiv(n[1],n[2]), 1]
 
 ## ceils number maybe 
 func ceil(n:PackedInt64Array) -> PackedInt64Array:
 	match system:
 		SYSTEM.COMPLEX: return n
-		SYSTEM.FRACTIONS, _: 
+		SYSTEM.FRACTIONS, _:
+			if isError(n): return ERROR
 			var real:int = intDiv(n[0],n[2])
 			var imag:int = intDiv(n[1],n[2])
 			if M.neq([n[0],0,1], [real,0,1]): real += 1

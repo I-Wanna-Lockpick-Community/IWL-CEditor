@@ -34,8 +34,8 @@ func describe(object:GameObject, pos:Vector2, screenBottomRight:Vector2) -> void
 					KeyBulk.OPERATION.DIVIDE: string += "Action: Divide by "
 					KeyBulk.OPERATION.MODULO: string += "Action: Modulo "
 				string += Colors.getName(object.altColor)
-			if object.color == Game.COLOR.GLITCH or object.altColor == Game.COLOR.GLITCH: string += "\nMimic: " + Colors.getName(object.glitchMimic)
-			elif object.color == Game.COLOR.ERROR or object.altColor == Game.COLOR.GLITCH: string += "\nMimic: " + Colors.getName(object.errorMimic)
+			if object.color == C.olors.GLITCH or object.altColor == C.olors.GLITCH: string += "\nMimic: " + Colors.getName(object.glitchMimic)
+			elif object.color == C.olors.ERROR or object.altColor == C.olors.GLITCH: string += "\nMimic: " + Colors.getName(object.errorMimic)
 			if object.glistening:
 				string += "\n- Effects -\nGlistening!"
 		Door:
@@ -59,11 +59,11 @@ func describe(object:GameObject, pos:Vector2, screenBottomRight:Vector2) -> void
 					string += "\nLock: " + LOCK_TYPES[lock.type] + Colors.getName(lock.color) + ", Cost: " + lockCost(lock)
 					if lock.armament:
 						string += " (Armament"
-						if lock.color == Game.COLOR.GLITCH and lock.glitchMimic != object.glitchMimic: string += ", Mimic: " + Colors.getName(lock.glitchMimic)
-						elif lock.color == Game.COLOR.ERROR and lock.errorMimic != object.errorMimic: string += ", Mimic: " + Colors.getName(lock.errorMimic)
+						if lock.color == C.olors.GLITCH and lock.glitchMimic != object.glitchMimic: string += ", Mimic: " + Colors.getName(lock.glitchMimic)
+						elif lock.color == C.olors.ERROR and lock.errorMimic != object.errorMimic: string += ", Mimic: " + Colors.getName(lock.errorMimic)
 						string += ")"
-			if object.hasInitialColor(Game.COLOR.GLITCH): string += "\nMimic: " + Colors.getName(object.glitchMimic)
-			elif object.hasInitialColor(Game.COLOR.ERROR): string += "\nMimic: " + Colors.getName(object.errorMimic)
+			if object.hasInitialColor(C.olors.GLITCH): string += "\nMimic: " + Colors.getName(object.glitchMimic)
+			elif object.hasInitialColor(C.olors.ERROR): string += "\nMimic: " + Colors.getName(object.errorMimic)
 			string += effects(object)
 			
 		RemoteLock:
@@ -72,8 +72,8 @@ func describe(object:GameObject, pos:Vector2, screenBottomRight:Vector2) -> void
 			if object.type == Lock.TYPE.GLISTENING: string += " Glistening"
 			if object.type in [Lock.TYPE.BLAST, Lock.TYPE.ALL]: string += " (" + lockCost(object) + ")"
 			if object.armament: string += " (Armament)"
-			if object.color == Game.COLOR.GLITCH: string += "\nMimic: " + Colors.getName(object.glitchMimic)
-			elif object.color == Game.COLOR.ERROR: string += "\nMimic: " + Colors.getName(object.errorMimic)
+			if object.color == C.olors.GLITCH: string += "\nMimic: " + Colors.getName(object.glitchMimic)
+			elif object.color == C.olors.ERROR: string += "\nMimic: " + Colors.getName(object.errorMimic)
 			string += effects(object)
 		_:
 			visible = false
@@ -114,11 +114,11 @@ func lockCost(lock:GameComponent) -> String:
 func effects(object:GameObject) -> String:
 	var string:String = ""
 	if object.cursed:
-		if object.curseColor == Game.COLOR.BROWN: string += "\nCursed!"
+		if object.curseColor == C.olors.BROWN: string += "\nCursed!"
 		else:
 			string += "\nCursed " + Colors.getName(object.curseColor) + "!"
-			if object.curseColor == Game.COLOR.GLITCH: string += " (Mimic: " + Colors.getName(object.curseMimic) + ")"
-			elif object.curseColor == Game.COLOR.ERROR: string += " (Mimic: " + Colors.getName(object.curseMimic) + ")"
+			if object.curseColor == C.olors.GLITCH: string += " (Mimic: " + Colors.getName(object.curseMimic) + ")"
+			elif object.curseColor == C.olors.ERROR: string += " (Mimic: " + Colors.getName(object.curseMimic) + ")"
 	if object.gameFrozen: string += "\nFrozen! (1xRed)"
 	if object.gameCrumbled: string += "\nEroded! (5xGreen)"
 	if object.gamePainted: string += "\nPainted! (3xBlue)"
