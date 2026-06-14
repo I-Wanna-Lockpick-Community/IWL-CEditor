@@ -79,6 +79,7 @@ static func loadFile(file:FileAccess, formatVersion:int) -> void:
 	if formatVersion > 2:
 		PROPERTIES.get(KeyBulk).append_array([&"altColor", &"operation"])
 		PROPERTIES.get(Door).append_array([&"oscillate"])
+		PROPERTIES.get(Lock).insert(14, &"spendType")
 	# LEVEL DATA
 	# tiles
 	Game.tiles.tile_map_data = file.get_var()
