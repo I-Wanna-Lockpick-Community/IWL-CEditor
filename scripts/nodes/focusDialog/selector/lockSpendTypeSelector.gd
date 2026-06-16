@@ -14,15 +14,14 @@ func _ready() -> void:
 	defaultValue = Lock.SPEND_TYPE.NORMAL
 	buttonType = LockSpendTypeSelectorButton
 	super()
-	# not sure what that last part does
-	#for button in buttons:
-		#var explanation:ControlExplanation
-		#match button.value:
-			#KeyBulk.COLLECT_TYPE.NONE: explanation = ControlExplanation.new("[%s]Disable spending", [&""])
-			#KeyBulk.COLLECT_TYPE.NORMAL: explanation = ControlExplanation.new("[%s]Set normal spend mode", [&""])
-			#KeyBulk.COLLECT_TYPE.STAR: explanation = ControlExplanation.new("[%s]Set star spend mode", [&""])
-			#KeyBulk.COLLECT_TYPE.ALL: explanation = ControlExplanation.new("[%s]Force spending", [&""])
-		#Explainer.addControl(button,explanation)
+	for button in buttons:
+		var explanation:ControlExplanation
+		match button.value:
+			Lock.SPEND_TYPE.NONE: explanation = ControlExplanation.new("[%s]Disable spending", [&"focusLockSpendTypeNone"])
+			Lock.SPEND_TYPE.NORMAL: explanation = ControlExplanation.new("[%s]Set normal spend mode", [&"focusLockSpendTypeNormal"])
+			Lock.SPEND_TYPE.STAR: explanation = ControlExplanation.new("[%s]Set star spend mode", [&"focusLockSpendTypeStar"])
+			Lock.SPEND_TYPE.ALL: explanation = ControlExplanation.new("[%s]Force spending", [&"focusLockSpendTypeAll"])
+		Explainer.addControl(button,explanation)
 
 func setSelect(value:Variant) -> void:
 	manuallySetting = true

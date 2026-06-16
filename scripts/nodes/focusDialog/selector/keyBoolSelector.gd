@@ -13,14 +13,13 @@ func _ready() -> void:
 	defaultValue = KeyBulk.BOOL_TYPE.ENABLE
 	buttonType = KeyBoolSelectorButton
 	super()
-	# not sure what that last part does
-	#for button in buttons:
-		#var explanation:ControlExplanation
-		#match button.value:
-			#KeyBulk.BOOL_TYPE.ENABLE: explanation = ControlExplanation.new("[%s]Set enable mode", [&"focusKeyOperationSet"])
-			#KeyBulk.BOOL_TYPE.DISABLE: explanation = ControlExplanation.new("[%s]Set disable mode", [&"focusKeyOperationAdd"])
-			#KeyBulk.BOOL_TYPE.TOGGLE: explanation = ControlExplanation.new("[%s]Set toggle mode", [&"focusKeyOperationSubtract"])
-		#Explainer.addControl(button,explanation)
+	for button in buttons:
+		var explanation:ControlExplanation
+		match button.value:
+			KeyBulk.BOOL_TYPE.ENABLE: explanation = ControlExplanation.new("[%s]Set enable mode", [&"focusKeyBoolEnable"])
+			KeyBulk.BOOL_TYPE.DISABLE: explanation = ControlExplanation.new("[%s]Set disable mode", [&"focusKeyBoolDisable"])
+			KeyBulk.BOOL_TYPE.TOGGLE: explanation = ControlExplanation.new("[%s]Set toggle mode", [&"focusKeyBoolToggle"])
+		Explainer.addControl(button,explanation)
 
 func setup() -> void:
 	buttons[KeyBulk.BOOL_TYPE.TOGGLE].visible = Mods.active(&"Boolflip")

@@ -15,14 +15,14 @@ func _ready() -> void:
 	buttonType = KeyCollectTypeSelectorButton
 	super()
 	# not sure what that last part does
-	#for button in buttons:
-		#var explanation:ControlExplanation
-		#match button.value:
-			#KeyBulk.COLLECT_TYPE.NONE: explanation = ControlExplanation.new("[%s]Disable spending", [&""])
-			#KeyBulk.COLLECT_TYPE.NORMAL: explanation = ControlExplanation.new("[%s]Set normal spend mode", [&""])
-			#KeyBulk.COLLECT_TYPE.STAR: explanation = ControlExplanation.new("[%s]Set star spend mode", [&""])
-			#KeyBulk.COLLECT_TYPE.ALL: explanation = ControlExplanation.new("[%s]Force spending", [&""])
-		#Explainer.addControl(button,explanation)
+	for button in buttons:
+		var explanation:ControlExplanation
+		match button.value:
+			KeyBulk.COLLECT_TYPE.NONE: explanation = ControlExplanation.new("[%s]Disable spending", [&"focusKeyCollectTypeNone"])
+			KeyBulk.COLLECT_TYPE.NORMAL: explanation = ControlExplanation.new("[%s]Set normal spend mode", [&"focusKeyCollectTypeNormal"])
+			KeyBulk.COLLECT_TYPE.STAR: explanation = ControlExplanation.new("[%s]Set star spend mode", [&"focusKeyCollectTypeStar"])
+			KeyBulk.COLLECT_TYPE.ALL: explanation = ControlExplanation.new("[%s]Force spending", [&"focusKeyCollectTypeAll"])
+		Explainer.addControl(button,explanation)
 
 func setSelect(value:Variant) -> void:
 	manuallySetting = true
