@@ -35,7 +35,7 @@ var armament:bool = false
 var frozen:bool = false
 var crumbled:bool = false
 var painted:bool = false
-var spendType = Lock.SPEND_TYPES.NORMAL
+var spendType = Lock.SPEND_TYPE.NORMAL
 
 func getColors() -> Array[C.olors]: return [color]
 

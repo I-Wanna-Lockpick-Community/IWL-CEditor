@@ -20,11 +20,13 @@ func focus(focused:KeyBulk, new:bool, _dontRedirect:bool) -> void:
 	%keyOperationSelector.visible = focused.type == KeyBulk.TYPE.OPERATOR
 	%keyOperationSelector.setSelect(focused.operation)
 	%keyRotorSelector.visible = focused.type == KeyBulk.TYPE.ROTOR
-	%keyUn.visible = focused.type in [KeyBulk.TYPE.STAR, KeyBulk.TYPE.CURSE]
-	%keyUn.button_pressed = !focused.un
+	%keyBoolSelector.visible = focused.type in [KeyBulk.TYPE.STAR, KeyBulk.TYPE.CURSE]
+	%keyBoolSelector.setSelect(focused.boolType)
+	%keyCollectTypeSelector.visible = focused.type not in [KeyBulk.TYPE.STAR, KeyBulk.TYPE.CURSE] && Mods.active(&"StarryWeakForceful")
+	%keyCollectTypeSelector.setSelect(focused.collectType) # GODOT IT DOES EXIST AHH
 	%keyRotorSelector.setup(focused)
+	%keyBoolSelector.setup()
 	%keyReciprocal.visible = focused.type == KeyBulk.TYPE.ROTOR && Mods.active(&"OperatorKeys")
-	setKeyUnIcon()
 	if focused.type == KeyBulk.TYPE.ROTOR: %keyRotorSelector.setValue(focused.count)
 	if main.interacted and !main.interacted.is_visible_in_tree(): main.deinteract()
 	if %keyCountEdit.visible:
@@ -45,7 +47,7 @@ func receiveKey(event:InputEventKey) -> bool:
 	if Editor.eventIs(event, &"focusKeyNormal"): _keyTypeSelected(KeyBulk.TYPE.NORMAL)
 	elif Editor.eventIs(event, &"focusKeyExact"): _keyTypeSelected(KeyBulk.TYPE.EXACT if main.focused.type != KeyBulk.TYPE.EXACT else KeyBulk.TYPE.NORMAL)
 	elif Editor.eventIs(event, &"focusKeyStar"):
-		if main.focused.type == KeyBulk.TYPE.STAR: Changes.PropertyChange.new(main.focused,&"un",!main.focused.un)
+		if main.focused.type == KeyBulk.TYPE.STAR: Changes.PropertyChange.new(main.focused,&"boolType",main.focused.value)
 		else: _keyTypeSelected(KeyBulk.TYPE.STAR)
 	elif Editor.eventIs(event, &"focusKeyRotor"):
 		if main.focused.type != KeyBulk.TYPE.ROTOR: _keyTypeSelected(KeyBulk.TYPE.ROTOR)
@@ -53,7 +55,7 @@ func receiveKey(event:InputEventKey) -> bool:
 		elif M.eq(main.focused.count, M.I): _keyCountSet(M.nI)
 		elif M.eq(main.focused.count, M.nI): _keyTypeSelected(KeyBulk.TYPE.NORMAL); _keyCountSet(M.ONE)
 	elif Editor.eventIs(event, &"focusKeyCurse") and Mods.active(&"CurseKeys"):
-			if main.focused.type == KeyBulk.TYPE.CURSE: Changes.PropertyChange.new(main.focused,&"un",!main.focused.un)
+			if main.focused.type == KeyBulk.TYPE.CURSE: Changes.PropertyChange.new(main.focused,&"boolType",main.focused.value)
 			else: _keyTypeSelected(KeyBulk.TYPE.CURSE)
 	elif Editor.eventIs(event, &"focusKeyOperator"): _keyTypeSelected(KeyBulk.TYPE.OPERATOR if main.focused.type != KeyBulk.TYPE.OPERATOR else KeyBulk.TYPE.NORMAL)
 	elif Editor.eventIs(event, &"focusKeyInfinite"): _keyInfiniteToggled(0 if main.focused.infinite else 1)
@@ -63,10 +65,12 @@ func receiveKey(event:InputEventKey) -> bool:
 	return true
 
 func changedMods() -> void:
+	%keyBoolSelector.setup()
 	%keyGlisteningToggle.visible = Mods.active(&"Glistening")
 	if main.focused is KeyBulk:
 		%keyPartialInfinite.visible = Mods.active(&"PartialInfKeys") and main.focused.infinite
 		%keyReciprocal.visible = main.focused.type == KeyBulk.TYPE.ROTOR && Mods.active(&"OperatorKeys")
+		%keyCollectTypeSelector.visible = (main.focused.type not in [KeyBulk.TYPE.STAR, KeyBulk.TYPE.CURSE]) && Mods.active(&"StarryWeakForceful")
 
 func _keyColorSelected(color:C.olors) -> void:
 	if main.focused is not KeyBulk: return
@@ -117,16 +121,15 @@ func _keyRotorSelected(value:KeyRotorSelector.VALUE):
 		KeyRotorSelector.VALUE.NEGROTOR: Changes.addChange(Changes.PropertyChange.new(main.focused,&"count",M.nI))
 	Changes.bufferSave()
 
-func _keyUnToggled(value:bool) -> void:
+func _keyBoolSelected(value:KeyBulk.BOOL_TYPE):
 	if main.focused is not KeyBulk: return
-	Changes.addChange(Changes.PropertyChange.new(main.focused,&"un",!value))
+	Changes.addChange(Changes.PropertyChange.new(main.focused,&"boolType",value))
 	Changes.bufferSave()
-	setKeyUnIcon()
 
-func setKeyUnIcon() -> void:
-	match main.focused.type:
-		KeyBulk.TYPE.STAR: %keyUn.icon = STAR_UN_ICONS[int(main.focused.un)]
-		KeyBulk.TYPE.CURSE: %keyUn.icon = CURSE_UN_ICONS[int(main.focused.un)]
+func _keyCollectTypeSelected(value:KeyBulk.COLLECT_TYPE):
+	if main.focused is not KeyBulk: return
+	Changes.addChange(Changes.PropertyChange.new(main.focused,&"collectType",value))
+	Changes.bufferSave()
 
 func _keyPartialInfiniteSet(value:PackedInt64Array) -> void:
 	if main.focused is not KeyBulk: return

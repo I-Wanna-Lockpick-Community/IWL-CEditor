@@ -453,13 +453,13 @@ func toggleCamera() -> void:
 	cameraZoomTarget = 1
 	AudioManager.play(preload("res://resources/sounds/player/camera.wav"))
 
-func changeKeys(color:C.olors, after:PackedInt64Array,override_star:bool=false) -> void:
+func changeKeys(color:C.olors, after:PackedInt64Array,override_star:bool=true) -> void:
 	if star[color] and not override_star: return
 	if star[color] and override_star:
 		GameChanges.addChange(GameChanges.KeyChange.new(color, after))
 	else:
 		GameChanges.addChange(GameChanges.KeyChange.new(color, M.keepAbove(after,glisten[color])))
 
-func changeGlisten(color:C.olors, after:PackedInt64Array,override_star:bool=false) -> void:
+func changeGlisten(color:C.olors, after:PackedInt64Array,override_star:bool=true) -> void:
 	if star[color] and not override_star: return
 	GameChanges.addChange(GameChanges.GlistenChange.new(color, after))

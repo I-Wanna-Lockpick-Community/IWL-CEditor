@@ -13,7 +13,8 @@ const CONFIGURATION_NAMES:Array[String] = ["1A", "2H", "2V", "3H", "3V", "4A", "
 const PREDEFINED_REAL:Array[CONFIGURATION] = [CONFIGURATION.spr1A, CONFIGURATION.spr2H, CONFIGURATION.spr2V, CONFIGURATION.spr3H, CONFIGURATION.spr3V, CONFIGURATION.spr4A, CONFIGURATION.spr4B, CONFIGURATION.spr5A, CONFIGURATION.spr5B, CONFIGURATION.spr6A, CONFIGURATION.spr6B, CONFIGURATION.spr8A, CONFIGURATION.spr12A, CONFIGURATION.spr24A, CONFIGURATION.spr7A, CONFIGURATION.spr9A, CONFIGURATION.spr9B, CONFIGURATION.spr10A, CONFIGURATION.spr11A, CONFIGURATION.spr13A, CONFIGURATION.spr24B]
 const PREDEFINED_IMAGINARY:Array[CONFIGURATION] = [CONFIGURATION.spr1A, CONFIGURATION.spr2H, CONFIGURATION.spr2V, CONFIGURATION.spr3H, CONFIGURATION.spr3V]
 
-enum SPEND_TYPES {NONE, NORMAL, STAR, ALL}
+const SPEND_TYPES = 4
+enum SPEND_TYPE {NONE, NORMAL, STAR, ALL}
 
 func getAvailableConfigurations() -> Array[Array]: return availableConfigurations(effectiveCount(), type)
 
@@ -138,7 +139,7 @@ var armament:bool = false
 var index:int
 var displayIndex:int # split into armaments and nonarmaments
 # in my mind, two buttons to toggle "spends star" and "spends normal" is more intuitive than 4 buttons which toggle
-var spendType = SPEND_TYPES.NORMAL
+var spendType = SPEND_TYPE.NORMAL
 
 func getColors() -> Array[C.olors]: return [color]
 
@@ -220,7 +221,7 @@ static func drawLock(lockDrawScaled:RID, lockDrawAuraBreaker:RID, lockDrawGlitch
 	lockArmament:bool,
 	frameHigh:Color,frameMain:Color,frameDark:Color,
 	negative:bool, drawFill:bool=true, noCopies:bool=false,
-	spendTypes:SPEND_TYPES=SPEND_TYPES.NORMAL
+	spendTypes:SPEND_TYPE=SPEND_TYPE.NORMAL
 ) -> void:
 	var rect:Rect2 = Rect2(-offsetFromType(lockSizeType), lockSize)
 	if lockNegated:
@@ -254,9 +255,9 @@ static func drawLock(lockDrawScaled:RID, lockDrawAuraBreaker:RID, lockDrawGlitch
 	# lighter if negative, darker if positive
 	if negative: bgColor = Color("#ffffff66")
 	else: bgColor = Color("#00000066")
-	if spendTypes == SPEND_TYPES.STAR: RenderingServer.canvas_item_add_texture_rect(lockDrawMain, rect, BACKGROUND_STARRY, true, bgColor)
-	if spendTypes == SPEND_TYPES.NONE: RenderingServer.canvas_item_add_texture_rect(lockDrawMain, rect, BACKGROUND_WEAK, true, bgColor)
-	if spendTypes == SPEND_TYPES.ALL: RenderingServer.canvas_item_add_texture_rect(lockDrawMain, rect, BACKGROUND_FORCEFUL, true, bgColor)
+	if spendTypes == SPEND_TYPE.STAR: RenderingServer.canvas_item_add_texture_rect(lockDrawMain, rect, BACKGROUND_STARRY, true, bgColor)
+	if spendTypes == SPEND_TYPE.NONE: RenderingServer.canvas_item_add_texture_rect(lockDrawMain, rect, BACKGROUND_WEAK, true, bgColor)
+	if spendTypes == SPEND_TYPE.ALL: RenderingServer.canvas_item_add_texture_rect(lockDrawMain, rect, BACKGROUND_FORCEFUL, true, bgColor)
 	if noCopies: return # no copies in this direction; go away
 	# frame
 	RenderingServer.canvas_item_add_nine_patch(lockDrawMain,rect,ANY_RECT,FRAME_HIGH,CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,frameHigh)

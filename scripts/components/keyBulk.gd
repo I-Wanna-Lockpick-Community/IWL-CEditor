@@ -11,6 +11,12 @@ const OPERATIONS:int = 6
 enum OPERATION {SET, ADD, SUBTRACT, MULTIPLY, DIVIDE, MODULO}
 const OPERATION_NAMES:Array[String] = ["Set", "Add", "Subtract", "Multiply", "Divide", "Modulo"]
 
+const BOOL_TYPES = 3
+enum BOOL_TYPE {ENABLE, DISABLE, TOGGLE}
+
+const COLLECT_TYPES = 4
+enum COLLECT_TYPE {NONE, NORMAL, STAR, ALL}
+
 # colors that use textures
 const TEXTURE_COLORS:Array[C.olors] = [C.olors.MASTER, C.olors.PURE, C.olors.STONE, C.olors.DYNAMITE, C.olors.QUICKSILVER, C.olors.ICE, C.olors.MUD, C.olors.GRAFFITI, C.olors.ERROR, C.olors.COSMIC]
 
@@ -42,6 +48,10 @@ const RECIPROCAL_POS_SYMBOL:Texture2D = preload("res://assets/game/key/symbols/r
 const RECIPROCAL_NEG_SYMBOL:Texture2D = preload("res://assets/game/key/symbols/recineg.png")
 const GLISTENING_SYMBOL:Texture2D = preload("res://assets/game/key/symbols/glistening.png")
 
+const OVERLAY_STAR:Texture2D = preload("res://assets/game/key/overlay/starry.png")
+const OVERLAY_WEAK:Texture2D = preload("res://assets/game/key/overlay/weak.png")
+const OVERLAY_FORCEFUL:Texture2D = preload("res://assets/game/key/overlay/forceful.png")
+
 static var TEXTURE:KeyColorsTextureLoader = KeyColorsTextureLoader.new("res://assets/game/key/$c/$t.png", true, false, {capitalised=false})
 static var GLITCH:KeyColorsTextureLoader = KeyColorsTextureLoader.new("res://assets/game/key/$c/glitch$t.png", false, false, {capitalised=true})
 
@@ -55,11 +65,12 @@ const CREATE_PARAMETERS:Array[StringName] = [
 ]
 const PROPERTIES:Array[StringName] = [
 	&"id", &"position", &"size",
-	&"color", &"type", &"count", &"infinite", &"glistening", &"un", &"altColor", &"operation"
+	&"color", &"type", &"count", &"infinite", &"glistening", &"boolType", &"altColor", &"operation", &"collectType"
 ]
 
 static var ARRAYS:Dictionary[StringName,Variant] = {}
 
+var collectType:COLLECT_TYPE = COLLECT_TYPE.NORMAL
 var color:C.olors = C.olors.WHITE
 var type:TYPE = TYPE.NORMAL
 var count:PackedInt64Array = M.ONE
@@ -67,7 +78,7 @@ var infinite:int = 0
 var glistening:bool = false # whether the key affects glistening count or not
 var altColor:C.olors = C.olors.WHITE
 var operation:OPERATION = OPERATION.SET
-var un:bool = false # whether a star or curse key is an unstar or uncurse key
+var boolType:BOOL_TYPE = BOOL_TYPE.ENABLE # whether a star or curse key is an unstar or uncurse key
 var reciprocal:bool = false # whether a rotor key is reciprocal or not
 
 func getColors() -> Array[C.olors]:
@@ -81,6 +92,7 @@ var drawSymbol:RID
 var drawError:RID
 var drawAdditionalGlitch:RID
 var drawAdditional:RID
+var drawOverlay:RID
 func _init() -> void: size = Vector2(32,32)
 
 func _ready() -> void:
@@ -91,6 +103,7 @@ func _ready() -> void:
 	drawError = RenderingServer.canvas_item_create()
 	drawAdditionalGlitch = RenderingServer.canvas_item_create()
 	drawAdditional = RenderingServer.canvas_item_create()
+	drawOverlay = RenderingServer.canvas_item_create()
 	RenderingServer.canvas_item_set_material(drawGlitch,Game.GLITCH_MATERIAL.get_rid())
 	RenderingServer.canvas_item_set_material(drawAdditionalGlitch,Game.GLITCH_MATERIAL.get_rid())
 	RenderingServer.canvas_item_set_z_index(drawDropShadow,-3)
@@ -103,6 +116,8 @@ func _ready() -> void:
 	RenderingServer.canvas_item_set_material(drawError,Game.ADDITIVE_MATERIAL)
 	RenderingServer.canvas_item_set_parent(drawAdditionalGlitch,get_canvas_item())
 	RenderingServer.canvas_item_set_parent(drawAdditional,get_canvas_item())
+	RenderingServer.canvas_item_set_parent(drawOverlay,get_canvas_item())
+	RenderingServer.canvas_item_set_z_index(drawOverlay,2)
 	Game.connect(&"goldIndexChanged",func():if hasAnimatedColor(): queue_redraw())
 
 func hasAnimatedColor() -> bool:
@@ -118,14 +133,15 @@ func _freed() -> void:
 	RenderingServer.free_rid(drawError)
 	RenderingServer.free_rid(drawAdditionalGlitch)
 	RenderingServer.free_rid(drawAdditional)
+	RenderingServer.free_rid(drawOverlay)
 
 func convertNumbers(from:M.SYSTEM) -> void:
 	Changes.addChange(Changes.ComponentConvertNumberChange.new(self, from, &"count"))
 
-func outlineTex() -> Texture2D: return getOutlineTexture(color, type, un, operation)
+func outlineTex() -> Texture2D: return getOutlineTexture(color, type, boolType, operation)
 
-static func getOutlineTexture(keyColor:C.olors, keyType:TYPE=TYPE.NORMAL, keyUn:bool=false, keyOperation:OPERATION=OPERATION.SET) -> Texture2D:
-	var textureType:KeyTextureLoader.TYPE = keyTextureType(keyType,keyUn)
+static func getOutlineTexture(keyColor:C.olors, keyType:TYPE=TYPE.NORMAL, keyBoolType:BOOL_TYPE=BOOL_TYPE.ENABLE, keyOperation:OPERATION=OPERATION.SET) -> Texture2D:
+	var textureType:KeyTextureLoader.TYPE = keyTextureType(keyType,keyBoolType)
 	match keyColor:
 		C.olors.MASTER:
 			match textureType:
@@ -148,8 +164,8 @@ func _draw() -> void:
 	RenderingServer.canvas_item_clear(drawAdditional)
 	if !active and Game.playState == Game.PLAY_STATE.PLAY: return
 	var rect:Rect2 = Rect2(Vector2.ZERO, size)
-	RenderingServer.canvas_item_add_texture_rect(drawDropShadow,Rect2(Vector2(3,3),size),getOutlineTexture(color,type,un,operation),false,Game.DROP_SHADOW_COLOR)
-	drawKey(drawGlitch,drawMain,Vector2.ZERO,getColor(COLOR_STEP.DRAW_BASE),type,un,glitchMimic,partialInfiniteAlpha)
+	RenderingServer.canvas_item_add_texture_rect(drawDropShadow,Rect2(Vector2(3,3),size),getOutlineTexture(color,type,boolType,operation),false,Game.DROP_SHADOW_COLOR)
+	drawKey(drawGlitch,drawMain,Vector2.ZERO,getColor(COLOR_STEP.DRAW_BASE),type,boolType,glitchMimic,partialInfiniteAlpha)
 	if color == C.olors.ERROR:
 		var errorrect:Rect2 = Rect2(Vector2(randi_range(-5,5),randi_range(-5,5)),size)
 		RenderingServer.canvas_item_add_texture_rect(drawError,errorrect,ERROR_FX.current([randi_range(0,2)]))
@@ -167,6 +183,8 @@ func _draw() -> void:
 				if M.eq(count, M.nONE) or M.eq(count,M.ONE): RenderingServer.canvas_item_add_texture_rect(drawSymbol,rect,SIGNFLIP_SYMBOL)
 				elif M.eq(count, M.I): RenderingServer.canvas_item_add_texture_rect(drawSymbol,rect,POSROTOR_SYMBOL)
 				elif M.eq(count, M.nI): RenderingServer.canvas_item_add_texture_rect(drawSymbol,rect,NEGROTOR_SYMBOL)
+		KeyBulk.TYPE.CURSE, KeyBulk.TYPE.STAR: #placeholder
+			if boolType == BOOL_TYPE.TOGGLE: RenderingServer.canvas_item_add_texture_rect(drawSymbol,rect,SIGNFLIP_SYMBOL)
 		KeyBulk.TYPE.OPERATOR:
 			drawOperationSymbol(drawAdditional,drawAdditionalGlitch,Vector2.ZERO,getAltColor(COLOR_STEP.DRAW_BASE),operation,glitchMimic)
 	if infinite:
@@ -184,21 +202,25 @@ func _draw() -> void:
 			RenderingServer.canvas_item_add_texture_rect(drawSymbol,Rect2(Vector2(-MULTITYPEOFFSET,MULTITYPEOFFSET), size),GLISTENING_SYMBOL)
 		else:
 			RenderingServer.canvas_item_add_texture_rect(drawSymbol,rect,GLISTENING_SYMBOL)
+	match collectType:
+		COLLECT_TYPE.NONE: RenderingServer.canvas_item_add_texture_rect(drawSymbol,rect,OVERLAY_WEAK, false, Color(1,1,1,0.6))
+		COLLECT_TYPE.ALL: RenderingServer.canvas_item_add_texture_rect(drawSymbol,rect,OVERLAY_FORCEFUL, false, Color(1,1,1,0.5))
+		COLLECT_TYPE.STAR: RenderingServer.canvas_item_add_texture_rect(drawSymbol,rect,OVERLAY_STAR, false, Color(1,1,1,0.5))
 
 func keycountColor() -> Color: return Color("#363029") if M.negative(M.sign(count)) else Color("#ebe3dd")
 func keycountOutlineColor() -> Color: return Color("#d6cfc9") if M.negative(M.sign(count)) else Color("#363029")
 
-static func keyTextureType(keyType:TYPE, keyUn:bool) -> KeyTextureLoader.TYPE:
+static func keyTextureType(keyType:TYPE, keyBoolType:BOOL_TYPE) -> KeyTextureLoader.TYPE:
 	match keyType:
 		TYPE.EXACT: return KeyTextureLoader.TYPE.EXACT
-		TYPE.STAR: return KeyTextureLoader.TYPE.UNSTAR if keyUn else KeyTextureLoader.TYPE.STAR
-		TYPE.CURSE: return KeyTextureLoader.TYPE.UNCURSE if keyUn else KeyTextureLoader.TYPE.CURSE
+		TYPE.STAR: return KeyTextureLoader.TYPE.UNSTAR if keyBoolType == BOOL_TYPE.DISABLE else KeyTextureLoader.TYPE.STAR
+		TYPE.CURSE: return KeyTextureLoader.TYPE.UNCURSE if keyBoolType == BOOL_TYPE.DISABLE else KeyTextureLoader.TYPE.CURSE
 		TYPE.OPERATOR: return KeyTextureLoader.TYPE.OPERATOR
 		_: return KeyTextureLoader.TYPE.NORMAL
 
-static func drawKey(keyDrawGlitch:RID,keyDrawMain:RID, keyOffset:Vector2,keyColor:C.olors,keyType:TYPE=TYPE.NORMAL,keyUn:bool=false,keyGlitchMimic:C.olors=C.olors.GLITCH,keyPartialInfiniteAlpha:float=1) -> void:
+static func drawKey(keyDrawGlitch:RID,keyDrawMain:RID, keyOffset:Vector2,keyColor:C.olors,keyType:TYPE=TYPE.NORMAL,keyBoolType:BOOL_TYPE=BOOL_TYPE.ENABLE,keyGlitchMimic:C.olors=C.olors.GLITCH,keyPartialInfiniteAlpha:float=1) -> void:
 	var rect:Rect2 = Rect2(keyOffset, Vector2(32,32))
-	var textureType:KeyTextureLoader.TYPE = keyTextureType(keyType, keyUn)
+	var textureType:KeyTextureLoader.TYPE = keyTextureType(keyType, keyBoolType)
 	RenderingServer.canvas_item_set_modulate(keyDrawMain, Color(Color.WHITE, keyPartialInfiniteAlpha))
 	RenderingServer.canvas_item_set_modulate(keyDrawGlitch, Color(Color.WHITE, keyPartialInfiniteAlpha))
 	if keyColor in TEXTURE_COLORS:
@@ -213,7 +235,7 @@ static func drawKey(keyDrawGlitch:RID,keyDrawMain:RID, keyOffset:Vector2,keyColo
 	else:
 		RenderingServer.canvas_item_add_texture_rect(keyDrawMain,rect,FRAME.current([textureType]))
 		RenderingServer.canvas_item_add_texture_rect(keyDrawMain,rect,FILL.current([textureType]),false,Game.mainTone[keyColor])
-		if keyType == TYPE.CURSE and !keyUn: RenderingServer.canvas_item_add_texture_rect(keyDrawMain,rect,CURSE_FILL_DARK,false,Game.darkTone[keyColor])
+		if keyType == TYPE.CURSE and not keyBoolType == BOOL_TYPE.DISABLE: RenderingServer.canvas_item_add_texture_rect(keyDrawMain,rect,CURSE_FILL_DARK,false,Game.darkTone[keyColor])
 
 static func drawOperationSymbol(keyDrawAdditonal:RID, keyDrawGlitch:RID, keyOffset:Vector2, partColor:C.olors, keyMode:OPERATION=OPERATION.SET,keyGlitchMimic:C.olors=C.olors.GLITCH):
 	var rect:Rect2 = Rect2(keyOffset, Vector2(32,32))
@@ -233,7 +255,7 @@ static func drawOperationSymbol(keyDrawAdditonal:RID, keyDrawGlitch:RID, keyOffs
 func propertyChangedInit(property:StringName) -> void:
 	if property == &"type":
 		if type not in [TYPE.NORMAL, TYPE.EXACT] and M.neq(count, M.ONE): Changes.addChange(Changes.PropertyChange.new(self,&"count",M.ONE))
-		if type not in [TYPE.STAR, TYPE.CURSE] and un: Changes.addChange(Changes.PropertyChange.new(self,&"un",false))
+		if type not in [TYPE.STAR, TYPE.CURSE] and boolType != BOOL_TYPE.ENABLE: Changes.addChange(Changes.PropertyChange.new(self,&"boolType",BOOL_TYPE.ENABLE))
 		if type != TYPE.ROTOR: Changes.addChange(Changes.PropertyChange.new(self,&"reciprocal",false))
 		Changes.addChange(Changes.PropertyChange.new(self,&"altColor",color))
 	if property == &"reciprocal":
@@ -276,39 +298,55 @@ func collect(player:Player) -> void:
 	if partialInfiniteCount: return
 	var collectColor:C.olors = getColor(COLOR_STEP.FINAL)
 	var collectAltColor:C.olors = getAltColor(COLOR_STEP.FINAL) # for operator
-
+	var canModify:bool = false
+	match collectType:
+		COLLECT_TYPE.NORMAL: canModify = !player.star[collectColor]
+		COLLECT_TYPE.ALL: canModify = true
+		COLLECT_TYPE.STAR: canModify = player.star[collectColor]
 	if glistening:
 		match type:
-			TYPE.NORMAL: player.changeGlisten(collectColor, M.add(player.glisten[collectColor], count))
-			TYPE.EXACT: player.changeGlisten(collectColor, count)
+			TYPE.NORMAL: if canModify: player.changeGlisten(collectColor, M.add(player.glisten[collectColor], count))
+			TYPE.EXACT: if canModify: player.changeGlisten(collectColor, count)
 			TYPE.ROTOR:
-				if reciprocal: player.changeGlisten(collectColor, M.divide(count,player.glisten[collectColor]))
-				else: player.changeGlisten(collectColor, M.times(player.glisten[collectColor], count))
+				if canModify:
+					if reciprocal: player.changeGlisten(collectColor, M.divide(count,player.glisten[collectColor]))
+					else: player.changeGlisten(collectColor, M.times(player.glisten[collectColor], count))
 			TYPE.OPERATOR:
-				match operation:
-					OPERATION.SET: player.changeGlisten(collectColor, player.glisten[collectAltColor])
-					OPERATION.ADD: player.changeGlisten(collectColor, M.add(player.glisten[collectColor], player.glisten[collectAltColor]))
-					OPERATION.SUBTRACT: player.changeGlisten(collectColor, M.sub(player.glisten[collectColor], player.glisten[collectAltColor]))
-					OPERATION.MULTIPLY: player.changeGlisten(collectColor, M.times(player.glisten[collectColor], player.glisten[collectAltColor]))
-					OPERATION.DIVIDE: player.changeGlisten(collectColor, M.divide(player.glisten[collectColor], player.glisten[collectAltColor]))
-					OPERATION.MODULO: player.changeGlisten(collectColor, M.modulo(player.glisten[collectColor], player.glisten[collectAltColor]))
+				if canModify:
+					match operation:
+						OPERATION.SET: player.changeGlisten(collectColor, player.glisten[collectAltColor])
+						OPERATION.ADD: player.changeGlisten(collectColor, M.add(player.glisten[collectColor], player.glisten[collectAltColor]))
+						OPERATION.SUBTRACT: player.changeGlisten(collectColor, M.sub(player.glisten[collectColor], player.glisten[collectAltColor]))
+						OPERATION.MULTIPLY: player.changeGlisten(collectColor, M.times(player.glisten[collectColor], player.glisten[collectAltColor]))
+						OPERATION.DIVIDE: player.changeGlisten(collectColor, M.divide(player.glisten[collectColor], player.glisten[collectAltColor]))
+						OPERATION.MODULO: player.changeGlisten(collectColor, M.modulo(player.glisten[collectColor], player.glisten[collectAltColor]))
 
 	match type:
-		TYPE.NORMAL: player.changeKeys(collectColor, M.add(player.key[collectColor], count))
-		TYPE.EXACT: player.changeKeys(collectColor, count)
+		TYPE.NORMAL: if canModify: player.changeKeys(collectColor, M.add(player.key[collectColor], count))
+		TYPE.EXACT: if canModify: player.changeKeys(collectColor, count)
 		TYPE.ROTOR:
-			if reciprocal: player.changeKeys(collectColor, M.divide(count,player.key[collectColor]))
-			else: player.changeKeys(collectColor, M.times(player.key[collectColor], count))
-		TYPE.STAR: GameChanges.addChange(GameChanges.StarChange.new(collectColor, !un))
-		TYPE.CURSE: GameChanges.addChange(GameChanges.CurseChange.new(collectColor, !un))
+			if canModify:
+				if reciprocal: player.changeKeys(collectColor, M.divide(count,player.key[collectColor]))
+				else: player.changeKeys(collectColor, M.times(player.key[collectColor], count))
+		TYPE.STAR: 
+			match boolType:
+				BOOL_TYPE.ENABLE: GameChanges.addChange(GameChanges.StarChange.new(collectColor, true))
+				BOOL_TYPE.DISABLE: GameChanges.addChange(GameChanges.StarChange.new(collectColor, false))
+				BOOL_TYPE.TOGGLE, _: GameChanges.addChange(GameChanges.StarChange.new(collectColor, !player.star[collectColor]))
+		TYPE.CURSE: 
+			match boolType:
+				BOOL_TYPE.ENABLE: GameChanges.addChange(GameChanges.CurseChange.new(collectColor, true))
+				BOOL_TYPE.DISABLE: GameChanges.addChange(GameChanges.CurseChange.new(collectColor, false))
+				BOOL_TYPE.TOGGLE, _: GameChanges.addChange(GameChanges.CurseChange.new(collectColor, !player.curse[collectColor]))
 		TYPE.OPERATOR:
-			match operation:
-				OPERATION.SET: player.changeKeys(collectColor, player.key[collectAltColor])
-				OPERATION.ADD: player.changeKeys(collectColor, M.add(player.key[collectColor], player.key[collectAltColor]))
-				OPERATION.SUBTRACT: player.changeKeys(collectColor, M.sub(player.key[collectColor], player.key[collectAltColor]))
-				OPERATION.MULTIPLY: player.changeKeys(collectColor, M.times(player.key[collectColor], player.key[collectAltColor]))
-				OPERATION.DIVIDE: player.changeKeys(collectColor, M.divide(player.key[collectColor], player.key[collectAltColor]))
-				OPERATION.MODULO: player.changeKeys(collectColor, M.modulo(player.key[collectColor], player.key[collectAltColor]))
+			if canModify:
+				match operation:
+					OPERATION.SET: player.changeKeys(collectColor, player.key[collectAltColor])
+					OPERATION.ADD: player.changeKeys(collectColor, M.add(player.key[collectColor], player.key[collectAltColor]))
+					OPERATION.SUBTRACT: player.changeKeys(collectColor, M.sub(player.key[collectColor], player.key[collectAltColor]))
+					OPERATION.MULTIPLY: player.changeKeys(collectColor, M.times(player.key[collectColor], player.key[collectAltColor]))
+					OPERATION.DIVIDE: player.changeKeys(collectColor, M.divide(player.key[collectColor], player.key[collectAltColor]))
+					OPERATION.MODULO: player.changeKeys(collectColor, M.modulo(player.key[collectColor], player.key[collectAltColor]))
 
 	if infinite:
 		flashAnimation()
@@ -324,7 +362,7 @@ func collect(player:Player) -> void:
 		match type:
 			TYPE.ROTOR: AudioManager.play(preload("res://resources/sounds/key/signflip.wav"))
 			TYPE.STAR:
-				if un: AudioManager.play(preload("res://resources/sounds/key/unstar.wav"))
+				if boolType == BOOL_TYPE.DISABLE or (boolType == BOOL_TYPE.TOGGLE and not player.star[color]): AudioManager.play(preload("res://resources/sounds/key/unstar.wav"))
 				else: AudioManager.play(preload("res://resources/sounds/key/star.wav"))
 			_:
 				if M.negative(M.sign(count)): AudioManager.play(preload("res://resources/sounds/key/negative.wav"))

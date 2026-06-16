@@ -16,9 +16,11 @@
 [ext_resource type="Texture2D" uid="uid://bowkgmjrwugjj" path="res://assets/ui/focusDialog/doorType/gate.png" id="12_qi8n2"]
 [ext_resource type="Texture2D" uid="uid://d2tw3epi1grlq" path="res://assets/ui/focusDialog/doorType/spend.png" id="13_jwt4y"]
 [ext_resource type="Script" uid="uid://w6eu5yj3itkr" path="res://scripts/nodes/focusDialog/selector/keyOperationSelector.gd" id="13_rrq8c"]
+[ext_resource type="Script" uid="uid://b618ppwxg1ubr" path="res://scripts/nodes/focusDialog/selector/keyBoolSelector.gd" id="13_vydri"]
 [ext_resource type="Texture2D" uid="uid://bxif3afno48fi" path="res://assets/ui/focusDialog/keySplitType/reciprocal.png" id="14_2wjug"]
 [ext_resource type="Script" uid="uid://d07pxhp1r6xex" path="res://scripts/nodes/focusDialog/lockHandler.gd" id="14_31m74"]
 [ext_resource type="Script" uid="uid://dbmpg02ass72r" path="res://scripts/nodes/focusDialog/spend.gd" id="14_e2stj"]
+[ext_resource type="Script" uid="uid://d385kmsarn7r" path="res://scripts/nodes/focusDialog/selector/keyCollectTypeSelector.gd" id="14_sb8el"]
 [ext_resource type="Script" uid="uid://cxlnmn0e36ba" path="res://scripts/nodes/focusDialog/selector/lockTypeSelector.gd" id="15_vfuuy"]
 [ext_resource type="Texture2D" uid="uid://blvji7kl64sbd" path="res://assets/ui/focusDialog/lockHandler/colorLink.png" id="17_5vlab"]
 [ext_resource type="Script" uid="uid://c71qe58ht0isn" path="res://scripts/nodes/focusDialog/configurationSelector.gd" id="17_cu8b0"]
@@ -38,14 +40,11 @@
 [ext_resource type="Script" uid="uid://ckcofkmbukj5o" path="res://scripts/nodes/focusDialog/selector/keyCounterWidthSelector.gd" id="25_7tfe2"]
 [ext_resource type="Texture2D" uid="uid://c1sixdrnoyq7f" path="res://assets/ui/focusDialog/numberEdit/infinite.png" id="25_hb0ue"]
 [ext_resource type="Script" uid="uid://bg8oswa2bhdsv" path="res://scripts/nodes/focusDialog/goalTypeSelector.gd" id="26_1rcup"]
-[ext_resource type="Texture2D" uid="uid://bne4fu6f8mfgx" path="res://assets/ui/focusDialog/lockBooleans/starry.png" id="27_rrq8c"]
-[ext_resource type="Texture2D" uid="uid://dxo7w10qni4ec" path="res://assets/ui/focusDialog/lockBooleans/normal.png" id="28_56xck"]
-[ext_resource type="Texture2D" uid="uid://cekqcy03yh1v5" path="res://assets/ui/focusDialog/lockBooleans/weak.png" id="28_ljt45"]
 [ext_resource type="Texture2D" uid="uid://cln0osp8um3ti" path="res://assets/ui/focusDialog/numberEdit/partialBlast.png" id="29_di8ev"]
 [ext_resource type="Script" uid="uid://dihumic7k5rec" path="res://scripts/singletons/focusDialog/keyCounterDialog.gd" id="30_bfxh1"]
-[ext_resource type="Texture2D" uid="uid://qciqomi4lpp8" path="res://assets/ui/focusDialog/lockBooleans/forceful.png" id="30_buutc"]
 [ext_resource type="Texture2D" uid="uid://wdnkcen713o8" path="res://assets/ui/focusDialog/numberEdit/x.png" id="31_rrq8c"]
 [ext_resource type="Script" uid="uid://2iqmgcrc5wpq" path="res://scripts/nodes/focusDialog/doorsHandler.gd" id="31_xwnfa"]
+[ext_resource type="Script" uid="uid://d0q61cn7u7wc1" path="res://scripts/nodes/focusDialog/selector/lockSpendTypeSelector.gd" id="33_buutc"]
 [ext_resource type="Script" uid="uid://b0shfyjnfk7ih" path="res://scripts/singletons/focusDialog/goalDialog.gd" id="33_di8ev"]
 [ext_resource type="Texture2D" uid="uid://cv1qa4bwwetr5" path="res://assets/ui/focusDialog/numberEdit/parenthesis.png" id="38_lm5cw"]
 [ext_resource type="Script" uid="uid://vfxgywtu3kgg" path="res://scripts/singletons/focusDialog/playerDialog.gd" id="40_p7jkh"]
@@ -257,13 +256,17 @@ layout_mode = 2
 size_flags_horizontal = 4
 script = ExtResource("7_q8u4b")
 
-[node name="keyUn" type="Button" parent="keyDialog/c/c/c" unique_id=265341602]
+[node name="keyBoolSelector" type="GridContainer" parent="keyDialog/c/c/c" unique_id=2073318874]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 4
-toggle_mode = true
-button_pressed = true
-icon = ExtResource("8_mscoq")
+script = ExtResource("13_vydri")
+
+[node name="keyCollectTypeSelector" type="GridContainer" parent="keyDialog/c/c/c" unique_id=1200671599]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+script = ExtResource("14_sb8el")
 
 [node name="keyReciprocal" type="Button" parent="keyDialog/c/c/c" unique_id=1374524677]
 unique_name_in_owner = true
@@ -466,38 +469,11 @@ toggle_mode = true
 icon = ExtResource("20_2wjug")
 vertical_icon_alignment = 0
 
-[node name="lockSettings2" type="HBoxContainer" parent="doorDialog/c/lock/c/c" unique_id=1560010955]
+[node name="lockSpendTypeSelector" type="GridContainer" parent="doorDialog/c/lock/c/c" unique_id=994350222]
 unique_name_in_owner = true
 layout_mode = 2
-alignment = 1
-
-[node name="lockSpendsNone" type="Button" parent="doorDialog/c/lock/c/c/lockSettings2" unique_id=205919500 groups=["explained"]]
-unique_name_in_owner = true
-layout_mode = 2
-toggle_mode = true
-icon = ExtResource("28_ljt45")
-metadata/explanation = SubResource("Resource_mscoq")
-
-[node name="lockSpendsNormal" type="Button" parent="doorDialog/c/lock/c/c/lockSettings2" unique_id=242004130 groups=["explained"]]
-unique_name_in_owner = true
-layout_mode = 2
-toggle_mode = true
-icon = ExtResource("28_56xck")
-metadata/explanation = SubResource("Resource_mscoq")
-
-[node name="lockSpendsStar" type="Button" parent="doorDialog/c/lock/c/c/lockSettings2" unique_id=769716352 groups=["explained"]]
-unique_name_in_owner = true
-layout_mode = 2
-toggle_mode = true
-icon = ExtResource("27_rrq8c")
-metadata/explanation = SubResource("Resource_mscoq")
-
-[node name="lockSpendsAll" type="Button" parent="doorDialog/c/lock/c/c/lockSettings2" unique_id=2096938309 groups=["explained"]]
-unique_name_in_owner = true
-layout_mode = 2
-toggle_mode = true
-icon = ExtResource("30_buutc")
-metadata/explanation = SubResource("Resource_mscoq")
+size_flags_horizontal = 4
+script = ExtResource("33_buutc")
 
 [node name="doorAuraSettings" type="HBoxContainer" parent="doorDialog/c/lock/c/c" unique_id=161681610]
 unique_name_in_owner = true
@@ -867,7 +843,8 @@ default_color = Color(0.8352941, 0.8352941, 0.8352941, 1)
 [connection signal="valueSet" from="keyDialog/c/c/c/keyCountEdit" to="keyDialog" method="_keyCountSet"]
 [connection signal="select" from="keyDialog/c/c/c/keyOperationSelector" to="keyDialog" method="_keyOperationSelected"]
 [connection signal="select" from="keyDialog/c/c/c/keyRotorSelector" to="keyDialog" method="_keyRotorSelected"]
-[connection signal="toggled" from="keyDialog/c/c/c/keyUn" to="keyDialog" method="_keyUnToggled"]
+[connection signal="select" from="keyDialog/c/c/c/keyBoolSelector" to="keyDialog" method="_keyBoolSelected"]
+[connection signal="select" from="keyDialog/c/c/c/keyCollectTypeSelector" to="keyDialog" method="_keyCollectTypeSelected"]
 [connection signal="toggled" from="keyDialog/c/c/c/keyReciprocal" to="keyDialog" method="_keyReciprocalToggled"]
 [connection signal="select" from="keyDialog/c/c/c/keyAltColorSelector" to="keyDialog" method="_keyAltColorSelected"]
 [connection signal="pressed" from="doorDialog/c/door/c/c/doorTypes/simple" to="doorDialog" method="_doorTypeSelected" binds= [0]]
@@ -880,10 +857,7 @@ default_color = Color(0.8352941, 0.8352941, 0.8352941, 1)
 [connection signal="toggled" from="doorDialog/c/lock/c/c/lockSettings/lockNegated" to="doorDialog" method="_lockNegatedSet"]
 [connection signal="toggled" from="doorDialog/c/lock/c/c/lockSettings/lockArmament" to="doorDialog" method="_lockArmamentSet"]
 [connection signal="pressed" from="doorDialog/c/lock/c/c/lockSettings/remoteLockConvert" to="doorDialog" method="_remoteLockConvert"]
-[connection signal="toggled" from="doorDialog/c/lock/c/c/lockSettings2/lockSpendsNone" to="doorDialog" method="_lockSpendsNone"]
-[connection signal="toggled" from="doorDialog/c/lock/c/c/lockSettings2/lockSpendsNormal" to="doorDialog" method="_lockSpendsNormal"]
-[connection signal="toggled" from="doorDialog/c/lock/c/c/lockSettings2/lockSpendsStar" to="doorDialog" method="_lockSpendsStar"]
-[connection signal="toggled" from="doorDialog/c/lock/c/c/lockSettings2/lockSpendsAll" to="doorDialog" method="_lockSpendsAll"]
+[connection signal="select" from="doorDialog/c/lock/c/c/lockSpendTypeSelector" to="doorDialog" method="_lockSpendTypes"]
 [connection signal="toggled" from="doorDialog/c/lock/c/c/doorCopySettings/realInfiniteCopy" to="doorDialog" method="_doorRealInfiniteSet"]
 [connection signal="valueSet" from="doorDialog/c/lock/c/c/doorCopySettings/doorCopiesEdit" to="doorDialog" method="_doorCopiesSet"]
 [connection signal="toggled" from="doorDialog/c/lock/c/c/doorCopySettings/imaginaryInfiniteCopy" to="doorDialog" method="_doorImaginaryInfiniteSet"]
