@@ -11,6 +11,10 @@ func describe(object:GameObject, pos:Vector2, screenBottomRight:Vector2) -> void
 	var string:String = ""
 	match object.get_script():
 		KeyBulk:
+			match object.collectType:
+				KeyBulk.COLLECT_TYPE.NONE: string += "Weak "
+				KeyBulk.COLLECT_TYPE.STAR: string += "Starry "
+				KeyBulk.COLLECT_TYPE.ALL: string += "Forceful "
 			match object.type:
 				KeyBulk.TYPE.EXACT: string += "Exact "
 				KeyBulk.TYPE.STAR: 
@@ -54,6 +58,10 @@ func describe(object:GameObject, pos:Vector2, screenBottomRight:Vector2) -> void
 				string += "\n- Effects -\nGlistening!"
 		Door:
 			if object.type == Door.TYPE.SIMPLE:
+				match object.locks[0].spendType:
+					Lock.SPEND_TYPE.NONE: string += "Weak "
+					Lock.SPEND_TYPE.STAR: string += "Starry "
+					Lock.SPEND_TYPE.ALL: string += "Forceful "
 				string += LOCK_TYPES[object.locks[0].type] + Colors.getName(object.colorSpend) + " Door"
 				if object.locks[0].armament:
 					string += " (Armament"
@@ -81,10 +89,14 @@ func describe(object:GameObject, pos:Vector2, screenBottomRight:Vector2) -> void
 			string += effects(object)
 			
 		RemoteLock:
+			match object.spendType:
+				Lock.SPEND_TYPE.NONE: string += "Weak "
+				Lock.SPEND_TYPE.STAR: string += "Starry "
+				Lock.SPEND_TYPE.ALL: string += "Forceful "
 			string += LOCK_TYPES[object.type] + Colors.getName(object.color) + " Remote Lock\n"
 			string += ("S" if object.satisfied else "Uns") + "atisfied, Cost: " + M.str(object.cost)
 			if object.type == Lock.TYPE.GLISTENING: string += " Glistening"
-			if object.type in [Lock.TYPE.BLAST, Lock.TYPE.ALL]: string += " (" + lockCost(object) + ")"
+			if object.type in [Lock.TYPE.BLAST, Lock.TYPE.ALL]: string += " (" + lockCost(object,false) + ")"
 			if object.armament: string += " (Armament)"
 			if object.color == C.olors.GLITCH: string += "\nMimic: " + Colors.getName(object.glitchMimic)
 			elif object.color == C.olors.ERROR: string += "\nMimic: " + Colors.getName(object.errorMimic)
@@ -98,8 +110,13 @@ func describe(object:GameObject, pos:Vector2, screenBottomRight:Vector2) -> void
 	if position.x + size.x > screenBottomRight.x: position.x -= size.x
 	if position.y + size.y > screenBottomRight.y: position.y -= size.y
 
-func lockCost(lock:GameComponent) -> String:
+func lockCost(lock:GameComponent, addSpendTypeTag:bool = true) -> String:
 	var string:String = ""
+	if addSpendTypeTag:
+		match lock.spendType:
+			Lock.SPEND_TYPE.NONE: string += "Weak "
+			Lock.SPEND_TYPE.STAR: string += "Starry "
+			Lock.SPEND_TYPE.ALL: string += "Forceful "
 	if lock.negated: string += "Not "
 	match lock.type:
 		Lock.TYPE.NORMAL: string += M.str(lock.count) if M.ex(lock.count) else "None"
@@ -136,11 +153,12 @@ func effects(object:GameObject) -> String:
 	if object.gameFrozen: string += "\nFrozen! (1xRed)"
 	if object.gameCrumbled: string += "\nEroded! (5xGreen)"
 	if object.gamePainted: string += "\nPainted! (3xBlue)"
-	match object.starred:
-		Door.STAR_STATE.STARRED_UNLOCKED: string += "\nStarred! (Unlocked)"
-		Door.STAR_STATE.STARRED_LOCKED: string += "\nStarred! (Locked)"
-	if object.starred != Door.STAR_STATE.UNSTARRED:
-		string += "\n    Spends " + M.str(object.starredSpendKey)
+	if object == Door:
+		match object.starred:
+			Door.STAR_STATE.STARRED_UNLOCKED: string += "\nStarred! (Unlocked)"
+			Door.STAR_STATE.STARRED_LOCKED: string += "\nStarred! (Locked)"
+		if object.starred != Door.STAR_STATE.UNSTARRED:
+			string += "\n    Spends " + M.str(object.starredSpendKey)
 		if M.ex(object.starredSpendGlisten):
 			string += "(" + M.str(object.starredSpendGlisten) + ")"
 		if object.hasArmamentLocks(): string += " (+ Armament locks)"
