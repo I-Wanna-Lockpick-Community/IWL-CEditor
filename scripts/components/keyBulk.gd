@@ -203,9 +203,9 @@ func _draw() -> void:
 		else:
 			RenderingServer.canvas_item_add_texture_rect(drawSymbol,rect,GLISTENING_SYMBOL)
 	match collectType:
-		COLLECT_TYPE.NONE: RenderingServer.canvas_item_add_texture_rect(drawSymbol,rect,OVERLAY_WEAK, false, Color(1,1,1,0.6))
-		COLLECT_TYPE.ALL: RenderingServer.canvas_item_add_texture_rect(drawSymbol,rect,OVERLAY_FORCEFUL, false, Color(1,1,1,0.5))
-		COLLECT_TYPE.STAR: RenderingServer.canvas_item_add_texture_rect(drawSymbol,rect,OVERLAY_STAR, false, Color(1,1,1,0.5))
+		COLLECT_TYPE.NONE: RenderingServer.canvas_item_add_texture_rect(drawSymbol,rect,OVERLAY_WEAK, false, Color(Game.darkTone[getColor(COLOR_STEP.FINAL)],0.6))
+		COLLECT_TYPE.ALL: RenderingServer.canvas_item_add_texture_rect(drawSymbol,rect,OVERLAY_FORCEFUL, false, Color(Game.darkTone[getColor(COLOR_STEP.FINAL)],0.6))
+		COLLECT_TYPE.STAR: RenderingServer.canvas_item_add_texture_rect(drawSymbol,rect,OVERLAY_STAR, false, Color(Game.darkTone[getColor(COLOR_STEP.FINAL)],0.6))
 
 func keycountColor() -> Color: return Color("#363029") if M.negative(M.sign(count)) else Color("#ebe3dd")
 func keycountOutlineColor() -> Color: return Color("#d6cfc9") if M.negative(M.sign(count)) else Color("#363029")
