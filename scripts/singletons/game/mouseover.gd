@@ -1,7 +1,7 @@
 extends PanelContainer
 class_name Mouseover
 
-const LOCK_TYPES = ["", "Blank ", "Blast ", "All ", "Exact ", "Starry ", "Remainder "]
+const LOCK_TYPES = ["", "Blank ", "Blast ", "All ", "Exact ", "Glistening ", "Remainder "]
 
 func describe(object:GameObject, pos:Vector2, screenBottomRight:Vector2) -> void:
 	if !object:
@@ -70,7 +70,7 @@ func describe(object:GameObject, pos:Vector2, screenBottomRight:Vector2) -> void
 					string += ")"
 				string += "\nCost: " + lockCost(object.locks[0])
 				if object.locks[0].color != object.colorSpend: 
-					if object.locks[0] != Lock.TYPE.REMAINDER: # do NOT append the color to the end if its a remainder lock
+					if object.locks[0].type != Lock.TYPE.REMAINDER: # do NOT append the color to the end if its a remainder lock
 						string += " " + Colors.getName(object.locks[0].color)
 			else:
 				if object.type == Door.TYPE.COMBO:
@@ -153,12 +153,11 @@ func effects(object:GameObject) -> String:
 	if object.gameFrozen: string += "\nFrozen! (1xRed)"
 	if object.gameCrumbled: string += "\nEroded! (5xGreen)"
 	if object.gamePainted: string += "\nPainted! (3xBlue)"
-	if object == Door:
-		match object.starred:
-			Door.STAR_STATE.STARRED_UNLOCKED: string += "\nStarred! (Unlocked)"
-			Door.STAR_STATE.STARRED_LOCKED: string += "\nStarred! (Locked)"
-		if object.starred != Door.STAR_STATE.UNSTARRED:
-			string += "\n    Spends " + M.str(object.starredSpendKey)
+	match object.starred:
+		Door.STAR_STATE.STARRED_UNLOCKED: string += "\nStarred! (Unlocked)"
+		Door.STAR_STATE.STARRED_LOCKED: string += "\nStarred! (Locked)"
+	if object.starred != Door.STAR_STATE.UNSTARRED:
+		string += "\nSpends " + M.str(object.starredSpendKey)
 		if M.ex(object.starredSpendGlisten):
 			string += "(" + M.str(object.starredSpendGlisten) + ")"
 		if object.hasArmamentLocks(): string += " (+ Armament locks)"
