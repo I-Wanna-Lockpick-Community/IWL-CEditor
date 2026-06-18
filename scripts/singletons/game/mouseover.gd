@@ -45,7 +45,7 @@ func describe(object:GameObject, pos:Vector2, screenBottomRight:Vector2) -> void
 				if additional: string += " (Lock " + additional + ")"
 				string += "\nCost: " + lockCost(object.locks[0])
 				if object.locks[0].color != object.colorSpend: 
-					if object.locks[0] != Lock.TYPE.REMAINDER: # do NOT append the color to the end if its a remainder lock
+					if object.locks[0].type != Lock.TYPE.REMAINDER: # do NOT append the color to the end if its a remainder lock
 						string += " " + Colors.getName(object.locks[0].color)
 			else:
 				if object.type == Door.TYPE.COMBO:
