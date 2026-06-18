@@ -74,6 +74,7 @@ var screenshot:Image
 var drawThumbnail:RID
 var thumbnailHideDescription:bool = false
 var thumbnailEntireLevel:bool = true
+var thumbnailWithText:bool = true
 
 var edgeResizing:bool = false
 
@@ -417,12 +418,12 @@ func dragComponent() -> void: # returns whether or not an object is being dragge
 			# keycounter has only a few possible widths
 			if componentDragged is KeyCounter:
 				toPosition -= effectiveDragPivotRect.position
-				if toPosition.x <= effectiveDragPivotRect.size.x - KeyCounter.WIDTH_AMOUNT[KeyCounter.WIDTH.EXLONG]: toPosition.x = effectiveDragPivotRect.size.x - KeyCounter.WIDTH_AMOUNT[KeyCounter.WIDTH.EXLONG]
-				elif toPosition.x <= effectiveDragPivotRect.size.x - KeyCounter.WIDTH_AMOUNT[KeyCounter.WIDTH.VLONG]: toPosition.x = effectiveDragPivotRect.size.x - KeyCounter.WIDTH_AMOUNT[KeyCounter.WIDTH.VLONG]
+				if Mods.active(&"MoreKeyCounterWidths") and toPosition.x <= effectiveDragPivotRect.size.x - KeyCounter.WIDTH_AMOUNT[KeyCounter.WIDTH.EXLONG]: toPosition.x = effectiveDragPivotRect.size.x - KeyCounter.WIDTH_AMOUNT[KeyCounter.WIDTH.EXLONG]
+				elif Mods.active(&"MoreKeyCounterWidths") and toPosition.x <= effectiveDragPivotRect.size.x - KeyCounter.WIDTH_AMOUNT[KeyCounter.WIDTH.VLONG]: toPosition.x = effectiveDragPivotRect.size.x - KeyCounter.WIDTH_AMOUNT[KeyCounter.WIDTH.VLONG]
 				elif toPosition.x <= effectiveDragPivotRect.size.x - KeyCounter.WIDTH_AMOUNT[KeyCounter.WIDTH.LONG]: toPosition.x = effectiveDragPivotRect.size.x - KeyCounter.WIDTH_AMOUNT[KeyCounter.WIDTH.LONG]
 				elif toPosition.x <= effectiveDragPivotRect.size.x - KeyCounter.WIDTH_AMOUNT[KeyCounter.WIDTH.MEDIUM]: toPosition.x = effectiveDragPivotRect.size.x - KeyCounter.WIDTH_AMOUNT[KeyCounter.WIDTH.MEDIUM]
-				elif toPosition.x >= KeyCounter.WIDTH_AMOUNT[KeyCounter.WIDTH.EXLONG]: toPosition.x = KeyCounter.WIDTH_AMOUNT[KeyCounter.WIDTH.EXLONG]
-				elif toPosition.x >= KeyCounter.WIDTH_AMOUNT[KeyCounter.WIDTH.VLONG]: toPosition.x = KeyCounter.WIDTH_AMOUNT[KeyCounter.WIDTH.VLONG]
+				elif Mods.active(&"MoreKeyCounterWidths") and toPosition.x >= KeyCounter.WIDTH_AMOUNT[KeyCounter.WIDTH.EXLONG]: toPosition.x = KeyCounter.WIDTH_AMOUNT[KeyCounter.WIDTH.EXLONG]
+				elif Mods.active(&"MoreKeyCounterWidths") and toPosition.x >= KeyCounter.WIDTH_AMOUNT[KeyCounter.WIDTH.VLONG]: toPosition.x = KeyCounter.WIDTH_AMOUNT[KeyCounter.WIDTH.VLONG]
 				elif toPosition.x >= KeyCounter.WIDTH_AMOUNT[KeyCounter.WIDTH.LONG]: toPosition.x = KeyCounter.WIDTH_AMOUNT[KeyCounter.WIDTH.LONG]
 				elif toPosition.x >= KeyCounter.WIDTH_AMOUNT[KeyCounter.WIDTH.MEDIUM]: toPosition.x = KeyCounter.WIDTH_AMOUNT[KeyCounter.WIDTH.MEDIUM]
 				else: toPosition.x = 0
@@ -500,7 +501,7 @@ func _input(event:InputEvent) -> void:
 			match event.keycode:
 				KEY_TAB: grab_focus()
 				KEY_F2: takeScreenshot()
-				KEY_F3: takeThumbnailScreenshot()
+				KEY_F3: takeThumbnailScreenshot(thumbnailWithText)
 
 static func eventIs(event:InputEvent, action:StringName, exactMatch:bool=true) -> bool: return event.is_action_pressed(action, false, exactMatch)
 
@@ -631,7 +632,7 @@ func takeScreenshot() -> void:
 	screenshot.resize(200,152)
 	%screenshotViewportCont.visible = false
 
-func takeThumbnailScreenshot() -> void:
+func takeThumbnailScreenshot(withText:bool) -> void:
 	%screenshotViewportCont.visible = true
 	%thumbnailTop.visible = true
 	%thumbnailBottom.visible = true
@@ -650,7 +651,7 @@ func takeThumbnailScreenshot() -> void:
 	await get_tree().process_frame
 	await get_tree().process_frame
 	RenderingServer.force_draw()
-	var thumbnail:Image = %screenshotViewport.get_texture().get_image()
+	var thumbnail:Image = (%screenshotViewport if withText else %screenshotInnerViewport).get_texture().get_image()
 	%screenshotViewportCont.visible = false
 	if OS.has_feature('web'):
 		thumbnail.save_png("user://_thumbnail.png")

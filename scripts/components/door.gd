@@ -125,7 +125,7 @@ func _ready() -> void:
 	RenderingServer.canvas_item_set_parent(drawNegative,get_canvas_item())
 	RenderingServer.canvas_item_set_self_modulate(drawError, "#ffffffaa")
 	RenderingServer.canvas_item_set_material(drawError,Game.ADDITIVE_MATERIAL)
-	Game.connect(&"goldIndexChanged",func(): if Colors.getDef(getColor(COLOR_STEP.DRAW_BASE)).doorTextureFrames > 1: queue_redraw())
+	Game.connect(&"goldIndexChanged",func(): if Colors.getDef(getColor(COLOR_STEP.DRAW_BASE)).doorTextureFrames > 1 or getColor(COLOR_STEP.BASE) == C.olors.ERROR : queue_redraw())
 
 func _freed() -> void:
 	RenderingServer.free_rid(drawDropShadow)
@@ -297,7 +297,7 @@ func propertyChangedInit(property:StringName) -> void:
 			TYPE.SIMPLE:
 				if len(locks) == 0: addLock()
 				elif len(locks) > 1:
-					for lockIndex in range(1,len(locks)):
+					for lockIndex in range(len(locks)-1,0,-1):
 						removeLock(lockIndex)
 				locks[0]._simpleDoorUpdate()
 			TYPE.COMBO:
@@ -406,6 +406,8 @@ var starred:STAR_STATE = STAR_STATE.UNSTARRED
 var starredColor:C.olors = C.olors.WHITE 
 var starredSpendKey:PackedInt64Array = M.ZERO
 var starredSpendGlisten:PackedInt64Array = M.ZERO
+var starredSpendWater:PackedInt64Array = M.ZERO
+var starredSpendWaterGlisten:PackedInt64Array = M.ZERO
 
 enum ANIM_STATE {IDLE, ADD_COPY, RELOCK}
 var animState:ANIM_STATE = ANIM_STATE.IDLE
@@ -501,8 +503,10 @@ func stop() -> void:
 	curseMimic = C.olors.GLITCH
 	justOpened = false
 	starred = STAR_STATE.UNSTARRED
-	starredSpendGlisten = M.ZERO
 	starredSpendKey = M.ZERO
+	starredSpendGlisten = M.ZERO
+	starredSpendWater = M.ZERO
+	starredSpendWaterGlisten = M.ZERO
 	starredColor = C.olors.WHITE
 	super()
 
@@ -521,21 +525,15 @@ func tryOpen(player:Player) -> void:
 		if player.masterCycle == 1 and tryMasterOpen(player): return
 		if player.masterCycle == 2 and tryQuicksilverOpen(player): return
 		if player.masterCycle == 3 and tryCosmicOpen(player): return
-	match starred:
-		STAR_STATE.STARRED_LOCKED: return
-		STAR_STATE.STARRED_UNLOCKED:
-			if M.nex(gameCopies) or checkCanOpen(player, false, true):
-				player.changeGlisten(starredColor, M.sub(player.glisten[starredColor], M.add(starredSpendGlisten, calculateCosts(player, ipow(), true, false, true))))
-				player.changeKeys(starredColor, M.sub(player.key[starredColor],M.add(starredSpendKey, calculateCosts(player, ipow(), false, false, true))))
-			else: return
-		STAR_STATE.UNSTARRED:
-			if M.nex(gameCopies) or checkCanOpen(player):
-				var spendColor:C.olors = getColor(COLOR_STEP.FINAL)
-				player.changeGlisten(spendColor, M.sub(player.glisten[spendColor], calculateCosts(player, ipow(), true)))
-				player.changeKeys(spendColor, M.sub(player.key[spendColor], calculateCosts(player)))
-			else: return
-	
-	GameChanges.addChange(GameChanges.PropertyChange.new(self, &"gameCopies", M.sub(gameCopies, M.across(ipow(), M.sub(M.allAxes(), infCopies)))))
+
+	if M.ex(gameCopies):
+		match starred:
+			STAR_STATE.STARRED_LOCKED: return
+			STAR_STATE.STARRED_UNLOCKED: if !checkCanOpen(player, func(lock): return lock.armament): return
+			STAR_STATE.UNSTARRED: if !checkCanOpen(player): return
+		applyCosts(player)
+
+		GameChanges.addChange(GameChanges.PropertyChange.new(self, &"gameCopies", M.sub(gameCopies, M.across(ipow(), M.sub(M.allAxes(), infCopies)))))
 	
 	if gameFrozen or gameCrumbled or gamePainted: AudioManager.play(preload("res://resources/sounds/door/deaura.wav"))
 	else:
@@ -577,15 +575,9 @@ func tryQuicksilverOpen(player:Player) -> bool:
 	if hasEffectiveColor(C.olors.QUICKSILVER): return false
 	if hasEffectiveColor(C.olors.PURE): return false
 
-	player.changeKeys(C.olors.QUICKSILVER, M.sub(player.key[C.olors.QUICKSILVER], player.masterMode), false)
-	var spendColor:C.olors = getColor(COLOR_STEP.FINAL)
-	if starred != 0:
-		player.changeGlisten(starredColor, M.sub(player.glisten[starredColor], M.add(starredSpendGlisten, calculateCosts(player, player.masterMode, true, false))))
-		player.changeKeys(starredColor, M.sub(player.key[starredColor],M.add(starredSpendKey, calculateCosts(player, player.masterMode, false, false))))
-	else:
-		player.changeGlisten(spendColor, M.sub(player.glisten[spendColor], calculateCosts(player, player.masterMode, true)))
-		player.changeKeys(spendColor, M.sub(player.key[spendColor],calculateCosts(player, player.masterMode)))
-
+	player.changeKeys(C.olors.QUICKSILVER, M.sub(player.key[C.olors.QUICKSILVER], player.masterMode),false)
+	applyCosts(player, player.masterMode)
+	
 	AudioManager.play(preload("res://resources/sounds/door/master.wav"))
 	relockAnimation()
 
@@ -597,6 +589,26 @@ func tryQuicksilverOpen(player:Player) -> bool:
 
 	return true
 
+func applyCosts(player:Player, costIpow:PackedInt64Array=ipow()) -> void:
+	var pure:bool = hasEffectiveColor(C.olors.PURE)
+	# DECIDE: should armaments be immune to air?
+	# DECIDE: should pure doors/gates be immune to the other elemental colors?
+	if starred != STAR_STATE.UNSTARRED:
+		var waterGlistenArmamentCost = calculateCosts(player, pure, func(lock): return lock.type == Lock.TYPE.GLISTENING and lock.getColor(Lock.COLOR_STEP.FINAL) == C.olors.WATER and lock.armament, costIpow)
+		var waterArmamentCost = calculateCosts(player, pure, func(lock): return lock.type != Lock.TYPE.GLISTENING and lock.getColor(Lock.COLOR_STEP.FINAL) == C.olors.WATER and lock.armament, costIpow)
+		player.changeGlisten(starredColor, M.sub(player.glisten[starredColor], M.add(starredSpendGlisten, calculateCosts(player, pure, func(lock): return lock.type == Lock.TYPE.GLISTENING and lock.armament, costIpow))))
+		player.changeGlisten(C.olors.WATER, M.add(starredSpendWaterGlisten, waterGlistenArmamentCost))
+		player.changeKeys(starredColor, M.sub(player.key[starredColor],M.add(starredSpendKey, calculateCosts(player, pure, func(lock): return lock.type != Lock.TYPE.GLISTENING and lock.armament, costIpow))))
+		player.changeKeys(C.olors.WATER, M.add(starredSpendWater, waterArmamentCost))
+	else:
+		var spendColor:C.olors = getColor(COLOR_STEP.FINAL)
+		var waterGlistenCost = calculateCosts(player, pure, func(lock): return lock.type == Lock.TYPE.GLISTENING and lock.getColor(Lock.COLOR_STEP.FINAL) == C.olors.WATER, costIpow)
+		var waterCost = calculateCosts(player, pure, func(lock): return lock.type != Lock.TYPE.GLISTENING and lock.getColor(Lock.COLOR_STEP.FINAL) == C.olors.WATER, costIpow)
+		player.changeGlisten(spendColor, M.sub(player.glisten[spendColor], calculateCosts(player, pure, func(lock): return lock.type == Lock.TYPE.GLISTENING, costIpow)))
+		player.changeGlisten(C.olors.WATER, M.sub(player.glisten[C.olors.WATER], waterGlistenCost))
+		player.changeKeys(spendColor, M.sub(player.key[spendColor], calculateCosts(player, pure, func(lock): return lock.type != Lock.TYPE.GLISTENING, costIpow)))
+		player.changeKeys(C.olors.WATER, M.sub(player.key[C.olors.WATER], waterCost))
+
 func tryDynamiteOpen(player:Player) -> bool:
 	if hasEffectiveColor(C.olors.DYNAMITE): return false
 	if hasEffectiveColor(C.olors.PURE): return false
@@ -604,7 +616,7 @@ func tryDynamiteOpen(player:Player) -> bool:
 	var openedForwards:bool
 	var openedBackwards:bool
 
-	if M.simplies(gameCopies, player.key[C.olors.DYNAMITE]) and M.nonNegative(M.sub(M.along(player.key[C.olors.DYNAMITE], gameCopies), M.cabs(gameCopies))) and M.nex(infCopies):
+	if M.simplies(gameCopies, player.key[C.olors.DYNAMITE]) and M.nonNegative(M.sub(M.along(player.key[C.olors.DYNAMITE], gameCopies), M.cabs(gameCopies))) and M.ex(gameCopies) and M.nex(infCopies):
 		# if the door can open, open it
 		player.changeKeys(C.olors.DYNAMITE, M.sub(player.key[C.olors.DYNAMITE], gameCopies), false)
 		GameChanges.addChange(GameChanges.PropertyChange.new(self, &"gameCopies", M.ZERO))
@@ -636,11 +648,14 @@ func tryCosmicOpen(player:Player) -> bool:
 	if hasEffectiveColor(C.olors.COSMIC): return false
 	if hasEffectiveColor(C.olors.PURE): return false
 	if starred == STAR_STATE.UNSTARRED and player.masterMode == M.ONE:
-		player.changeKeys(C.olors.COSMIC, M.sub(player.key[C.olors.COSMIC], player.masterMode), false)
-		if checkCanOpen(player, true, false): GameChanges.addChange(GameChanges.PropertyChange.new(self, &"starred", STAR_STATE.STARRED_UNLOCKED))
+		player.changeKeys(C.olors.COSMIC, M.sub(player.key[C.olors.COSMIC], player.masterMode),false)
+		if checkCanOpen(player, func(lock): return !lock.armament): GameChanges.addChange(GameChanges.PropertyChange.new(self, &"starred", STAR_STATE.STARRED_UNLOCKED))
 		else: GameChanges.addChange(GameChanges.PropertyChange.new(self, &"starred", STAR_STATE.STARRED_LOCKED))
-		GameChanges.addChange(GameChanges.PropertyChange.new(self, &"starredSpendKey", calculateCosts(player, ipow(), false, true, false)))
-		GameChanges.addChange(GameChanges.PropertyChange.new(self, &"starredSpendGlisten", calculateCosts(player, ipow(), true, false, true)))
+		var pure:bool = hasEffectiveColor(C.olors.PURE)
+		GameChanges.addChange(GameChanges.PropertyChange.new(self, &"starredSpendKey", calculateCosts(player, pure, func(lock): return lock.type != Lock.TYPE.GLISTENING and !lock.armament)))
+		GameChanges.addChange(GameChanges.PropertyChange.new(self, &"starredSpendWater", calculateCosts(player, pure, func(lock): return lock.type != Lock.TYPE.GLISTENING and !lock.armament and lock.getColor(Lock.COLOR_STEP.FINAL) == C.olors.WATER)))
+		GameChanges.addChange(GameChanges.PropertyChange.new(self, &"starredSpendGlisten", calculateCosts(player, pure, func(lock): return lock.type == Lock.TYPE.GLISTENING and lock.armament)))
+		GameChanges.addChange(GameChanges.PropertyChange.new(self, &"starredSpendWaterGlisten", calculateCosts(player, pure, func(lock): return lock.type == Lock.TYPE.GLISTENING and lock.armament and lock.getColor(Lock.COLOR_STEP.FINAL) == C.olors.WATER)))
 		GameChanges.addChange(GameChanges.PropertyChange.new(self, &"starredColor", getColor(COLOR_STEP.FINAL)))
 		GameChanges.addChange(GameChanges.PropertyChange.new(self, &"starredipow", ipow()))
 	elif starred != STAR_STATE.UNSTARRED and player.masterMode == M.nONE:
@@ -653,31 +668,31 @@ func tryCosmicOpen(player:Player) -> bool:
 	GameChanges.bufferSave()
 	return true
 
-func checkCanOpen(player:Player, checkNonarmamentLocks:bool=true, checkArmamentLocks:bool=true, checkCrash:bool=true) -> bool:
+func checkCanOpen(player:Player, predicate:Callable=func(_lock): return true, checkCrash:bool=true) -> bool:
 	var willCrash:bool = false
 	var canOpen:bool = true
+	var pure:bool = hasEffectiveColor(C.olors.PURE)
 	if M.ex(gameCopies): # although nothing (yet) can make a door 0 copy without destroying it
 		for lock in locks:
-			if !lock.canOpen(player):
+			if !lock.canOpen(player) and (pure or M.nex(player.key[C.olors.AIR]) or !lock.canOpen(player, C.olors.AIR)):
 				if lock.getColor(Lock.COLOR_STEP.EFFECTIVE) == C.olors.NONE and checkCrash: willCrash = true
-				elif checkArmamentLocks if lock.armament else checkNonarmamentLocks: canOpen = false
+				elif predicate.call(lock): canOpen = false
 			elif lock.getColor(Lock.COLOR_STEP.EFFECTIVE) == C.olors.NONE: canOpen = false
 		for lock in remoteLocks:
-			if !lock.satisfied and (checkArmamentLocks if lock.armament else checkNonarmamentLocks): canOpen = false
-		if willCrash: Game.crash(); return false
+			if !lock.satisfied and predicate.call(lock): canOpen = false
+		if willCrash:
+			Game.crash()
+			return false
 	return canOpen
 
-func calculateCosts(player:Player, costIpow:PackedInt64Array=ipow(), forGlisten:bool=false, checkNonarmamentLocks:bool=true, checkArmamentLocks:bool=true) -> PackedInt64Array:
+func calculateCosts(player:Player, pure:bool, predicate:Callable, costIpow:PackedInt64Array=ipow()) -> PackedInt64Array:
 	var cost:PackedInt64Array = M.ZERO
-	var colorStarred = player.star[getColor(COLOR_STEP.FINAL)]
-	for lock in locks: 
-		if ((lock.type == Lock.TYPE.GLISTENING) == forGlisten) and (checkArmamentLocks if lock.armament else checkNonarmamentLocks): 
-			if (lock.spendType == Lock.SPEND_TYPE.STAR and not colorStarred) or (lock.spendType == Lock.SPEND_TYPE.NORMAL and colorStarred) or (lock.spendType == Lock.SPEND_TYPE.NONE): pass
-			else: cost = M.add(cost, lock.getCost(player, costIpow))
-	for lock in remoteLocks: 
-		if ((lock.type == Lock.TYPE.GLISTENING) == forGlisten) and (checkArmamentLocks if lock.armament else checkNonarmamentLocks): 
-			if (lock.spendType == Lock.SPEND_TYPE.STAR and not colorStarred) or (lock.spendType == Lock.SPEND_TYPE.NORMAL and colorStarred) or (lock.spendType == Lock.SPEND_TYPE.NONE): pass
-			else: cost = M.add(cost, lock.getCost(player))
+	for lock in locks:
+		if predicate.call(lock):
+			cost = M.add(cost, lock.getCost(player, !pure, costIpow))
+	for lock in remoteLocks:
+		if predicate.call(lock):
+			cost = M.add(cost, lock.cost)
 	return cost
 
 func hasEffectiveColor(color:C.olors) -> bool:
@@ -757,44 +772,39 @@ func auraCheck(player:Player) -> void:
 	if type == TYPE.GATE: return
 	if animState != ANIM_STATE.IDLE: return
 	if starred != STAR_STATE.UNSTARRED: return
-	var deAuraed:bool = false
+	var playSound:bool = false
 	if player.auraRed and gameFrozen and !hasEffectiveColor(C.olors.MAROON):
 		GameChanges.addChange(GameChanges.PropertyChange.new(self,&"gameFrozen",false))
 		makeDebris(Debris, C.olors.WHITE)
-		deAuraed = true
+		playSound = true
 	if player.auraGreen and gameCrumbled and !hasEffectiveColor(C.olors.FOREST):
 		GameChanges.addChange(GameChanges.PropertyChange.new(self,&"gameCrumbled",false))
 		makeDebris(Debris, C.olors.BROWN)
-		deAuraed = true
+		playSound = true
 	if player.auraBlue and gamePainted and !hasEffectiveColor(C.olors.NAVY):
 		GameChanges.addChange(GameChanges.PropertyChange.new(self,&"gamePainted",false))
 		makeDebris(Debris, C.olors.ORANGE)
-		deAuraed = true
-	var auraed:bool = false
-	if player.auraMaroon and !gameFrozen and !hasEffectiveColor(C.olors.RED) and !isAllInitialColor(C.olors.ICE):
+		playSound = true
+	if player.auraMaroon and !gameFrozen and !hasEffectiveColor(C.olors.RED):
 		GameChanges.addChange(GameChanges.PropertyChange.new(self,&"gameFrozen",true))
 		makeDebris(Debris, C.olors.WHITE)
-		auraed = true
-	if player.auraForest and !gameCrumbled and !hasEffectiveColor(C.olors.GREEN) and !isAllInitialColor(C.olors.MUD):
+		playSound = true
+	if player.auraForest and !gameCrumbled and !hasEffectiveColor(C.olors.GREEN):
 		GameChanges.addChange(GameChanges.PropertyChange.new(self,&"gameCrumbled",true))
 		makeDebris(Debris, C.olors.BROWN)
-		auraed = true
-	if player.auraNavy and !gamePainted and !hasEffectiveColor(C.olors.BLUE) and !isAllInitialColor(C.olors.GRAFFITI):
+		playSound = true
+	if player.auraNavy and !gamePainted and !hasEffectiveColor(C.olors.BLUE):
 		GameChanges.addChange(GameChanges.PropertyChange.new(self,&"gamePainted",true))
 		makeDebris(Debris, C.olors.ORANGE)
-		auraed = true
-	if deAuraed or auraed:
+		playSound = true
+	if playSound:
 		AudioManager.play(preload("res://resources/sounds/door/deaura.wav"))
 		GameChanges.bufferSave()
+
 
 func isAllInitialColor(color:C.olors) -> bool:
 	if getColor(COLOR_STEP.INITIAL) != color: return false
 	for lock in locks: if lock.color != color: return false
-	return true
-
-func isAllBaseColor(color:C.olors) -> bool:
-	if getColor(COLOR_STEP.BASE) != color: return false
-	for lock in locks: if lock.getColor(Lock.COLOR_STEP.BASE) != color: return false
 	return true
 
 func curseCheck(player:Player) -> void:

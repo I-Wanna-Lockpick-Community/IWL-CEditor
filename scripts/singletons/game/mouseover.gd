@@ -63,11 +63,8 @@ func describe(object:GameObject, pos:Vector2, screenBottomRight:Vector2) -> void
 					Lock.SPEND_TYPE.STAR: string += "Starry "
 					Lock.SPEND_TYPE.ALL: string += "Forceful "
 				string += LOCK_TYPES[object.locks[0].type] + Colors.getName(object.colorSpend) + " Door"
-				if object.locks[0].armament:
-					string += " (Armament"
-					if object.locks[0].glitchMimic != object.glitchMimic: string += ", Mimic: " + Colors.getName(object.locks[0].glitchMimic)
-					elif object.locks[0].errorMimic != object.errorMimic: string += ", Mimic: " + Colors.getName(object.locks[0].errorMimic)
-					string += ")"
+				var additional:String = lockAdditionalInfo(object.locks[0], object)
+				if additional: string += " (Lock " + additional + ")"
 				string += "\nCost: " + lockCost(object.locks[0])
 				if object.locks[0].color != object.colorSpend: 
 					if object.locks[0].type != Lock.TYPE.REMAINDER: # do NOT append the color to the end if its a remainder lock
@@ -79,11 +76,8 @@ func describe(object:GameObject, pos:Vector2, screenBottomRight:Vector2) -> void
 				else: string += "Empty Gate" if len(object.locks) == 0 else "Gate"
 				for lock in object.locks:
 					string += "\nLock: " + LOCK_TYPES[lock.type] + Colors.getName(lock.color) + ", Cost: " + lockCost(lock)
-					if lock.armament:
-						string += " (Armament"
-						if lock.color == C.olors.GLITCH and lock.glitchMimic != object.glitchMimic: string += ", Mimic: " + Colors.getName(lock.glitchMimic)
-						elif lock.color == C.olors.ERROR and lock.errorMimic != object.errorMimic: string += ", Mimic: " + Colors.getName(lock.errorMimic)
-						string += ")"
+					var additional:String = lockAdditionalInfo(lock, object)
+					if additional: string += " (" + additional + ")"
 			if object.hasInitialColor(C.olors.GLITCH): string += "\nMimic: " + Colors.getName(object.glitchMimic)
 			elif object.hasInitialColor(C.olors.ERROR): string += "\nMimic: " + Colors.getName(object.errorMimic)
 			string += effects(object)
@@ -94,9 +88,9 @@ func describe(object:GameObject, pos:Vector2, screenBottomRight:Vector2) -> void
 				Lock.SPEND_TYPE.STAR: string += "Starry "
 				Lock.SPEND_TYPE.ALL: string += "Forceful "
 			string += LOCK_TYPES[object.type] + Colors.getName(object.color) + " Remote Lock\n"
-			string += ("S" if object.satisfied else "Uns") + "atisfied, Cost: " + M.str(object.cost)
+			string += ("S" if object.satisfied else "Uns") + "atisfied, Cost: " + lockCost(object)
 			if object.type == Lock.TYPE.GLISTENING: string += " Glistening"
-			if object.type in [Lock.TYPE.BLAST, Lock.TYPE.ALL]: string += " (" + lockCost(object,false) + ")"
+			if object.type in [Lock.TYPE.BLAST, Lock.TYPE.ALL]: string += " (" + M.str(object.cost) + ")"
 			if object.armament: string += " (Armament)"
 			if object.color == C.olors.GLITCH: string += "\nMimic: " + Colors.getName(object.glitchMimic)
 			elif object.color == C.olors.ERROR: string += "\nMimic: " + Colors.getName(object.errorMimic)
@@ -109,6 +103,13 @@ func describe(object:GameObject, pos:Vector2, screenBottomRight:Vector2) -> void
 	position = pos
 	if position.x + size.x > screenBottomRight.x: position.x -= size.x
 	if position.y + size.y > screenBottomRight.y: position.y -= size.y
+
+func lockAdditionalInfo(lock:Lock, door:Door) -> String:
+	var additional:Array[String] = []
+	if lock.armament: additional.append("Armament")
+	if door.colorSpend in [C.olors.GLITCH, C.olors.ERROR] and lock.color in [C.olors.GLITCH, C.olors.ERROR] and lock.getColor(Lock.COLOR_STEP.EFFECTIVE) != door.getColor(Door.COLOR_STEP.EFFECTIVE): additional.append("Mimic: " + Colors.getName(lock.getColor(Lock.COLOR_STEP.EFFECTIVE)))
+	if additional: return ", ".join(additional)
+	else: return ""
 
 func lockCost(lock:GameComponent, addSpendTypeTag:bool = true) -> String:
 	var string:String = ""
@@ -124,7 +125,7 @@ func lockCost(lock:GameComponent, addSpendTypeTag:bool = true) -> String:
 		Lock.TYPE.BLAST, Lock.TYPE.ALL:
 			string += "["
 			var numerator:PackedInt64Array = lock.count
-			var divideThrough:bool = !M.isComplex(lock.denominator) and !M.isComplex(numerator)
+			var divideThrough:bool = !M.isComplex(lock.denominator) and (!M.isComplex(numerator) or !lock.isPartial)
 			if divideThrough: numerator = M.divide(numerator,M.saxis(lock.denominator))
 			if M.neq(numerator, M.ONE): string += M.str(numerator)
 			string += "All" if lock.type == Lock.TYPE.BLAST else "ALL"
@@ -153,14 +154,15 @@ func effects(object:GameObject) -> String:
 	if object.gameFrozen: string += "\nFrozen! (1xRed)"
 	if object.gameCrumbled: string += "\nEroded! (5xGreen)"
 	if object.gamePainted: string += "\nPainted! (3xBlue)"
-	match object.starred:
-		Door.STAR_STATE.STARRED_UNLOCKED: string += "\nStarred! (Unlocked)"
-		Door.STAR_STATE.STARRED_LOCKED: string += "\nStarred! (Locked)"
-	if object.starred != Door.STAR_STATE.UNSTARRED:
-		string += " (Spends " + M.str(object.starredSpendKey)
-		if M.ex(object.starredSpendGlisten):
-			string += "(" + M.str(object.starredSpendGlisten) + ")"
-		if object.hasArmamentLocks(): string += " (+ Armament locks)"
-		string += " " + Colors.getName(object.starredColor) + ")"
+	if object is Door:
+		match object.starred:
+			Door.STAR_STATE.STARRED_UNLOCKED: string += "\nStarred! (Unlocked)"
+			Door.STAR_STATE.STARRED_LOCKED: string += "\nStarred! (Locked)"
+		if object.starred != Door.STAR_STATE.UNSTARRED:
+			string += "\n    Spends " + M.str(object.starredSpendKey)
+			if M.ex(object.starredSpendGlisten):
+				string += "(" + M.str(object.starredSpendGlisten) + ")"
+			if object.hasArmamentLocks(): string += " (+ Armament locks)"
+			string += " " + Colors.getName(object.starredColor) + ")"
 	if string: string = "\n- Effects -" + string
 	return string

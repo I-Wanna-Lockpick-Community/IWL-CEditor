@@ -4,6 +4,7 @@ class_name LoadV1toCurrent
 static var COMPONENTS:Array[GDScript] = [Lock, KeyCounterElement, KeyBulk, Door, Goal, KeyCounter, PlayerSpawn, FloatingTile, RemoteLock]
 static var NON_OBJECT_COMPONENTS:Array[GDScript] = [Lock, KeyCounterElement]
 
+# dont put new properties in this, put injectors for them with the correct formatVersion boundary, down in loadFile()
 static var BASE_PROPERTIES:Dictionary[GDScript,Array] = {
 	Lock: [
 		&"id", &"position", &"size",
@@ -43,6 +44,7 @@ static var BASE_PROPERTIES:Dictionary[GDScript,Array] = {
 		&"frozen", &"crumbled", &"painted"
 	]
 }
+# dont put new arrays in this, put injectors for them with the correct formatVersion boundary, down in loadFile()
 static var BASE_ARRAYS:Dictionary[GDScript,Dictionary] = {
 	Lock: {},
 	KeyCounterElement: {},

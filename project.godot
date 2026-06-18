@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="IWLCEditor"
-config/version="1.0.34"
+config/version="1.0.40"
 run/main_scene="uid://djnt51xv7wn52"
 config/features=PackedStringArray("4.6", "GL Compatibility")
 config/icon="uid://b5g2tn4r1674k"

@@ -110,6 +110,7 @@ func opened() -> void:
 	configFile.load("user://config.ini")
 	%thumbnailHideDescription.button_pressed = configFile.get_value("Game.editor", "thumbnailHideDescription", false)
 	%thumbnailEntireLevel.button_pressed = configFile.get_value("Game.editor", "thumbnailEntireLevel", true)
+	%thumbnailWithText.button_pressed = configFile.get_value("Game.editor", "thumbnailWithText", true)
 	%fileDialogWorkaround.button_pressed = configFile.get_value("Game.editor", "fileDialogWorkaround", false)
 	%fullscreen.button_pressed = configFile.get_value("Game.editor", "fullscreen", false)
 	%uiScale.value = configFile.get_value("Game.editor", "logUiScale", log(DisplayServer.screen_get_dpi()/96.0)/0.6931471806) # log2
@@ -132,6 +133,7 @@ func getMatches(matchName:String, default:Array[String]) -> Array[String]:
 func closed() -> void:
 	configFile.set_value("Game.editor", "thumbnailHideDescription", %thumbnailHideDescription.button_pressed)
 	configFile.set_value("Game.editor", "thumbnailEntireLevel", %thumbnailEntireLevel.button_pressed)
+	configFile.set_value("Game.editor", "thumbnailWithText", %thumbnailWithText.button_pressed)
 	configFile.set_value("Game.editor", "fileDialogWorkaround", %fileDialogWorkaround.button_pressed)
 	configFile.set_value("Game.editor", "fullscreen", %fullscreen.button_pressed)
 	configFile.set_value("Game.editor", "logUiScale", %uiScale.value)
@@ -165,7 +167,7 @@ func _fullscreenSet(toggled_on:bool) -> void:
 
 func _generateThumbnail() -> void:
 	Game.editor.outline.visible = false
-	await Game.editor.takeThumbnailScreenshot()
+	await Game.editor.takeThumbnailScreenshot(Game.editor.thumbnailWithText)
 	Game.editor.outline.visible = true
 
 func _thumbnailHideDescriptionSet(toggled_on:bool) -> void:
@@ -173,6 +175,9 @@ func _thumbnailHideDescriptionSet(toggled_on:bool) -> void:
 
 func _thumbnailEntireLevelSet(toggled_on:bool) -> void:
 	Game.editor.thumbnailEntireLevel = toggled_on
+
+func _thumbnailWithText(toggled_on: bool) -> void:
+	Game.editor.thumbnailWithText = toggled_on
 
 func _uiScaleChanged(value:float) -> void:
 	Game.logUiScale = value

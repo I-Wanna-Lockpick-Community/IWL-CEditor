@@ -18,7 +18,7 @@ const CREATE_PARAMETERS:Array[StringName] = [
 ]
 const PROPERTIES:Array[StringName] = [
 	&"id", &"position", &"size",
-	&"undoStack", # undostack is a "property" and not an "array" because we wont ever interact with the elements; its basically just a selfcontained piece of Data
+	&"undoStack", # undostack is a "property" and not an "array" because we wont ever interact with the elements; its basically just a selfcontained datum
 	&"saveBuffered"
 ]
 static var ARRAYS:Dictionary[StringName,Variant] = {

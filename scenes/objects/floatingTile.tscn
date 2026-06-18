@@ -6,6 +6,7 @@
 size = Vector2(32, 32)
 
 [node name="floatingTile" type="Node2D" unique_id=741927119]
+z_index = -2
 script = ExtResource("1_f645u")
 metadata/_custom_type_script = "uid://bkp3fklu8mlnk"
 
