@@ -222,13 +222,12 @@ layout_mode = 2
 texture = ExtResource("8_16i1m")
 expand_mode = 3
 
-[node name="keyPartialInfiniteEdit" parent="keyDialog/c/c/c/c/keyPartialInfinite" unique_id=231119399 node_paths=PackedStringArray("context") instance=ExtResource("20_gx4cd")]
+[node name="keyPartialInfiniteEdit" parent="keyDialog/c/c/c/c/keyPartialInfinite" unique_id=231119399 instance=ExtResource("20_gx4cd")]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(40, 18)
 layout_mode = 2
 type = 2
 allowZero = false
-context = NodePath("../../../../../../..")
 
 [node name="keyGlisteningToggle" type="Button" parent="keyDialog/c/c/c/c" unique_id=1657225081 groups=["explained"]]
 unique_name_in_owner = true
@@ -238,10 +237,9 @@ toggle_mode = true
 icon = ExtResource("10_vapyv")
 metadata/explanation = SubResource("Resource_hdjws")
 
-[node name="keyCountEdit" parent="keyDialog/c/c/c" unique_id=1393964115 node_paths=PackedStringArray("context") instance=ExtResource("20_gx4cd")]
+[node name="keyCountEdit" parent="keyDialog/c/c/c" unique_id=1393964115 instance=ExtResource("20_gx4cd")]
 unique_name_in_owner = true
 layout_mode = 2
-context = NodePath("../../../../..")
 
 [node name="keyOperationSelector" type="GridContainer" parent="keyDialog/c/c/c" unique_id=2013174328]
 unique_name_in_owner = true
@@ -298,6 +296,7 @@ theme_override_constants/separation = 4
 unique_name_in_owner = true
 custom_minimum_size = Vector2(182, 0)
 layout_mode = 2
+size_flags_horizontal = 4
 theme_type_variation = &"DialogPanelContainer"
 
 [node name="c" type="MarginContainer" parent="doorDialog/c/door" unique_id=685399445]
@@ -482,10 +481,9 @@ layout_mode = 2
 toggle_mode = true
 icon = ExtResource("25_hb0ue")
 
-[node name="doorCopiesEdit" parent="doorDialog/c/lock/c/c/doorCopySettings" unique_id=1561873349 node_paths=PackedStringArray("context") instance=ExtResource("20_gx4cd")]
+[node name="doorCopiesEdit" parent="doorDialog/c/lock/c/c/doorCopySettings" unique_id=1561873349 instance=ExtResource("20_gx4cd")]
 unique_name_in_owner = true
 layout_mode = 2
-context = NodePath("../../../../../../..")
 
 [node name="imaginaryInfiniteCopy" type="Button" parent="doorDialog/c/lock/c/c/doorCopySettings" unique_id=709491226]
 unique_name_in_owner = true
@@ -493,11 +491,10 @@ layout_mode = 2
 toggle_mode = true
 icon = ExtResource("25_hb0ue")
 
-[node name="doorAxialNumberEdit" parent="doorDialog/c/lock/c/c" unique_id=1443733692 node_paths=PackedStringArray("context") instance=ExtResource("20_gx4cd")]
+[node name="doorAxialNumberEdit" parent="doorDialog/c/lock/c/c" unique_id=1443733692 instance=ExtResource("20_gx4cd")]
 unique_name_in_owner = true
 layout_mode = 2
 type = 1
-context = NodePath("../../../../../..")
 
 [node name="blastLockSettings" type="VBoxContainer" parent="doorDialog/c/lock/c/c" unique_id=2055272722]
 unique_name_in_owner = true
@@ -509,10 +506,9 @@ alignment = 1
 unique_name_in_owner = true
 layout_mode = 2
 
-[node name="partialBlastNumeratorEdit" parent="doorDialog/c/lock/c/c/blastLockSettings/partialBlastSettings" unique_id=2038813885 node_paths=PackedStringArray("context") instance=ExtResource("20_gx4cd")]
+[node name="partialBlastNumeratorEdit" parent="doorDialog/c/lock/c/c/blastLockSettings/partialBlastSettings" unique_id=2038813885 instance=ExtResource("20_gx4cd")]
 unique_name_in_owner = true
 layout_mode = 2
-context = NodePath("../../../../../../../..")
 
 [node name="partialBlastSep" type="HSeparator" parent="doorDialog/c/lock/c/c/blastLockSettings/partialBlastSettings" unique_id=1939953753]
 unique_name_in_owner = true
@@ -557,11 +553,10 @@ unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="partialBlastDenominatorEdit" parent="doorDialog/c/lock/c/c/blastLockSettings/c/partialDenominator" unique_id=1928037066 node_paths=PackedStringArray("context") instance=ExtResource("20_gx4cd")]
+[node name="partialBlastDenominatorEdit" parent="doorDialog/c/lock/c/c/blastLockSettings/c/partialDenominator" unique_id=1928037066 instance=ExtResource("20_gx4cd")]
 unique_name_in_owner = true
 layout_mode = 2
 allowZero = false
-context = NodePath("../../../../../../../../..")
 
 [node name="remoteLock" type="PanelContainer" parent="doorDialog/c" unique_id=381581047]
 unique_name_in_owner = true
@@ -688,10 +683,9 @@ layout_mode = 2
 [node name="c" type="VBoxContainer" parent="playerDialog/c/playerStateColorSettings/c" unique_id=890339268]
 layout_mode = 2
 
-[node name="playerKeyCountEdit" parent="playerDialog/c/playerStateColorSettings/c/c" unique_id=1310694864 node_paths=PackedStringArray("context") instance=ExtResource("20_gx4cd")]
+[node name="playerKeyCountEdit" parent="playerDialog/c/playerStateColorSettings/c/c" unique_id=1310694864 instance=ExtResource("20_gx4cd")]
 unique_name_in_owner = true
 layout_mode = 2
-context = NodePath("../../../../../..")
 
 [node name="playerKeyGlistenCont" type="HBoxContainer" parent="playerDialog/c/playerStateColorSettings/c/c" unique_id=865961514]
 unique_name_in_owner = true
@@ -701,10 +695,9 @@ layout_mode = 2
 layout_mode = 2
 texture = ExtResource("38_lm5cw")
 
-[node name="playerKeyGlistenEdit" parent="playerDialog/c/playerStateColorSettings/c/c/playerKeyGlistenCont" unique_id=209548756 node_paths=PackedStringArray("context") instance=ExtResource("20_gx4cd")]
+[node name="playerKeyGlistenEdit" parent="playerDialog/c/playerStateColorSettings/c/c/playerKeyGlistenCont" unique_id=209548756 instance=ExtResource("20_gx4cd")]
 unique_name_in_owner = true
 layout_mode = 2
-context = NodePath("../../../../../../..")
 
 [node name="p2" type="TextureRect" parent="playerDialog/c/playerStateColorSettings/c/c/playerKeyGlistenCont" unique_id=1003227765]
 layout_mode = 2
