@@ -12,7 +12,8 @@ class_name FocusDialog
 var focused:GameObject # the object that is currently focused
 var componentFocused:GameComponent # you can focus both a door and a lock at the same time so
 var activeDialog:Control
-var bufferFocus:bool = false
+var bufferFocusObject:bool = false
+var bufferFocusComponent:bool = false
 
 var focusOffsetAmount:float = 0
 
@@ -57,7 +58,8 @@ func defocus() -> void:
 	if object is RemoteLock: object.queue_redraw()
 	deinteract()
 	defocusComponent()
-	bufferFocus = false
+	bufferFocusObject = false
+	bufferFocusComponent = false
 
 func focusComponent(component:GameComponent) -> void:
 	if !component:
@@ -73,7 +75,8 @@ func defocusComponent() -> void:
 	if !componentFocused: return
 	componentFocused = null
 	deinteract()
-	bufferFocus = false
+	bufferFocusObject = false
+	bufferFocusComponent = false
 
 func interact(edit:NumberEdit, last:bool=false) -> void:
 	deinteract()
@@ -108,7 +111,9 @@ func receiveKey(event:InputEventKey) -> bool:
 							nextMenu(); index = 0
 						else: index += 1
 					interact(numberEdits[index])
-			else: bufferFocus = true
+			else:
+				bufferFocusComponent = true
+				bufferFocusObject = true
 		else: return false
 	return true
 
@@ -137,10 +142,12 @@ const OBJECT_MARGIN:float = 16 # between the dialog and the object; where the sp
 const SPEECH_BUBBLER_MARGIN:float = 10 # between speech bubbler and edge of dialog
 
 func _process(delta:float) -> void:
-	if bufferFocus:
-		if componentFocused: focusComponent(componentFocused)
-		elif focused: focus(focused)
-		bufferFocus = false
+	if bufferFocusComponent and componentFocused:
+		focusComponent(componentFocused)
+		bufferFocusComponent = false
+	if bufferFocusObject and focused:
+		focus(focused)
+		bufferFocusObject = false
 	if focused and activeDialog:
 		focusOffsetAmount += (-focusOffsetAmount)*min(1, delta*25)
 		visible = true

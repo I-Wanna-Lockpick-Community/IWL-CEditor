@@ -511,7 +511,6 @@ func receiveUnhandledKey(key:InputEventKey) -> bool:
 			CURSOR_MODE.NUMBER:
 				var character:String = char(key.unicode)
 				if numberValues[cursorSelectedNumber] == 0:
-					print(text.erase(cursorStart, cursorEnd - cursorStart).insert(cursorStart, character))
 					Changes.addChange(Changes.NumberEditTextChange.new(self, text.erase(cursorStart, cursorEnd - cursorStart).insert(cursorStart, character)))
 					Changes.addChange(Changes.GlobalPropertyChange.new(self, &"cursorStart", cursorStart+1))
 					Changes.addChange(Changes.GlobalPropertyChange.new(self, &"cursorEnd", cursorStart))
