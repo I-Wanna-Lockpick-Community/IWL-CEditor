@@ -177,6 +177,11 @@ static var mods:Dictionary[StringName, Mod] = {
 		"Cosmic Color",
 		"Adds the Cosmic color. Added by Bored",
 		{&"CosmicColorUsed": ColorProblem.new([C.olors.COSMIC], "Cosmic Color Used")}
+	),
+	&"ElementalColors": Mod.new(
+		"Elemental Colors",
+		"Adds four elemental colours that interact with locks. Added by BerryGo",
+		{&"ElementalColorUsed": ColorProblem.new([C.olors.FIRE, C.olors.WATER, C.olors.EARTH, C.olors.AIR], "Elemental Color Used")}
 	)
 }
 
@@ -286,6 +291,7 @@ func colors() -> Array[C.olors]:
 	if active(&"NoneColor"): array.append(C.olors.NONE)
 	if active(&"CosmicColor"): array.append(C.olors.COSMIC)
 	if active(&"ErrorColor"): array.append(C.olors.ERROR)
+	if active(&"ElementalColors"): array.append_array([C.olors.FIRE, C.olors.WATER, C.olors.EARTH, C.olors.AIR])
 	return array
 
 ## wraps

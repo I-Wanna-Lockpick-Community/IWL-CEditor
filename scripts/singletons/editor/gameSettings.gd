@@ -122,7 +122,6 @@ func _setTonesToMain() -> void:
 	updateLabels()
 
 func _setPreset(id:int) -> void:
-	print(id)
 	for color in Colors.DEFINITIONS:
 		match id:
 			0: # default

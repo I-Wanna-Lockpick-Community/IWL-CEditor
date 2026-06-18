@@ -30,7 +30,11 @@ const DEFAULT_HIGH:Array[Color] = [
 	Color("#d1ffff"), Color("#b57ea7"), Color("#f2e380"),
 	Color("#00000000"),
 	Color("#fff"),
-	Color("#240a44")
+	Color("#240a44"),
+	Color("#A79437"),
+	Color("#54A7FF"),
+	Color("#99BB00"),
+	Color("#A6CCEE")
 ]
 const BRIGHT_HIGH:Array[Color] = [
 	Color("#e7bf98"),
@@ -46,7 +50,11 @@ const BRIGHT_HIGH:Array[Color] = [
 	Color("#d1ffff"), Color("#b57ea7"), Color("#f2e380"),
 	Color("#00000000"),
 	Color("#fff"),
-	Color("#340e62")
+	Color("#340e62"),
+	Color("#A79437"),
+	Color("#54A7FF"),
+	Color("#99BB00"),
+	Color("#A6CCEE")
 ]
 
 var mainTone:Array[Color] = DEFAULT_MAIN.duplicate()
@@ -64,7 +72,11 @@ const DEFAULT_MAIN:Array[Color] = [
 	Color("#82f0ff"), Color("#966489"), Color("#e2c961"),
 	Color("#00000000"),
 	Color("#006dff"),
-	Color("#19072f")
+	Color("#19072f"),
+	Color("#ad511b"),
+	Color("#3D95F5"),
+	Color("#779900"),
+	Color("#86ACCC")
 	
 ]
 const BRIGHT_MAIN:Array[Color] = [
@@ -81,7 +93,11 @@ const BRIGHT_MAIN:Array[Color] = [
 	Color("#82f0ff"), Color("#966489"), Color("#e2c961"),
 	Color("#00000000"),
 	Color("#006dff"),
-	Color("#240a44")
+	Color("#240a44"),
+	Color("#ad511b"),
+	Color("#3D95F5"),
+	Color("#779900"),
+	Color("#86ACCC")
 ]
 
 var darkTone:Array[Color] = DEFAULT_DARK.duplicate()
@@ -99,7 +115,11 @@ const DEFAULT_DARK:Array[Color] = [
 	Color("#62b6c1"), Color("#7f4972"), Color("#c6af51"),
 	Color("#00000000"),
 	Color("#006dff"),
-	Color("#110521")
+	Color("#110521"),
+	Color("#8e0d0d"),
+	Color("#166CCC"),
+	Color("#664400"),
+	Color("#688CAC")
 
 ]
 const BRIGHT_DARK:Array[Color] = [
@@ -116,7 +136,11 @@ const BRIGHT_DARK:Array[Color] = [
 	Color("#62b6c1"), Color("#7f4972"), Color("#c6af51"),
 	Color("#00000000"),
 	Color("#006dff"),
-	Color("#19072f")
+	Color("#19072f"),
+	Color("#8e0d0d"),
+	Color("#166CCC"),
+	Color("#664400"),
+	Color("#688CAC")
 ]
 
 @onready var editor:Editor = get_node("/root/editor")
@@ -288,7 +312,7 @@ func playTest(spawn:PlayerSpawn) -> void:
 		world.add_child(player)
 		player.position = spawn.position + Vector2(17, 23)
 		if spawn != levelStart:
-			GameChanges.assignAndFollowStack(spawn.undoStack)
+			if spawn.undoStack: GameChanges.assignAndFollowStack(spawn.undoStack) # surely this will not grow limbs and bite me
 			GameChanges.saveBuffered = spawn.saveBuffered
 			player.key.assign(spawn.key.map(func(number): return number.duplicate()))
 			player.star.assign(spawn.star)

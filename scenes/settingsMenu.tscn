@@ -96,7 +96,6 @@ theme_override_styles/separator = SubResource("StyleBoxLine_egwj7")
 
 [node name="levelSettings" type="MarginContainer" parent="c" unique_id=1819875583]
 unique_name_in_owner = true
-visible = false
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_constants/margin_left = 10
@@ -321,6 +320,21 @@ size_flags_vertical = 0
 tooltip_text = "If this is turned off then the thumbnail will only capture a 800x608 centered around the level start, similar to the load preview."
 texture = ExtResource("5_iswfj")
 
+[node name="c4" type="HBoxContainer" parent="c/levelSettings/c/followWorld/c2/c" unique_id=393189203]
+layout_mode = 2
+
+[node name="thumbnailWithText" type="CheckBox" parent="c/levelSettings/c/followWorld/c2/c/c4" unique_id=1662737377]
+unique_name_in_owner = true
+layout_mode = 2
+button_pressed = true
+text = "With Text"
+
+[node name="clarifier" type="TextureRect" parent="c/levelSettings/c/followWorld/c2/c/c4" unique_id=2010503699]
+layout_mode = 2
+size_flags_vertical = 0
+tooltip_text = "With extra text at top and bottom of screen."
+texture = ExtResource("5_iswfj")
+
 [node name="c2" type="HBoxContainer" parent="c/levelSettings/c/followWorld/c2/c" unique_id=1420224109]
 layout_mode = 2
 theme_override_constants/separation = 2
@@ -339,6 +353,7 @@ texture = ExtResource("5_iswfj")
 
 [node name="editorSettings" type="MarginContainer" parent="c" unique_id=1912824648]
 unique_name_in_owner = true
+visible = false
 layout_mode = 2
 size_flags_vertical = 3
 
@@ -1020,6 +1035,7 @@ toneButtonGroup = SubResource("ButtonGroup_3e3b5")
 [connection signal="value_changed" from="c/levelSettings/c/followWorld/c2/c/c/levelRevision" to="." method="_levelRevisionSet"]
 [connection signal="toggled" from="c/levelSettings/c/followWorld/c2/c/thumbnailHideDescription" to="." method="_thumbnailHideDescriptionSet"]
 [connection signal="toggled" from="c/levelSettings/c/followWorld/c2/c/c3/thumbnailEntireLevel" to="." method="_thumbnailEntireLevelSet"]
+[connection signal="toggled" from="c/levelSettings/c/followWorld/c2/c/c4/thumbnailWithText" to="." method="_thumbnailWithText"]
 [connection signal="pressed" from="c/levelSettings/c/followWorld/c2/c/c2/generateThumbnail" to="." method="_generateThumbnail"]
 [connection signal="toggled" from="c/editorSettings/c2/c/fileDialogWorkaroundCont/fileDialogWorkaround" to="." method="_fileDialogWorkaroundSet"]
 [connection signal="toggled" from="c/editorSettings/c2/c/fullscreen" to="." method="_fullscreenSet"]

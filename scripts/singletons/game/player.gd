@@ -222,7 +222,7 @@ func _physics_process(_delta:float) -> void:
 
 	move_and_slide()
 
-	position = position.round()
+	# position = position.round()
 
 	if moveDirection and !cameraMode: %sprite.flip_h = moveDirection < 0
 

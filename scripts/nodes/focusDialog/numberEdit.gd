@@ -470,7 +470,7 @@ func receiveUnhandledKey(key:InputEventKey) -> bool:
 		match cursorMode:
 			CURSOR_MODE.NORMAL:
 				var character:String = char(key.unicode)
-				if cursorStart == 0 and cursorEnd == textLen:
+				if cursorStart == 0 and cursorEnd == textLen and textLen != 0:
 					if Editor.eventIs(key, &"numberNegate"):
 						setValue(M.times(result,M.nONE), false)
 						selectAll()
@@ -484,14 +484,22 @@ func receiveUnhandledKey(key:InputEventKey) -> bool:
 				elif "0123456789".contains(character):
 					var endNumber:int = numberEnds.find(cursorStart)
 					if endNumber != -1:
-						setNumber(endNumber, numberValues[endNumber]*10+character.to_int())
+						setNumber(endNumber, numberValues[endNumber]*10+character.to_int()*sign(numberValues[endNumber]))
 						Changes.addChange(Changes.GlobalPropertyChange.new(self, &"cursorStart", numberEnds[endNumber]))
 						Changes.addChange(Changes.GlobalPropertyChange.new(self, &"cursorEnd", cursorStart))
 						placeCursor()
 						return true
 					var startNumber:int = numberStarts.find(cursorStart)
+					if numberValues[startNumber] < 0: startNumber = -1 # |-123 shouldnt trigger this
+					elif startNumber == -1:
+						# try to find a negative number one character before the cursor, ie -|123
+						startNumber = numberStarts.find(cursorStart-1)
+						if startNumber != -1 and numberValues[startNumber] >= 0: startNumber = -1
 					if startNumber != -1:
-						setNumber(startNumber, character.to_int()*(10**len(str(numberValues[startNumber]))) + numberValues[startNumber])
+						if numberValues[startNumber] < 0:
+							setNumber(startNumber, -character.to_int()*(10**(len(str(numberValues[startNumber]))-1)) + numberValues[startNumber])
+						else:
+							setNumber(startNumber, character.to_int()*(10**len(str(numberValues[startNumber]))) + numberValues[startNumber])
 						Changes.addChange(Changes.GlobalPropertyChange.new(self, &"cursorStart", cursorStart+1))
 						Changes.addChange(Changes.GlobalPropertyChange.new(self, &"cursorEnd", cursorStart))
 						placeCursor()
@@ -502,7 +510,13 @@ func receiveUnhandledKey(key:InputEventKey) -> bool:
 				placeCursor()
 			CURSOR_MODE.NUMBER:
 				var character:String = char(key.unicode)
-				if Editor.eventIs(key, &"numberNegate"):
+				if numberValues[cursorSelectedNumber] == 0:
+					Changes.addChange(Changes.NumberEditTextChange.new(self, text.erase(cursorStart, cursorEnd - cursorStart).insert(cursorStart, character)))
+					Changes.addChange(Changes.GlobalPropertyChange.new(self, &"cursorStart", cursorStart+1))
+					Changes.addChange(Changes.GlobalPropertyChange.new(self, &"cursorEnd", cursorStart))
+					Changes.addChange(Changes.GlobalPropertyChange.new(self, &"cursorMode", CURSOR_MODE.NORMAL))
+					placeCursor()
+				elif Editor.eventIs(key, &"numberNegate"):
 					setNumber(cursorSelectedNumber, -numberValues[cursorSelectedNumber])
 					numberCaptureCursor(cursorSelectedNumber)
 				elif Editor.eventIs(key, &"numberTimesI"):

@@ -5,7 +5,7 @@ var COLORS:int = 0
 var DEFINITIONS:Array[ColorDef] = []
 
 # reference this as C.olors so that it can be a constant expression, but reference everything else as Colors.[thing]
-enum olors {MASTER, WHITE, ORANGE, PURPLE, RED, GREEN, BLUE, PINK, CYAN, BLACK, BROWN, PURE, GLITCH, STONE, DYNAMITE, QUICKSILVER, MAROON, FOREST, NAVY, ICE, MUD, GRAFFITI, NONE, ERROR, COSMIC}
+enum olors {MASTER, WHITE, ORANGE, PURPLE, RED, GREEN, BLUE, PINK, CYAN, BLACK, BROWN, PURE, GLITCH, STONE, DYNAMITE, QUICKSILVER, MAROON, FOREST, NAVY, ICE, MUD, GRAFFITI, NONE, ERROR, COSMIC, FIRE, WATER, EARTH, AIR}
 
 func _init() -> void:
 	# only add at the end, please!
@@ -46,6 +46,11 @@ func _init() -> void:
 	defineColor("Error",		Color("#ffffff"), Color("#006dff"), Color("#006dff")).texturedKeys().texturedDoors(true)
 	defineColor("Cosmic",		Color("#240a44"), Color("#19072f"), Color("#110521")).texturedKeys().animatedDoors(8, true) \
 				   .brightTones(Color("#340e62"), Color("#240a44"), Color("#19072f"))
+
+	defineColor("Fire",		Color("#a79437"), Color("#ad511b"), Color("#8e0d0d"))
+	defineColor("Water",	Color("#54a7ff"), Color("#3d95f5"), Color("#166ccc"))
+	defineColor("Earth",	Color("#99bb00"), Color("#779900"), Color("#664400"))
+	defineColor("Air",		Color("#a6ccee"), Color("#86accc"), Color("#688cac"))
 
 func getDef(color:C.olors) -> ColorDef: return DEFINITIONS[color]
 func getName(color:C.olors) -> String: return DEFINITIONS[color].name

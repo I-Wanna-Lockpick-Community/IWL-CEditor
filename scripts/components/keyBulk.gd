@@ -106,6 +106,7 @@ func _ready() -> void:
 	Game.connect(&"goldIndexChanged",func():if hasAnimatedColor(): queue_redraw())
 
 func hasAnimatedColor() -> bool:
+	if getColor(COLOR_STEP.DRAW_BASE) == C.olors.ERROR or getAltColor(COLOR_STEP.DRAW_BASE) == C.olors.ERROR: return true
 	if Colors.getDef(getColor(COLOR_STEP.DRAW_BASE)).keyTextureFrames > 1: return true
 	if type == TYPE.OPERATOR and Colors.getDef(getAltColor(COLOR_STEP.DRAW_BASE)).keyTextureFrames > 1: return true
 	return false

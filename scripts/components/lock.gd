@@ -163,7 +163,7 @@ func _ready() -> void:
 	RenderingServer.canvas_item_set_parent(drawConfiguration,get_canvas_item())
 	RenderingServer.canvas_item_set_self_modulate(drawError, "#ffffffaa")
 	RenderingServer.canvas_item_set_material(drawError,Game.ADDITIVE_MATERIAL)
-	Game.connect(&"goldIndexChanged",func(): if Colors.getDef(getColor(COLOR_STEP.DRAW_BASE)).doorTextureFrames > 1: queue_redraw())
+	Game.connect(&"goldIndexChanged",func(): if Colors.getDef(getColor(COLOR_STEP.DRAW_BASE)).doorTextureFrames > 1 or getColor(COLOR_STEP.BASE) == C.olors.ERROR: queue_redraw())
 
 func _freed() -> void:
 	RenderingServer.free_rid(drawScaled)
@@ -294,21 +294,27 @@ static func drawLock(lockDrawScaled:RID, lockDrawAuraBreaker:RID, lockDrawGlitch
 			TYPE.BLAST, TYPE.ALL:
 				var numerator:String
 				var ipow:int = 0
-				if M.isComplex(lockDenominator) or M.isComplex(lockCount) or M.nex(lockDenominator): numerator = M.str(lockCount)
+				if M.isComplex(lockDenominator) or M.nex(lockDenominator): numerator = M.str(lockCount)
 				else:
 					numerator = M.str(M.divide(lockCount, M.saxis(lockDenominator)))
 					ipow = M.toIpow(M.axis(lockDenominator))
 				if numerator == "1": numerator = ""
 				
 				const symbolOffsetX:float = 10
+				
+				var denom:String
+				if lockIsPartial:
+					if M.isComplex(lockDenominator) or M.nex(lockDenominator) or M.isComplex(lockCount):
+						numerator = M.str(lockCount)
+						denom = M.str(lockDenominator)
+						ipow = 0
+					else: denom = M.str(M.abs(lockDenominator))
+				
 				var strWidth:float = Game.FTALK.get_string_size(numerator,HORIZONTAL_ALIGNMENT_LEFT,-1,12).x + symbolOffsetX
 				var startX:int = round((lockSize.x - strWidth)/2)
 				var startY:int = round((lockSize.y+14)/2)
-				
+
 				if lockIsPartial:
-					var denom:String
-					if M.isComplex(lockDenominator) or M.isComplex(lockCount): denom = M.str(lockDenominator)
-					else: denom = M.str(M.abs(lockDenominator))
 					var denomWidth:float = Game.FTALK.get_string_size(denom,HORIZONTAL_ALIGNMENT_LEFT,-1,12).x
 					var denomStartX = round((lockSize.x - denomWidth)/2)
 					var denomStartY = startY + 10
@@ -494,12 +500,13 @@ func effectiveConfiguration() -> CONFIGURATION:
 		else: return CONFIGURATION.NONE
 	else: return configuration
 
-func canOpen(player:Player) -> bool: return getLockCanOpen(self, player)
+func canOpen(player:Player, checkColor:C.olors=getColor(COLOR_STEP.FINAL)) -> bool: return getLockCanOpen(self, player, checkColor)
 
-static func getLockCanOpen(lock:GameComponent,player:Player) -> bool:
+static func getLockCanOpen(lock:GameComponent, player:Player, checkColor:C.olors=lock.getColor(COLOR_STEP.FINAL)) -> bool:
+	if checkColor == C.olors.FIRE: return !lock.negated
 	var can:bool = true
-	var keyCount:PackedInt64Array = player.key[lock.getColor(COLOR_STEP.FINAL)]
-	var glistCount:PackedInt64Array = player.glisten[lock.getColor(COLOR_STEP.FINAL)]
+	var keyCount:PackedInt64Array = player.key[checkColor]
+	var glistenCount:PackedInt64Array = player.glisten[checkColor]
 	var lockCount:PackedInt64Array = lock.effectiveCount()
 	var lockDenominator:PackedInt64Array = lock.effectiveDenominator()
 	if M.isError(keyCount): return lock.negated
@@ -522,23 +529,27 @@ static func getLockCanOpen(lock:GameComponent,player:Player) -> bool:
 				if lock.effectiveZeroI(): can = M.nex(M.i(keyCount))
 				else: can = M.nex(M.r(keyCount))
 			else: can = M.eq(M.along(keyCount, lockCount), M.cabs(lockCount))
-		TYPE.GLISTENING: can = M.cgte(M.along(glistCount, lockCount), M.cabs(lockCount))
-		TYPE.REMAINDER:
-			can = M.neq(M.partialRemainder(keyCount, lockCount),M.ZERO)
+		TYPE.GLISTENING: can = M.cgte(M.along(glistenCount, lockCount), M.cabs(lockCount))
+		TYPE.REMAINDER: can = M.neq(M.partialRemainder(keyCount, lockCount),M.ZERO)
 	return can != lock.negated
 
-func getCost(player:Player, ipow:PackedInt64Array=parent.ipow()) -> PackedInt64Array: return getLockCost(self, player, ipow)
+func getCost(player:Player, airEffect:bool, ipow:PackedInt64Array=parent.ipow()) -> PackedInt64Array: return getLockCost(self, airEffect, player, ipow)
 
-static func getLockCost(lock:GameComponent, player:Player, ipow:PackedInt64Array) -> PackedInt64Array:
+static func getLockCost(lock:GameComponent, airEffect:bool, player:Player, ipow:PackedInt64Array) -> PackedInt64Array:
+	var checkColor:C.olors
+	if airEffect and M.ex(player.key[C.olors.AIR]) and !lock.canOpen(player): checkColor = C.olors.AIR
+	else: checkColor = lock.getColor(COLOR_STEP.FINAL)
 	var cost:PackedInt64Array = M.ZERO
-	var keyCount:PackedInt64Array = player.key[lock.getColor(COLOR_STEP.FINAL)]
+	var keyCount:PackedInt64Array = player.key[checkColor]
 	var lockCount:PackedInt64Array = lock.effectiveCount(ipow)
 	var lockDenominator:PackedInt64Array = lock.effectiveDenominator(ipow)
-	match lock.type:
-		TYPE.NORMAL, TYPE.EXACT, TYPE.GLISTENING: cost = lockCount
-		TYPE.BLAST: if M.ex(lockDenominator): cost = M.divide(M.times(M.alongbs(keyCount, lockDenominator), lockCount), lockDenominator)
-		TYPE.REMAINDER: cost = M.partialRemainder(keyCount, lockCount)
-		TYPE.ALL: if M.ex(lockDenominator): cost = M.divide(M.times(keyCount, lockCount), lockDenominator)
+	if lock.getColor(Lock.COLOR_STEP.FINAL) == C.olors.EARTH and lock.type != Lock.TYPE.BLAST: cost = player.key[C.olors.EARTH]
+	else:
+		match lock.type:
+			TYPE.NORMAL, TYPE.EXACT, TYPE.GLISTENING: cost = lockCount
+			TYPE.BLAST: if M.ex(lockDenominator): cost = M.divide(M.times(M.alongbs(keyCount, lockDenominator), lockCount), lockDenominator)
+			TYPE.REMAINDER: cost = M.partialRemainder(keyCount, lockCount)
+			TYPE.ALL: if M.ex(lockDenominator): cost = M.divide(M.times(keyCount, lockCount), lockDenominator)
 	if lock.negated: return M.negate(cost)
 	return cost
 
