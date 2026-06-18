@@ -297,7 +297,7 @@ func propertyChangedInit(property:StringName) -> void:
 			TYPE.SIMPLE:
 				if len(locks) == 0: addLock()
 				elif len(locks) > 1:
-					for lockIndex in range(1,len(locks)):
+					for lockIndex in range(len(locks)-1,0,-1):
 						removeLock(lockIndex)
 				locks[0]._simpleDoorUpdate()
 			TYPE.COMBO:
