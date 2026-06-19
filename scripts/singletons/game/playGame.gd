@@ -122,11 +122,11 @@ func _process(delta:float) -> void:
 		if descriptionOffset < 0: descriptionOffset = 0
 		queue_redraw()
 	if !paused: Game.playTime += delta
-	var objectHovered:GameObject
+	var objectsHovered:Array[GameObject] = []
 	var mouseWorldPosition = %world.get_local_mouse_position()
 	for object in Game.objects.values():
-		if object.active and Rect2(object.getDrawPosition(),object.size).has_point(mouseWorldPosition): objectHovered = object
-	%mouseover.describe(objectHovered, %gameViewportCont.get_local_mouse_position()*Vector2(800,608)/%gameViewportCont.size,Vector2(800,608))
+		if object.active and Rect2(object.getDrawPosition(),object.size).has_point(mouseWorldPosition): objectsHovered.append(object)
+	%mouseover.describe(objectsHovered, %gameViewportCont.get_local_mouse_position()*Vector2(800,608)/%gameViewportCont.size,Vector2(800,608))
 
 func _draw() -> void:
 	RenderingServer.canvas_item_clear(drawDescription)

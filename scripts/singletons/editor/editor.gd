@@ -46,6 +46,7 @@ var targetCameraZoom:float = 1
 var zoomPoint:Vector2 # the point where the latest zoom was targetted
 
 var objectHovered:GameObject
+var objectsHovered:Array[GameObject] = []
 var componentHovered:GameComponent # you can hover both a door and a lock at the same time so
 
 enum DRAG_MODE {POSITION, SIZE_DIAG, SIZE_VERT, SIZE_HORIZ}
@@ -142,12 +143,14 @@ func _process(delta:float) -> void:
 	%gameViewportDisplay.material.set_shader_parameter(&"tileSize", Vector2i(800, 608) if settingsOpen else tileSize)
 	componentHovered = null
 	if !componentDragged:
+		objectsHovered = []
 		objectHovered = null
 		if !Input.is_action_pressed(&"heldKeepMode") and !settingsOpen:
 			for object in Game.objectsParent.get_children():
 				if mode == MODE.SELECT or Game.playState == Game.PLAY_STATE.PLAY or (mode == MODE.KEY and object is KeyBulk) or (mode == MODE.DOOR and object is Door) or (mode == MODE.OTHER and object.get_script() == otherObjects.selected):
 					if Rect2(object.getDrawPosition(), object.size).has_point(mouseWorldPosition) and (Game.playState != Game.PLAY_STATE.PLAY or object.active):
 						objectHovered = object
+						objectsHovered.append(object)
 			if focusDialog.focused is Door:
 				for lock in focusDialog.focused.locks:
 					if Rect2(lock.getDrawPosition(), lock.size).has_point(mouseWorldPosition):
@@ -156,7 +159,9 @@ func _process(delta:float) -> void:
 				for element in focusDialog.focused.elements:
 					if Rect2(element.getDrawPosition(), element.getHoverSize()).has_point(mouseWorldPosition):
 						componentHovered = element
-	%mouseover.describe(objectHovered if Game.playState == Game.PLAY_STATE.PLAY else null, %gameViewportDisplay.get_local_mouse_position(), %gameViewportDisplay.size)
+	if Game.playState == Game.PLAY_STATE.PLAY:
+		%mouseover.describe(objectsHovered, %gameViewportDisplay.get_local_mouse_position(), %gameViewportDisplay.size)
+	else: %mouseover.visible = false
 	Game.tiles.z_index = 3 if mode == MODE.TILE and Game.playState != Game.PLAY_STATE.PLAY else -3
 
 	if autoRunTimer < 2:

@@ -29,11 +29,11 @@
 [ext_resource type="Texture2D" uid="uid://bdtmt4y2pnoo0" path="res://assets/ui/playControls/savestate.png" id="17_lo5f0"]
 [ext_resource type="Script" uid="uid://c7ptucaohcnil" path="res://scripts/singletons/editor/outline.gd" id="23_lo5f0"]
 [ext_resource type="PackedScene" uid="uid://uojm0pynavni" path="res://scenes/settingsMenu.tscn" id="25_6lm8n"]
-[ext_resource type="PackedScene" uid="uid://ccqphk3fjcl1e" path="res://scenes/mouseover.tscn" id="26_lo5f0"]
 [ext_resource type="Texture2D" uid="uid://ba540b55427af" path="res://assets/ui/settings/setings.png" id="27_1abrv"]
 [ext_resource type="PackedScene" uid="uid://r7q8sdncd4jo" path="res://scenes/outlineViewport.tscn" id="28_e62bx"]
 [ext_resource type="Shader" uid="uid://y4p3snw4y2xy" path="res://resources/materials/placePreview.gdshader" id="28_ndxgo"]
 [ext_resource type="Shader" uid="uid://b7ek3evjsfuc5" path="res://resources/materials/outline.gdshader" id="29_65evm"]
+[ext_resource type="Script" uid="uid://bsmyhhhm08v2u" path="res://scripts/singletons/game/mouseover.gd" id="30_e62bx"]
 [ext_resource type="Texture2D" uid="uid://d10g6pdt4sjs2" path="res://assets/ui/mods/iconSmall/Refactored.png" id="33_mxdmd"]
 [ext_resource type="PackedScene" uid="uid://dhp8ohn6mj5pr" path="res://scenes/resizeHandles.tscn" id="35_e62bx"]
 
@@ -489,11 +489,13 @@ visible = false
 z_index = 2
 layout_mode = 1
 
-[node name="mouseover" parent="c/gameCont/c" unique_id=1890289430 instance=ExtResource("26_lo5f0")]
+[node name="mouseover" type="VBoxContainer" parent="c/gameCont/c" unique_id=793475222]
 unique_name_in_owner = true
 layout_mode = 0
-offset_right = 85.0
-offset_bottom = 49.0
+mouse_filter = 2
+theme_override_constants/separation = 2
+script = ExtResource("30_e62bx")
+metadata/_custom_type_script = "uid://bsmyhhhm08v2u"
 
 [node name="c3" type="PanelContainer" parent="c" unique_id=374923697]
 z_index = 3

@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://ccqphk3fjcl1e"]
 
-[ext_resource type="Script" uid="uid://2wf20cwqyit2" path="res://scripts/singletons/game/mouseover.gd" id="1_gl1n8"]
+[ext_resource type="Script" uid="uid://2wf20cwqyit2" path="res://scripts/nodes/mouseoverPanel.gd" id="1_gl1n8"]
 [ext_resource type="FontFile" uid="uid://chu3ujnqyd5tv" path="res://resources/fonts/fMouseover.fnt" id="1_gp1tu"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_gl1n8"]
