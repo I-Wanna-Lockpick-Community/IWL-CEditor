@@ -7,10 +7,10 @@ enum VALUE {NOROTATE, SIGNFLIP, POSROTOR, NEGROTOR}
 var isInRecMode:bool = false
 
 const ICONS:Array[Texture2D] = [
-	preload("res://assets/ui/focusDialog/keySplitType/norotate.png"),
-	preload("res://assets/ui/focusDialog/keySplitType/signflip.png"),
-	preload("res://assets/ui/focusDialog/keySplitType/posrotor.png"),
-	preload("res://assets/ui/focusDialog/keySplitType/negrotor.png"),
+	preload("res://assets/ui/focusDialog/key/type/rotor/norotate.png"),
+	preload("res://assets/ui/focusDialog/key/type/rotor/signflip.png"),
+	preload("res://assets/ui/focusDialog/key/type/rotor/positive.png"),
+	preload("res://assets/ui/focusDialog/key/type/rotor/negative.png"),
 ]
 
 func _ready() -> void:

@@ -2,21 +2,21 @@ extends HBoxContainer
 class_name ConfigurationSelector
 # selector for lock size and configuration; manages lock sizing
 
-const SPECIFIC_A:Texture2D = preload("res://assets/ui/focusDialog/lockConfiguration/SpecificA.png")
-const SPECIFIC_B:Texture2D = preload("res://assets/ui/focusDialog/lockConfiguration/SpecificB.png")
-const SPECIFIC_H:Texture2D = preload("res://assets/ui/focusDialog/lockConfiguration/SpecificH.png")
-const SPECIFIC_V:Texture2D = preload("res://assets/ui/focusDialog/lockConfiguration/SpecificV.png")
+const SPECIFIC_A:Texture2D = preload("res://assets/ui/focusDialog/door/lockConfiguration/SpecificA.png")
+const SPECIFIC_B:Texture2D = preload("res://assets/ui/focusDialog/door/lockConfiguration/SpecificB.png")
+const SPECIFIC_H:Texture2D = preload("res://assets/ui/focusDialog/door/lockConfiguration/SpecificH.png")
+const SPECIFIC_V:Texture2D = preload("res://assets/ui/focusDialog/door/lockConfiguration/SpecificV.png")
 
 const ICONS:Array[Texture2D] = [
 	SPECIFIC_A,
 	SPECIFIC_B,
-	preload("res://assets/ui/focusDialog/lockConfiguration/AnyS.png"),
-	preload("res://assets/ui/focusDialog/lockConfiguration/AnyH.png"),
-	preload("res://assets/ui/focusDialog/lockConfiguration/AnyV.png"),
-	preload("res://assets/ui/focusDialog/lockConfiguration/AnyM.png"),
-	preload("res://assets/ui/focusDialog/lockConfiguration/AnyL.png"),
-	preload("res://assets/ui/focusDialog/lockConfiguration/AnyXL.png"),
-	preload("res://assets/ui/focusDialog/lockConfiguration/ANY.png")
+	preload("res://assets/ui/focusDialog/door/lockConfiguration/AnyS.png"),
+	preload("res://assets/ui/focusDialog/door/lockConfiguration/AnyH.png"),
+	preload("res://assets/ui/focusDialog/door/lockConfiguration/AnyV.png"),
+	preload("res://assets/ui/focusDialog/door/lockConfiguration/AnyM.png"),
+	preload("res://assets/ui/focusDialog/door/lockConfiguration/AnyL.png"),
+	preload("res://assets/ui/focusDialog/door/lockConfiguration/AnyXL.png"),
+	preload("res://assets/ui/focusDialog/door/lockConfiguration/ANY.png")
 ]
 
 const OPTIONS:int = 9

@@ -1,6 +1,6 @@
 extends Button
 
-const GATE_FILL:Texture2D = preload('res://assets/ui/focusDialog/lockHandler/spendGate.png')
+const GATE_FILL:Texture2D = preload('res://assets/ui/focusDialog/door/lockHandler/spendGate.png')
 
 var drawMain:RID
 

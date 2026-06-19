@@ -2,12 +2,12 @@ extends Selector
 class_name keyOperationSelector
 
 const ICONS:Array[Texture2D] = [
-	preload("res://assets/ui/focusDialog/keySplitType/set.png"),
-	preload("res://assets/ui/focusDialog/keySplitType/add.png"),
-	preload("res://assets/ui/focusDialog/keySplitType/subtract.png"),
-	preload("res://assets/ui/focusDialog/keySplitType/multiply.png"),
-	preload("res://assets/ui/focusDialog/keySplitType/divide.png"),
-	preload("res://assets/ui/focusDialog/keySplitType/modulo.png"),
+	preload("res://assets/ui/focusDialog/key/type/operator/set.png"),
+	preload("res://assets/ui/focusDialog/key/type/operator/add.png"),
+	preload("res://assets/ui/focusDialog/key/type/operator/subtract.png"),
+	preload("res://assets/ui/focusDialog/key/type/operator/multiply.png"),
+	preload("res://assets/ui/focusDialog/key/type/operator/divide.png"),
+	preload("res://assets/ui/focusDialog/key/type/operator/modulo.png"),
 ]
 
 func _ready() -> void:

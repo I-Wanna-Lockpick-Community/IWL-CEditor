@@ -44,13 +44,13 @@ func _select(button:Button) -> void:
 
 class LockHandlerButton extends HandlerButton:
 	const ICONS:Array[Texture2D] = [
-		preload("res://assets/ui/focusDialog/lockHandler/normal.png"), preload("res://assets/ui/focusDialog/lockHandler/imaginary.png"),
-		preload("res://assets/ui/focusDialog/lockHandler/blank.png"), preload("res://assets/ui/focusDialog/lockHandler/blank.png"),
-		preload("res://assets/ui/focusDialog/lockHandler/blast.png"), preload("res://assets/ui/focusDialog/lockHandler/blasti.png"),
-		preload("res://assets/ui/focusDialog/lockHandler/all.png"), preload("res://assets/ui/focusDialog/lockHandler/all.png"),
-		preload("res://assets/ui/focusDialog/lockHandler/exact.png"), preload("res://assets/ui/focusDialog/lockHandler/exacti.png"),
-		preload("res://assets/ui/focusDialog/lockHandler/glistening.png"), preload("res://assets/ui/focusDialog/lockHandler/glisteningi.png"),
-		preload("res://assets/ui/focusDialog/lockHandler/remainder.png"), preload("res://assets/ui/focusDialog/lockHandler/remainder.png"),
+		preload("res://assets/ui/focusDialog/door/lockHandler/normal.png"), preload("res://assets/ui/focusDialog/door/lockHandler/imaginary.png"),
+		preload("res://assets/ui/focusDialog/door/lockHandler/blank.png"), preload("res://assets/ui/focusDialog/door/lockHandler/blank.png"),
+		preload("res://assets/ui/focusDialog/door/lockHandler/blast.png"), preload("res://assets/ui/focusDialog/door/lockHandler/blasti.png"),
+		preload("res://assets/ui/focusDialog/door/lockHandler/all.png"), preload("res://assets/ui/focusDialog/door/lockHandler/all.png"),
+		preload("res://assets/ui/focusDialog/door/lockHandler/exact.png"), preload("res://assets/ui/focusDialog/door/lockHandler/exacti.png"),
+		preload("res://assets/ui/focusDialog/door/lockHandler/glistening.png"), preload("res://assets/ui/focusDialog/door/lockHandler/glisteningi.png"),
+		preload("res://assets/ui/focusDialog/door/lockHandler/remainder.png"), preload("res://assets/ui/focusDialog/door/lockHandler/remainder.png"),
 	]
 
 	var lock:Lock

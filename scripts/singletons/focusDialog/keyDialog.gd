@@ -3,8 +3,8 @@ class_name KeyDialog
 
 @onready var main:FocusDialog = get_parent()
 
-const STAR_UN_ICONS:Array[Texture2D] = [ preload("res://assets/ui/focusDialog/keySplitType/star.png"), preload("res://assets/ui/focusDialog/keySplitType/unstar.png") ]
-const CURSE_UN_ICONS:Array[Texture2D] = [ preload("res://assets/ui/focusDialog/keySplitType/curse.png"), preload("res://assets/ui/focusDialog/keySplitType/uncurse.png") ]
+const STAR_UN_ICONS:Array[Texture2D] = [ preload("res://assets/ui/focusDialog/key/type/star/star.png"), preload("res://assets/ui/focusDialog/key/type/star/unstar.png") ]
+const CURSE_UN_ICONS:Array[Texture2D] = [ preload("res://assets/ui/focusDialog/key/type/curse/curse.png"), preload("res://assets/ui/focusDialog/key/type/curse/uncurse.png") ]
 
 func focus(focused:KeyBulk, new:bool, _dontRedirect:bool) -> void:
 	%keyColorSelector.setSelect(focused.color)

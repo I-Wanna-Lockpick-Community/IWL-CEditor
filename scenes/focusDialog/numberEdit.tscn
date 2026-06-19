@@ -24,6 +24,11 @@ script = ExtResource("6_amhd8")
 explanation = "{ Number Edit (0i valid) }"
 metadata/_custom_type_script = "uid://cgjhnhjwymb8g"
 
+[sub_resource type="Resource" id="Resource_amhd8"]
+script = ExtResource("6_amhd8")
+explanation = "{ Number Edit (Change representation) }"
+metadata/_custom_type_script = "uid://cgjhnhjwymb8g"
+
 [node name="numberEdit" type="PanelContainer" unique_id=231119399 groups=["explained", "hasNumbers"]]
 custom_minimum_size = Vector2(70, 18)
 offset_right = 70.0
@@ -121,12 +126,13 @@ texture = ExtResource("6_5c4sp")
 stretch_mode = 3
 metadata/explanation = SubResource("Resource_eo48x")
 
-[node name="changeBaseForm" type="Button" parent="c2/side/sideCont/c2/c" unique_id=738210166]
+[node name="changeBaseForm" type="Button" parent="c2/side/sideCont/c2/c" unique_id=738210166 groups=["explained"]]
 unique_name_in_owner = true
 visible = false
 modulate = Color(0.7708398, 0.7708394, 0.77083945, 1)
 layout_mode = 2
 size_flags_horizontal = 0
 icon = ExtResource("7_5c4sp")
+metadata/explanation = SubResource("Resource_amhd8")
 
 [connection signal="pressed" from="c2/side/sideCont/c2/c/changeBaseForm" to="." method="_baseFormChanged"]

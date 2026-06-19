@@ -2,12 +2,12 @@ extends Selector
 class_name KeyTypeSelector
 
 const ICONS:Array[Texture2D] = [
-	preload("res://assets/ui/focusDialog/keyType/normal.png"),
-	preload("res://assets/ui/focusDialog/keyType/exact.png"),
-	preload("res://assets/ui/focusDialog/keyType/star.png"),
-	preload("res://assets/ui/focusDialog/keyType/rotor.png"),
-	preload("res://assets/ui/focusDialog/keyType/curse.png"),
-	preload("res://assets/ui/focusDialog/keyType/operator.png"),
+	preload("res://assets/ui/focusDialog/key/type/normal.png"),
+	preload("res://assets/ui/focusDialog/key/type/exact.png"),
+	preload("res://assets/ui/focusDialog/key/type/star.png"),
+	preload("res://assets/ui/focusDialog/key/type/rotor.png"),
+	preload("res://assets/ui/focusDialog/key/type/curse.png"),
+	preload("res://assets/ui/focusDialog/key/type/operator.png"),
 ]
 
 func _ready() -> void:
