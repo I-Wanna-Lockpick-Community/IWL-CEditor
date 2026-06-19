@@ -27,8 +27,8 @@ func focus(focused:GameObject, new:bool, dontRedirect:bool) -> void: # Door or R
 		%frozen.button_pressed = focused.frozen
 		%crumbled.button_pressed = focused.crumbled
 		%painted.button_pressed = focused.painted
-		%doorOscillate.button_pressed = focused.oscillate
 		%spendArmament.button_pressed = focused.armament
+		%doorOscillate.button_pressed = focused.oscillate
 		%realInfinitePosCopy.button_pressed = M.positive(M.r(focused.infCopies))
 		%realInfiniteNegCopy.button_pressed = M.negative(M.r(focused.infCopies))
 		%imagInfinitePosCopy.button_pressed = M.positive(M.ir(focused.infCopies))
@@ -146,6 +146,7 @@ func receiveKey(event:InputEvent) -> bool:
 		if Editor.eventIs(event, &"focusDoorFrozen"): _frozenSet(!main.focused.frozen)
 		elif Editor.eventIs(event, &"focusDoorCrumbled"): _crumbledSet(!main.focused.crumbled)
 		elif Editor.eventIs(event, &"focusDoorPainted"): _paintedSet(!main.focused.painted)
+		elif Editor.eventIs(event, &"focusDoorSpendArmament"): _spendArmamentSet(!main.focused.armament)
 		elif Editor.eventIs(event, &"focusDoorAddLock", true): main.focused.addLock()
 		elif Editor.eventIs(event, &"focusDoorColorLink"): %colorLink.button_pressed = !%colorLink.button_pressed
 		elif Editor.eventIs(event, &"quicksetColor"): Game.editor.quickSet.startQuick(&"quicksetColor", main.focused)
@@ -158,6 +159,7 @@ func changedMods() -> void:
 	%lockNegated.visible = Mods.active(&"NegatedLocks")
 	%lockArmament.visible = Mods.active(&"Armaments")
 	%doorInfCopiesSettings.visible = Mods.active(&"InfCopyDoors")
+	%spendArmament.visible = Mods.active(&"Armaments")
 	%doorOscillate.visible = Mods.active(&"Fractions")
 	if main.componentFocused is Lock and main.componentFocused.type in [Lock.TYPE.BLAST, Lock.TYPE.ALL]:
 		main.focusComponent(main.componentFocused)

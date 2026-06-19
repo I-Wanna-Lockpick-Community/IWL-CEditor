@@ -440,6 +440,8 @@ func receiveKey(key:InputEventKey) -> bool:
 			KEY_A:
 				if Input.is_key_pressed(KEY_CTRL):
 					selectAll()
+					return true
+				return false
 			KEY_BACKSPACE:
 				if text == "": return true
 				match cursorMode:

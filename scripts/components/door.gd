@@ -55,7 +55,7 @@ const CREATE_PARAMETERS:Array[StringName] = [
 const PROPERTIES:Array[StringName] = [
 	&"id", &"position", &"size",
 	&"colorSpend", &"copies", &"infCopies", &"type",
-	&"frozen", &"crumbled", &"painted", &"oscillate", &"armament"
+	&"frozen", &"crumbled", &"painted", &"armament", &"oscillate"
 ]
 static var ARRAYS:Dictionary[StringName,Variant] = {
 	&"remoteLocks":RemoteLock
@@ -68,8 +68,8 @@ var type:TYPE = TYPE.SIMPLE
 var frozen:bool = false
 var crumbled:bool = false
 var painted:bool = false
-var oscillate:bool = false
 var armament:bool = false
+var oscillate:bool = false
 
 func getColors() -> Array[C.olors]: return [colorSpend]
 

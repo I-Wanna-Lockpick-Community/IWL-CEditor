@@ -845,6 +845,12 @@ layout_mode = 2
 label = "Toggle Painted"
 action = &"focusDoorPainted"
 
+[node name="focusDoorSpendArmament" parent="c/editorSettings/c2/c/hotkeys/componentFocused/c/doorFocused/c/editingDoorProperties/c" unique_id=439908987 instance=ExtResource("6_dkncv")]
+layout_mode = 2
+label = "Toggle Spend Armament"
+action = &"focusDoorSpendArmament"
+prerequisite = &"Armaments"
+
 [node name="l2" type="Label" parent="c/editorSettings/c2/c/hotkeys/componentFocused/c/doorFocused/c" unique_id=1103998184]
 layout_mode = 2
 text = "Editing Lock Properties"

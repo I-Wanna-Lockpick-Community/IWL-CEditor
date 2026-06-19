@@ -101,6 +101,12 @@ explanation = "[%s]Toggle painted"
 hotkeys = Array[StringName]([&"focusDoorPainted"])
 metadata/_custom_type_script = "uid://cgjhnhjwymb8g"
 
+[sub_resource type="Resource" id="Resource_vydri"]
+script = ExtResource("22_s5h3h")
+explanation = "[%s]Toggle spend armament"
+hotkeys = Array[StringName]([&"focusDoorSpendArmament"])
+metadata/_custom_type_script = "uid://cgjhnhjwymb8g"
+
 [sub_resource type="ButtonGroup" id="ButtonGroup_8gwon"]
 allow_unpress = true
 
@@ -238,6 +244,7 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(40, 18)
 layout_mode = 2
 type = 2
+allowZeroI = null
 allowZero = false
 
 [node name="keyGlisteningToggle" type="Button" parent="keyDialog/c/c/c/c" unique_id=1657225081 groups=["explained"]]
@@ -251,6 +258,9 @@ metadata/explanation = SubResource("Resource_hdjws")
 [node name="keyCountEdit" parent="keyDialog/c/c/c" unique_id=1393964115 instance=ExtResource("20_gx4cd")]
 unique_name_in_owner = true
 layout_mode = 2
+type = null
+allowZeroI = null
+allowZero = null
 
 [node name="keyOperationSelector" type="GridContainer" parent="keyDialog/c/c/c" unique_id=2013174328]
 unique_name_in_owner = true
@@ -475,11 +485,12 @@ toggle_mode = true
 icon = ExtResource("20_2wjug")
 vertical_icon_alignment = 0
 
-[node name="spendArmament" type="Button" parent="doorDialog/c/lock/c/c/doorBooleans" unique_id=2039200117]
+[node name="spendArmament" type="Button" parent="doorDialog/c/lock/c/c/doorBooleans" unique_id=2039200117 groups=["explained"]]
 unique_name_in_owner = true
 layout_mode = 2
 toggle_mode = true
 icon = ExtResource("31_vydri")
+metadata/explanation = SubResource("Resource_vydri")
 
 [node name="doorCopySettings" type="VBoxContainer" parent="doorDialog/c/lock/c/c" unique_id=1160178579]
 unique_name_in_owner = true
@@ -498,6 +509,9 @@ stretch_mode = 3
 [node name="doorCopiesEdit" parent="doorDialog/c/lock/c/c/doorCopySettings/c" unique_id=1561873349 instance=ExtResource("20_gx4cd")]
 unique_name_in_owner = true
 layout_mode = 2
+type = null
+allowZeroI = null
+allowZero = null
 
 [node name="doorInfCopiesSettings" type="HBoxContainer" parent="doorDialog/c/lock/c/c/doorCopySettings" unique_id=1648330172]
 unique_name_in_owner = true
@@ -553,6 +567,8 @@ layout_mode = 2
 unique_name_in_owner = true
 layout_mode = 2
 type = 1
+allowZeroI = null
+allowZero = null
 
 [node name="blastLockSettings" type="VBoxContainer" parent="doorDialog/c/lock/c/c" unique_id=2055272722]
 unique_name_in_owner = true
@@ -567,6 +583,9 @@ layout_mode = 2
 [node name="partialBlastNumeratorEdit" parent="doorDialog/c/lock/c/c/blastLockSettings/partialBlastSettings" unique_id=2038813885 instance=ExtResource("20_gx4cd")]
 unique_name_in_owner = true
 layout_mode = 2
+type = null
+allowZeroI = null
+allowZero = null
 
 [node name="partialBlastSep" type="HSeparator" parent="doorDialog/c/lock/c/c/blastLockSettings/partialBlastSettings" unique_id=1939953753]
 unique_name_in_owner = true
@@ -614,6 +633,8 @@ size_flags_horizontal = 3
 [node name="partialBlastDenominatorEdit" parent="doorDialog/c/lock/c/c/blastLockSettings/c/partialDenominator" unique_id=1928037066 instance=ExtResource("20_gx4cd")]
 unique_name_in_owner = true
 layout_mode = 2
+type = null
+allowZeroI = null
 allowZero = false
 
 [node name="remoteLock" type="PanelContainer" parent="doorDialog/c" unique_id=381581047]
@@ -744,6 +765,9 @@ layout_mode = 2
 [node name="playerKeyCountEdit" parent="playerDialog/c/playerStateColorSettings/c/c" unique_id=1310694864 instance=ExtResource("20_gx4cd")]
 unique_name_in_owner = true
 layout_mode = 2
+type = null
+allowZeroI = null
+allowZero = null
 
 [node name="playerKeyGlistenCont" type="HBoxContainer" parent="playerDialog/c/playerStateColorSettings/c/c" unique_id=865961514]
 unique_name_in_owner = true
@@ -756,6 +780,9 @@ texture = ExtResource("38_lm5cw")
 [node name="playerKeyGlistenEdit" parent="playerDialog/c/playerStateColorSettings/c/c/playerKeyGlistenCont" unique_id=209548756 instance=ExtResource("20_gx4cd")]
 unique_name_in_owner = true
 layout_mode = 2
+type = null
+allowZeroI = null
+allowZero = null
 
 [node name="p2" type="TextureRect" parent="playerDialog/c/playerStateColorSettings/c/c/playerKeyGlistenCont" unique_id=1003227765]
 layout_mode = 2
