@@ -83,12 +83,12 @@ static func exportFile(_file:FileAccess) -> void:
 					KeyBulk.TYPE.EXACT: code += "type=key_EXACT;&#xA;"
 					KeyBulk.TYPE.STAR: code += "type=key_UNSTAR;&#xA;" if object.un else "type=key_STAR;&#xA;"
 					KeyBulk.TYPE.ROTOR:
-						if M.eq(object.count, M.nONE): code += "type=key_SIGNFLIP;&#xA;"
-						elif M.eq(object.count, M.I): code += "type=key_POSROTOR;&#xA;"
-						elif M.eq(object.count, M.nI): code += "type=key_NEGROTOR;&#xA;"
+						if M.eq(object.count, M.nONE()): code += "type=key_SIGNFLIP;&#xA;"
+						elif M.eq(object.count, M.I()): code += "type=key_POSROTOR;&#xA;"
+						elif M.eq(object.count, M.nI()): code += "type=key_NEGROTOR;&#xA;"
 					KeyBulk.TYPE.CURSE: code += "type=key_UNCURSE;&#xA;" if object.un else "type=key_CURSE;&#xA;"
 				if object.type in [KeyBulk.TYPE.NORMAL, KeyBulk.TYPE.EXACT]:
-					if M.neq(M.r(object.count), M.ONE): code += "count = %s;&#xA;" % M.str(M.r(object.count))
+					if M.neq(M.r(object.count), M.ONE()): code += "count = %s;&#xA;" % M.str(M.r(object.count))
 					if M.ex(M.i(object.count)): code += "icount = %s;&#xA;" % M.str(M.ir(object.count))
 				if object.infinite: code += "inf = 1;&#xA;"
 				storeInstance("oKey" + COLOR_NAMES[object.color], object.position-levelPos, code, object.gameMakerName)
@@ -101,7 +101,7 @@ static func exportFile(_file:FileAccess) -> void:
 					Door.TYPE.GATE: objName = "oGate"
 				if object.size.x != 32: code += "w = %s;&#xA;" % (object.size.x / 32)
 				if object.size.y != 32: code += "h = %s;&#xA;" % (object.size.y / 32)
-				if M.neq(M.r(object.copies), M.ONE): code += "copies = %s;&#xA;" % M.str(M.r(object.copies))
+				if M.neq(M.r(object.copies), M.ONE()): code += "copies = %s;&#xA;" % M.str(M.r(object.copies))
 				if M.ex(M.i(object.copies)): code += "icopies = %s;&#xA;" % M.str(M.ir(object.copies))
 				if object.frozen: code += "aura[0] = 1;&#xA;"
 				if object.crumbled: code += "aura[1] = 1;&#xA;"
@@ -110,7 +110,7 @@ static func exportFile(_file:FileAccess) -> void:
 					var lock:Lock = object.locks[0]
 					if lock.color != object.colorSpend: code += "color = %s;&#xA;" % lock.color
 					if lock.type != Lock.TYPE.NORMAL: code += "type = %s;&#xA;" % lock.type
-					if M.neq(M.r(lock.count), M.ONE): code += "count = %s;&#xA;" % M.str(M.r(lock.count))
+					if M.neq(M.r(lock.count), M.ONE()): code += "count = %s;&#xA;" % M.str(M.r(lock.count))
 					if M.ex(M.i(lock.count)): code += "icount = %s;&#xA;" % M.str(M.ir(lock.count))
 					if lock.type in [Lock.TYPE.BLAST, Lock.TYPE.ALL] and Mods.activeModpack == Mods.modpacks[&"IWLC"]:
 						if M.ex(M.r(lock.denominator)): code += "denom = %s;&#xA;" % M.str(M.r(lock.denominator))
@@ -144,7 +144,7 @@ static func exportFile(_file:FileAccess) -> void:
 					code += "sprite = %s;&#xA;" % spriteName
 				if object.color != C.olors.WHITE: code += "color = color_%s;&#xA;" % COLOR_NAMES[object.color].to_upper()
 				if object.type != Lock.TYPE.NORMAL: code += "type = lock_%s;&#xA;" % Lock.TYPE_NAMES[object.type].to_upper()
-				if M.neq(M.r(object.count), M.ONE): code += "count = %s;&#xA;" % M.str(M.r(object.count))
+				if M.neq(M.r(object.count), M.ONE()): code += "count = %s;&#xA;" % M.str(M.r(object.count))
 				if M.ex(M.i(object.count)): code += "icount = %s;&#xA;" % M.str(M.ir(object.count))
 				if M.ex(M.r(object.denominator)): code += "denom = %s;&#xA;" % M.str(M.r(object.denominator))
 				if M.ex(M.i(object.denominator)): code += "idenom = %s;&#xA;" % M.str(M.ir(object.denominator))

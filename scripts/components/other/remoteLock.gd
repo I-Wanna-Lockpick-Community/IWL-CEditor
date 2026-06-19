@@ -26,10 +26,10 @@ var color:C.olors = C.olors.WHITE
 var type:Lock.TYPE = Lock.TYPE.NORMAL
 var configuration:Lock.CONFIGURATION = Lock.CONFIGURATION.spr1A
 var sizeType:Lock.SIZE_TYPE = Lock.SIZE_TYPE.AnyS
-var count:PackedInt64Array = M.ONE
+var count:PackedInt64Array = M.ONE()
 var zeroI:bool = false
 var isPartial:bool = false # for partial blast
-var denominator:PackedInt64Array = M.ONE # for partial blast
+var denominator:PackedInt64Array = M.ONE() # for partial blast
 var negated:bool = false
 var armament:bool = false
 var frozen:bool = false
@@ -204,7 +204,7 @@ var glitchMimic:C.olors = C.olors.GLITCH
 var errorMimic:C.olors = C.olors.ERROR
 var curseMimic:C.olors = C.olors.GLITCH
 var satisfied:bool = false
-var cost:PackedInt64Array = M.ZERO
+var cost:PackedInt64Array = M.ZERO()
 var gameFrozen:bool = false
 var gameCrumbled:bool = false
 var gamePainted:bool = false
@@ -239,7 +239,7 @@ func stop() -> void:
 	errorMimic = C.olors.ERROR
 	curseMimic = C.olors.ERROR
 	satisfied = false
-	cost = M.ZERO
+	cost = M.ZERO()
 	curseTimer = 0
 
 func check(player:Player) -> void:
@@ -268,7 +268,7 @@ func blinkAnim() -> void:
 
 func canOpen(player:Player, checkColor:C.olors=getColor(Lock.COLOR_STEP.FINAL)) -> bool: return Lock.getLockCanOpen(self, player, checkColor)
 
-func getCost(player:Player, airEffect:bool) -> PackedInt64Array: return Lock.getLockCost(self,airEffect,player,M.ONE)
+func getCost(player:Player, airEffect:bool) -> PackedInt64Array: return Lock.getLockCost(self,airEffect,player,M.ONE())
 
 func getColor(step:Lock.COLOR_STEP) -> C.olors:
 	var resultColor:C.olors = color
@@ -308,8 +308,8 @@ func isNegative() -> bool:
 		return M.negative(M.sign(effectiveDenominator()))
 	return M.negative(M.sign(effectiveCount()))
 
-func effectiveCount(_ipow:PackedInt64Array=M.ONE) -> PackedInt64Array: return count
-func effectiveDenominator(_ipow:PackedInt64Array=M.ONE) -> PackedInt64Array: return denominator
+func effectiveCount(_ipow:PackedInt64Array=M.ONE()) -> PackedInt64Array: return count
+func effectiveDenominator(_ipow:PackedInt64Array=M.ONE()) -> PackedInt64Array: return denominator
 func effectiveZeroI() -> bool: return zeroI
 
 func checkDoors() -> void:

@@ -5,7 +5,7 @@
 [ext_resource type="Script" uid="uid://q0u3f7fb1u41" path="res://scripts/nodes/aspectRatioContainer.gd" id="2_rt4fk"]
 [ext_resource type="Shader" uid="uid://donorxvv474n1" path="res://resources/materials/playGame.gdshader" id="3_wfiui"]
 [ext_resource type="Theme" uid="uid://bvfthh0vm4fbp" path="res://resources/uiTheme.tres" id="5_n2d1d"]
-[ext_resource type="PackedScene" uid="uid://ccqphk3fjcl1e" path="res://scenes/mouseoverPanel.tscn" id="5_y4ge2"]
+[ext_resource type="Script" uid="uid://bsmyhhhm08v2u" path="res://scripts/singletons/game/mouseover.gd" id="5_y4ge2"]
 [ext_resource type="PackedScene" uid="uid://cudl265jx2hk6" path="res://scenes/gameSettings.tscn" id="6_m88lo"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_abwwd"]
@@ -22,7 +22,7 @@ bg_color = Color(0, 0, 0, 1)
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_wfiui"]
 bg_color = Color(0.15727392, 0.15727398, 0.15727389, 1)
 
-[sub_resource type="ButtonGroup" id="ButtonGroup_y4ge2"]
+[sub_resource type="ButtonGroup" id="ButtonGroup_huxtg"]
 
 [node name="playGame" type="PanelContainer" unique_id=974390549]
 anchors_preset = 15
@@ -85,8 +85,14 @@ limit_bottom = 608
 position_smoothing_enabled = true
 position_smoothing_speed = 8.0
 
-[node name="mouseover" parent="aspectRatioContainer/gameViewportCont/gameViewport" unique_id=2030446618 instance=ExtResource("5_y4ge2")]
+[node name="mouseover" type="VBoxContainer" parent="aspectRatioContainer/gameViewportCont/gameViewport" unique_id=1997196625]
 unique_name_in_owner = true
+offset_left = 1.0
+offset_top = 1.0
+offset_right = 84.0
+offset_bottom = 48.0
+script = ExtResource("5_y4ge2")
+metadata/_custom_type_script = "uid://bsmyhhhm08v2u"
 
 [node name="drawParent" type="Node2D" parent="aspectRatioContainer/gameViewportCont/gameViewport" unique_id=1168904747]
 unique_name_in_owner = true
@@ -105,7 +111,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_wfiui")
 [node name="gameSettings" parent="aspectRatioContainer/gameViewportCont/gameViewport/pauseMenu" unique_id=1574010737 instance=ExtResource("6_m88lo")]
 unique_name_in_owner = true
 layout_mode = 1
-toneButtonGroup = SubResource("ButtonGroup_y4ge2")
+toneButtonGroup = SubResource("ButtonGroup_huxtg")
 
 [node name="main" type="MarginContainer" parent="aspectRatioContainer/gameViewportCont/gameViewport/pauseMenu" unique_id=1384260393]
 unique_name_in_owner = true

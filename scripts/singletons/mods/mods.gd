@@ -79,7 +79,7 @@ static var mods:Dictionary[StringName, Mod] = {
 		"Adds the Partial Blast type for Locks from world 3 of IWL:C",
 		{&"PartialBlastLock": ComponentProblem.new([Lock, RemoteLock], func(component:GameComponent) -> bool: \
 			return component.type == Lock.TYPE.BLAST and (component.isPartial or M.neq(component.count, component.denominator)) \
-				or component.type == Lock.TYPE.ALL and (component.isPartial or M.neq(component.count, M.ONE) or M.neq(component.denominator, M.ONE))
+				or component.type == Lock.TYPE.ALL and (component.isPartial or M.neq(component.count, M.ONE()) or M.neq(component.denominator, M.ONE()))
 		, "Partial Blast Lock")}
 	),
 	&"ExactLocks": Mod.new(

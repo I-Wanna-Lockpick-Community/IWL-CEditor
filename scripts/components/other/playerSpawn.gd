@@ -41,20 +41,20 @@ func _init() -> void:
 	size = Vector2(32,32)
 	for color in Colors.COLORS:
 		# if color == C.olors.STONE:
-		key.append(M.ZERO)
+		key.append(M.ZERO())
 		star.append(false)
 		curse.append(color == C.olors.BROWN)
-		glisten.append(M.ZERO)
+		glisten.append(M.ZERO())
 
 func resetColors() -> void:
 	for color in Colors.COLORS:
 		resetColor(color)
 
 func resetColor(color:C.olors) -> void:
-	Changes.addChange(Changes.ArrayElementChange.new(self,&"key",color,M.ZERO))
+	Changes.addChange(Changes.ArrayElementChange.new(self,&"key",color,M.ZERO()))
 	Changes.addChange(Changes.ArrayElementChange.new(self,&"star",color,false))
 	Changes.addChange(Changes.ArrayElementChange.new(self,&"curse",color,false))
-	Changes.addChange(Changes.ArrayElementChange.new(self,&"glisten",color,M.ZERO))
+	Changes.addChange(Changes.ArrayElementChange.new(self,&"glisten",color,M.ZERO()))
 
 var forceDrawStart:bool = false
 

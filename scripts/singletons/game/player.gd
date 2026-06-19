@@ -49,11 +49,11 @@ var glisten:Array[PackedInt64Array] = [] #your glistening count
 var cantSave:bool = false # cant save if near a door
 var cantSavePrevious = false
 
-var masterMode:PackedInt64Array = M.ZERO
+var masterMode:PackedInt64Array = M.ZERO()
 var masterCycle:int = 0 # 0 = None, 1 = Master, 2 = Silver, 3 = Cosmic
 const MASTER_CYCLE_COLORS:Array[C.olors] = [C.olors.WHITE, C.olors.MASTER, C.olors.QUICKSILVER, C.olors.COSMIC]
 
-var complexMode:PackedInt64Array = M.ONE # C(1,0) for real view, C(0,1) for i-view
+var complexMode:PackedInt64Array = M.ONE() # C(1,0) for real view, C(0,1) for i-view
 
 var drawDropShadow:RID
 
@@ -102,8 +102,8 @@ var bufferedCheckKeys:bool = false
 func _init() -> void:
 	for color in Colors.COLORS:
 		# if color == C.olors.STONE:
-		key.append(M.ZERO)
-		glisten.append(M.ZERO)
+		key.append(M.ZERO())
+		glisten.append(M.ZERO())
 		star.append(false)
 		curse.append(color == C.olors.BROWN)
 
@@ -343,7 +343,7 @@ func cycleMaster() -> void:
 	dropMaster()
 
 func dropMaster() -> void:
-	masterMode = M.ZERO
+	masterMode = M.ZERO()
 	masterCycle = 0
 
 func getArmamentImmunities() -> Array[C.olors]:
@@ -372,7 +372,7 @@ func checkKeys() -> void:
 	explodey = M.ex(key[C.olors.DYNAMITE]) and C.olors.DYNAMITE not in armamentImmunities
 
 	curseMode = 0
-	var highestSeen:PackedInt64Array = M.ZERO
+	var highestSeen:PackedInt64Array = M.ZERO()
 	if C.olors.PURE not in armamentImmunities:
 		for color in Colors.COLORS:
 			if !curse[color] or M.nex(M.r(key[color])) or color in armamentImmunities: continue
@@ -384,17 +384,17 @@ func checkKeys() -> void:
 				curseColor = color as C.olors
 
 func complexSwitch() -> void:
-	if M.eq(complexMode, M.ONE): complexMode = M.I
-	else: complexMode = M.ONE
+	if M.eq(complexMode, M.ONE()): complexMode = M.I()
+	else: complexMode = M.ONE()
 
 	AudioManager.play(preload("res://resources/sounds/player/camera.wav"))
 	AudioManager.play(preload("res://resources/sounds/key/signflip.wav"))
 	complexSwitchAnim = true
 	complexSwitchAngle = 0
 
-	if M.eq(complexMode, M.I) and masterCycle and M.ex(M.i(key[MASTER_CYCLE_COLORS[masterCycle]])):
+	if M.eq(complexMode, M.I()) and masterCycle and M.ex(M.i(key[MASTER_CYCLE_COLORS[masterCycle]])):
 		masterMode = M.axis(M.i(key[MASTER_CYCLE_COLORS[masterCycle]]))
-	elif M.eq(complexMode, M.ONE) and masterCycle and M.ex(M.r(key[MASTER_CYCLE_COLORS[masterCycle]])):
+	elif M.eq(complexMode, M.ONE()) and masterCycle and M.ex(M.r(key[MASTER_CYCLE_COLORS[masterCycle]])):
 		masterMode = M.axis(M.r(key[MASTER_CYCLE_COLORS[masterCycle]]))
 	elif masterCycle:
 		AudioManager.play(preload("res://resources/sounds/player/masterUnequip.wav"))
@@ -438,7 +438,7 @@ func _draw() -> void:
 		var masterDrawOpacity:Color = Color(Color.WHITE,masterShineScale*0.6)
 		RenderingServer.canvas_item_add_texture_rect(drawMasterShine,Rect2(Vector2(-32,-32)*masterShineScale,Vector2(64,64)*masterShineScale),HELD_SHINE,false,getMasterShineColor())
 		RenderingServer.canvas_item_add_texture_rect(drawMasterKey,Rect2(Vector2(-16,-16),Vector2(32,32)),getHeldKeySprite(),false,masterDrawOpacity)
-	if M.eq(complexMode, M.I):
+	if M.eq(complexMode, M.I()):
 		TextDraw.outlinedCentered(Game.FTALK,drawComplexModeText,"I-View",Color.from_hsv(Game.complexViewHue,0.4901960784,1),Color.BLACK,12,Vector2(0,-10))
 	# complex switch
 	if complexSwitchAnim:

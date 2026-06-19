@@ -160,12 +160,17 @@ func _process(delta:float) -> void:
 
 		var objectMargin:float = focusOffsetAmount + OBJECT_MARGIN
 
-		position = Game.editor.worldspaceToScreenspace(focused.getDrawPosition() + Vector2(focused.size.x/2,focused.size.y)) + Vector2(0,objectMargin)
+		position = Game.editor.worldspaceToScreenspace(focused.getDrawPosition() + Vector2(focused.size.x/2,focused.size.y))
+		if componentFocused: position.y = max(position.y, Game.editor.worldspaceToScreenspace(componentFocused.getDrawPosition() + componentFocused.size).y)
+		position += Vector2(0,objectMargin)
 		
 		if above and position.y - height - 2*objectMargin - focused.size.y*Game.editor.cameraZoom < Game.editor.gameCont.position.y + EDGE_MARGIN: flip = true
 		elif !above and position.y + height > Game.editor.gameCont.position.y + Game.editor.gameCont.size.y - EDGE_MARGIN: flip = true
 
-		if above != flip: position = Game.editor.worldspaceToScreenspace(focused.getDrawPosition() + Vector2(focused.size.x/2,0)) + Vector2(0,-objectMargin)
+		if above != flip:
+			position = Game.editor.worldspaceToScreenspace(focused.getDrawPosition() + Vector2(focused.size.x/2,0))
+			if componentFocused: position.y = min(position.y, Game.editor.worldspaceToScreenspace(componentFocused.getDrawPosition()).y)
+			position -= Vector2(0,objectMargin)
 		%speechBubbler.rotation_degrees = 0 if above != flip else 180
 		if flip != above: activeDialog.get_child(0).position.y = -height
 		else: activeDialog.get_child(0).position.y = 0

@@ -49,9 +49,9 @@ func receiveKey(event:InputEventKey) -> bool:
 		else: _keyTypeSelected(KeyBulk.TYPE.STAR)
 	elif Editor.eventIs(event, &"focusKeyRotor"):
 		if main.focused.type != KeyBulk.TYPE.ROTOR: _keyTypeSelected(KeyBulk.TYPE.ROTOR)
-		elif M.eq(main.focused.count, M.nONE): _keyCountSet(M.I)
-		elif M.eq(main.focused.count, M.I): _keyCountSet(M.nI)
-		elif M.eq(main.focused.count, M.nI): _keyTypeSelected(KeyBulk.TYPE.NORMAL); _keyCountSet(M.ONE)
+		elif M.eq(main.focused.count, M.nONE()): _keyCountSet(M.I())
+		elif M.eq(main.focused.count, M.I()): _keyCountSet(M.nI())
+		elif M.eq(main.focused.count, M.nI()): _keyTypeSelected(KeyBulk.TYPE.NORMAL); _keyCountSet(M.ONE())
 	elif Editor.eventIs(event, &"focusKeyCurse") and Mods.active(&"CurseKeys"):
 			if main.focused.type == KeyBulk.TYPE.CURSE: Changes.PropertyChange.new(main.focused,&"un",!main.focused.un)
 			else: _keyTypeSelected(KeyBulk.TYPE.CURSE)
@@ -82,7 +82,7 @@ func _keyTypeSelected(type:KeyBulk.TYPE) -> void:
 	if main.focused is not KeyBulk: return
 	var beforeType:KeyBulk.TYPE = main.focused.type
 	Changes.addChange(Changes.PropertyChange.new(main.focused,&"type",type))
-	if beforeType != type and type == KeyBulk.TYPE.ROTOR: Changes.PropertyChange.new(main.focused,&"count",M.nONE)
+	if beforeType != type and type == KeyBulk.TYPE.ROTOR: Changes.PropertyChange.new(main.focused,&"count",M.nONE())
 	Changes.bufferSave()
 
 func _keyOperationSelected(operation:KeyBulk.OPERATION) -> void:
@@ -111,10 +111,10 @@ func _keyGlisteningToggled(value:bool) -> void:
 func _keyRotorSelected(value:KeyRotorSelector.VALUE):
 	if main.focused is not KeyBulk: return
 	match value:
-		KeyRotorSelector.VALUE.NOROTATE: Changes.addChange(Changes.PropertyChange.new(main.focused,&"count",M.ONE))
-		KeyRotorSelector.VALUE.SIGNFLIP: Changes.addChange(Changes.PropertyChange.new(main.focused,&"count",M.nONE))
-		KeyRotorSelector.VALUE.POSROTOR: Changes.addChange(Changes.PropertyChange.new(main.focused,&"count",M.I))
-		KeyRotorSelector.VALUE.NEGROTOR: Changes.addChange(Changes.PropertyChange.new(main.focused,&"count",M.nI))
+		KeyRotorSelector.VALUE.NOROTATE: Changes.addChange(Changes.PropertyChange.new(main.focused,&"count",M.ONE()))
+		KeyRotorSelector.VALUE.SIGNFLIP: Changes.addChange(Changes.PropertyChange.new(main.focused,&"count",M.nONE()))
+		KeyRotorSelector.VALUE.POSROTOR: Changes.addChange(Changes.PropertyChange.new(main.focused,&"count",M.I()))
+		KeyRotorSelector.VALUE.NEGROTOR: Changes.addChange(Changes.PropertyChange.new(main.focused,&"count",M.nI()))
 	Changes.bufferSave()
 
 func _keyUnToggled(value:bool) -> void:

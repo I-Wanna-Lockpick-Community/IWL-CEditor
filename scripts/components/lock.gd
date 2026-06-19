@@ -22,7 +22,7 @@ static func availableConfigurations(lockCount:PackedInt64Array, lockType:TYPE) -
 	if lockType != TYPE.NORMAL and lockType != TYPE.EXACT: return available
 	var absCount:PackedInt64Array = M.cabs(lockCount)
 	if M.isNonzeroReal(lockCount):
-		if M.eq(absCount, M.ONE): available.append([SIZE_TYPE.AnyS, CONFIGURATION.spr1A])
+		if M.eq(absCount, M.ONE()): available.append([SIZE_TYPE.AnyS, CONFIGURATION.spr1A])
 		elif M.eq(absCount, M.N(2)): available.append([SIZE_TYPE.AnyH, CONFIGURATION.spr2H]); available.append([SIZE_TYPE.AnyV, CONFIGURATION.spr2V])
 		elif M.eq(absCount, M.N(3)): available.append([SIZE_TYPE.AnyH, CONFIGURATION.spr3H]); available.append([SIZE_TYPE.AnyV, CONFIGURATION.spr3V])
 		elif M.eq(absCount, M.N(4)): available.append([SIZE_TYPE.AnyM, CONFIGURATION.spr4A]); available.append([SIZE_TYPE.AnyL, CONFIGURATION.spr4B])
@@ -40,7 +40,7 @@ static func availableConfigurations(lockCount:PackedInt64Array, lockType:TYPE) -
 			elif M.eq(absCount, M.N(11)): available.append([SIZE_TYPE.AnyL, CONFIGURATION.spr11A])
 			elif M.eq(absCount, M.N(13)): available.append([SIZE_TYPE.AnyL, CONFIGURATION.spr13A])
 	elif M.isNonzeroImag(lockCount):
-		if M.eq(absCount, M.I): available.append([SIZE_TYPE.AnyS, CONFIGURATION.spr1A])
+		if M.eq(absCount, M.I()): available.append([SIZE_TYPE.AnyS, CONFIGURATION.spr1A])
 		elif M.eq(absCount, M.Ni(2)): available.append([SIZE_TYPE.AnyH, CONFIGURATION.spr2H]); available.append([SIZE_TYPE.AnyV, CONFIGURATION.spr2V])
 		elif M.eq(absCount, M.Ni(3)): available.append([SIZE_TYPE.AnyH, CONFIGURATION.spr3H]); available.append([SIZE_TYPE.AnyV, CONFIGURATION.spr3V])
 	return available
@@ -123,10 +123,10 @@ var color:C.olors = C.olors.WHITE
 var type:TYPE = TYPE.NORMAL
 var configuration:CONFIGURATION = CONFIGURATION.spr1A
 var sizeType:SIZE_TYPE = SIZE_TYPE.AnyS
-var count:PackedInt64Array = M.ONE
+var count:PackedInt64Array = M.ONE()
 var zeroI:bool = false # if the count is zeroI, for exact locks
 var isPartial:bool = false # for partial blast
-var denominator:PackedInt64Array = M.ONE # for partial blast
+var denominator:PackedInt64Array = M.ONE() # for partial blast
 var negated:bool = false
 var armament:bool = false
 var index:int
@@ -163,7 +163,13 @@ func _ready() -> void:
 	RenderingServer.canvas_item_set_parent(drawConfiguration,get_canvas_item())
 	RenderingServer.canvas_item_set_self_modulate(drawError, "#ffffffaa")
 	RenderingServer.canvas_item_set_material(drawError,Game.ADDITIVE_MATERIAL)
-	Game.connect(&"goldIndexChanged",func(): if Colors.getDef(getColor(COLOR_STEP.DRAW_BASE)).doorTextureFrames > 1 or getColor(COLOR_STEP.BASE) == C.olors.ERROR: queue_redraw())
+	Game.connect(&"goldIndexChanged",func(): if animated(): queue_redraw())
+
+func animated() -> bool:
+	if Colors.getDef(getColor(COLOR_STEP.DRAW_BASE)).doorTextureFrames > 1: return true
+	if getColor(COLOR_STEP.BASE) == C.olors.ERROR: return true
+	if armament: return true
+	return false
 
 func _freed() -> void:
 	RenderingServer.free_rid(drawScaled)
@@ -428,24 +434,24 @@ func propertyChangedInit(property:StringName) -> void:
 
 static func lockPropertyChangedInit(lock:GameComponent, property:StringName) -> void:
 	if property == &"type":
-		if (lock.type == TYPE.BLANK or (lock.type == TYPE.ALL and !Mods.active(&"PartialBlastLocks"))) and M.neq(lock.count, M.ONE):
-			Changes.addChange(Changes.PropertyChange.new(lock,&"count",M.ONE))
+		if (lock.type == TYPE.BLANK or (lock.type == TYPE.ALL and !Mods.active(&"PartialBlastLocks"))) and M.neq(lock.count, M.ONE()):
+			Changes.addChange(Changes.PropertyChange.new(lock,&"count",M.ONE()))
 		if lock.type != TYPE.EXACT and lock.zeroI:
 			Changes.addChange(Changes.PropertyChange.new(lock,&"zeroI",false))
 		if lock.type == TYPE.BLAST:
 			if !Mods.active(&"PartialBlastLocks"):
-				if M.neq(M.abs(lock.count), M.ONE): Changes.addChange(Changes.PropertyChange.new(lock,&"count",M.saxis(lock.count)))
+				if M.neq(M.abs(lock.count), M.ONE()): Changes.addChange(Changes.PropertyChange.new(lock,&"count",M.saxis(lock.count)))
 				if M.neq(M.axis(lock.denominator), M.axis(lock.count)): Changes.addChange(Changes.PropertyChange.new(lock,&"denominator", M.axis(lock.count)))
 		elif lock.type == TYPE.ALL:
-			if !lock.isPartial and M.neq(lock.denominator, M.ONE): Changes.addChange(Changes.PropertyChange.new(lock,&"denominator",M.ONE))
+			if !lock.isPartial and M.neq(lock.denominator, M.ONE()): Changes.addChange(Changes.PropertyChange.new(lock,&"denominator",M.ONE()))
 		else:
-			if M.neq(lock.denominator, M.ONE): Changes.addChange(Changes.PropertyChange.new(lock,&"denominator",M.ONE))
+			if M.neq(lock.denominator, M.ONE()): Changes.addChange(Changes.PropertyChange.new(lock,&"denominator",M.ONE()))
 			if lock.isPartial: Changes.addChange(Changes.PropertyChange.new(lock,&"isPartial",false))
 			if M.isComplex(lock.count):
 				Changes.addChange(Changes.PropertyChange.new(lock,&"count",M.r(lock.count)))
 
 	if property == &"isPartial" and !lock.isPartial:
-		Changes.addChange(Changes.PropertyChange.new(lock,&"denominator", M.ONE if M.isComplex(lock.count) or M.nex(lock.count) or lock.type == TYPE.ALL else M.axis(lock.count)))
+		Changes.addChange(Changes.PropertyChange.new(lock,&"denominator", M.ONE() if M.isComplex(lock.count) or M.nex(lock.count) or lock.type == TYPE.ALL else M.axis(lock.count)))
 
 func propertyChangedDo(property:StringName) -> void:
 	if property in [&"count", &"denominator"] and parent: parent.queue_redraw()
@@ -495,7 +501,7 @@ func getColor(step:COLOR_STEP) -> C.olors:
 
 func effectiveConfiguration() -> CONFIGURATION:
 	if Game.simpleLocks: return CONFIGURATION.NONE
-	if M.neq(parent.ipow(), M.ONE):
+	if M.neq(parent.ipow(), M.ONE()):
 		if parent.type == Door.TYPE.SIMPLE: return getAutoConfiguration(self)
 		else: return CONFIGURATION.NONE
 	else: return configuration
@@ -518,7 +524,7 @@ static func getLockCanOpen(lock:GameComponent, player:Player, checkColor:C.olors
 			elif !M.simplies(lockDenominator, keyCount): can = false
 			elif lock.isPartial:
 				if !M.divisibleBy(M.alongbs(keyCount, lockDenominator), lockDenominator): can = false
-				elif M.neq(M.sign(M.divide(M.alongbs(keyCount, lockDenominator), lockDenominator)), M.ONE): can = false
+				elif M.neq(M.sign(M.divide(M.alongbs(keyCount, lockDenominator), lockDenominator)), M.ONE()): can = false
 		TYPE.ALL:
 			if M.nex(lockDenominator): can = false
 			elif M.nex(keyCount): can = false
@@ -530,7 +536,7 @@ static func getLockCanOpen(lock:GameComponent, player:Player, checkColor:C.olors
 				else: can = M.nex(M.r(keyCount))
 			else: can = M.eq(M.along(keyCount, lockCount), M.cabs(lockCount))
 		TYPE.GLISTENING: can = M.cgte(M.along(glistenCount, lockCount), M.cabs(lockCount))
-		TYPE.REMAINDER: can = M.neq(M.partialRemainder(keyCount, lockCount),M.ZERO)
+		TYPE.REMAINDER: can = M.neq(M.partialRemainder(keyCount, lockCount),M.ZERO())
 	return can != lock.negated
 
 func getCost(player:Player, airEffect:bool, ipow:PackedInt64Array=parent.ipow()) -> PackedInt64Array: return getLockCost(self, airEffect, player, ipow)
@@ -539,7 +545,7 @@ static func getLockCost(lock:GameComponent, airEffect:bool, player:Player, ipow:
 	var checkColor:C.olors
 	if airEffect and M.ex(player.key[C.olors.AIR]) and !lock.canOpen(player): checkColor = C.olors.AIR
 	else: checkColor = lock.getColor(COLOR_STEP.FINAL)
-	var cost:PackedInt64Array = M.ZERO
+	var cost:PackedInt64Array = M.ZERO()
 	var keyCount:PackedInt64Array = player.key[checkColor]
 	var lockCount:PackedInt64Array = lock.effectiveCount(ipow)
 	var lockDenominator:PackedInt64Array = lock.effectiveDenominator(ipow)

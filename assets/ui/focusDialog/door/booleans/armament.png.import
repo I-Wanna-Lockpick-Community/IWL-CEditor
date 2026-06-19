@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bkt1mrode320h"
-path="res://.godot/imported/frozen3x2.png-49f0b84c43b3a05db273b60ff5ae72de.ctex"
+uid="uid://ca6ku3ydgym02"
+path="res://.godot/imported/armament.png-4b6008735cc52cb4ee183783f4021010.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/game/door/aura/frozen3x2.png"
-dest_files=["res://.godot/imported/frozen3x2.png-49f0b84c43b3a05db273b60ff5ae72de.ctex"]
+source_file="res://assets/ui/focusDialog/door/booleans/armament.png"
+dest_files=["res://.godot/imported/armament.png-4b6008735cc52cb4ee183783f4021010.ctex"]
 
 [params]
 

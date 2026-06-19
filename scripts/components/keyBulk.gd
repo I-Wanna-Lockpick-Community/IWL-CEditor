@@ -62,7 +62,7 @@ static var ARRAYS:Dictionary[StringName,Variant] = {}
 
 var color:C.olors = C.olors.WHITE
 var type:TYPE = TYPE.NORMAL
-var count:PackedInt64Array = M.ONE
+var count:PackedInt64Array = M.ONE()
 var infinite:int = 0
 var glistening:bool = false # whether the key affects glistening count or not
 var altColor:C.olors = C.olors.WHITE
@@ -157,17 +157,17 @@ func _draw() -> void:
 	if animState == ANIM_STATE.FLASH: RenderingServer.canvas_item_add_texture_rect(drawSymbol,rect,outlineTex(),false,Color(Color.WHITE,animAlpha))
 	match type:
 		KeyBulk.TYPE.NORMAL, KeyBulk.TYPE.EXACT:
-			if !M.eq(count, M.ONE): TextDraw.outlined2(FKEYBULK,drawSymbol,M.str(count),keycountColor(),keycountOutlineColor(),14,Vector2(1,25))
+			if !M.eq(count, M.ONE()): TextDraw.outlined2(FKEYBULK,drawSymbol,M.str(count),keycountColor(),keycountOutlineColor(),14,Vector2(1,25))
 		KeyBulk.TYPE.ROTOR:
 			if reciprocal:
-				if M.eq(count, M.nONE): RenderingServer.canvas_item_add_texture_rect(drawSymbol,rect,RECIPROCAL_FLIP_SYMBOL)
-				elif M.eq(count, M.I): RenderingServer.canvas_item_add_texture_rect(drawSymbol,rect,RECIPROCAL_POS_SYMBOL)
-				elif M.eq(count, M.nI): RenderingServer.canvas_item_add_texture_rect(drawSymbol,rect,RECIPROCAL_NEG_SYMBOL)
-				elif M.eq(count, M.ONE): RenderingServer.canvas_item_add_texture_rect(drawSymbol,rect, RECIPROCAL__SYMBOL)
+				if M.eq(count, M.nONE()): RenderingServer.canvas_item_add_texture_rect(drawSymbol,rect,RECIPROCAL_FLIP_SYMBOL)
+				elif M.eq(count, M.I()): RenderingServer.canvas_item_add_texture_rect(drawSymbol,rect,RECIPROCAL_POS_SYMBOL)
+				elif M.eq(count, M.nI()): RenderingServer.canvas_item_add_texture_rect(drawSymbol,rect,RECIPROCAL_NEG_SYMBOL)
+				elif M.eq(count, M.ONE()): RenderingServer.canvas_item_add_texture_rect(drawSymbol,rect, RECIPROCAL__SYMBOL)
 			else:
-				if M.eq(count, M.nONE) or M.eq(count,M.ONE): RenderingServer.canvas_item_add_texture_rect(drawSymbol,rect,SIGNFLIP_SYMBOL)
-				elif M.eq(count, M.I): RenderingServer.canvas_item_add_texture_rect(drawSymbol,rect,POSROTOR_SYMBOL)
-				elif M.eq(count, M.nI): RenderingServer.canvas_item_add_texture_rect(drawSymbol,rect,NEGROTOR_SYMBOL)
+				if M.eq(count, M.nONE()) or M.eq(count,M.ONE()): RenderingServer.canvas_item_add_texture_rect(drawSymbol,rect,SIGNFLIP_SYMBOL)
+				elif M.eq(count, M.I()): RenderingServer.canvas_item_add_texture_rect(drawSymbol,rect,POSROTOR_SYMBOL)
+				elif M.eq(count, M.nI()): RenderingServer.canvas_item_add_texture_rect(drawSymbol,rect,NEGROTOR_SYMBOL)
 		KeyBulk.TYPE.OPERATOR:
 			drawOperationSymbol(drawAdditional,drawAdditionalGlitch,Vector2.ZERO,getAltColor(COLOR_STEP.DRAW_BASE),operation,glitchMimic)
 	if infinite:
@@ -233,13 +233,13 @@ static func drawOperationSymbol(keyDrawAdditonal:RID, keyDrawGlitch:RID, keyOffs
 
 func propertyChangedInit(property:StringName) -> void:
 	if property == &"type":
-		if type not in [TYPE.NORMAL, TYPE.EXACT] and M.neq(count, M.ONE): Changes.addChange(Changes.PropertyChange.new(self,&"count",M.ONE))
+		if type not in [TYPE.NORMAL, TYPE.EXACT] and M.neq(count, M.ONE()): Changes.addChange(Changes.PropertyChange.new(self,&"count",M.ONE()))
 		if type not in [TYPE.STAR, TYPE.CURSE] and un: Changes.addChange(Changes.PropertyChange.new(self,&"un",false))
 		if type != TYPE.ROTOR: Changes.addChange(Changes.PropertyChange.new(self,&"reciprocal",false))
 		Changes.addChange(Changes.PropertyChange.new(self,&"altColor",color))
 	if property == &"reciprocal":
-		if reciprocal and M.eq(count, M.nONE): Changes.addChange(Changes.PropertyChange.new(self,&"count",M.ONE))
-		if !reciprocal and M.eq(count, M.ONE): Changes.addChange(Changes.PropertyChange.new(self,&"count",M.nONE))
+		if reciprocal and M.eq(count, M.nONE()): Changes.addChange(Changes.PropertyChange.new(self,&"count",M.ONE()))
+		if !reciprocal and M.eq(count, M.ONE()): Changes.addChange(Changes.PropertyChange.new(self,&"count",M.nONE()))
 
 # ==== PLAY ==== #
 var glitchMimic:C.olors = C.olors.GLITCH

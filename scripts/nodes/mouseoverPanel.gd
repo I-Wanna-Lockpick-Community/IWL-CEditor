@@ -15,9 +15,9 @@ func describe(object:GameObject) -> void:
 				KeyBulk.TYPE.EXACT: string += "Exact "
 				KeyBulk.TYPE.STAR: string += "Unstar " if object.un else "Star "
 				KeyBulk.TYPE.ROTOR:
-					if M.eq(object.count, M.nONE): string += "Signflip "
-					elif M.eq(object.count, M.I): string += "Rotor (i) "
-					elif M.eq(object.count, M.nI): string += "Rotor (-i) "
+					if M.eq(object.count, M.nONE()): string += "Signflip "
+					elif M.eq(object.count, M.I()): string += "Rotor (i) "
+					elif M.eq(object.count, M.nI()): string += "Rotor (-i) "
 					if object.reciprocal: string += "Reciprocal "
 				KeyBulk.TYPE.CURSE: string += "Uncurse " if object.un else "Curse "
 				KeyBulk.TYPE.OPERATOR: string += "Operator "
@@ -93,7 +93,7 @@ func lockCost(lock:GameComponent) -> String:
 			var numerator:PackedInt64Array = lock.count
 			var divideThrough:bool = !M.isComplex(lock.denominator) and (!M.isComplex(numerator) or !lock.isPartial)
 			if divideThrough: numerator = M.divide(numerator,M.saxis(lock.denominator))
-			if M.neq(numerator, M.ONE): string += M.str(numerator)
+			if M.neq(numerator, M.ONE()): string += M.str(numerator)
 			string += "All" if lock.type == Lock.TYPE.BLAST else "ALL"
 			if lock.type == Lock.TYPE.BLAST and divideThrough: string += (" -" if M.negative(M.sign(lock.denominator)) else " +") + ("i" if M.isNonzeroImag(lock.denominator) else "")
 			if lock.isPartial:

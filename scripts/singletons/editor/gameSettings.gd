@@ -140,7 +140,7 @@ func _draw() -> void:
 	RenderingServer.canvas_item_clear(doorDrawAuraBreaker)
 	RenderingServer.canvas_item_clear(doorDrawMain)
 	KeyBulk.drawKey(keyDrawMain,keyDrawMain,Vector2.ZERO,%colorSelector.selected)
-	Door.drawDoor(doorDrawScaled,doorDrawAuraBreaker,doorDrawMain,doorDrawMain,Vector2(32,32),%colorSelector.selected,C.olors.GLITCH,Door.TYPE.COMBO,1)
+	Door.drawDoor(doorDrawScaled,doorDrawAuraBreaker,doorDrawMain,doorDrawMain,Vector2(32,32),%colorSelector.selected,C.olors.GLITCH,Door.TYPE.COMBO,1,false)
 
 func _hideTimerSet(toggled_on:bool) -> void:
 	Game.hideTimer = toggled_on

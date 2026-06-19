@@ -29,7 +29,7 @@ var numberSemiNegative:Array[bool] = [] # if a number's sign is currently inaccu
 var texts:Array[String] = [""] # one at the start and one after each number. may be empty
 var currentExpression:Array = []
 var expressionError:ERROR = ERROR.NONE
-var result:PackedInt64Array = M.ZERO
+var result:PackedInt64Array = M.ZERO()
 var isZeroI:bool = false
 var baseForm:BASE_FORM = BASE_FORM.FACTORED
 
@@ -214,7 +214,7 @@ func evaluate(manual:bool=false) -> void:
 					if M.isAxial(result): valueSet.emit(result)
 					else: expressionError = ERROR.NUMBER
 				TYPE.NONNEGATIVE_INTEGER:
-					if M.isReal(result) and M.isInteger(result) and M.gte(result, M.ZERO): valueSet.emit(result)
+					if M.isReal(result) and M.isInteger(result) and M.gte(result, M.ZERO()): valueSet.emit(result)
 					else: expressionError = ERROR.NUMBER
 	theme_type_variation = (&"NumberEditPanelContainerError" if expressionError else &"NumberEditPanelContainerSelected") if owner.interacted == self else &"NumberEditPanelContainer"
 	%type.modulate = ERROR_COLOR if expressionError == ERROR.NUMBER else Color.WHITE
@@ -238,7 +238,7 @@ func parseTokens(tokens:Array[Vector2i], step:STEP) -> Array: # returns expressi
 		STEP.SUM:
 			if len(tokens) == 0:
 				# empty bracket!
-				return [EXPRESSION.CONSTANT, M.ZERO]
+				return [EXPRESSION.CONSTANT, M.ZERO()]
 			var layer:int = 0
 			for index in range(len(tokens)-1,-1,-1):
 				var token:TOKEN = tokens[index].x as TOKEN
@@ -281,7 +281,7 @@ func parseTokens(tokens:Array[Vector2i], step:STEP) -> Array: # returns expressi
 							]
 			return parseTokens(tokens, STEP.AXIS)
 		STEP.AXIS:
-			var axis:PackedInt64Array = M.ONE
+			var axis:PackedInt64Array = M.ONE()
 			while tokens[0].x in [TOKEN.CROSS, TOKEN.DASH]:
 				if tokens.pop_front().x == TOKEN.DASH: axis = M.negate(axis)
 				if len(tokens) == 0:
@@ -294,7 +294,7 @@ func parseTokens(tokens:Array[Vector2i], step:STEP) -> Array: # returns expressi
 					# multiple of i!
 					return [EXPRESSION.CONSTANT, axis]
 			# axis!
-			if M.neq(axis, M.ONE):
+			if M.neq(axis, M.ONE()):
 				return [EXPRESSION.AXIS, axis, parseTokens(tokens, STEP.BRACKET)]
 			else: return parseTokens(tokens, STEP.BRACKET)
 		STEP.BRACKET:
@@ -369,7 +369,7 @@ func evaluateExpression(expression:Array) -> PackedInt64Array:
 		EXPRESSION.CONSTANT: return expression[1]
 		EXPRESSION.ERROR, _:
 			expressionError = ERROR.SYNTAX
-			return M.ZERO
+			return M.ZERO()
 
 func buildText() -> void:
 	var formattedText:String = texts[0]
@@ -475,11 +475,11 @@ func receiveUnhandledKey(key:InputEventKey) -> bool:
 				var character:String = char(key.unicode)
 				if cursorStart == 0 and cursorEnd == textLen and textLen != 0:
 					if Editor.eventIs(key, &"numberNegate"):
-						setValue(M.times(result,M.nONE), false)
+						setValue(M.times(result,M.nONE()), false)
 						selectAll()
 						return true
 					elif Editor.eventIs(key, &"numberTimesI"):
-						setValue(M.times(result,M.I), false)
+						setValue(M.times(result,M.I()), false)
 						selectAll()
 						return true
 				if cursorEnd > cursorStart:
