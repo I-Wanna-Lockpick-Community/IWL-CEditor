@@ -21,10 +21,11 @@ void fragment() {
 			accumulator = max(accumulator, texture(TEXTURE, UV+SCREEN_PIXEL_SIZE*vec2(x,y)).rgb);
 		}
 	}
-	// for the three color channels, if the accumulated value is no greator than that of the pixel itself, then we ignore it
+	// for the three color channels, if the accumulated value is no greater than that of the pixel itself, then we ignore it
 	accumulator *= sign(accumulator - COLOR.rgb);
 	// display the channels, with their respective colors
-	COLOR = over(vec4(rChannel.rgb, rChannel.a*accumulator.r),
-		over(vec4(gChannel.rgb, gChannel.a*accumulator.g),
-		vec4(bChannel.rgb, bChannel.a*accumulator.b)));
+	vec4 r = vec4(rChannel.rgb, rChannel.a*accumulator.r);
+	vec4 g = vec4(gChannel.rgb, gChannel.a*accumulator.g);
+	vec4 b = vec4(bChannel.rgb, bChannel.a*accumulator.b);
+	COLOR = over(over(r, g), b);
 }

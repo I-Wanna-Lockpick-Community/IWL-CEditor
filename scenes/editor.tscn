@@ -499,15 +499,15 @@ offset_bottom = 49.0
 z_index = 3
 layout_mode = 2
 
-[node name="c2" type="HBoxContainer" parent="c/c3" unique_id=263254150]
+[node name="c" type="HBoxContainer" parent="c/c3" unique_id=263254150]
 layout_mode = 2
 
-[node name="c2" type="MarginContainer" parent="c/c3/c2" unique_id=1686107609]
+[node name="c" type="MarginContainer" parent="c/c3/c" unique_id=1686107609]
 clip_contents = true
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="quickSet" type="RichTextLabel" parent="c/c3/c2/c2" unique_id=1047817629]
+[node name="quickSet" type="RichTextLabel" parent="c/c3/c/c" unique_id=1047817629]
 unique_name_in_owner = true
 visible = false
 custom_minimum_size = Vector2(0, 17)
@@ -520,7 +520,7 @@ scroll_active = false
 autowrap_mode = 0
 script = ExtResource("14_sdh1e")
 
-[node name="explainText" type="RichTextLabel" parent="c/c3/c2/c2" unique_id=957444453]
+[node name="explainText" type="RichTextLabel" parent="c/c3/c/c" unique_id=957444453]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 17)
 layout_mode = 2
@@ -531,7 +531,7 @@ bbcode_enabled = true
 scroll_active = false
 autowrap_mode = 0
 
-[node name="settingsText" type="RichTextLabel" parent="c/c3/c2/c2" unique_id=92265013]
+[node name="settingsText" type="RichTextLabel" parent="c/c3/c/c" unique_id=92265013]
 unique_name_in_owner = true
 visible = false
 custom_minimum_size = Vector2(0, 17)
@@ -544,7 +544,7 @@ text = "IWLCEditor"
 scroll_active = false
 autowrap_mode = 0
 
-[node name="toggleSettingsMenu" type="Button" parent="c/c3/c2" unique_id=1560231123 groups=["explained"]]
+[node name="toggleSettingsMenu" type="Button" parent="c/c3/c" unique_id=1560231123 groups=["explained"]]
 unique_name_in_owner = true
 layout_mode = 2
 toggle_mode = true
@@ -697,4 +697,4 @@ theme = ExtResource("1_j8y2p")
 [connection signal="pressed" from="c/c/c/topBar/c/playControls/pause" to="c/c/c/topBar" method="_pause"]
 [connection signal="pressed" from="c/c/c/topBar/c/playControls/stop" to="c/c/c/topBar" method="_stop"]
 [connection signal="resized" from="c/gameCont/gameViewportDisplay" to="." method="_gameViewportDisplayResized"]
-[connection signal="toggled" from="c/c3/c2/toggleSettingsMenu" to="." method="_toggleSettingsMenu"]
+[connection signal="toggled" from="c/c3/c/toggleSettingsMenu" to="." method="_toggleSettingsMenu"]
