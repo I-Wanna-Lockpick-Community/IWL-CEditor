@@ -58,12 +58,15 @@ enum BASE_FORM {FACTORED, DISTRIBUTED}
 		allowZero = value
 		updateRestrictionDisplay()
 
+var transformation:Callable # when the value is set, apply this transformation first
+
 func _ready() -> void:
 	owner.numberEdits.append(self) # the scene root
 	shapedText = ts.create_shaped_text()
 	updateRestrictionDisplay()
 
 func setValue(value:PackedInt64Array, manual:bool=true) -> void:
+	if transformation: value = transformation.call(value)
 	match baseForm:
 		BASE_FORM.FACTORED: text = M.str(value)
 		BASE_FORM.DISTRIBUTED: text = M.strDistributeFraction(value)
@@ -484,17 +487,17 @@ func receiveUnhandledKey(key:InputEventKey) -> bool:
 				elif "0123456789".contains(character):
 					var endNumber:int = numberEnds.find(cursorStart)
 					if endNumber != -1:
-						setNumber(endNumber, numberValues[endNumber]*10+character.to_int()*sign(numberValues[endNumber]))
+						setNumber(endNumber, numberValues[endNumber]*10+character.to_int()*sign(numberValues[endNumber] if numberValues[endNumber] else 1))
 						Changes.addChange(Changes.GlobalPropertyChange.new(self, &"cursorStart", numberEnds[endNumber]))
 						Changes.addChange(Changes.GlobalPropertyChange.new(self, &"cursorEnd", cursorStart))
 						placeCursor()
 						return true
 					var startNumber:int = numberStarts.find(cursorStart)
-					if numberValues[startNumber] < 0: startNumber = -1 # |-123 shouldnt trigger this
-					elif startNumber == -1:
+					if startNumber == -1:
 						# try to find a negative number one character before the cursor, ie -|123
 						startNumber = numberStarts.find(cursorStart-1)
 						if startNumber != -1 and numberValues[startNumber] >= 0: startNumber = -1
+					elif numberValues[startNumber] < 0: startNumber = -1 # |-123 shouldnt trigger this
 					if startNumber != -1:
 						if numberValues[startNumber] < 0:
 							setNumber(startNumber, -character.to_int()*(10**(len(str(numberValues[startNumber]))-1)) + numberValues[startNumber])

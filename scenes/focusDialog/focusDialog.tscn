@@ -36,13 +36,17 @@
 [ext_resource type="Texture2D" uid="uid://ddautei1wlnil" path="res://assets/ui/focusDialog/otherObjects/playtest.png" id="24_7tfe2"]
 [ext_resource type="Script" uid="uid://lbaubg2qq1s1" path="res://scripts/nodes/focusDialog/keyCounterHandler.gd" id="25_1rcup"]
 [ext_resource type="Script" uid="uid://ckcofkmbukj5o" path="res://scripts/nodes/focusDialog/selector/keyCounterWidthSelector.gd" id="25_7tfe2"]
-[ext_resource type="Texture2D" uid="uid://c1sixdrnoyq7f" path="res://assets/ui/focusDialog/numberEdit/infinite.png" id="25_hb0ue"]
 [ext_resource type="Script" uid="uid://bg8oswa2bhdsv" path="res://scripts/nodes/focusDialog/goalTypeSelector.gd" id="26_1rcup"]
 [ext_resource type="Texture2D" uid="uid://cln0osp8um3ti" path="res://assets/ui/focusDialog/numberEdit/partialBlast.png" id="29_di8ev"]
 [ext_resource type="Script" uid="uid://dihumic7k5rec" path="res://scripts/singletons/focusDialog/keyCounterDialog.gd" id="30_bfxh1"]
 [ext_resource type="Texture2D" uid="uid://wdnkcen713o8" path="res://assets/ui/focusDialog/numberEdit/x.png" id="31_rrq8c"]
 [ext_resource type="Script" uid="uid://2iqmgcrc5wpq" path="res://scripts/nodes/focusDialog/doorsHandler.gd" id="31_xwnfa"]
+[ext_resource type="Texture2D" uid="uid://bmjg5iy11qbl7" path="res://assets/ui/focusDialog/doorsInfCopies/plusinf.png" id="33_8gwon"]
 [ext_resource type="Script" uid="uid://b0shfyjnfk7ih" path="res://scripts/singletons/focusDialog/goalDialog.gd" id="33_di8ev"]
+[ext_resource type="Texture2D" uid="uid://four3p8ja50m" path="res://assets/ui/focusDialog/doorsInfCopies/positive.png" id="34_8gwon"]
+[ext_resource type="Texture2D" uid="uid://qjrnehy6nkb1" path="res://assets/ui/focusDialog/doorsInfCopies/negative.png" id="35_vydri"]
+[ext_resource type="Texture2D" uid="uid://ck6tkj18vcs7k" path="res://assets/ui/focusDialog/doorsInfCopies/positiveI.png" id="36_sb8el"]
+[ext_resource type="Texture2D" uid="uid://stnu3c8g3kfv" path="res://assets/ui/focusDialog/doorsInfCopies/negativeI.png" id="37_wu5cm"]
 [ext_resource type="Texture2D" uid="uid://cv1qa4bwwetr5" path="res://assets/ui/focusDialog/numberEdit/parenthesis.png" id="38_lm5cw"]
 [ext_resource type="Script" uid="uid://vfxgywtu3kgg" path="res://scripts/singletons/focusDialog/playerDialog.gd" id="40_p7jkh"]
 [ext_resource type="Texture2D" uid="uid://bde4hvh2i41bh" path="res://assets/ui/focusDialog/keySplitType/curse.png" id="41_ft2jg"]
@@ -95,6 +99,12 @@ script = ExtResource("22_s5h3h")
 explanation = "[%s]Toggle painted"
 hotkeys = Array[StringName]([&"focusDoorPainted"])
 metadata/_custom_type_script = "uid://cgjhnhjwymb8g"
+
+[sub_resource type="ButtonGroup" id="ButtonGroup_8gwon"]
+allow_unpress = true
+
+[sub_resource type="ButtonGroup" id="ButtonGroup_vydri"]
+allow_unpress = true
 
 [sub_resource type="StyleBoxLine" id="StyleBoxLine_di8ev"]
 content_margin_left = 4.0
@@ -464,32 +474,73 @@ toggle_mode = true
 icon = ExtResource("20_2wjug")
 vertical_icon_alignment = 0
 
-[node name="doorCopySettings" type="HBoxContainer" parent="doorDialog/c/lock/c/c" unique_id=690871626]
+[node name="doorCopySettings" type="VBoxContainer" parent="doorDialog/c/lock/c/c" unique_id=1160178579]
 unique_name_in_owner = true
 visible = false
 layout_mode = 2
 alignment = 1
 
-[node name="x" type="TextureRect" parent="doorDialog/c/lock/c/c/doorCopySettings" unique_id=1284241333]
+[node name="c" type="HBoxContainer" parent="doorDialog/c/lock/c/c/doorCopySettings" unique_id=878721858]
+layout_mode = 2
+
+[node name="x" type="TextureRect" parent="doorDialog/c/lock/c/c/doorCopySettings/c" unique_id=1284241333]
 layout_mode = 2
 texture = ExtResource("31_rrq8c")
 stretch_mode = 3
 
-[node name="realInfiniteCopy" type="Button" parent="doorDialog/c/lock/c/c/doorCopySettings" unique_id=826471876]
-unique_name_in_owner = true
-layout_mode = 2
-toggle_mode = true
-icon = ExtResource("25_hb0ue")
-
-[node name="doorCopiesEdit" parent="doorDialog/c/lock/c/c/doorCopySettings" unique_id=1561873349 instance=ExtResource("20_gx4cd")]
+[node name="doorCopiesEdit" parent="doorDialog/c/lock/c/c/doorCopySettings/c" unique_id=1561873349 instance=ExtResource("20_gx4cd")]
 unique_name_in_owner = true
 layout_mode = 2
 
-[node name="imaginaryInfiniteCopy" type="Button" parent="doorDialog/c/lock/c/c/doorCopySettings" unique_id=709491226]
+[node name="doorInfCopiesSettings" type="HBoxContainer" parent="doorDialog/c/lock/c/c/doorCopySettings" unique_id=1648330172]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="xinf" type="TextureRect" parent="doorDialog/c/lock/c/c/doorCopySettings/doorInfCopiesSettings" unique_id=1228748502]
+layout_mode = 2
+texture = ExtResource("33_8gwon")
+stretch_mode = 3
+
+[node name="c" type="HBoxContainer" parent="doorDialog/c/lock/c/c/doorCopySettings/doorInfCopiesSettings" unique_id=1369101344]
+layout_mode = 2
+size_flags_horizontal = 3
+alignment = 1
+
+[node name="realInfinitePosCopy" type="Button" parent="doorDialog/c/lock/c/c/doorCopySettings/doorInfCopiesSettings/c" unique_id=1461396821]
 unique_name_in_owner = true
 layout_mode = 2
 toggle_mode = true
-icon = ExtResource("25_hb0ue")
+button_group = SubResource("ButtonGroup_8gwon")
+icon = ExtResource("34_8gwon")
+
+[node name="realInfiniteNegCopy" type="Button" parent="doorDialog/c/lock/c/c/doorCopySettings/doorInfCopiesSettings/c" unique_id=800438878]
+unique_name_in_owner = true
+layout_mode = 2
+toggle_mode = true
+button_group = SubResource("ButtonGroup_8gwon")
+icon = ExtResource("35_vydri")
+
+[node name="b" type="Control" parent="doorDialog/c/lock/c/c/doorCopySettings/doorInfCopiesSettings/c" unique_id=204925163]
+custom_minimum_size = Vector2(8, 0)
+layout_mode = 2
+
+[node name="imagInfinitePosCopy" type="Button" parent="doorDialog/c/lock/c/c/doorCopySettings/doorInfCopiesSettings/c" unique_id=1382226083]
+unique_name_in_owner = true
+layout_mode = 2
+toggle_mode = true
+button_group = SubResource("ButtonGroup_vydri")
+icon = ExtResource("36_sb8el")
+
+[node name="imagInfiniteNegCopy" type="Button" parent="doorDialog/c/lock/c/c/doorCopySettings/doorInfCopiesSettings/c" unique_id=1716150808]
+unique_name_in_owner = true
+layout_mode = 2
+toggle_mode = true
+button_group = SubResource("ButtonGroup_vydri")
+icon = ExtResource("37_wu5cm")
+
+[node name="b" type="Control" parent="doorDialog/c/lock/c/c/doorCopySettings/doorInfCopiesSettings" unique_id=1267275454]
+custom_minimum_size = Vector2(29, 0)
+layout_mode = 2
 
 [node name="doorAxialNumberEdit" parent="doorDialog/c/lock/c/c" unique_id=1443733692 instance=ExtResource("20_gx4cd")]
 unique_name_in_owner = true
@@ -843,9 +894,11 @@ default_color = Color(0.8352941, 0.8352941, 0.8352941, 1)
 [connection signal="toggled" from="doorDialog/c/lock/c/c/doorBooleans/frozen" to="doorDialog" method="_frozenSet"]
 [connection signal="toggled" from="doorDialog/c/lock/c/c/doorBooleans/crumbled" to="doorDialog" method="_crumbledSet"]
 [connection signal="toggled" from="doorDialog/c/lock/c/c/doorBooleans/painted" to="doorDialog" method="_paintedSet"]
-[connection signal="toggled" from="doorDialog/c/lock/c/c/doorCopySettings/realInfiniteCopy" to="doorDialog" method="_doorRealInfiniteSet"]
-[connection signal="valueSet" from="doorDialog/c/lock/c/c/doorCopySettings/doorCopiesEdit" to="doorDialog" method="_doorCopiesSet"]
-[connection signal="toggled" from="doorDialog/c/lock/c/c/doorCopySettings/imaginaryInfiniteCopy" to="doorDialog" method="_doorImaginaryInfiniteSet"]
+[connection signal="valueSet" from="doorDialog/c/lock/c/c/doorCopySettings/c/doorCopiesEdit" to="doorDialog" method="_doorCopiesSet"]
+[connection signal="toggled" from="doorDialog/c/lock/c/c/doorCopySettings/doorInfCopiesSettings/c/realInfinitePosCopy" to="doorDialog" method="_doorRealInfiniteSet"]
+[connection signal="toggled" from="doorDialog/c/lock/c/c/doorCopySettings/doorInfCopiesSettings/c/realInfiniteNegCopy" to="doorDialog" method="_doorRealInfiniteSet"]
+[connection signal="toggled" from="doorDialog/c/lock/c/c/doorCopySettings/doorInfCopiesSettings/c/imagInfinitePosCopy" to="doorDialog" method="_doorImaginaryInfiniteSet"]
+[connection signal="toggled" from="doorDialog/c/lock/c/c/doorCopySettings/doorInfCopiesSettings/c/imagInfiniteNegCopy" to="doorDialog" method="_doorImaginaryInfiniteSet"]
 [connection signal="valueSet" from="doorDialog/c/lock/c/c/doorAxialNumberEdit" to="doorDialog" method="_doorAxialNumberSet"]
 [connection signal="valueSet" from="doorDialog/c/lock/c/c/blastLockSettings/partialBlastSettings/partialBlastNumeratorEdit" to="doorDialog" method="_partialBlastNumeratorSet"]
 [connection signal="toggled" from="doorDialog/c/lock/c/c/blastLockSettings/c/isPartial" to="doorDialog" method="_isPartialSet"]

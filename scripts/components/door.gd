@@ -312,9 +312,9 @@ func propertyChangedInit(property:StringName) -> void:
 				Changes.addChange(Changes.PropertyChange.new(self,&"crumbled",false))
 				Changes.addChange(Changes.PropertyChange.new(self,&"painted",false))
 	if property == &"size" and type == TYPE.SIMPLE and len(locks) > 0: locks[0]._simpleDoorUpdate() # ghhghghhh TODO: figure this out
-	if property in [&"copies", &"infCopies"] and M.neq(M.across(M.cabs(copies), infCopies), infCopies):
-		if M.ex(M.r(infCopies)) and M.nex(M.r(copies)): Changes.addChange(Changes.PropertyChange.new(self,&"copies", M.Ncn(M.saxis(M.r(copies)), M.ir(copies))))
-		if M.ex(M.i(infCopies)) and M.nex(M.i(copies)): Changes.addChange(Changes.PropertyChange.new(self,&"copies",M.Ncn(M.r(copies), M.saxis(M.ir(copies)))))
+	if property == &"infCopies":
+		editor.focusDialog.doorDialog.updateDoorCopiesEdit = true
+		if M.neq(copies, M.orelse(infCopies, copies)): Changes.addChange(Changes.PropertyChange.new(self,&"copies", M.orelse(infCopies, copies)))
 
 func propertyChangedDo(property:StringName) -> void:
 	super(property)

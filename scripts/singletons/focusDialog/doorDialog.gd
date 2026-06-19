@@ -6,6 +6,15 @@ class_name DoorDialog
 @onready var lockHandler:LockHandler = %lockHandler
 @onready var doorsHandler:DoorsHandler = %doorsHandler
 
+var updateDoorCopiesEdit:bool = false
+
+func _ready() -> void:
+	%doorCopiesEdit.transformation = doorCopiesTransformation
+
+func doorCopiesTransformation(value:PackedInt64Array) -> PackedInt64Array:
+	if main.focused is Door: value = M.without(value, main.focused.infCopies)
+	return value
+
 func focus(focused:GameObject, new:bool, dontRedirect:bool) -> void: # Door or RemoteLock
 	if focused is Door:
 		%door.visible = true
@@ -19,9 +28,11 @@ func focus(focused:GameObject, new:bool, dontRedirect:bool) -> void: # Door or R
 		%crumbled.button_pressed = focused.crumbled
 		%painted.button_pressed = focused.painted
 		%doorOscillate.button_pressed = focused.oscillate
-		%realInfiniteCopy.button_pressed = M.ex(M.r(focused.infCopies))
-		%imaginaryInfiniteCopy.button_pressed = M.ex(M.i(focused.infCopies))
-		%doorCopiesEdit.allowZero = Mods.active(&"ZeroCopyDoors")
+		%realInfinitePosCopy.button_pressed = M.positive(M.r(focused.infCopies))
+		%realInfiniteNegCopy.button_pressed = M.negative(M.r(focused.infCopies))
+		%imagInfinitePosCopy.button_pressed = M.positive(M.ir(focused.infCopies))
+		%imagInfiniteNegCopy.button_pressed = M.negative(M.ir(focused.infCopies))
+		%doorCopiesEdit.allowZero = Mods.active(&"ZeroCopyDoors") or M.ex(focused.infCopies)
 		if !main.componentFocused:
 			%lockSettings.visible = false
 			%doorAxialNumberEdit.visible = false
@@ -36,9 +47,11 @@ func focus(focused:GameObject, new:bool, dontRedirect:bool) -> void: # Door or R
 		elif %doorAxialNumberEdit.visible:
 			if !main.interacted: main.interact(%doorAxialNumberEdit)
 		else: main.deinteract()
+		if new or updateDoorCopiesEdit:
+			%doorCopiesEdit.setValue(M.without(focused.copies, focused.infCopies))
+			updateDoorCopiesEdit = false
 		if new:
 			%lockHandler.setup(focused)
-			%doorCopiesEdit.setValue(focused.copies)
 			if focused.type == Door.TYPE.SIMPLE and !dontRedirect: main.focusComponent(focused.locks[0])
 	elif focused is RemoteLock:
 		%door.visible = false
@@ -143,8 +156,7 @@ func changedMods() -> void:
 	%remoteLockConvert.visible = Mods.active(&"RemoteLocks") and main.componentFocused is Lock
 	%lockNegated.visible = Mods.active(&"NegatedLocks")
 	%lockArmament.visible = Mods.active(&"Armaments")
-	%realInfiniteCopy.visible = Mods.active(&"InfCopyDoors")
-	%imaginaryInfiniteCopy.visible = Mods.active(&"InfCopyDoors")
+	%doorInfCopiesSettings.visible = Mods.active(&"InfCopyDoors")
 	%doorOscillate.visible = Mods.active(&"Fractions")
 	if main.componentFocused is Lock and main.componentFocused.type in [Lock.TYPE.BLAST, Lock.TYPE.ALL]:
 		main.focusComponent(main.componentFocused)
@@ -164,7 +176,7 @@ func _doorColorSelected(color:C.olors) -> void:
 
 func _doorCopiesSet(value:PackedInt64Array) -> void:
 	if main.focused is not Door: return
-	Changes.addChange(Changes.PropertyChange.new(main.focused,&"copies",value))
+	Changes.addChange(Changes.PropertyChange.new(main.focused,&"copies",M.orelse(main.focused.infCopies, value)))
 	Changes.bufferSave()
 
 func _doorAxialNumberSet(value:PackedInt64Array) -> void:
@@ -273,14 +285,22 @@ func _blastLockAxisSet(value:bool) -> void:
 	Changes.addChange(Changes.PropertyChange.new(lock,&"denominator",M.times(lock.denominator, M.I if value else M.nI)))
 	Changes.bufferSave()
 
-func _doorRealInfiniteSet(value:bool) -> void:
+func _doorRealInfiniteSet(_toggled:bool) -> void:
 	if main.focused is not Door: return
-	Changes.addChange(Changes.PropertyChange.new(main.focused,&"infCopies",M.Ncn(M.N(int(value)), M.ir(main.focused.infCopies))))
+	var value:int = 0
+	if %realInfinitePosCopy.button_pressed: value = 1
+	elif %realInfiniteNegCopy.button_pressed: value = -1
+	Changes.addChange(Changes.PropertyChange.new(main.focused,&"infCopies",M.Ncn(M.N(value), M.ir(main.focused.infCopies))))
+	if !value: Changes.addChange(Changes.PropertyChange.new(main.focused,&"copies",M.ONE if M.isReal(main.focused.copies) else M.i(main.focused.copies)))
 	Changes.bufferSave()
 
-func _doorImaginaryInfiniteSet(value:bool) -> void:
+func _doorImaginaryInfiniteSet(_toggled:bool) -> void:
 	if main.focused is not Door: return
-	Changes.addChange(Changes.PropertyChange.new(main.focused,&"infCopies",M.Ncn(M.r(main.focused.infCopies), M.N(int(value)))))
+	var value:int = 0
+	if %imagInfinitePosCopy.button_pressed: value = 1
+	elif %imagInfiniteNegCopy.button_pressed: value = -1
+	Changes.addChange(Changes.PropertyChange.new(main.focused,&"infCopies",M.Ncn(M.r(main.focused.infCopies), M.N(value))))
+	if !value: Changes.addChange(Changes.PropertyChange.new(main.focused,&"copies",M.ONE if M.isImag(main.focused.copies) else M.r(main.focused.copies)))
 	Changes.bufferSave()
 
 func _lockArmamentSet(value:bool) -> void:

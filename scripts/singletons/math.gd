@@ -201,6 +201,12 @@ func orelse(a:PackedInt64Array, b:PackedInt64Array) -> PackedInt64Array:
 		SYSTEM.COMPLEX: return [a[0] if a[0] else b[0], a[1] if a[1] else b[1]]
 		SYSTEM.FRACTIONS, _: return simplify([a[0]*b[2] if a[0] else b[0]*a[2], a[1]*b[2] if a[1] else b[1]*a[2], a[2]*b[2]])
 
+## componentwise without
+func without(a:PackedInt64Array, b:PackedInt64Array) -> PackedInt64Array:
+	match system:
+		SYSTEM.COMPLEX: return [0 if b[0] else a[0], 0 if b[1] else a[1]]
+		SYSTEM.FRACTIONS, _: return simplify([0 if b[0] else a[0], 0 if b[1] else a[1], a[2]])
+
 # reducers
 
 ## (n -> n)
