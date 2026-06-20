@@ -415,6 +415,8 @@ var curseMimic:C.olors = C.olors.GLITCH
 enum STAR_STATE {UNSTARRED, STARRED_UNLOCKED, STARRED_LOCKED}
 var starred:STAR_STATE = STAR_STATE.UNSTARRED
 var starredColor:C.olors = C.olors.WHITE 
+var starredIpow:PackedInt64Array = M.ONE()
+var starredOpenMultiplier:PackedInt64Array = M.ONE()
 var starredSpendKey:PackedInt64Array = M.ZERO()
 var starredSpendGlisten:PackedInt64Array = M.ZERO()
 var starredSpendWater:PackedInt64Array = M.ZERO()
@@ -519,13 +521,20 @@ func stop() -> void:
 	starredSpendWater = M.ZERO()
 	starredSpendWaterGlisten = M.ZERO()
 	starredColor = C.olors.WHITE
+	starredIpow = M.ONE()
+	starredOpenMultiplier = M.ONE()
 	super()
 
-# for fracttional open
+# for fractional open
 func getOpenMultiplier(direction:PackedInt64Array=ipow()) -> PackedInt64Array:
+	if oscillate: return M.ONE()
 	var copiesInDirection:PackedInt64Array = M.reduce(M.along(gameCopies, direction))
-	if !oscillate and M.lt(copiesInDirection, M.ONE()) and M.gt(copiesInDirection, M.ZERO()): return copiesInDirection
+	if M.lt(copiesInDirection, M.ONE()) and M.gt(copiesInDirection, M.ZERO()): return copiesInDirection
 	return M.ONE()
+
+func getOpenMultiplierWithMasterlike(direction:PackedInt64Array, keyCount:PackedInt64Array) -> PackedInt64Array:
+	if oscillate: return M.ONE()
+	return M.min(getOpenMultiplier(direction), M.reduce(M.along(keyCount, direction)))
 
 func tryOpen(player:Player) -> void:
 	if type == TYPE.GATE: return
@@ -548,9 +557,9 @@ func tryOpen(player:Player) -> void:
 			STAR_STATE.STARRED_LOCKED: return
 			STAR_STATE.STARRED_UNLOCKED: if !checkCanOpen(player, func(lock): return lock.armament): return
 			STAR_STATE.UNSTARRED: if !checkCanOpen(player): return
-		var multiplier:PackedInt64Array = getOpenMultiplier()
+		var multiplier:PackedInt64Array = getOpenMultiplier() if starred == STAR_STATE.UNSTARRED else starredOpenMultiplier
 		applyCosts(player, multiplier)
-		GameChanges.addChange(GameChanges.PropertyChange.new(self, &"gameCopies", M.sub(gameCopies, M.without(M.times(ipow(), multiplier), infCopies))))
+		GameChanges.addChange(GameChanges.PropertyChange.new(self, &"gameCopies", M.sub(gameCopies, M.without(M.times(ipow() if starred == STAR_STATE.UNSTARRED else starredIpow, multiplier), infCopies))))
 	
 	if gameFrozen or gameCrumbled or gamePainted: AudioManager.play(preload("res://resources/sounds/door/deaura.wav"))
 	else:
@@ -572,7 +581,7 @@ func tryMasterOpen(player:Player) -> bool:
 	if hasEffectiveColor(C.olors.PURE): return false
 
 	var openedForwards:bool = M.positive(M.sign(M.across(gameCopies, player.masterMode)))
-	var multiplier:PackedInt64Array = getOpenMultiplier(player.masterMode)
+	var multiplier:PackedInt64Array = getOpenMultiplierWithMasterlike(player.masterMode, player.key[C.olors.MASTER])
 	GameChanges.addChange(GameChanges.PropertyChange.new(self, &"gameCopies", M.sub(gameCopies, M.without(M.times(player.masterMode, multiplier), infCopies))))
 	player.changeKeys(C.olors.MASTER, M.sub(player.key[C.olors.MASTER], M.times(player.masterMode, multiplier)))
 	
@@ -593,7 +602,7 @@ func tryQuicksilverOpen(player:Player) -> bool:
 	if hasEffectiveColor(C.olors.QUICKSILVER): return false
 	if hasEffectiveColor(C.olors.PURE): return false
 
-	var multiplier:PackedInt64Array = getOpenMultiplier(player.masterMode)
+	var multiplier:PackedInt64Array = getOpenMultiplierWithMasterlike(player.masterMode, player.key[C.olors.QUICKSILVER])
 	player.changeKeys(C.olors.QUICKSILVER, M.sub(player.key[C.olors.QUICKSILVER], M.times(player.masterMode, multiplier)))
 	applyCosts(player, multiplier, player.masterMode)
 	
@@ -682,7 +691,8 @@ func tryCosmicOpen(player:Player) -> bool:
 		GameChanges.addChange(GameChanges.PropertyChange.new(self, &"starredSpendGlisten", calculateCosts(player, pure, multiplier, func(lock): return lock.type == Lock.TYPE.GLISTENING and lock.armament)))
 		GameChanges.addChange(GameChanges.PropertyChange.new(self, &"starredSpendWaterGlisten", calculateCosts(player, pure, multiplier, func(lock): return lock.type == Lock.TYPE.GLISTENING and lock.armament and lock.getColor(Lock.COLOR_STEP.FINAL) == C.olors.WATER)))
 		GameChanges.addChange(GameChanges.PropertyChange.new(self, &"starredColor", getColor(COLOR_STEP.FINAL)))
-		GameChanges.addChange(GameChanges.PropertyChange.new(self, &"starredipow", ipow()))
+		GameChanges.addChange(GameChanges.PropertyChange.new(self, &"starredIpow", ipow()))
+		GameChanges.addChange(GameChanges.PropertyChange.new(self, &"starredOpenMultiplier", multiplier))
 	elif starred != STAR_STATE.UNSTARRED and player.masterMode == M.nONE():
 		player.changeKeys(C.olors.COSMIC, M.sub(player.key[C.olors.COSMIC], player.masterMode))
 		GameChanges.addChange(GameChanges.PropertyChange.new(self, &"starred", STAR_STATE.UNSTARRED))
