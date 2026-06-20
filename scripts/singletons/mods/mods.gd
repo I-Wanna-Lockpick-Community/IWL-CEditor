@@ -111,7 +111,10 @@ static var mods:Dictionary[StringName, Mod] = {
 		"Adds Armaments from world 5 of IWL:C",
 		{&"LockArmament": ComponentProblem.new([Lock, RemoteLock], func(component:GameComponent) -> bool: \
 			return component.armament
-		, "Lock Armament")}
+		, "Lock Armament"),
+		&"DoorArmament": ComponentProblem.new([Door], func(component:GameComponent) -> bool: \
+			return component.armament
+		, "Door Armament")}
 	),
 	&"RemainderLocks": Mod.new(
 		"Remainder Locks",
@@ -144,7 +147,9 @@ static var mods:Dictionary[StringName, Mod] = {
 	&"Fractions": Mod.new(
 		"Fractions",
 		"The fractional number type",
-		{}
+		{&"DoorOscillate": ComponentProblem.new([Door], func(component:GameComponent) -> bool: \
+			return component.oscillate
+		, "Door Oscillate")}
 	),
 	&"Glistening": Mod.new(
 		"Glistening",
