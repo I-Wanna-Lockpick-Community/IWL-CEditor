@@ -393,7 +393,8 @@ func playSaved(fromOpenWindow:OpenWindow=null) -> void:
 	editorWindowMode = get_window().mode
 	editorWindowSize = get_window().size
 	if fromOpenWindow: editor.remove_child(fromOpenWindow) # otherwise it gets killed by the scene change
-	get_tree().change_scene_to_file("res://scenes/playGame.tscn")
+	playGame = preload("res://scenes/playGame.tscn").instantiate()
+	get_tree().change_scene_to_node(playGame)
 	get_window().mode = Window.MODE_WINDOWED
 	if !OS.has_feature("web"): get_window().size = Vector2(800,608) * uiScale
 	objects.clear()
@@ -411,13 +412,13 @@ func edit() -> void:
 	won = false
 	crashState = CRASH_STATE.NONE
 	playState = PLAY_STATE.EDIT
-	get_tree().change_scene_to_file("res://scenes/editor.tscn")
+	editor = preload("res://scenes/editor.tscn").instantiate()
+	get_tree().change_scene_to_node(editor)
 	get_window().mode = editorWindowMode
 	if !OS.has_feature("web"): get_window().size = editorWindowSize
 	objects.clear()
 	components.clear()
 	await get_tree().scene_changed
-	editor = get_node("/root/editor")
 	Saving.loadFile(Saving.savePath, true)
 	await get_tree().process_frame
 	editor.home()

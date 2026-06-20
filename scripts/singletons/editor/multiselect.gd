@@ -227,7 +227,6 @@ class TileCopy extends Copy: # definitely rethink this at some point
 	var position:Vector2
 
 	func _init(select:TileSelect) -> void:
-		Game.editor = select.Game.editor
 		position = select.position - Game.editor.multiselect.selectRect.position
 
 	func paste() -> void:

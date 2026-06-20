@@ -42,7 +42,6 @@ func _ready() -> void:
 	RenderingServer.canvas_item_set_parent(drawDescription, %worldViewportCont.get_canvas_item())
 	RenderingServer.canvas_item_set_parent(drawMain, %drawParent.get_canvas_item())
 	RenderingServer.canvas_item_set_parent(drawAutoRunGradient, %drawParent.get_canvas_item())
-	Game.playGame = self
 	Game.camera = playCamera
 
 func _process(delta:float) -> void:
