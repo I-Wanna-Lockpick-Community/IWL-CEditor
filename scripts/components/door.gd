@@ -589,7 +589,7 @@ func applyCosts(player:Player, costIpow:PackedInt64Array=ipow()) -> void:
 		var waterGlistenArmamentCost = calculateCosts(player, pure, func(lock): return lock.type == Lock.TYPE.GLISTENING and lock.getColor(Lock.COLOR_STEP.FINAL) == Game.COLOR.WATER and lock.armament, costIpow)
 		var waterArmamentCost = calculateCosts(player, pure, func(lock): return lock.type != Lock.TYPE.GLISTENING and lock.getColor(Lock.COLOR_STEP.FINAL) == Game.COLOR.WATER and lock.armament, costIpow)
 		player.changeGlisten(starredColor, M.sub(player.glisten[starredColor], M.add(starredSpendGlisten, calculateCosts(player, pure, func(lock): return lock.type == Lock.TYPE.GLISTENING and lock.armament, costIpow))))
-		player.changeGlisten(Game.COLOR.WATER, M.add(starredSpendWaterGlisten, waterGlistenArmamentCost))
+		player.changeGlisten(Game.COLOR.WATER, M.sub(player.glisten[Game.COLOR.WATER], M.add(starredSpendWaterGlisten, waterGlistenArmamentCost)))
 		player.changeKeys(starredColor, M.sub(player.key[starredColor],M.add(starredSpendKey, calculateCosts(player, pure, func(lock): return lock.type != Lock.TYPE.GLISTENING and lock.armament, costIpow))))
 		player.changeKeys(Game.COLOR.WATER, M.add(starredSpendWater, waterArmamentCost))
 	else:
