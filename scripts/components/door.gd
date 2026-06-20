@@ -37,6 +37,7 @@ const GLITCH_DARK:Texture2D = preload("res://assets/game/door/glitch/dark.png")
 
 const STARRED_SYMBOL_ON:Texture2D = preload("res://assets/game/door/symbols/starOn.png")
 const STARRED_SYMBOL_OFF:Texture2D = preload("res://assets/game/door/symbols/starOff.png")
+const OSCILLATE_SYMBOL:Texture2D = preload("res://assets/game/door/symbols/oscillate.png")
 
 static var GLITCH:ColorsTextureLoader = ColorsTextureLoader.new("res://assets/game/door/glitch/$c.png", false, false, {capitalised=false})
 
@@ -199,6 +200,7 @@ func _draw() -> void:
 	match starred:
 		STAR_STATE.STARRED_UNLOCKED: RenderingServer.canvas_item_add_texture_rect(drawSymbols,Rect2(Vector2(size.x/2-12,size.y-12),Vector2(24,24)),STARRED_SYMBOL_ON)
 		STAR_STATE.STARRED_LOCKED: RenderingServer.canvas_item_add_texture_rect(drawSymbols,Rect2(Vector2(size.x/2-12,size.y-12),Vector2(24,24)),STARRED_SYMBOL_OFF)
+	if oscillate: RenderingServer.canvas_item_add_texture_rect(drawSymbols,Rect2(Vector2(size.x-10,-6),Vector2(16,16)),OSCILLATE_SYMBOL)
 
 static func drawDoor(doorDrawScaled:RID,doorDrawAuraBreaker:RID,doorDrawGlitch:RID,doorDrawMain:RID,
 	doorSize:Vector2,
@@ -519,6 +521,12 @@ func stop() -> void:
 	starredColor = C.olors.WHITE
 	super()
 
+# for fracttional open
+func getOpenMultiplier(direction:PackedInt64Array=ipow()) -> PackedInt64Array:
+	var copiesInDirection:PackedInt64Array = M.reduce(M.along(gameCopies, direction))
+	if !oscillate and M.lt(copiesInDirection, M.ONE()) and M.gt(copiesInDirection, M.ZERO()): return copiesInDirection
+	return M.ONE()
+
 func tryOpen(player:Player) -> void:
 	if type == TYPE.GATE: return
 	if animState != ANIM_STATE.IDLE: return
@@ -540,9 +548,9 @@ func tryOpen(player:Player) -> void:
 			STAR_STATE.STARRED_LOCKED: return
 			STAR_STATE.STARRED_UNLOCKED: if !checkCanOpen(player, func(lock): return lock.armament): return
 			STAR_STATE.UNSTARRED: if !checkCanOpen(player): return
-		applyCosts(player)
-
-		GameChanges.addChange(GameChanges.PropertyChange.new(self, &"gameCopies", M.sub(gameCopies, M.across(ipow(), M.sub(M.allAxes(), infCopies)))))
+		var multiplier:PackedInt64Array = getOpenMultiplier()
+		applyCosts(player, multiplier)
+		GameChanges.addChange(GameChanges.PropertyChange.new(self, &"gameCopies", M.sub(gameCopies, M.without(M.times(ipow(), multiplier), infCopies))))
 	
 	if gameFrozen or gameCrumbled or gamePainted: AudioManager.play(preload("res://resources/sounds/door/deaura.wav"))
 	else:
@@ -564,8 +572,9 @@ func tryMasterOpen(player:Player) -> bool:
 	if hasEffectiveColor(C.olors.PURE): return false
 
 	var openedForwards:bool = M.positive(M.sign(M.across(gameCopies, player.masterMode)))
-	GameChanges.addChange(GameChanges.PropertyChange.new(self, &"gameCopies", M.sub(gameCopies, M.across(player.masterMode, M.sub(M.allAxes(), infCopies)))))
-	player.changeKeys(C.olors.MASTER, M.sub(player.key[C.olors.MASTER], player.masterMode))
+	var multiplier:PackedInt64Array = getOpenMultiplier(player.masterMode)
+	GameChanges.addChange(GameChanges.PropertyChange.new(self, &"gameCopies", M.sub(gameCopies, M.without(M.times(player.masterMode, multiplier), infCopies))))
+	player.changeKeys(C.olors.MASTER, M.sub(player.key[C.olors.MASTER], M.times(player.masterMode, multiplier)))
 	
 	if openedForwards:
 		AudioManager.play(preload("res://resources/sounds/door/master.wav"))
@@ -584,8 +593,9 @@ func tryQuicksilverOpen(player:Player) -> bool:
 	if hasEffectiveColor(C.olors.QUICKSILVER): return false
 	if hasEffectiveColor(C.olors.PURE): return false
 
-	player.changeKeys(C.olors.QUICKSILVER, M.sub(player.key[C.olors.QUICKSILVER], player.masterMode))
-	applyCosts(player, player.masterMode)
+	var multiplier:PackedInt64Array = getOpenMultiplier(player.masterMode)
+	player.changeKeys(C.olors.QUICKSILVER, M.sub(player.key[C.olors.QUICKSILVER], M.times(player.masterMode, multiplier)))
+	applyCosts(player, multiplier, player.masterMode)
 	
 	AudioManager.play(preload("res://resources/sounds/door/master.wav"))
 	relockAnimation()
@@ -598,24 +608,29 @@ func tryQuicksilverOpen(player:Player) -> bool:
 
 	return true
 
-func applyCosts(player:Player, costIpow:PackedInt64Array=ipow()) -> void:
+func applyCosts(player:Player, multiplier:PackedInt64Array=M.ONE(), costIpow:PackedInt64Array=ipow()) -> void:
 	var pure:bool = hasEffectiveColor(C.olors.PURE)
 	# DECIDE: should armaments be immune to air?
 	# DECIDE: should pure doors/gates be immune to the other elemental colors?
 	if starred != STAR_STATE.UNSTARRED:
-		var waterGlistenArmamentCost = calculateCosts(player, pure, func(lock): return lock.type == Lock.TYPE.GLISTENING and lock.getColor(Lock.COLOR_STEP.FINAL) == C.olors.WATER and lock.armament, costIpow)
-		var waterArmamentCost = calculateCosts(player, pure, func(lock): return lock.type != Lock.TYPE.GLISTENING and lock.getColor(Lock.COLOR_STEP.FINAL) == C.olors.WATER and lock.armament, costIpow)
-		player.changeGlisten(starredColor, M.sub(player.glisten[starredColor], M.add(starredSpendGlisten, calculateCosts(player, pure, func(lock): return lock.type == Lock.TYPE.GLISTENING and lock.armament, costIpow))))
-		player.changeGlisten(C.olors.WATER, M.add(starredSpendWaterGlisten, waterGlistenArmamentCost))
-		player.changeKeys(starredColor, M.sub(player.key[starredColor],M.add(starredSpendKey, calculateCosts(player, pure, func(lock): return lock.type != Lock.TYPE.GLISTENING and lock.armament, costIpow))))
+		var waterGlistenArmamentCost = calculateCosts(player, pure, multiplier, func(lock): return lock.type == Lock.TYPE.GLISTENING and lock.getColor(Lock.COLOR_STEP.FINAL) == C.olors.WATER and lock.armament, costIpow)
+		var waterArmamentCost = calculateCosts(player, pure, multiplier, func(lock): return lock.type != Lock.TYPE.GLISTENING and lock.getColor(Lock.COLOR_STEP.FINAL) == C.olors.WATER and lock.armament, costIpow)
+		player.changeGlisten(starredColor, M.sub(player.glisten[starredColor], M.add(starredSpendGlisten,
+			calculateCosts(player, pure, multiplier, func(lock): return lock.type == Lock.TYPE.GLISTENING and lock.armament, costIpow))))
+		
+		player.changeGlisten(C.olors.WATER, M.sub(player.glisten[C.olors.WATER], M.add(starredSpendWaterGlisten, waterGlistenArmamentCost)))
+		
+		player.changeKeys(starredColor, M.sub(player.key[starredColor], M.add(starredSpendKey,
+			calculateCosts(player, pure, multiplier, func(lock): return lock.type != Lock.TYPE.GLISTENING and lock.armament, costIpow))))
+		
 		player.changeKeys(C.olors.WATER, M.add(starredSpendWater, waterArmamentCost))
 	else:
 		var spendColor:C.olors = getColor(COLOR_STEP.FINAL)
-		var waterGlistenCost = calculateCosts(player, pure, func(lock): return lock.type == Lock.TYPE.GLISTENING and lock.getColor(Lock.COLOR_STEP.FINAL) == C.olors.WATER, costIpow)
-		var waterCost = calculateCosts(player, pure, func(lock): return lock.type != Lock.TYPE.GLISTENING and lock.getColor(Lock.COLOR_STEP.FINAL) == C.olors.WATER, costIpow)
-		player.changeGlisten(spendColor, M.sub(player.glisten[spendColor], calculateCosts(player, pure, func(lock): return lock.type == Lock.TYPE.GLISTENING, costIpow)))
+		var waterGlistenCost = calculateCosts(player, pure, multiplier, func(lock): return lock.type == Lock.TYPE.GLISTENING and lock.getColor(Lock.COLOR_STEP.FINAL) == C.olors.WATER, costIpow)
+		var waterCost = calculateCosts(player, pure, multiplier, func(lock): return lock.type != Lock.TYPE.GLISTENING and lock.getColor(Lock.COLOR_STEP.FINAL) == C.olors.WATER, costIpow)
+		player.changeGlisten(spendColor, M.sub(player.glisten[spendColor], calculateCosts(player, pure, multiplier, func(lock): return lock.type == Lock.TYPE.GLISTENING, costIpow)))
 		player.changeGlisten(C.olors.WATER, M.sub(player.glisten[C.olors.WATER], waterGlistenCost))
-		player.changeKeys(spendColor, M.sub(player.key[spendColor], calculateCosts(player, pure, func(lock): return lock.type != Lock.TYPE.GLISTENING, costIpow)))
+		player.changeKeys(spendColor, M.sub(player.key[spendColor], calculateCosts(player, pure, multiplier, func(lock): return lock.type != Lock.TYPE.GLISTENING, costIpow)))
 		player.changeKeys(C.olors.WATER, M.sub(player.key[C.olors.WATER], waterCost))
 
 func tryDynamiteOpen(player:Player) -> bool:
@@ -635,7 +650,7 @@ func tryDynamiteOpen(player:Player) -> bool:
 		openedForwards = M.hasPositive(M.along(player.key[C.olors.DYNAMITE], gameCopies))
 		openedBackwards = M.hasNonPositive(M.along(player.key[C.olors.DYNAMITE], gameCopies))
 
-		GameChanges.addChange(GameChanges.PropertyChange.new(self, &"gameCopies", M.sub(gameCopies, M.across(player.key[C.olors.DYNAMITE], M.sub(M.allAxes(),infCopies)))))
+		GameChanges.addChange(GameChanges.PropertyChange.new(self, &"gameCopies", M.sub(gameCopies, M.without(player.key[C.olors.DYNAMITE], infCopies))))
 		player.changeKeys(C.olors.DYNAMITE, M.ZERO())
 
 	if openedForwards:
@@ -661,10 +676,11 @@ func tryCosmicOpen(player:Player) -> bool:
 		if checkCanOpen(player, func(lock): return !lock.armament): GameChanges.addChange(GameChanges.PropertyChange.new(self, &"starred", STAR_STATE.STARRED_UNLOCKED))
 		else: GameChanges.addChange(GameChanges.PropertyChange.new(self, &"starred", STAR_STATE.STARRED_LOCKED))
 		var pure:bool = hasEffectiveColor(C.olors.PURE)
-		GameChanges.addChange(GameChanges.PropertyChange.new(self, &"starredSpendKey", calculateCosts(player, pure, func(lock): return lock.type != Lock.TYPE.GLISTENING and !lock.armament)))
-		GameChanges.addChange(GameChanges.PropertyChange.new(self, &"starredSpendWater", calculateCosts(player, pure, func(lock): return lock.type != Lock.TYPE.GLISTENING and !lock.armament and lock.getColor(Lock.COLOR_STEP.FINAL) == C.olors.WATER)))
-		GameChanges.addChange(GameChanges.PropertyChange.new(self, &"starredSpendGlisten", calculateCosts(player, pure, func(lock): return lock.type == Lock.TYPE.GLISTENING and lock.armament)))
-		GameChanges.addChange(GameChanges.PropertyChange.new(self, &"starredSpendWaterGlisten", calculateCosts(player, pure, func(lock): return lock.type == Lock.TYPE.GLISTENING and lock.armament and lock.getColor(Lock.COLOR_STEP.FINAL) == C.olors.WATER)))
+		var multiplier:PackedInt64Array = getOpenMultiplier()
+		GameChanges.addChange(GameChanges.PropertyChange.new(self, &"starredSpendKey", calculateCosts(player, pure, multiplier, func(lock): return lock.type != Lock.TYPE.GLISTENING and !lock.armament)))
+		GameChanges.addChange(GameChanges.PropertyChange.new(self, &"starredSpendWater", calculateCosts(player, pure, multiplier, func(lock): return lock.type != Lock.TYPE.GLISTENING and !lock.armament and lock.getColor(Lock.COLOR_STEP.FINAL) == C.olors.WATER)))
+		GameChanges.addChange(GameChanges.PropertyChange.new(self, &"starredSpendGlisten", calculateCosts(player, pure, multiplier, func(lock): return lock.type == Lock.TYPE.GLISTENING and lock.armament)))
+		GameChanges.addChange(GameChanges.PropertyChange.new(self, &"starredSpendWaterGlisten", calculateCosts(player, pure, multiplier, func(lock): return lock.type == Lock.TYPE.GLISTENING and lock.armament and lock.getColor(Lock.COLOR_STEP.FINAL) == C.olors.WATER)))
 		GameChanges.addChange(GameChanges.PropertyChange.new(self, &"starredColor", getColor(COLOR_STEP.FINAL)))
 		GameChanges.addChange(GameChanges.PropertyChange.new(self, &"starredipow", ipow()))
 	elif starred != STAR_STATE.UNSTARRED and player.masterMode == M.nONE():
@@ -694,7 +710,7 @@ func checkCanOpen(player:Player, predicate:Callable=func(_lock): return true, ch
 			return false
 	return canOpen
 
-func calculateCosts(player:Player, pure:bool, predicate:Callable, costIpow:PackedInt64Array=ipow()) -> PackedInt64Array:
+func calculateCosts(player:Player, pure:bool, multiplier:PackedInt64Array, predicate:Callable, costIpow:PackedInt64Array=ipow()) -> PackedInt64Array:
 	var cost:PackedInt64Array = M.ZERO()
 	for lock in locks:
 		if predicate.call(lock):
@@ -702,7 +718,7 @@ func calculateCosts(player:Player, pure:bool, predicate:Callable, costIpow:Packe
 	for lock in remoteLocks:
 		if predicate.call(lock):
 			cost = M.add(cost, lock.cost)
-	return cost
+	return M.times(cost, multiplier)
 
 func hasEffectiveColor(color:C.olors) -> bool:
 	if getColor(COLOR_STEP.EFFECTIVE) == color: return true

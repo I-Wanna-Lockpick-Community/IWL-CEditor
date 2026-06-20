@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://ymp7vkb5t4rc"
-path="res://.godot/imported/oscillate temp.png-a54bb84dbaba44cef383ac84f6184f2d.ctex"
+uid="uid://x1gvt1vi83gd"
+path="res://.godot/imported/oscillate.png-3fd8aa7b471cb9329d81e0ecb8d70910.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/ui/focusDialog/door/booleans/oscillate temp.png"
-dest_files=["res://.godot/imported/oscillate temp.png-a54bb84dbaba44cef383ac84f6184f2d.ctex"]
+source_file="res://assets/game/door/symbols/oscillate.png"
+dest_files=["res://.godot/imported/oscillate.png-3fd8aa7b471cb9329d81e0ecb8d70910.ctex"]
 
 [params]
 

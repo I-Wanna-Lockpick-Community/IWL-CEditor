@@ -16,6 +16,11 @@ func doorCopiesTransformation(value:PackedInt64Array) -> PackedInt64Array:
 	return value
 
 func focus(focused:GameObject, new:bool, dontRedirect:bool) -> void: # Door or RemoteLock
+	%spendArmament.visible = Mods.active(&"Armaments") and main.focused is Door
+	%oscillate.visible = Mods.active(&"Fractions") and main.focused is Door
+	%frozen.button_pressed = focused.frozen
+	%crumbled.button_pressed = focused.crumbled
+	%painted.button_pressed = focused.painted
 	if focused is Door:
 		%door.visible = true
 		%remoteLock.visible = false
@@ -24,11 +29,8 @@ func focus(focused:GameObject, new:bool, dontRedirect:bool) -> void: # Door or R
 		%spend.queue_redraw()
 		%lockConfigurationSelector.visible = main.componentFocused and focused.type != Door.TYPE.SIMPLE
 		%doorColorSelector.visible = main.componentFocused or focused.type != Door.TYPE.GATE # a mod will probably add something so i wont turn off the menu completely
-		%frozen.button_pressed = focused.frozen
-		%crumbled.button_pressed = focused.crumbled
-		%painted.button_pressed = focused.painted
 		%spendArmament.button_pressed = focused.armament
-		%doorOscillate.button_pressed = focused.oscillate
+		%oscillate.button_pressed = focused.oscillate
 		%realInfinitePosCopy.button_pressed = M.positive(M.r(focused.infCopies))
 		%realInfiniteNegCopy.button_pressed = M.negative(M.r(focused.infCopies))
 		%imagInfinitePosCopy.button_pressed = M.positive(M.ir(focused.infCopies))
@@ -159,8 +161,8 @@ func changedMods() -> void:
 	%lockNegated.visible = Mods.active(&"NegatedLocks")
 	%lockArmament.visible = Mods.active(&"Armaments")
 	%doorInfCopiesSettings.visible = Mods.active(&"InfCopyDoors")
-	%spendArmament.visible = Mods.active(&"Armaments")
-	%doorOscillate.visible = Mods.active(&"Fractions")
+	%spendArmament.visible = Mods.active(&"Armaments") and main.focused is Door
+	%oscillate.visible = Mods.active(&"Fractions") and main.focused is Door
 	if main.componentFocused is Lock and main.componentFocused.type in [Lock.TYPE.BLAST, Lock.TYPE.ALL]:
 		main.focusComponent(main.componentFocused)
 
@@ -242,10 +244,10 @@ func _paintedSet(value:bool) -> void:
 	Changes.addChange(Changes.PropertyChange.new(main.focused,&"painted",value))
 	Changes.bufferSave()
 
-func _doorOscillateSet(value:bool) -> void:
+func _oscillateSet(value:bool) -> void:
 	if main.focused is not Door and main.focused is not RemoteLock: return
 	if main.focused is Door and main.focused.type == Door.TYPE.GATE: return
-	Changes.addChange(Changes.PropertyChange.new(main.focused,&"doorOscillate",value))
+	Changes.addChange(Changes.PropertyChange.new(main.focused,&"oscillate",value))
 	Changes.bufferSave()
 
 func _lockNegatedSet(value:bool) -> void:

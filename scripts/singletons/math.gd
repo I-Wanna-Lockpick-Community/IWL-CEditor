@@ -184,6 +184,12 @@ func rotate(n:PackedInt64Array) -> PackedInt64Array:
 		SYSTEM.FRACTIONS, _: return [-n[1], n[0], n[2]]
 
 ## componentwise max
+func min(a:PackedInt64Array, b:PackedInt64Array) -> PackedInt64Array:
+	match system:
+		SYSTEM.COMPLEX: return [min(a[0], b[0]), min(a[1], b[1])]
+		SYSTEM.FRACTIONS, _: return simplify([min(a[0]*b[2], b[0]*a[2]), min(a[1]*b[2], b[1]*a[2]), a[2]*b[2]])
+
+## componentwise max
 func max(a:PackedInt64Array, b:PackedInt64Array) -> PackedInt64Array:
 	match system:
 		SYSTEM.COMPLEX: return [max(a[0], b[0]), max(a[1], b[1])]
