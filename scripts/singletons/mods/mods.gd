@@ -191,10 +191,7 @@ func colors() -> Array[Game.COLOR]:
 	if active(&"NoneColor"): array.append(Game.COLOR.NONE)
 	if active(&"CosmicColor"): array.append(Game.COLOR.COSMIC)
 	if active(&"ErrorColor"): array.append(Game.COLOR.ERROR)
-	if active(&"ElementalColors"): array.append(Game.COLOR.FIRE)
-	if active(&"ElementalColors"): array.append(Game.COLOR.WATER)
-	if active(&"ElementalColors"): array.append(Game.COLOR.EARTH)
-	if active(&"ElementalColors"): array.append(Game.COLOR.AIR)
+	if active(&"ElementalColors"): array.append_array([Game.COLOR.FIRE, Game.COLOR.WATER, Game.COLOR.EARTH, Game.COLOR.AIR])
 	return array
 
 func nextColor(color:Game.COLOR) -> Game.COLOR:
