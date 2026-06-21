@@ -4,7 +4,7 @@ class_name Mouseover
 var panels:Array[MouseoverPanel] = []
 
 func describe(objects:Array[GameObject], pos:Vector2, screenBottomRight:Vector2) -> void:
-	if len(objects) == 0:
+	if len(objects) == 0 or Game.pda.visible:
 		visible = false
 		return
 	visible = true

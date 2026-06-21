@@ -381,8 +381,12 @@ label = "Action"
 action = &"gameAction"
 metadata/_custom_type_script = "uid://4muxkbry8eqk"
 
-[node name="pda" type="Control" parent="c/c/controls" unique_id=952423790]
+[node name="pda" type="Button" parent="c/c/controls" unique_id=2107877330]
 layout_mode = 2
+script = ExtResource("4_t6p7j")
+label = "PDA"
+action = &"gamePDA"
+metadata/_custom_type_script = "uid://4muxkbry8eqk"
 
 [node name="interact" type="Control" parent="c/c/controls" unique_id=1758816483]
 layout_mode = 2

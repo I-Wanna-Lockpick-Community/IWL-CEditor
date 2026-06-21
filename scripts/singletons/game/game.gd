@@ -193,11 +193,14 @@ const ROBOTO_MONO:Font = preload("res://resources/fonts/RobotoMono-SemiBold.ttf"
 const FKEYX:Font = preload("res://resources/fonts/fKeyX.fnt")
 const FKEYNUM:Font = preload("res://resources/fonts/fKeyNum.fnt")
 const FTALK:Font = preload("res://resources/fonts/fTalk.fnt")
+const FTALKSMALL:Font = preload("res://resources/fonts/fTalkSmall.fnt")
 const FLEVELID:Font = preload("res://resources/fonts/fLevelID.fnt")
 const FLEVELNAME:Font = preload("res://resources/fonts/fLevelName.fnt")
 const FROOMNUM:Font = preload("res://resources/fonts/fRoomNum.fnt")
 const FMINIID:Font = preload("res://resources/fonts/fMiniId.fnt")
 const FPRESENTS:Font = preload("res://resources/fonts/fPresents.fnt")
+const FPDA:Font = preload("res://resources/fonts/fPDA.fnt")
+const FPDA2:Font = preload("res://resources/fonts/fPDA2.fnt")
 
 var latestSpawn:PlayerSpawn
 var levelStart:PlayerSpawn
@@ -215,6 +218,8 @@ var playState:PLAY_STATE = PLAY_STATE.EDIT:
 		complexViewHue = 0
 
 var camera:Camera2D
+
+var pda:PDA
 
 var fastAnimSpeed:float = 0 # 0: slowest, 1: fastest
 var fastAnimTimer:float = 0 # speed resets when this counts down to 0
@@ -298,7 +303,8 @@ func fasterAnims() -> void:
 
 func playTest(spawn:PlayerSpawn) -> void:
 	var starting:bool = false
-	
+
+	editor.pda.reset()
 	editor.multiselect.deselect()
 	editor.focusDialog.defocusComponent()
 	editor.focusDialog.defocus()
@@ -349,6 +355,7 @@ func stopTest() -> void:
 	player.pauseFrame = true
 	won = false
 	crashState = CRASH_STATE.NONE
+	pda.close()
 	await get_tree().process_frame
 	player.queue_free()
 	for object in objects.values():

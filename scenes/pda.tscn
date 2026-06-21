@@ -1,0 +1,24 @@
+[gd_scene format=3 uid="uid://bjwgb1n83p512"]
+
+[ext_resource type="Script" uid="uid://c1o8hlo7b0syw" path="res://scripts/singletons/game/pda.gd" id="1_06rri"]
+[ext_resource type="FontFile" uid="uid://ppj7vcpp67gk" path="res://resources/fonts/fPDA2.fnt" id="2_7vl7m"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_tv688"]
+line_spacing = 4.0
+font = ExtResource("2_7vl7m")
+font_size = 14
+font_color = Color(0.3137255, 1, 1, 1)
+
+[node name="PDA" type="Node2D" unique_id=635940995 groups=["modUI"]]
+script = ExtResource("1_06rri")
+
+[node name="draw" type="Node2D" parent="." unique_id=284603728]
+unique_name_in_owner = true
+
+[node name="jokes" type="Label" parent="." unique_id=393179351]
+unique_name_in_owner = true
+offset_right = 352.0
+offset_bottom = 82.143
+text = "Door Facts: Remember to keep your eyes on the invariants! If you don't, then mathematicians can't write a paper about the puzzles you're solving!"
+label_settings = SubResource("LabelSettings_tv688")
+autowrap_mode = 2

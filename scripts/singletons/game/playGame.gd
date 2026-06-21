@@ -11,6 +11,7 @@ const TEXT_BREAK_FLAGS:int = TextServer.LineBreakFlag.BREAK_MANDATORY|TextServer
 @onready var world:World = %world
 @onready var gameViewport:SubViewport = %gameViewport
 @onready var playCamera:Camera2D = %playCamera
+@onready var pda:PDA = %PDA
 
 var configFile:ConfigFile = ConfigFile.new()
 
@@ -43,6 +44,9 @@ func _ready() -> void:
 	RenderingServer.canvas_item_set_parent(drawMain, %drawParent.get_canvas_item())
 	RenderingServer.canvas_item_set_parent(drawAutoRunGradient, %drawParent.get_canvas_item())
 	Game.camera = playCamera
+	Game.pda = %PDA
+	pda.screenSize = Vector2(800, 608)
+	pda.reset()
 
 func _process(delta:float) -> void:
 	textWiggleAngle += 5.8643062867*delta # 5.6 degrees per frame, 60fps
@@ -234,6 +238,7 @@ func restart() -> void:
 	roomTransitionPhase = -2
 	queue_redraw()
 	Game.player.pauseFrame = true
+	pda.close()
 	Game.player.queue_free()
 	for object in Game.objects.values():
 		object.stop()

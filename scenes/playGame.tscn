@@ -4,6 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://2hd65vn44me7" path="res://scenes/world.tscn" id="2_abwwd"]
 [ext_resource type="Script" uid="uid://q0u3f7fb1u41" path="res://scripts/nodes/aspectRatioContainer.gd" id="2_rt4fk"]
 [ext_resource type="Shader" uid="uid://donorxvv474n1" path="res://resources/materials/playGame.gdshader" id="3_wfiui"]
+[ext_resource type="PackedScene" uid="uid://bjwgb1n83p512" path="res://scenes/pda.tscn" id="5_huxtg"]
 [ext_resource type="Theme" uid="uid://bvfthh0vm4fbp" path="res://resources/uiTheme.tres" id="5_n2d1d"]
 [ext_resource type="Script" uid="uid://bsmyhhhm08v2u" path="res://scripts/singletons/game/mouseover.gd" id="5_y4ge2"]
 [ext_resource type="PackedScene" uid="uid://cudl265jx2hk6" path="res://scenes/gameSettings.tscn" id="6_m88lo"]
@@ -54,7 +55,7 @@ size_2d_override = Vector2i(800, 608)
 size_2d_override_stretch = true
 render_target_update_mode = 4
 
-[node name="Panel" type="Panel" parent="aspectRatioContainer/gameViewportCont/gameViewport" unique_id=1316509062]
+[node name="p" type="Panel" parent="aspectRatioContainer/gameViewportCont/gameViewport" unique_id=1316509062]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -84,6 +85,10 @@ limit_right = 800
 limit_bottom = 608
 position_smoothing_enabled = true
 position_smoothing_speed = 8.0
+
+[node name="PDA" parent="aspectRatioContainer/gameViewportCont/gameViewport" unique_id=635940995 instance=ExtResource("5_huxtg")]
+unique_name_in_owner = true
+visible = false
 
 [node name="mouseover" type="VBoxContainer" parent="aspectRatioContainer/gameViewportCont/gameViewport" unique_id=1997196625]
 unique_name_in_owner = true

@@ -12,6 +12,7 @@ class_name Editor
 @onready var topBar:TopBar = %topBar
 @onready var settingsMenu:SettingsMenu = %settingsMenu
 @onready var outline:Outline = %outline
+@onready var pda:PDA = %PDA
 var modsWindow:ModsWindow
 var exportWindow:ExportWindow
 var findProblems:FindProblems
@@ -108,6 +109,7 @@ func _ready() -> void:
 	playerObject.size = Vector2(12,21)
 	playerObject.id = -1
 	%screenshotViewportCont.visible = false
+	Game.pda = %PDA
 
 func _process(delta:float) -> void:
 	queue_redraw()
@@ -129,7 +131,6 @@ func _process(delta:float) -> void:
 		
 	if Game.playState != Game.PLAY_STATE.PLAY and !focusDialog.focused and get_window().has_focus() and has_focus():
 		editorCamera.position += Vector2(Input.get_axis(&"editCameraLeft", &"editCameraRight"),Input.get_axis(&"editCameraUp", &"editCameraDown"))*delta/editorCamera.zoom*700
-
 
 	mouseWorldPosition = screenspaceToWorldspace(get_global_mouse_position())
 	mouseTilePosition = Vector2i(floor(mouseWorldPosition / Vector2(tileSize))) * tileSize
@@ -673,4 +674,6 @@ func _gameViewportDisplayResized():
 	var newSize:Vector2 = %gameViewportDisplay.size * Game.uiScale
 	%gameViewport.size = newSize
 	%placePreviewViewport.size = newSize
+	%PDA.screenSize = newSize
+	%PDA.queue_redraw()
 	RenderingServer.global_shader_parameter_set(&"SCREEN_SIZE", newSize)

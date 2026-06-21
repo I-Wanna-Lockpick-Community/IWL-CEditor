@@ -33,6 +33,7 @@
 [ext_resource type="PackedScene" uid="uid://r7q8sdncd4jo" path="res://scenes/outlineViewport.tscn" id="28_e62bx"]
 [ext_resource type="Shader" uid="uid://y4p3snw4y2xy" path="res://resources/materials/placePreview.gdshader" id="28_ndxgo"]
 [ext_resource type="Shader" uid="uid://b7ek3evjsfuc5" path="res://resources/materials/outline.gdshader" id="29_65evm"]
+[ext_resource type="PackedScene" uid="uid://bjwgb1n83p512" path="res://scenes/pda.tscn" id="30_65evm"]
 [ext_resource type="Script" uid="uid://bsmyhhhm08v2u" path="res://scripts/singletons/game/mouseover.gd" id="30_e62bx"]
 [ext_resource type="Texture2D" uid="uid://d10g6pdt4sjs2" path="res://assets/ui/mods/iconSmall/Refactored.png" id="33_mxdmd"]
 [ext_resource type="PackedScene" uid="uid://dhp8ohn6mj5pr" path="res://scenes/resizeHandles.tscn" id="35_e62bx"]
@@ -488,6 +489,10 @@ unique_name_in_owner = true
 visible = false
 z_index = 2
 layout_mode = 1
+
+[node name="PDA" parent="c/gameCont/c" unique_id=635940995 instance=ExtResource("30_65evm")]
+unique_name_in_owner = true
+visible = false
 
 [node name="mouseover" type="VBoxContainer" parent="c/gameCont/c" unique_id=793475222]
 unique_name_in_owner = true

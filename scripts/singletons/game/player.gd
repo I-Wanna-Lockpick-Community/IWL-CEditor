@@ -249,6 +249,9 @@ func _process(delta:float) -> void:
 	drawCurse.color = curseColor
 	drawCurse.queue_redraw()
 
+	if Input.is_action_pressed(&"gamePDA") and !paused(): Game.pda.open()
+	else: Game.pda.close()
+
 func convertNumbers(from:M.SYSTEM) -> void:
 	Changes.addChange(Changes.ConvertNumberChange.new(self, from, &"key"))
 	Changes.addChange(Changes.ConvertNumberChange.new(self, from, &"glisten"))
@@ -261,7 +264,9 @@ func receiveKey(event:InputEventKey):
 	elif Editor.eventIs(event, &"gameRestart", false): Game.restart()
 	elif Editor.eventIs(event, &"gameUndo", false) and !cameraMode and GameChanges.undo(): AudioManager.play(preload("res://resources/sounds/player/undo.wav"), 1, 0.6)
 	elif Editor.eventIs(event, &"gameAction", false):
-		if cameraMode:
+		if Game.pda.visible:
+			Game.pda.nextPage()
+		elif cameraMode:
 			if Game.levelBounds.size == Vector2i(800, 608): return
 			if cameraZoomTarget == 1:
 				AudioManager.play(preload("res://resources/sounds/player/camera.wav"),1,1.5)

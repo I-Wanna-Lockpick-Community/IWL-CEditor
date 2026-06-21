@@ -9,15 +9,11 @@ const bitmap_extension := ".png"
 const font_extension := ".fnt"
 const fonts_path := "res://resources/fonts/"
 
-@export var convert_font: bool = false:
-	set(val):
-		if convert_font == val: return
-		convert_font = val
-		print("here")
-		_convert()
+@export_tool_button("convert")
+var c:Callable = _convert
 
 func _ready() -> void:
-	gamemaker_fonts_path = "C:/Users/Beeka/Desktop/Things/Games/iwlp/IWannaLockpickDecompilation/fonts"
+	gamemaker_fonts_path = "/home/apia/Projects/iwannalockpick/fonts"
 
 func _convert():
 	# Copy the .png file

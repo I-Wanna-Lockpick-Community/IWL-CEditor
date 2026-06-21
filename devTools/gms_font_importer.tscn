@@ -4,5 +4,4 @@
 
 [node name="FontMaker" type="Node" unique_id=537584301]
 script = ExtResource("1_5l1cu")
-font_name = "fPresents"
-convert_font = true
+font_name = "fTalkSmall"

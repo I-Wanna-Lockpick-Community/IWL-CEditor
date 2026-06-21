@@ -1,0 +1,17 @@
+[remap]
+
+importer="font_data_bmfont"
+type="FontFile"
+uid="uid://ppj7vcpp67gk"
+path="res://.godot/imported/fPDA2.fnt-2ccef1bb60d8163b384bc719397b3925.fontdata"
+
+[deps]
+
+source_file="res://resources/fonts/fPDA2.fnt"
+dest_files=["res://.godot/imported/fPDA2.fnt-2ccef1bb60d8163b384bc719397b3925.fontdata"]
+
+[params]
+
+fallbacks=[]
+compress=true
+scaling_mode=2
