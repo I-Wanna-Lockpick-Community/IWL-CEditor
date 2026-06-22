@@ -1,5 +1,4 @@
 shader_type canvas_item;
-instance uniform vec4 colorTop:source_color;
 instance uniform vec4 colorBottom:source_color;
 instance uniform vec2 size;
 varying vec2 vert;
@@ -13,7 +12,7 @@ void vertex() {
 }
 
 void fragment() {
-	vec4 color = lerpColor(colorTop,colorBottom,vert.y/size.y);
+	vec4 color = lerpColor(COLOR,colorBottom,vert.y/size.y);
 	COLOR.rgb = color.rgb;
 	COLOR.a *= color.a;
 }

@@ -264,7 +264,7 @@ static func drawAuras(objectDrawCrumbled:RID,objectDrawPainted:RID,objectDrawFro
 		if variableSize:
 			RenderingServer.canvas_item_set_material(objectDrawCrumbled,CRUMBLED_MATERIAL.get_rid())
 			RenderingServer.canvas_item_set_instance_shader_parameter(objectDrawCrumbled, &"size", rect.size)
-			RenderingServer.canvas_item_add_rect(objectDrawCrumbled,rect,Color.WHITE)
+			RenderingServer.canvas_item_add_rect(objectDrawCrumbled,rect,Color(1/rect.size.x, 1/rect.size.y, 1))
 		else: RenderingServer.canvas_item_set_material(objectDrawCrumbled,Game.NO_MATERIAL.get_rid())
 	if objectPainted:
 		if rect.size == Vector2(32,32): RenderingServer.canvas_item_add_texture_rect(objectDrawPainted,rect,PAINTED_1X1)
@@ -273,8 +273,8 @@ static func drawAuras(objectDrawCrumbled:RID,objectDrawPainted:RID,objectDrawFro
 		else: variableSize = true
 		if variableSize:
 			RenderingServer.canvas_item_set_material(objectDrawPainted,PAINTED_MATERIAL.get_rid())
-			RenderingServer.canvas_item_set_instance_shader_parameter(objectDrawPainted, &"scale", rect.size/128)
-			RenderingServer.canvas_item_add_texture_rect(objectDrawPainted,rect,PAINTED_BASE,true)
+			RenderingServer.canvas_item_add_texture_rect(objectDrawPainted,rect,PAINTED_BASE,true, Color(1/rect.size.x, 1/rect.size.y, 1
+		))
 		else: RenderingServer.canvas_item_set_material(objectDrawPainted,Game.ADDITIVE_MATERIAL.get_rid())
 	if objectFrozen:
 		if rect.size == Vector2(32,32): RenderingServer.canvas_item_add_texture_rect(objectDrawFrozen,rect,FROZEN_1X1)
@@ -283,8 +283,7 @@ static func drawAuras(objectDrawCrumbled:RID,objectDrawPainted:RID,objectDrawFro
 		else: variableSize = true
 		if variableSize:
 			RenderingServer.canvas_item_set_material(objectDrawFrozen,FROZEN_MATERIAL.get_rid())
-			RenderingServer.canvas_item_set_instance_shader_parameter(objectDrawFrozen, &"size", rect.size)
-			RenderingServer.canvas_item_add_rect(objectDrawFrozen,rect,Color.WHITE)
+			RenderingServer.canvas_item_add_rect(objectDrawFrozen,rect,Color(1/rect.size.x, 1/rect.size.y, 1))
 		else: RenderingServer.canvas_item_set_material(objectDrawFrozen,Game.NO_MATERIAL.get_rid())
 
 func receiveMouseInput(event:InputEventMouse) -> bool:

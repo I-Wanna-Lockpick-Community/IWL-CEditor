@@ -26,7 +26,6 @@ static func outlinedGradient(font:Font,item:RID,gradientItem:RID,string:String,c
 	for x in range(-1,2):
 		for y in range(-1,2):
 			if Vector2(x,y) != Vector2(0,0): font.draw_string(item,pos+Vector2(x,y),string,HORIZONTAL_ALIGNMENT_LEFT,-1,fontSize,outlineColor)
-	RenderingServer.canvas_item_set_instance_shader_parameter(gradientItem, &"colorTop", colorTop)
 	RenderingServer.canvas_item_set_instance_shader_parameter(gradientItem, &"colorBottom", colorBottom)
 	RenderingServer.canvas_item_set_instance_shader_parameter(gradientItem, &"size", font.get_string_size(string,HORIZONTAL_ALIGNMENT_LEFT,-1,fontSize))
-	font.draw_string(gradientItem,pos,string,HORIZONTAL_ALIGNMENT_LEFT,-1,fontSize)
+	font.draw_string(gradientItem,pos,string,HORIZONTAL_ALIGNMENT_LEFT,-1,fontSize, colorTop)

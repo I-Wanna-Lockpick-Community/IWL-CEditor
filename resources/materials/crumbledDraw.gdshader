@@ -1,5 +1,4 @@
 shader_type canvas_item;
-instance uniform vec2 size = vec2(32,32);
 const vec4 COLOR_FILL = vec4(0.2823529412, 0.0509803922, 0.0509803922, 0.7058823529);
 const vec4 COLOR_BACK = vec4(0.2823529412, 0.0509803922, 0.0509803922, 0.1960784314);
 
@@ -16,6 +15,7 @@ bool stripe(float _start, float width) {
 }
 
 void fragment() {
+	vec2 size = round(vec2(1.0/COLOR.r, 1.0/COLOR.g));
 	position = floor(UV*size);
 	vec2 unposition = size - position - vec2(1,1);
 	minposition = vec2(min(position.x,unposition.x),min(position.y,unposition.y));
