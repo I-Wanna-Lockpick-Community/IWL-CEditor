@@ -378,6 +378,7 @@ func propertyChangedDo(property:StringName) -> void:
 		for remoteLock in remoteLocks: remoteLock.queue_redraw()
 
 func addLock() -> void:
+	if len(locks) == 1: locks[0]._comboDoorConfigurationChanged(Lock.SIZE_TYPE.AnyS)
 	Changes.addChange(Changes.CreateComponentChange.new(Lock,{&"position":getFirstFreePosition(),&"parentId":id}))
 	if len(locks) == 1 and type != Door.TYPE.GATE: Changes.addChange(Changes.PropertyChange.new(self,&"type",TYPE.SIMPLE))
 	elif type == Door.TYPE.SIMPLE: Changes.addChange(Changes.PropertyChange.new(self,&"type",TYPE.COMBO))
