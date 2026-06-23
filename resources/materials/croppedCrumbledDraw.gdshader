@@ -17,19 +17,22 @@ bool stripe(float _start, float width) {
 
 void fragment() {
 	vec2 croppedUV = mix(vec2(COLOR.r,COLOR.g),vec2(COLOR.b,COLOR.a),UV);
-
-	position = floor(croppedUV*size);
-	vec2 unposition = size - position - vec2(1,1);
-	minposition = vec2(min(position.x,unposition.x),min(position.y,unposition.y));
-
-	if ((minposition.x < 0.5 || minposition.y < 0.5) // border
-		|| (minposition.x + 2.0*minposition.y < 6.5) // corners
-		|| stripe(4.5,11.0)
-		|| stripe(24.5,5.0)
-		|| stripe(37.5,9.0)
-		|| stripe(54.5,5.0)) {
-		COLOR = COLOR_FILL;
+	if (croppedUV.x < 0.0 || croppedUV.y < 0.0 || croppedUV.x > 1.0 || croppedUV.y > 1.0) {
+		COLOR.a = 0.0;
 	} else {
-		COLOR = COLOR_BACK;
+		position = floor(croppedUV*size);
+		vec2 unposition = size - position - vec2(1,1);
+		minposition = vec2(min(position.x,unposition.x),min(position.y,unposition.y));
+
+		if ((minposition.x < 0.5 || minposition.y < 0.5) // border
+			|| (minposition.x + 2.0*minposition.y < 6.5) // corners
+			|| stripe(4.5,11.0)
+			|| stripe(24.5,5.0)
+			|| stripe(37.5,9.0)
+			|| stripe(54.5,5.0)) {
+			COLOR = COLOR_FILL;
+		} else {
+			COLOR = COLOR_BACK;
+		}
 	}
 }

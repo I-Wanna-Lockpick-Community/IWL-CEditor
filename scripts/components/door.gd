@@ -319,7 +319,7 @@ static func drawCroppedAuras(objectDrawFrozen:RID,objectDrawCrumbled:RID,objectD
 		for cropRect in paintedRects:
 			var cropStart:Vector2 = cropRect.position / rect.size;
 			var cropEnd:Vector2 = cropRect.end / rect.size;
-			RenderingServer.canvas_item_add_texture_rect(objectDrawPainted,cropRect,PAINTED_BASE,true,Color(cropStart.x, cropStart.y, cropEnd.x, cropEnd.y))
+			RenderingServer.canvas_item_add_rect(objectDrawPainted,cropRect,Color(cropStart.x, cropStart.y, cropEnd.x, cropEnd.y))
 
 func receiveMouseInput(event:InputEventMouse) -> bool:
 	# resizing

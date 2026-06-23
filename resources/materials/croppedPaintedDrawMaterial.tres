@@ -1,7 +1,8 @@
 [gd_resource type="ShaderMaterial" format=3 uid="uid://btw27qej617a2"]
 
 [ext_resource type="Shader" uid="uid://beb6skm2uo7qj" path="res://resources/materials/croppedPaintedDraw.gdshader" id="1_j38ax"]
+[ext_resource type="Texture2D" uid="uid://bcga4dl4wx5gi" path="res://assets/game/door/aura/paintedBase.png" id="2_2tej8"]
 
 [resource]
 shader = ExtResource("1_j38ax")
-shader_parameter/COLOR_BOTTOM = Vector3(0.72156864, 0.46666667, 0)
+shader_parameter/paintedBase = ExtResource("2_2tej8")
