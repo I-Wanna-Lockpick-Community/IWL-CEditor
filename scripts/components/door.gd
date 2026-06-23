@@ -435,6 +435,7 @@ func reindexLocks() -> void:
 				%locksParent.move_child(lock,armamentIter)
 			nonArmamentIter += 1
 		iter += 1
+	if armament: queue_redraw() # not really sure where else to put it
 
 # ==== PLAY ==== #
 var gameCopies:PackedInt64Array = M.ONE()
