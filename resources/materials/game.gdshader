@@ -13,10 +13,6 @@ uniform vec2 mousePosition = vec2(0,0); // where the mouse is, in worldspace
 global uniform float RCAMERA_ZOOM = 1; // reciprocal of camera zoom
 uniform vec2 tileSize = vec2(32,32);
 
-vec3 lerpColor(vec3 color1, vec3 color2, float t) {
-	return color1 * (1.0-t) + color2 * t;
-}
-
 float lengthSquared(vec2 vector) {
 	return vector.x*vector.x + vector.y*vector.y;
 }
@@ -29,7 +25,7 @@ void fragment() {
 	vec2 XY = FRAGCOORD.xy*RCAMERA_ZOOM + screenPosition - LEVEL_POS;
 	if (XY.x < 0.0 || XY.y < 0.0 || XY.x > LEVEL_SIZE.x || XY.y > LEVEL_SIZE.y) {
 		// draw level bounds
-		COLOR.rgb = lerpColor(COLOR.rgb, OUTOFBOUNDS_COLOR, 0.5);
+		COLOR.rgb = mix(COLOR.rgb, OUTOFBOUNDS_COLOR, 0.5);
 	}
 	// draw grid
 	float gridAlpha = 0.0;
@@ -37,6 +33,6 @@ void fragment() {
 	if ((tileSize.x <= 16.0 && mod(XY.x,16.0) < RCAMERA_ZOOM) || (tileSize.y <= 16.0 && mod(XY.y,16.0) < RCAMERA_ZOOM)) gridAlpha = 0.35;
 	if ((tileSize.x <= 32.0 && mod(XY.x,32.0) < RCAMERA_ZOOM) || (tileSize.y <= 32.0 && mod(XY.y,32.0) < RCAMERA_ZOOM)) gridAlpha = 1.0;
 	if ((tileSize.x > 799.5 && mod(XY.x,800.0) < RCAMERA_ZOOM) || (tileSize.y > 607.5 && mod(XY.y,608.0) < RCAMERA_ZOOM)) gridAlpha = 0.8;
-	if (tileSize.x > 799.5 && tileSize.y > 607.5) COLOR.rgb = lerpColor(COLOR.rgb,GRID_COLOR.rgb,GRID_COLOR.a*gridAlpha);
-	else COLOR.rgb = lerpColor(COLOR.rgb,GRID_COLOR.rgb,GRID_COLOR.a*gridAlpha*(1.0-min(lengthSquared(mousePosition-XY)/1e4,1.0)));
+	if (tileSize.x > 799.5 && tileSize.y > 607.5) COLOR.rgb = mix(COLOR.rgb,GRID_COLOR.rgb,GRID_COLOR.a*gridAlpha);
+	else COLOR.rgb = mix(COLOR.rgb,GRID_COLOR.rgb,GRID_COLOR.a*gridAlpha*(1.0-min(lengthSquared(mousePosition-XY)/1e4,1.0)));
 }

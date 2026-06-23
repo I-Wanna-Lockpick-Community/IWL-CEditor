@@ -4,5 +4,4 @@
 
 [resource]
 shader = ExtResource("1_6jx75")
-shader_parameter/colorTop = Color(0.72156864, 0.21568628, 0, 1)
-shader_parameter/colorBottom = Color(0.72156864, 0.46666667, 0, 1)
+shader_parameter/COLOR_BOTTOM = Vector3(0.72156864, 0.46666667, 0)

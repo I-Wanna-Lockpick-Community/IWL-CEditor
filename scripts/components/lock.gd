@@ -456,6 +456,7 @@ static func lockPropertyChangedInit(lock:GameComponent, property:StringName) -> 
 func propertyChangedDo(property:StringName) -> void:
 	if property in [&"count", &"denominator"] and parent: parent.queue_redraw()
 	if property == &"armament" and parent: parent.reindexLocks()
+	if property in [&"size", &"position"] and parent and parent.armament: parent.queue_redraw()
 
 # ==== PLAY ==== #
 var glitchMimic:C.olors = C.olors.GLITCH

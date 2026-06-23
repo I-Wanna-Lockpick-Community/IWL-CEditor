@@ -19,17 +19,20 @@ const CRUMBLED_1X1:Texture2D = preload("res://assets/game/door/aura/crumbled1x1.
 const CRUMBLED_1X2:Texture2D = preload("res://assets/game/door/aura/crumbled1x2.png")
 const CRUMBLED_2X2:Texture2D = preload("res://assets/game/door/aura/crumbled2x2.png")
 const CRUMBLED_MATERIAL:ShaderMaterial = preload("res://resources/materials/crumbledDrawMaterial.tres")
+const CROPPED_CRUMBLED_MATERIAL:ShaderMaterial = preload("res://resources/materials/croppedCrumbledDrawMaterial.tres")
 
 const PAINTED_1X1:Texture2D = preload("res://assets/game/door/aura/painted1x1.png")
 const PAINTED_1X2:Texture2D = preload("res://assets/game/door/aura/painted1x2.png")
 const PAINTED_2X2:Texture2D = preload("res://assets/game/door/aura/painted2x2.png")
 const PAINTED_BASE:Texture2D = preload("res://assets/game/door/aura/paintedBase.png")
 const PAINTED_MATERIAL:ShaderMaterial = preload("res://resources/materials/paintedDrawMaterial.tres")
+const CROPPED_PAINTED_MATERIAL:ShaderMaterial = preload("res://resources/materials/croppedPaintedDrawMaterial.tres")
 
 const FROZEN_1X1:Texture2D = preload("res://assets/game/door/aura/frozen1x1.png")
 const FROZEN_1X2:Texture2D = preload("res://assets/game/door/aura/frozen1x2.png")
 const FROZEN_2X2:Texture2D = preload("res://assets/game/door/aura/frozen2x2.png")
 const FROZEN_MATERIAL:ShaderMaterial = preload("res://resources/materials/frozenDrawMaterial.tres")
+const CROPPED_FROZEN_MATERIAL:ShaderMaterial = preload("res://resources/materials/croppedFrozenDrawMaterial.tres")
 
 const GLITCH_HIGH:Texture2D = preload("res://assets/game/door/glitch/high.png")
 const GLITCH_MAIN:Texture2D = preload("res://assets/game/door/glitch/main.png")
@@ -183,11 +186,21 @@ func _draw() -> void:
 				var errorrect:Rect2 = Rect2(i*32+randi_range(-5,5),j*32+randi_range(-5,5),32.0,32.0)
 				RenderingServer.canvas_item_add_texture_rect(drawError,errorrect,ERROR_FX.current([randi_range(0,2)]))
 	# auras
-	drawAuras(drawCrumbled,drawPainted,drawFrozen,
-		frozen if Game.playState == Game.PLAY_STATE.EDIT else gameFrozen,
-		crumbled if Game.playState == Game.PLAY_STATE.EDIT else gameCrumbled,
-		painted if Game.playState == Game.PLAY_STATE.EDIT else gamePainted,
-		rect)
+	var showFrozen:bool = frozen if Game.playState == Game.PLAY_STATE.EDIT else gameFrozen
+	var showCrumbled:bool = crumbled if Game.playState == Game.PLAY_STATE.EDIT else gameCrumbled
+	var showPainted:bool = painted if Game.playState == Game.PLAY_STATE.EDIT else gamePainted
+	if armament:
+		var frozenRects:Array[Rect2] = []
+		var crumbledRects:Array[Rect2] = []
+		var paintedRects:Array[Rect2] = []
+		for lock in locks:
+			var lockRect:Rect2 = Rect2(lock.getDrawPosition()-position, lock.getDrawSize())
+			if showFrozen and !lock.armament: frozenRects.append(lockRect)
+			if showCrumbled and !lock.armament: crumbledRects.append(lockRect)
+			if showPainted and !lock.armament: paintedRects.append(lockRect)
+		drawCroppedAuras(drawFrozen,drawCrumbled,drawPainted,frozenRects,crumbledRects,paintedRects,rect)
+	else:
+		drawAuras(drawFrozen,drawCrumbled,drawPainted,showFrozen,showCrumbled,showPainted,rect)
 	# anim overlays
 	if animState == ANIM_STATE.ADD_COPY: RenderingServer.canvas_item_add_rect(drawNegative,rect,Color(Color.WHITE,animAlpha))
 	elif animState == ANIM_STATE.RELOCK: RenderingServer.canvas_item_add_rect(drawSymbols,rect,Color(Color.WHITE,animAlpha)) # just to be on top of everything else
@@ -254,7 +267,7 @@ static func drawDoor(doorDrawScaled:RID,doorDrawAuraBreaker:RID,doorDrawGlitch:R
 		else: RenderingServer.canvas_item_add_nine_patch(doorDrawMain,rect,TEXTURE_RECT,FRAME,CORNER_SIZE,CORNER_SIZE)
 		if doorArmament: RenderingServer.canvas_item_add_nine_patch(doorDrawMain,rect,Lock.ARMAMENT_RECT,Lock.ARMAMENT[Game.goldIndex%4],Lock.ARMAMENT_CORNER_SIZE,Lock.ARMAMENT_CORNER_SIZE)
 
-static func drawAuras(objectDrawCrumbled:RID,objectDrawPainted:RID,objectDrawFrozen:RID,objectFrozen:bool,objectCrumbled:bool,objectPainted:bool,rect:Rect2) -> void:
+static func drawAuras(objectDrawFrozen:RID,objectDrawCrumbled:RID,objectDrawPainted:RID,objectFrozen:bool,objectCrumbled:bool,objectPainted:bool,rect:Rect2) -> void:
 	var variableSize:bool = false
 	if objectCrumbled:
 		if rect.size == Vector2(32,32): RenderingServer.canvas_item_add_texture_rect(objectDrawCrumbled,rect,CRUMBLED_1X1)
@@ -273,8 +286,7 @@ static func drawAuras(objectDrawCrumbled:RID,objectDrawPainted:RID,objectDrawFro
 		else: variableSize = true
 		if variableSize:
 			RenderingServer.canvas_item_set_material(objectDrawPainted,PAINTED_MATERIAL.get_rid())
-			RenderingServer.canvas_item_add_texture_rect(objectDrawPainted,rect,PAINTED_BASE,true, Color(1/rect.size.x, 1/rect.size.y, 1
-		))
+			RenderingServer.canvas_item_add_texture_rect(objectDrawPainted,rect,PAINTED_BASE,true, Color(1/rect.size.x, 1/rect.size.y, 1))
 		else: RenderingServer.canvas_item_set_material(objectDrawPainted,Game.ADDITIVE_MATERIAL.get_rid())
 	if objectFrozen:
 		if rect.size == Vector2(32,32): RenderingServer.canvas_item_add_texture_rect(objectDrawFrozen,rect,FROZEN_1X1)
@@ -285,6 +297,29 @@ static func drawAuras(objectDrawCrumbled:RID,objectDrawPainted:RID,objectDrawFro
 			RenderingServer.canvas_item_set_material(objectDrawFrozen,FROZEN_MATERIAL.get_rid())
 			RenderingServer.canvas_item_add_rect(objectDrawFrozen,rect,Color(1/rect.size.x, 1/rect.size.y, 1))
 		else: RenderingServer.canvas_item_set_material(objectDrawFrozen,Game.NO_MATERIAL.get_rid())
+
+static func drawCroppedAuras(objectDrawFrozen:RID,objectDrawCrumbled:RID,objectDrawPainted:RID,frozenRects:Array[Rect2],crumbledRects:Array[Rect2],paintedRects:Array[Rect2],rect:Rect2) -> void:
+	if frozenRects:
+		RenderingServer.canvas_item_set_material(objectDrawFrozen,CROPPED_FROZEN_MATERIAL.get_rid())
+		RenderingServer.canvas_item_set_instance_shader_parameter(objectDrawFrozen, &"size", rect.size)
+		for cropRect in frozenRects:
+			var cropStart:Vector2 = cropRect.position / rect.size;
+			var cropEnd:Vector2 = cropRect.end / rect.size;
+			RenderingServer.canvas_item_add_rect(objectDrawFrozen,cropRect,Color(cropStart.x, cropStart.y, cropEnd.x, cropEnd.y))
+	if crumbledRects:
+		RenderingServer.canvas_item_set_material(objectDrawCrumbled,CROPPED_CRUMBLED_MATERIAL.get_rid())
+		RenderingServer.canvas_item_set_instance_shader_parameter(objectDrawCrumbled, &"size", rect.size)
+		for cropRect in crumbledRects:
+			var cropStart:Vector2 = cropRect.position / rect.size;
+			var cropEnd:Vector2 = cropRect.end / rect.size;
+			RenderingServer.canvas_item_add_rect(objectDrawCrumbled,cropRect,Color(cropStart.x, cropStart.y, cropEnd.x, cropEnd.y))
+	if paintedRects:
+		RenderingServer.canvas_item_set_material(objectDrawPainted,CROPPED_PAINTED_MATERIAL.get_rid())
+		RenderingServer.canvas_item_set_instance_shader_parameter(objectDrawPainted, &"size", rect.size)
+		for cropRect in paintedRects:
+			var cropStart:Vector2 = cropRect.position / rect.size;
+			var cropEnd:Vector2 = cropRect.end / rect.size;
+			RenderingServer.canvas_item_add_texture_rect(objectDrawPainted,cropRect,PAINTED_BASE,true,Color(cropStart.x, cropStart.y, cropEnd.x, cropEnd.y))
 
 func receiveMouseInput(event:InputEventMouse) -> bool:
 	# resizing

@@ -1,0 +1,6 @@
+[gd_resource type="ShaderMaterial" format=3 uid="uid://ct5cxx6x6ghjs"]
+
+[ext_resource type="Shader" uid="uid://dr1jj1wis516v" path="res://resources/materials/croppedFrozenDraw.gdshader" id="1_ff8hp"]
+
+[resource]
+shader = ExtResource("1_ff8hp")
