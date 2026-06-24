@@ -36,7 +36,7 @@ func describe(object:GameObject) -> void:
 				string += "\n- Effects -\nGlistening!"
 		Door:
 			if object.type == Door.TYPE.SIMPLE:
-				if door.oscillate: string += "Oscillating "
+				if object.oscillate: string += "Oscillating "
 				string += LOCK_TYPES[object.locks[0].type] + Colors.getName(object.colorSpend) + " Door"
 				var additional:String = lockAdditionalInfo(object.locks[0], object)
 				if additional: string += " (Lock " + additional + ")"
