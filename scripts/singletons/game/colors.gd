@@ -26,7 +26,7 @@ func _init() -> void:
 
 	defineColor("Brown",		Color("#aa6015"), Color("#704010"), Color("#382007"))
 	defineColor("Pure",			Color("#edeae7"), Color("#d6cfc9"), Color("#bbaea4")).animatedKeys(4).animatedDoors(4)
-	defineColor("Glitch",		Color("#78be00"), Color("#b49600"), Color("#dc6e00")).unconfigurableTone()
+	defineColor("Glitch",		Color("#78be00"), Color("#b49600"), Color("#dc6e00")).unconfigurableTone().mimic()
 	defineColor("Stone",		Color("#96a0a5"), Color("#647378"), Color("#3c4b50")).texturedKeys().texturedDoors()
 
 	# MODDED
@@ -43,7 +43,7 @@ func _init() -> void:
 	defineColor("Graffiti",		Color("#f2e380"), Color("#e2c961"), Color("#c6af51")).texturedKeys()
 
 	defineColor("None",			Color("#0000"),   Color("#0000"),   Color("#0000")  ).unconfigurableTone()
-	defineColor("Error",		Color("#ffffff"), Color("#006dff"), Color("#006dff")).texturedKeys().texturedDoors(true)
+	defineColor("Error",		Color("#ffffff"), Color("#006dff"), Color("#006dff")).texturedKeys().texturedDoors(true).mimic()
 	defineColor("Cosmic",		Color("#240a44"), Color("#19072f"), Color("#110521")).texturedKeys().animatedDoors(8, true) \
 				   .brightTones(Color("#340e62"), Color("#240a44"), Color("#19072f"))
 
@@ -96,6 +96,8 @@ class ColorDef extends RefCounted:
 	var doorTextureTile:bool = false
 	var doorTextureFrames:int = 1
 
+	var isMimic:bool = false
+
 	func brightTones(_highTone:Color, _mainTone:Color, _darkTone:Color) -> ColorDef:
 		BRIGHT_HIGH = _highTone
 		BRIGHT_MAIN = _mainTone
@@ -128,4 +130,8 @@ class ColorDef extends RefCounted:
 		doorTexture = true
 		doorTextureFrames = frames
 		doorTextureTile = tiled
+		return self
+	
+	func mimic() -> ColorDef:
+		isMimic = true
 		return self

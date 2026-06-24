@@ -887,7 +887,7 @@ func curseCheck(player:Player) -> void:
 	if willCurse and !willCurseRedundant:
 		GameChanges.addChange(GameChanges.PropertyChange.new(self,&"cursed",true))
 		GameChanges.addChange(GameChanges.PropertyChange.new(self,&"curseColor",player.curseColor))
-		if player.curseColor in [C.olors.GLITCH, C.olors.ERROR]:
+		if Colors.getDef(player.curseColor).isMimic:
 			GameChanges.addChange(GameChanges.PropertyChange.new(self,&"curseMimic",player.curseColor))
 		makeCurseParticles(curseColor, 1, 0.2, 0.5)
 		AudioManager.play(preload("res://resources/sounds/door/curse.wav"))

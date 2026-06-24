@@ -4,10 +4,6 @@ class_name MouseoverPanel
 const LOCK_TYPES = ["", "Blank ", "Blast ", "All ", "Exact ", "Starry ", "Remainder "]
 
 func describe(object:GameObject) -> void:
-	if !object:
-		visible = false
-		return
-	visible = true
 	var string:String = ""
 	match object.get_script():
 		KeyBulk:
@@ -40,6 +36,7 @@ func describe(object:GameObject) -> void:
 				string += "\n- Effects -\nGlistening!"
 		Door:
 			if object.type == Door.TYPE.SIMPLE:
+				if door.oscillate: string += "Oscillating "
 				string += LOCK_TYPES[object.locks[0].type] + Colors.getName(object.colorSpend) + " Door"
 				var additional:String = lockAdditionalInfo(object.locks[0], object)
 				if additional: string += " (Lock " + additional + ")"
@@ -69,16 +66,14 @@ func describe(object:GameObject) -> void:
 			if object.color == C.olors.GLITCH: string += "\nMimic: " + Colors.getName(object.glitchMimic)
 			elif object.color == C.olors.ERROR: string += "\nMimic: " + Colors.getName(object.errorMimic)
 			string += effects(object)
-		_:
-			visible = false
-			return
+		_: return
 	%text.text = string
 	size = Vector2.ZERO
 
 func lockAdditionalInfo(lock:Lock, door:Door) -> String:
 	var additional:Array[String] = []
 	if lock.armament: additional.append("Armament")
-	if door.colorSpend in [C.olors.GLITCH, C.olors.ERROR] and lock.color in [C.olors.GLITCH, C.olors.ERROR] and lock.getColor(Lock.COLOR_STEP.EFFECTIVE) != door.getColor(Door.COLOR_STEP.EFFECTIVE): additional.append("Mimic: " + Colors.getName(lock.getColor(Lock.COLOR_STEP.EFFECTIVE)))
+	if Colors.getDef(door.colorSpend).isMimic and Colors.getDef(lock.color).isMimic and lock.getColor(Lock.COLOR_STEP.EFFECTIVE) != door.getColor(Door.COLOR_STEP.EFFECTIVE): additional.append("Mimic: " + Colors.getName(lock.getColor(Lock.COLOR_STEP.EFFECTIVE)))
 	if additional: return ", ".join(additional)
 	else: return ""
 
@@ -122,11 +117,11 @@ func effects(object:GameObject) -> String:
 	if object.gamePainted: string += "\nPainted! (3xBlue)"
 	if object is Door:
 		match object.starred:
-			Door.STAR_STATE.STARRED_UNLOCKED: string += "\nStarred! (Unlocked)"
-			Door.STAR_STATE.STARRED_LOCKED: string += "\nStarred! (Locked)"
+			Door.STAR_STATE.STARRED_UNLOCKED: string += "\nStarred! (Unlocked,"
+			Door.STAR_STATE.STARRED_LOCKED: string += "\nStarred! (Locked,"
 		if object.starred != Door.STAR_STATE.UNSTARRED:
 			string += "\n    Spends " + M.str(object.starredSpendKey)
-			if M.ex(object.starredSpendGlisten):
+			if M.ex(object. ):
 				string += "(" + M.str(object.starredSpendGlisten) + ")"
 			if object.hasArmamentLocks(): string += " (+ Armament locks)"
 			string += " " + Colors.getName(object.starredColor) + ")"
