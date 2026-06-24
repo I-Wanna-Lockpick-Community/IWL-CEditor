@@ -121,7 +121,7 @@ func effects(object:GameObject) -> String:
 			Door.STAR_STATE.STARRED_LOCKED: string += "\nStarred! (Locked,"
 		if object.starred != Door.STAR_STATE.UNSTARRED:
 			string += "\n    Spends " + M.str(object.starredSpendKey)
-			if M.ex(object. ):
+			if M.ex(object.starredSpendGlisten):
 				string += "(" + M.str(object.starredSpendGlisten) + ")"
 			if object.hasArmamentLocks(): string += " (+ Armament locks)"
 			string += " " + Colors.getName(object.starredColor) + ")"
