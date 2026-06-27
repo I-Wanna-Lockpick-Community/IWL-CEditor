@@ -15,7 +15,7 @@ const CREATE_PARAMETERS:Array[StringName] = [
 ]
 const PROPERTIES:Array[StringName] = [
 	&"id", &"position", &"size",
-	&"color", &"type", &"configuration", &"sizeType", &"count", &"zeroI", &"isPartial", &"denominator", &"negated", &"armament",
+	&"color", &"type", &"configuration", &"sizeType", &"count", &"zeroI", &"isPartial", &"denominator", &"negated", &"armament", &"spendType",
 	&"frozen", &"crumbled", &"painted"
 ]
 static var ARRAYS:Dictionary[StringName,Variant] = {
@@ -35,6 +35,7 @@ var armament:bool = false
 var frozen:bool = false
 var crumbled:bool = false
 var painted:bool = false
+var spendType = Lock.SPEND_TYPE.NORMAL
 
 func getColors() -> Array[C.olors]: return [color]
 
@@ -119,7 +120,7 @@ func _draw() -> void:
 		Lock.getFrameHighColor(isNegative(), negated).blend(Color(animColor,animAlpha)),
 		Lock.getFrameMainColor(isNegative(), negated).blend(Color(animColor,animAlpha)),
 		Lock.getFrameDarkColor(isNegative(), negated).blend(Color(animColor,animAlpha)),
-		isNegative()
+		isNegative(), true, false, spendType
 	)
 	var from:Vector2 = size/2-getOffset()
 	var index:int = 0

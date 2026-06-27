@@ -183,6 +183,20 @@ static var mods:Dictionary[StringName, Mod] = {
 		"Adds the Cosmic color. Added by Bored",
 		{&"CosmicColorUsed": ColorProblem.new([C.olors.COSMIC], "Cosmic Color Used")}
 	),
+	&"StarryWeakForceful": Mod.new(
+		"Starry, Weak and Forceful",
+		"Adds the Starry, Weak and Forceful properties to keys and doors. Added by Bored, original idea by MathCookie.",
+		{&"StarryWeakForceful": ComponentProblem.new([KeyBulk], func(component:GameComponent) -> bool: \
+			return component.collectType != KeyBulk.COLLECT_TYPE.NORMAL
+		, "Starry, Weak and Forceful")} #cant figure it out
+	),
+	&"Boolflip": Mod.new(
+		"Boolflip Keys",
+		"Allows keys that modify boolean properties, like Star, to toggle. Added by Bored",
+		{&"BoolflipUsed": ComponentProblem.new([KeyBulk], func(component:GameComponent) -> bool: \
+			return component.boolType == KeyBulk.BOOL_TYPE.TOGGLE
+		, "Boolflip Key")} # doesnt work :<
+	),
 	&"ElementalColors": Mod.new(
 		"Elemental Colors",
 		"Adds four elemental colours that interact with locks. Added by BerryGo",

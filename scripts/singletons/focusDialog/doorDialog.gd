@@ -73,6 +73,8 @@ func focusComponent(component:GameComponent, new:bool) -> void: # Lock or Remote
 		%lockConfigurationSelector.visible = main.focused.type != Door.TYPE.SIMPLE
 		%lockConfigurationSelector.setup(component)
 	%lockSettings.visible = true
+	%lockSpendTypeSelector.visible = Mods.active(&"StarryWeakForceful")
+	%lockSpendTypeSelector.setSelect(component.spendType)
 	
 	%remoteLockConvert.visible = Mods.active(&"RemoteLocks") and component is not RemoteLock
 
@@ -255,7 +257,13 @@ func _lockNegatedSet(value:bool) -> void:
 	var lock:GameComponent = main.componentFocused if main.componentFocused is Lock else main.focused
 	Changes.addChange(Changes.PropertyChange.new(lock,&"negated",value))
 	Changes.bufferSave()
-
+	
+func _lockSpendTypes(value:Lock.SPEND_TYPE):
+	if main.componentFocused is not Lock and main.focused is not RemoteLock: return
+	var lock:GameComponent = main.componentFocused if main.componentFocused is Lock else main.focused
+	Changes.addChange(Changes.PropertyChange.new(lock,&"spendType",value))
+	Changes.bufferSave()
+	
 func _partialBlastNumeratorSet(value:PackedInt64Array) -> void:
 	if main.componentFocused is not Lock and main.focused is not RemoteLock: return
 	var lock:GameComponent = main.componentFocused if main.componentFocused is Lock else main.focused
