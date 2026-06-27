@@ -40,6 +40,7 @@ func describe(object:GameObject) -> void:
 				string += LOCK_TYPES[object.locks[0].type] + Colors.getName(object.colorSpend) + " Door"
 				var additional:String = lockAdditionalInfo(object.locks[0], object)
 				if additional: string += " (Lock " + additional + ")"
+				if object.armament: string += " (Spend Armament)"
 				string += "\nCost: " + lockCost(object.locks[0])
 				if object.locks[0].color != object.colorSpend: 
 					if object.locks[0].type != Lock.TYPE.REMAINDER: # do NOT append the color to the end if its a remainder lock
@@ -49,6 +50,7 @@ func describe(object:GameObject) -> void:
 					string += Colors.getName(object.colorSpend)
 					string += " Lockless Door" if len(object.locks) == 0 else " Combo Door"
 				else: string += "Empty Gate" if len(object.locks) == 0 else "Gate"
+				if object.armament: string += " (Spend Armament)"
 				for lock in object.locks:
 					string += "\nLock: " + LOCK_TYPES[lock.type] + Colors.getName(lock.color) + ", Cost: " + lockCost(lock)
 					var additional:String = lockAdditionalInfo(lock, object)
