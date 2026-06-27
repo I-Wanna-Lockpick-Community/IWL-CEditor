@@ -2,10 +2,10 @@ extends Selector
 class_name LockSpendTypeSelector
 
 const ICONS:Array[Texture2D] = [
-	preload("res://assets/ui/focusDialog/lockBooleans/weak.png"),
-	preload("res://assets/ui/focusDialog/lockBooleans/normal.png"),
-	preload("res://assets/ui/focusDialog/lockBooleans/starry.png"),
-	preload("res://assets/ui/focusDialog/lockBooleans/forceful.png"),
+	preload("res://assets/ui/focusDialog/door/lockBooleans/weak.png"),
+	preload("res://assets/ui/focusDialog/door/lockBooleans/normal.png"),
+	preload("res://assets/ui/focusDialog/door/lockBooleans/starry.png"),
+	preload("res://assets/ui/focusDialog/door/lockBooleans/forceful.png"),
 ]
 
 func _ready() -> void:

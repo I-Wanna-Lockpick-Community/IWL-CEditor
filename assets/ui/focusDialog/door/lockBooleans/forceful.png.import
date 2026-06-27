@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://qciqomi4lpp8"
-path="res://.godot/imported/forceful.png-61b40b01c2e4caea9b7bf675517b613c.ctex"
+path="res://.godot/imported/forceful.png-20fbe9946dfb1124e60181b18c094c12.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/ui/focusDialog/lockBooleans/forceful.png"
-dest_files=["res://.godot/imported/forceful.png-61b40b01c2e4caea9b7bf675517b613c.ctex"]
+source_file="res://assets/ui/focusDialog/door/lockBooleans/forceful.png"
+dest_files=["res://.godot/imported/forceful.png-20fbe9946dfb1124e60181b18c094c12.ctex"]
 
 [params]
 

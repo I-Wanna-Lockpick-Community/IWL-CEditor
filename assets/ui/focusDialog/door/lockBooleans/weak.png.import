@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://cekqcy03yh1v5"
-path="res://.godot/imported/weak.png-5025c699c6c28107a999b26ca9e6249c.ctex"
+path="res://.godot/imported/weak.png-bb1717bcd88a9fa965a2b2c40eb14ca5.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/ui/focusDialog/lockBooleans/weak.png"
-dest_files=["res://.godot/imported/weak.png-5025c699c6c28107a999b26ca9e6249c.ctex"]
+source_file="res://assets/ui/focusDialog/door/lockBooleans/weak.png"
+dest_files=["res://.godot/imported/weak.png-bb1717bcd88a9fa965a2b2c40eb14ca5.ctex"]
 
 [params]
 

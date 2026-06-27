@@ -1,17 +1,17 @@
 extends Selector
-class_name KeyBoolSelector
+class_name KeyBoolTypeSelector
 
 const ICONS:Array[Texture2D] = [
-	preload("res://assets/ui/focusDialog/keySplitType/star.png"),
-	preload("res://assets/ui/focusDialog/keySplitType/unstar.png"),
-	preload("res://assets/ui/focusDialog/keySplitType/signflip.png"),
+	preload("res://assets/ui/focusDialog/key/type/star/star.png"),
+	preload("res://assets/ui/focusDialog/key/type/star/unstar.png"),
+	preload("res://assets/ui/focusDialog/key/type/rotor/signflip.png"),
 ]
 
 func _ready() -> void:
 	columns = KeyBulk.BOOL_TYPES
 	options = range(KeyBulk.BOOL_TYPES)
 	defaultValue = KeyBulk.BOOL_TYPE.ENABLE
-	buttonType = KeyBoolSelectorButton
+	buttonType = KeyBoolTypeSelectorButton
 	super()
 	for button in buttons:
 		var explanation:ControlExplanation
@@ -30,10 +30,10 @@ func setSelect(value:Variant) -> void:
 	manuallySetting = false
 	selected = value
 
-class KeyBoolSelectorButton extends SelectorButton:
+class KeyBoolTypeSelectorButton extends SelectorButton:
 	var drawMain:RID
 
-	func _init(_value:KeyBulk.BOOL_TYPE, _selector:KeyBoolSelector):
+	func _init(_value:KeyBulk.BOOL_TYPE, _selector:KeyBoolTypeSelector):
 		custom_minimum_size = Vector2(16,16)
 		z_index = 1
 		super(_value, _selector)

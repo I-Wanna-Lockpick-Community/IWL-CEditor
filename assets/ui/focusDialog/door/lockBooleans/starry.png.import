@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://bne4fu6f8mfgx"
-path="res://.godot/imported/starry.png-c2bef51fa1b1f227c67d6d68d345a38b.ctex"
+path="res://.godot/imported/starry.png-850c954018fb75f0002374aaf81320da.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/ui/focusDialog/lockBooleans/starry.png"
-dest_files=["res://.godot/imported/starry.png-c2bef51fa1b1f227c67d6d68d345a38b.ctex"]
+source_file="res://assets/ui/focusDialog/door/lockBooleans/starry.png"
+dest_files=["res://.godot/imported/starry.png-850c954018fb75f0002374aaf81320da.ctex"]
 
 [params]
 

@@ -20,12 +20,12 @@ func focus(focused:KeyBulk, new:bool, _dontRedirect:bool) -> void:
 	%keyOperationSelector.visible = focused.type == KeyBulk.TYPE.OPERATOR
 	%keyOperationSelector.setSelect(focused.operation)
 	%keyRotorSelector.visible = focused.type == KeyBulk.TYPE.ROTOR
-	%keyBoolSelector.visible = focused.type in [KeyBulk.TYPE.STAR, KeyBulk.TYPE.CURSE]
-	%keyBoolSelector.setSelect(focused.boolType)
+	%keyBoolTypeSelector.visible = focused.type in [KeyBulk.TYPE.STAR, KeyBulk.TYPE.CURSE]
+	%keyBoolTypeSelector.setSelect(focused.boolType)
 	%keyCollectTypeSelector.visible = focused.type not in [KeyBulk.TYPE.STAR, KeyBulk.TYPE.CURSE] && Mods.active(&"StarryWeakForceful")
-	%keyCollectTypeSelector.setSelect(focused.collectType) # GODOT IT DOES EXIST AHH
+	%keyCollectTypeSelector.setSelect(focused.collectType)
 	%keyRotorSelector.setup(focused)
-	%keyBoolSelector.setup()
+	%keyBoolTypeSelector.setup()
 	%keyReciprocal.visible = focused.type == KeyBulk.TYPE.ROTOR && Mods.active(&"OperatorKeys")
 	if focused.type == KeyBulk.TYPE.ROTOR: %keyRotorSelector.setValue(focused.count)
 	if main.interacted and !main.interacted.is_visible_in_tree(): main.deinteract()
@@ -65,7 +65,7 @@ func receiveKey(event:InputEventKey) -> bool:
 	return true
 
 func changedMods() -> void:
-	%keyBoolSelector.setup()
+	%keyBoolTypeSelector.setup()
 	%keyGlisteningToggle.visible = Mods.active(&"Glistening")
 	if main.focused is KeyBulk:
 		%keyPartialInfinite.visible = Mods.active(&"PartialInfKeys") and main.focused.infinite
@@ -121,12 +121,12 @@ func _keyRotorSelected(value:KeyRotorSelector.VALUE):
 		KeyRotorSelector.VALUE.NEGROTOR: Changes.addChange(Changes.PropertyChange.new(main.focused,&"count",M.nI()))
 	Changes.bufferSave()
 
-func _keyBoolSelected(value:KeyBulk.BOOL_TYPE):
+func _keyBoolTypeSelected(value:KeyBulk.BOOL_TYPE) -> void:
 	if main.focused is not KeyBulk: return
 	Changes.addChange(Changes.PropertyChange.new(main.focused,&"boolType",value))
 	Changes.bufferSave()
 
-func _keyCollectTypeSelected(value:KeyBulk.COLLECT_TYPE):
+func _keyCollectTypeSelected(value:Player.KEYCHANGE_TYPE) -> void:
 	if main.focused is not KeyBulk: return
 	Changes.addChange(Changes.PropertyChange.new(main.focused,&"collectType",value))
 	Changes.bufferSave()

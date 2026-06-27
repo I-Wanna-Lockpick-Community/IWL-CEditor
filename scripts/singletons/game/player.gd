@@ -458,23 +458,22 @@ func toggleCamera() -> void:
 	cameraZoomTarget = 1
 	AudioManager.play(preload("res://resources/sounds/player/camera.wav"))
 
-<<<<<<< HEAD
-func changeKeys(color:C.olors, after:PackedInt64Array) -> void:
-	if star[color]: return
-	GameChanges.applyChange(GameChanges.newColorChange(GameChanges.TYPE.KeyChange, color, M.keepAbove(after,glisten[color])))
+const KEYCHANGE_TYPES = 4
+enum KEYCHANGE_TYPE {NONE, NORMAL, STAR, ALL}
 
-func changeGlisten(color:C.olors, after:PackedInt64Array) -> void:
+func changeKeys(color:C.olors, after:PackedInt64Array, collectType:KEYCHANGE_TYPE=KEYCHANGE_TYPE.NORMAL) -> void:
+	match collectType:
+		KEYCHANGE_TYPE.NONE: return # ???
+		KEYCHANGE_TYPE.NORMAL: if star[color]: return
+		KEYCHANGE_TYPE.STAR: if !star[color]: return
+	if collectType in [KEYCHANGE_TYPE.STAR, KEYCHANGE_TYPE.ALL]:
+		GameChanges.applyChange(GameChanges.newColorChange(GameChanges.TYPE.KeyChange, color, after))
+	else: GameChanges.applyChange(GameChanges.newColorChange(GameChanges.TYPE.KeyChange, color, M.keepAbove(after,glisten[color])))
+
+func changeGlisten(color:C.olors, after:PackedInt64Array, collectType:KEYCHANGE_TYPE=KEYCHANGE_TYPE.NORMAL) -> void:
+	match collectType:
+		KEYCHANGE_TYPE.NONE: return # ???
+		KEYCHANGE_TYPE.NORMAL: if star[color]: return
+		KEYCHANGE_TYPE.STAR: if !star[color]: return
 	if star[color]: return
 	GameChanges.applyChange(GameChanges.newColorChange(GameChanges.TYPE.GlistenChange, color, after))
-=======
-func changeKeys(color:C.olors, after:PackedInt64Array,override_star:bool=true) -> void:
-	if star[color] and not override_star: return
-	if star[color] and override_star:
-		GameChanges.addChange(GameChanges.KeyChange.new(color, after))
-	else:
-		GameChanges.addChange(GameChanges.KeyChange.new(color, M.keepAbove(after,glisten[color])))
-
-func changeGlisten(color:C.olors, after:PackedInt64Array,override_star:bool=true) -> void:
-	if star[color] and not override_star: return
-	GameChanges.addChange(GameChanges.GlistenChange.new(color, after))
->>>>>>> bdev

@@ -1,12 +1,16 @@
 extends PanelContainer
 class_name MouseoverPanel
 
-const LOCK_TYPES = ["", "Blank ", "Blast ", "All ", "Exact ", "Starry ", "Remainder "]
+const LOCK_TYPES = ["", "Blank ", "Blast ", "All ", "Exact ", "Glistening ", "Remainder "]
 
 func describe(object:GameObject) -> void:
 	var string:String = ""
 	match object.get_script():
 		KeyBulk:
+			match object.collectType:
+				Player.KEYCHANGE_TYPE.NONE: string += "Weak "
+				Player.KEYCHANGE_TYPE.STAR: string += "Starry "
+				Player.KEYCHANGE_TYPE.ALL: string += "Forceful "
 			match object.type:
 				KeyBulk.TYPE.EXACT: string += "Exact "
 				KeyBulk.TYPE.STAR: string += "Unstar " if object.un else "Star "
@@ -36,6 +40,10 @@ func describe(object:GameObject) -> void:
 				string += "\n- Effects -\nGlistening!"
 		Door:
 			if object.type == Door.TYPE.SIMPLE:
+				match object.locks[0].spendType:
+					Lock.SPEND_TYPE.NONE: string += "Weak "
+					Lock.SPEND_TYPE.STAR: string += "Starry "
+					Lock.SPEND_TYPE.ALL: string += "Forceful "
 				if object.oscillate: string += "Oscillating "
 				string += LOCK_TYPES[object.locks[0].type] + Colors.getName(object.colorSpend) + " Door"
 				var additional:String = lockAdditionalInfo(object.locks[0], object)
@@ -52,7 +60,12 @@ func describe(object:GameObject) -> void:
 				else: string += "Empty Gate" if len(object.locks) == 0 else "Gate"
 				if object.armament: string += " (Spend Armament)"
 				for lock in object.locks:
-					string += "\nLock: " + LOCK_TYPES[lock.type] + Colors.getName(lock.color) + ", Cost: " + lockCost(lock)
+					string += "\nLock: " + LOCK_TYPES[lock.type] + Colors.getName(lock.color) + ", Cost: "
+					match lock.spendType:
+						Lock.SPEND_TYPE.NONE: string += "Weak "
+						Lock.SPEND_TYPE.STAR: string += "Starry "
+						Lock.SPEND_TYPE.ALL: string += "Forceful "
+					string += lockCost(lock)
 					var additional:String = lockAdditionalInfo(lock, object)
 					if additional: string += " (" + additional + ")"
 			if object.hasInitialColor(C.olors.GLITCH): string += "\nMimic: " + Colors.getName(object.glitchMimic)
@@ -60,6 +73,10 @@ func describe(object:GameObject) -> void:
 			string += effects(object)
 			
 		RemoteLock:
+			match object.spendType:
+				Lock.SPEND_TYPE.NONE: string += "Weak "
+				Lock.SPEND_TYPE.STAR: string += "Starry "
+				Lock.SPEND_TYPE.ALL: string += "Forceful "
 			string += LOCK_TYPES[object.type] + Colors.getName(object.color) + " Remote Lock\n"
 			string += ("S" if object.satisfied else "Uns") + "atisfied, Cost: " + lockCost(object)
 			if object.type == Lock.TYPE.GLISTENING: string += " Glistening"
@@ -122,7 +139,7 @@ func effects(object:GameObject) -> String:
 			Door.STAR_STATE.STARRED_UNLOCKED: string += "\nStarred! (Unlocked,"
 			Door.STAR_STATE.STARRED_LOCKED: string += "\nStarred! (Locked,"
 		if object.starred != Door.STAR_STATE.UNSTARRED:
-			string += "\n    Spends " + M.str(object.starredSpendKey)
+			string += "\nSpends " + M.str(object.starredSpendKey)
 			if M.ex(object.starredSpendGlisten):
 				string += "(" + M.str(object.starredSpendGlisten) + ")"
 			if object.hasArmamentLocks(): string += " (+ Armament locks)"

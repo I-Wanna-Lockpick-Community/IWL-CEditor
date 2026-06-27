@@ -187,7 +187,7 @@ static var mods:Dictionary[StringName, Mod] = {
 		"Starry, Weak and Forceful",
 		"Adds the Starry, Weak and Forceful properties to keys and doors. Added by Bored, original idea by MathCookie.",
 		{&"StarryWeakForceful": ComponentProblem.new([KeyBulk], func(component:GameComponent) -> bool: \
-			return component.collectType != KeyBulk.COLLECT_TYPE.NORMAL
+			return component.collectType != Player.KEYCHANGE_TYPE.NORMAL
 		, "Starry, Weak and Forceful")} #cant figure it out
 	),
 	&"Boolflip": Mod.new(

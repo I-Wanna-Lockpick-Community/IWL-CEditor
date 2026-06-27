@@ -258,7 +258,7 @@ func _lockNegatedSet(value:bool) -> void:
 	Changes.addChange(Changes.PropertyChange.new(lock,&"negated",value))
 	Changes.bufferSave()
 	
-func _lockSpendTypes(value:Lock.SPEND_TYPE):
+func _lockSpendTypeSet(value:Lock.SPEND_TYPE):
 	if main.componentFocused is not Lock and main.focused is not RemoteLock: return
 	var lock:GameComponent = main.componentFocused if main.componentFocused is Lock else main.focused
 	Changes.addChange(Changes.PropertyChange.new(lock,&"spendType",value))

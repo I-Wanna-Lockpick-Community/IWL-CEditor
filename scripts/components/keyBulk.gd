@@ -14,9 +14,6 @@ const OPERATION_NAMES:Array[String] = ["Set", "Add", "Subtract", "Multiply", "Di
 const BOOL_TYPES = 3
 enum BOOL_TYPE {ENABLE, DISABLE, TOGGLE}
 
-const COLLECT_TYPES = 4
-enum COLLECT_TYPE {NONE, NORMAL, STAR, ALL}
-
 # colors that use textures
 const TEXTURE_COLORS:Array[C.olors] = [C.olors.MASTER, C.olors.PURE, C.olors.STONE, C.olors.DYNAMITE, C.olors.QUICKSILVER, C.olors.ICE, C.olors.MUD, C.olors.GRAFFITI, C.olors.ERROR, C.olors.COSMIC]
 
@@ -70,7 +67,7 @@ const PROPERTIES:Array[StringName] = [
 
 static var ARRAYS:Dictionary[StringName,Variant] = {}
 
-var collectType:COLLECT_TYPE = COLLECT_TYPE.NORMAL
+var collectType:Player.KEYCHANGE_TYPE = Player.KEYCHANGE_TYPE.NORMAL
 var color:C.olors = C.olors.WHITE
 var type:TYPE = TYPE.NORMAL
 var count:PackedInt64Array = M.ONE()
@@ -204,9 +201,9 @@ func _draw() -> void:
 		else:
 			RenderingServer.canvas_item_add_texture_rect(drawSymbol,rect,GLISTENING_SYMBOL)
 	match collectType:
-		COLLECT_TYPE.NONE: RenderingServer.canvas_item_add_texture_rect(drawSymbol,rect,OVERLAY_WEAK, false, Color(Game.darkTone[getColor(COLOR_STEP.FINAL)],0.6))
-		COLLECT_TYPE.ALL: RenderingServer.canvas_item_add_texture_rect(drawSymbol,rect,OVERLAY_FORCEFUL, false, Color(Game.darkTone[getColor(COLOR_STEP.FINAL)],0.6))
-		COLLECT_TYPE.STAR: RenderingServer.canvas_item_add_texture_rect(drawSymbol,rect,OVERLAY_STAR, false, Color(Game.darkTone[getColor(COLOR_STEP.FINAL)],0.6))
+		Player.KEYCHANGE_TYPE.NONE: RenderingServer.canvas_item_add_texture_rect(drawSymbol,rect,OVERLAY_WEAK, false, Color(Game.darkTone[getColor(COLOR_STEP.FINAL)],0.6))
+		Player.KEYCHANGE_TYPE.ALL: RenderingServer.canvas_item_add_texture_rect(drawSymbol,rect,OVERLAY_FORCEFUL, false, Color(Game.darkTone[getColor(COLOR_STEP.FINAL)],0.6))
+		Player.KEYCHANGE_TYPE.STAR: RenderingServer.canvas_item_add_texture_rect(drawSymbol,rect,OVERLAY_STAR, false, Color(Game.darkTone[getColor(COLOR_STEP.FINAL)],0.6))
 
 func keycountColor() -> Color: return Color("#363029") if M.negative(M.sign(count)) else Color("#ebe3dd")
 func keycountOutlineColor() -> Color: return Color("#d6cfc9") if M.negative(M.sign(count)) else Color("#363029")
@@ -257,6 +254,7 @@ func propertyChangedInit(property:StringName) -> void:
 	if property == &"type":
 		if type not in [TYPE.NORMAL, TYPE.EXACT] and M.neq(count, M.ONE()): Changes.addChange(Changes.PropertyChange.new(self,&"count",M.ONE()))
 		if type not in [TYPE.STAR, TYPE.CURSE] and boolType != BOOL_TYPE.ENABLE: Changes.addChange(Changes.PropertyChange.new(self,&"boolType",BOOL_TYPE.ENABLE))
+		if type in [TYPE.STAR, TYPE.CURSE] and collectType != Player.KEYCHANGE_TYPE.NORMAL: Changes.addChange(Changes.PropertyChange.new(self,&"collectType",Player.KEYCHANGE_TYPE.NORMAL))
 		if type != TYPE.ROTOR: Changes.addChange(Changes.PropertyChange.new(self,&"reciprocal",false))
 		Changes.addChange(Changes.PropertyChange.new(self,&"altColor",color))
 	if property == &"reciprocal":
@@ -299,37 +297,30 @@ func collect(player:Player) -> void:
 	if partialInfiniteCount: return
 	var collectColor:C.olors = getColor(COLOR_STEP.FINAL)
 	var collectAltColor:C.olors = getAltColor(COLOR_STEP.FINAL) # for operator
-	var canModify:bool = false
-	match collectType:
-		COLLECT_TYPE.NORMAL: canModify = !player.star[collectColor]
-		COLLECT_TYPE.ALL: canModify = true
-		COLLECT_TYPE.STAR: canModify = player.star[collectColor]
 	if glistening:
 		match type:
-			TYPE.NORMAL: if canModify: player.changeGlisten(collectColor, M.add(player.glisten[collectColor], count))
-			TYPE.EXACT: if canModify: player.changeGlisten(collectColor, count)
+			TYPE.NORMAL: player.changeGlisten(collectColor, M.add(player.glisten[collectColor], count), collectType)
+			TYPE.EXACT: player.changeGlisten(collectColor, count, collectType)
 			TYPE.ROTOR:
-				if canModify:
-					if reciprocal: player.changeGlisten(collectColor, M.divide(count,player.glisten[collectColor]))
-					else: player.changeGlisten(collectColor, M.times(player.glisten[collectColor], count))
+				if reciprocal: player.changeGlisten(collectColor, M.divide(count,player.glisten[collectColor]), collectType)
+				else: player.changeGlisten(collectColor, M.times(player.glisten[collectColor], count), collectType)
 			TYPE.OPERATOR:
-				if canModify:
-					match operation:
-						OPERATION.SET: player.changeGlisten(collectColor, player.glisten[collectAltColor])
-						OPERATION.ADD: player.changeGlisten(collectColor, M.add(player.glisten[collectColor], player.glisten[collectAltColor]))
-						OPERATION.SUBTRACT: player.changeGlisten(collectColor, M.sub(player.glisten[collectColor], player.glisten[collectAltColor]))
-						OPERATION.MULTIPLY: player.changeGlisten(collectColor, M.times(player.glisten[collectColor], player.glisten[collectAltColor]))
-						OPERATION.DIVIDE: player.changeGlisten(collectColor, M.divide(player.glisten[collectColor], player.glisten[collectAltColor]))
-						OPERATION.MODULO: player.changeGlisten(collectColor, M.modulo(player.glisten[collectColor], player.glisten[collectAltColor]))
+				match operation:
+					OPERATION.SET: player.changeGlisten(collectColor, player.glisten[collectAltColor], collectType)
+					OPERATION.ADD: player.changeGlisten(collectColor, M.add(player.glisten[collectColor], player.glisten[collectAltColor]), collectType)
+					OPERATION.SUBTRACT: player.changeGlisten(collectColor, M.sub(player.glisten[collectColor], player.glisten[collectAltColor]), collectType)
+					OPERATION.MULTIPLY: player.changeGlisten(collectColor, M.times(player.glisten[collectColor], player.glisten[collectAltColor]), collectType)
+					OPERATION.DIVIDE: player.changeGlisten(collectColor, M.divide(player.glisten[collectColor], player.glisten[collectAltColor]), collectType)
+					OPERATION.MODULO: player.changeGlisten(collectColor, M.modulo(player.glisten[collectColor], player.glisten[collectAltColor]), collectType)
 
 	match type:
-		TYPE.NORMAL: if canModify: player.changeKeys(collectColor, M.add(player.key[collectColor], count))
-		TYPE.EXACT: if canModify: player.changeKeys(collectColor, count)
+		TYPE.NORMAL: player.changeKeys(collectColor, M.add(player.key[collectColor], count), collectType)
+		TYPE.EXACT: player.changeKeys(collectColor, count, collectType)
 		TYPE.ROTOR:
-			if reciprocal: player.changeKeys(collectColor, M.divide(count,player.key[collectColor]))
-			else: player.changeKeys(collectColor, M.times(player.key[collectColor], count))
+			if reciprocal: player.changeKeys(collectColor, M.divide(count,player.key[collectColor]), collectType)
+			else: player.changeKeys(collectColor, M.times(player.key[collectColor], count), collectType)
 		TYPE.STAR, TYPE.CURSE:
-			var changeType:GameChanges.TYPE = GameChanges.TYPE.StarChange if type == TYPE.STAR else GameChanges.TYPE.CurseType
+			var changeType:GameChanges.TYPE = GameChanges.TYPE.StarChange if type == TYPE.STAR else GameChanges.TYPE.CurseChange
 			match boolType:
 				BOOL_TYPE.ENABLE: GameChanges.addChange(GameChanges.newColorChange(changeType, collectColor, true))
 				BOOL_TYPE.DISABLE: GameChanges.addChange(GameChanges.newColorChange(changeType, collectColor, false))
@@ -337,14 +328,13 @@ func collect(player:Player) -> void:
 					if type == TYPE.STAR: GameChanges.addChange(GameChanges.newColorChange(changeType, collectColor, !player.star[collectColor]))
 					else: GameChanges.addChange(GameChanges.newColorChange(changeType, collectColor, !player.curse[collectColor]))
 		TYPE.OPERATOR:
-			if canModify:
-				match operation:
-					OPERATION.SET: player.changeKeys(collectColor, player.key[collectAltColor])
-					OPERATION.ADD: player.changeKeys(collectColor, M.add(player.key[collectColor], player.key[collectAltColor]))
-					OPERATION.SUBTRACT: player.changeKeys(collectColor, M.sub(player.key[collectColor], player.key[collectAltColor]))
-					OPERATION.MULTIPLY: player.changeKeys(collectColor, M.times(player.key[collectColor], player.key[collectAltColor]))
-					OPERATION.DIVIDE: player.changeKeys(collectColor, M.divide(player.key[collectColor], player.key[collectAltColor]))
-					OPERATION.MODULO: player.changeKeys(collectColor, M.modulo(player.key[collectColor], player.key[collectAltColor]))
+			match operation:
+				OPERATION.SET: player.changeKeys(collectColor, player.key[collectAltColor], collectType)
+				OPERATION.ADD: player.changeKeys(collectColor, M.add(player.key[collectColor], player.key[collectAltColor]), collectType)
+				OPERATION.SUBTRACT: player.changeKeys(collectColor, M.sub(player.key[collectColor], player.key[collectAltColor]), collectType)
+				OPERATION.MULTIPLY: player.changeKeys(collectColor, M.times(player.key[collectColor], player.key[collectAltColor]), collectType)
+				OPERATION.DIVIDE: player.changeKeys(collectColor, M.divide(player.key[collectColor], player.key[collectAltColor]), collectType)
+				OPERATION.MODULO: player.changeKeys(collectColor, M.modulo(player.key[collectColor], player.key[collectAltColor]), collectType)
 
 	if infinite:
 		flashAnimation()
