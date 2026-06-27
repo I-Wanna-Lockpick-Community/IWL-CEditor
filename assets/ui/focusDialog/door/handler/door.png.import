@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cx430oa2p4ep8"
-path="res://.godot/imported/eroded.png-5204dd9ca773aeac8c1fd9a2cbe1fd90.ctex"
+uid="uid://7p45f24m55l1"
+path="res://.godot/imported/door.png-6b1c6fd1393c01b86d381319d3f81b9e.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/game/door/symbols/eroded.png"
-dest_files=["res://.godot/imported/eroded.png-5204dd9ca773aeac8c1fd9a2cbe1fd90.ctex"]
+source_file="res://assets/ui/focusDialog/door/handler/door.png"
+dest_files=["res://.godot/imported/door.png-6b1c6fd1393c01b86d381319d3f81b9e.ctex"]
 
 [params]
 

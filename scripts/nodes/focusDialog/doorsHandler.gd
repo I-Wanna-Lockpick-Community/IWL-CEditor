@@ -30,7 +30,7 @@ func _select(button:Button) -> void:
 	remoteLock.queue_redraw()
 
 class DoorsHandlerButton extends HandlerButton:
-	const ICON:Texture2D = preload("res://assets/ui/focusDialog/door/handler/spend.png")
+	const ICON:Texture2D = preload("res://assets/ui/focusDialog/door/handler/door.png")
 
 	var door:Door
 
