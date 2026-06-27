@@ -146,11 +146,13 @@ func _process(delta:float) -> void:
 	if !componentDragged:
 		objectsHovered = []
 		objectHovered = null
+		var hoverZIndex:int = 0
 		if !Input.is_action_pressed(&"heldKeepMode") and !settingsOpen:
 			for object in Game.objectsParent.get_children():
 				if mode == MODE.SELECT or Game.playState == Game.PLAY_STATE.PLAY or (mode == MODE.KEY and object is KeyBulk) or (mode == MODE.DOOR and object is Door) or (mode == MODE.OTHER and object.get_script() == otherObjects.selected):
-					if Rect2(object.getDrawPosition(), object.size).has_point(mouseWorldPosition) and (Game.playState != Game.PLAY_STATE.PLAY or object.active):
+					if hoverZIndex <= object.z_index and Rect2(object.getDrawPosition(), object.size).has_point(mouseWorldPosition) and (Game.playState != Game.PLAY_STATE.PLAY or object.active):
 						objectHovered = object
+						hoverZIndex = object.z_index
 						objectsHovered.append(object)
 			if focusDialog.focused is Door:
 				for lock in focusDialog.focused.locks:
