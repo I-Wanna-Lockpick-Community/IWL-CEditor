@@ -1,7 +1,7 @@
 extends PlaceholderObject
 class_name PlayerPlaceholderObject
 
-var undoStack:Array[RefCounted]:
+var undoStack:Array[Array]:
 	get(): return GameChanges.undoStack
 
 func outlineTex() -> Texture2D:

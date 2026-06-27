@@ -460,8 +460,8 @@ func toggleCamera() -> void:
 
 func changeKeys(color:C.olors, after:PackedInt64Array) -> void:
 	if star[color]: return
-	GameChanges.addChange(GameChanges.KeyChange.new(color, M.keepAbove(after,glisten[color])))
+	GameChanges.applyChange(GameChanges.newColorChange(GameChanges.TYPE.KeyChange, color, M.keepAbove(after,glisten[color])))
 
 func changeGlisten(color:C.olors, after:PackedInt64Array) -> void:
 	if star[color]: return
-	GameChanges.addChange(GameChanges.GlistenChange.new(color, after))
+	GameChanges.applyChange(GameChanges.newColorChange(GameChanges.TYPE.GlistenChange, color, after))

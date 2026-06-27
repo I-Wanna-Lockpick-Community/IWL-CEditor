@@ -12,7 +12,7 @@ func focus(focused:GameObject, new:bool, _dontRedirect:bool) -> void:
 	%playerSettings.visible = focused is PlayerPlaceholderObject
 	if new: setSelectedColor(C.olors.WHITE)
 	else: _playerColorSelected(color)
-	var undoPositions:int = focused.undoStack.reduce(func(accum, change): return accum + 1 if change is GameChanges.UndoSeparator else accum, -1)
+	var undoPositions:int = focused.undoStack.reduce(func(accum, change): return accum + 1 if change[0] == GameChanges.TYPE.UndoSeparator else accum, -1)
 	%playerUndostack.text = "%s positions in undo history" % undoPositions
 	%playerUndostack.visible = undoPositions > 0
 	if %playerSpawnSettings.visible:

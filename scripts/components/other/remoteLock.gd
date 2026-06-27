@@ -252,8 +252,8 @@ func check(player:Player) -> void:
 		if gamePainted and (M.nex(player.key[C.olors.GRAFFITI]) or C.olors.GRAFFITI in gateArmamentImmunities): return
 	var satisfiedBefore:bool = satisfied
 	var costBefore:PackedInt64Array = cost
-	GameChanges.addChange(GameChanges.PropertyChange.new(self,&"satisfied",canOpen(player)))
-	GameChanges.addChange(GameChanges.PropertyChange.new(self,&"cost",getCost(player, true)))
+	GameChanges.applyChange(GameChanges.newPropertyChange(self,&"satisfied",canOpen(player)))
+	GameChanges.applyChange(GameChanges.newPropertyChange(self,&"cost",getCost(player, true)))
 	if getColor(Lock.COLOR_STEP.EFFECTIVE) == C.olors.NONE and !satisfied: Game.crash(); return
 	if !(satisfiedBefore == satisfied and M.eq(costBefore, cost)):
 		if satisfied: AudioManager.play(preload("res://resources/sounds/remoteLock/success.wav"))
@@ -316,7 +316,7 @@ func checkDoors() -> void:
 	var any:bool = false
 	for door in doors:
 		if door.active: any = true
-	GameChanges.addChange(GameChanges.PropertyChange.new(self,&"active",any))
+	GameChanges.applyChange(GameChanges.newPropertyChange(self,&"active",any))
 	queue_redraw()
 
 func setMimic(mimicType:C.olors, setColor:C.olors) -> void:
@@ -325,8 +325,8 @@ func setMimic(mimicType:C.olors, setColor:C.olors) -> void:
 		C.olors.GLITCH: property = &"glitchMimic"
 		C.olors.ERROR: property = &"errorMimic"
 	if curseUnaffected():
-		if color == mimicType: GameChanges.addChange(GameChanges.PropertyChange.new(self, property, setColor))
-	elif curseColor == mimicType: GameChanges.addChange(GameChanges.PropertyChange.new(self, &"curseMimic", setColor))
+		if color == mimicType: GameChanges.applyChange(GameChanges.newPropertyChange(self, property, setColor))
+	elif curseColor == mimicType: GameChanges.applyChange(GameChanges.newPropertyChange(self, &"curseMimic", setColor))
 	queue_redraw()
 
 func curseUnaffected() -> bool:
@@ -337,19 +337,19 @@ func curseCheck(player:Player) -> void:
 	var willCurse:bool = player.curseMode > 0 and (!cursed or (curseColor != player.curseColor and curseColor != C.olors.PURE))
 	var willCurseRedundant:bool = willCurse and color == player.curseColor
 	if willCurse and !willCurseRedundant:
-		GameChanges.addChange(GameChanges.PropertyChange.new(self,&"cursed",true))
-		GameChanges.addChange(GameChanges.PropertyChange.new(self,&"curseColor",player.curseColor))
+		GameChanges.applyChange(GameChanges.newPropertyChange(self,&"cursed",true))
+		GameChanges.applyChange(GameChanges.newPropertyChange(self,&"curseColor",player.curseColor))
 		if Colors.getDef(player.curseColor).isMimic:
-			GameChanges.addChange(GameChanges.PropertyChange.new(self,&"curseMimic",player.curseColor))
+			GameChanges.applyChange(GameChanges.newPropertyChange(self,&"curseMimic",player.curseColor))
 		makeCurseParticles(curseColor, 1, 0.2, 0.5)
 		AudioManager.play(preload("res://resources/sounds/door/curse.wav"))
 		GameChanges.bufferSave()
 	elif cursed and (willCurseRedundant or (player.curseMode < 0 and curseColor == player.curseColor)):
-		GameChanges.addChange(GameChanges.PropertyChange.new(self,&"cursed",false))
+		GameChanges.applyChange(GameChanges.newPropertyChange(self,&"cursed",false))
 		if curseColor == C.olors.GLITCH:
-			GameChanges.addChange(GameChanges.PropertyChange.new(self,&"curseMimic",C.olors.GLITCH))
+			GameChanges.applyChange(GameChanges.newPropertyChange(self,&"curseMimic",C.olors.GLITCH))
 		if curseColor == C.olors.ERROR:
-			GameChanges.addChange(GameChanges.PropertyChange.new(self,&"curseMimic",C.olors.ERROR))
+			GameChanges.applyChange(GameChanges.newPropertyChange(self,&"curseMimic",C.olors.ERROR))
 		if willCurseRedundant:
 			makeCurseParticles(player.curseColor, 1, 0.2, 0.5)
 			AudioManager.play(preload("res://resources/sounds/door/curse.wav"))
@@ -366,29 +366,29 @@ func makeCurseParticles(particleColor:C.olors, mode:int, scaleMin:float=1,scaleM
 func auraCheck(player:Player) -> void:
 	var deAuraed:bool = false
 	if player.auraRed and gameFrozen and getColor(Lock.COLOR_STEP.EFFECTIVE) != C.olors.MAROON:
-		GameChanges.addChange(GameChanges.PropertyChange.new(self,&"gameFrozen",false))
+		GameChanges.applyChange(GameChanges.newPropertyChange(self,&"gameFrozen",false))
 		makeDebris(Door.Debris, C.olors.WHITE)
 		deAuraed = true
 	if player.auraGreen and gameCrumbled and getColor(Lock.COLOR_STEP.EFFECTIVE) != C.olors.FOREST:
-		GameChanges.addChange(GameChanges.PropertyChange.new(self,&"gameCrumbled",false))
+		GameChanges.applyChange(GameChanges.newPropertyChange(self,&"gameCrumbled",false))
 		makeDebris(Door.Debris, C.olors.BROWN)
 		deAuraed = true
 	if player.auraBlue and gamePainted and getColor(Lock.COLOR_STEP.EFFECTIVE) != C.olors.NAVY:
-		GameChanges.addChange(GameChanges.PropertyChange.new(self,&"gamePainted",false))
+		GameChanges.applyChange(GameChanges.newPropertyChange(self,&"gamePainted",false))
 		makeDebris(Door.Debris, C.olors.ORANGE)
 		deAuraed = true
 	if armament: return
 	var auraed:bool = false
 	if player.auraMaroon and !gameFrozen and getColor(Lock.COLOR_STEP.EFFECTIVE) != C.olors.RED:
-		GameChanges.addChange(GameChanges.PropertyChange.new(self,&"gameFrozen",true))
+		GameChanges.applyChange(GameChanges.newPropertyChange(self,&"gameFrozen",true))
 		makeDebris(Door.Debris, C.olors.WHITE)
 		auraed = true
 	if player.auraForest and !gameCrumbled and getColor(Lock.COLOR_STEP.EFFECTIVE) != C.olors.GREEN:
-		GameChanges.addChange(GameChanges.PropertyChange.new(self,&"gameCrumbled",true))
+		GameChanges.applyChange(GameChanges.newPropertyChange(self,&"gameCrumbled",true))
 		makeDebris(Door.Debris, C.olors.BROWN)
 		auraed = true
 	if player.auraNavy and !gamePainted and getColor(Lock.COLOR_STEP.EFFECTIVE) != C.olors.BLUE:
-		GameChanges.addChange(GameChanges.PropertyChange.new(self,&"gamePainted",true))
+		GameChanges.applyChange(GameChanges.newPropertyChange(self,&"gamePainted",true))
 		makeDebris(Door.Debris, C.olors.ORANGE)
 		auraed = true
 	

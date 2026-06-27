@@ -300,8 +300,8 @@ func collect(player:Player) -> void:
 		TYPE.ROTOR:
 			if reciprocal: player.changeKeys(collectColor, M.divide(count,player.key[collectColor]))
 			else: player.changeKeys(collectColor, M.times(player.key[collectColor], count))
-		TYPE.STAR: GameChanges.addChange(GameChanges.StarChange.new(collectColor, !un))
-		TYPE.CURSE: GameChanges.addChange(GameChanges.CurseChange.new(collectColor, !un))
+		TYPE.STAR: GameChanges.applyChange(GameChanges.newColorChange(GameChanges.TYPE.StarChange, collectColor, !un))
+		TYPE.CURSE: GameChanges.applyChange(GameChanges.newColorChange(GameChanges.TYPE.CurseChange, collectColor, !un))
 		TYPE.OPERATOR:
 			match operation:
 				OPERATION.SET: player.changeKeys(collectColor, player.key[collectAltColor])
@@ -313,11 +313,11 @@ func collect(player:Player) -> void:
 
 	if infinite:
 		flashAnimation()
-		GameChanges.addChange(GameChanges.PropertyChange.new(self, &"partialInfiniteCount", infinite))
-	else: GameChanges.addChange(GameChanges.PropertyChange.new(self, &"active", false))
+		GameChanges.applyChange(GameChanges.newPropertyChange(self, &"partialInfiniteCount", infinite))
+	else: GameChanges.applyChange(GameChanges.newPropertyChange(self, &"active", false))
 	for object in Game.objects.values():
 		if object is KeyBulk and object.infinite and object.partialInfiniteCount > 0:
-			GameChanges.addChange(GameChanges.PropertyChange.new(object, &"partialInfiniteCount", object.partialInfiniteCount - 1))
+			GameChanges.applyChange(GameChanges.newPropertyChange(object, &"partialInfiniteCount", object.partialInfiniteCount - 1))
 
 	if color == C.olors.MASTER: # not effectiveColor; doesnt trigger on glitch master
 		AudioManager.play(preload("res://resources/sounds/key/master.wav"))
@@ -340,7 +340,7 @@ func setMimic(mimicType:C.olors, setColor:C.olors) -> void:
 	match mimicType:
 		C.olors.GLITCH: property = &"glitchMimic"
 		C.olors.ERROR: property = &"errorMimic"
-	if hasInitialColor(mimicType): GameChanges.addChange(GameChanges.PropertyChange.new(self, property, setColor))
+	if hasInitialColor(mimicType): GameChanges.applyChange(GameChanges.newPropertyChange(self, property, setColor))
 	queue_redraw()
 
 func flashAnimation() -> void:

@@ -201,7 +201,7 @@ func save(path:String="") -> void:
 		file.store_16(Game.COMPONENTS.find(object.get_script()))
 		for property in object.PROPERTIES:
 			if object is PlayerSpawn and property == &"undoStack":
-				file.store_var(SerialisedUndoStack.new(object.undoStack) if object.undoStack else null, true)
+				file.store_var(object.undoStack, true)
 			else: file.store_var(object.get(property), true)
 		for array in object.ARRAYS.keys():
 			if arrayTypeIsComponent(object.ARRAYS[array]): file.store_var(componentArrayToIDs(object.get(array)))

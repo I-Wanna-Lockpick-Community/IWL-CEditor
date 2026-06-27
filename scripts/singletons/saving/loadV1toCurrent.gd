@@ -148,7 +148,9 @@ static func loadFile(file:FileAccess, formatVersion:int) -> void:
 			object.get(array).assign(value)
 
 	for buffer in otherBuffers:
-		if buffer[0] is PlayerSpawn and buffer[1] == &"undoStack": buffer[0].undoStack.assign(buffer[2].build())
+		if buffer[0] is PlayerSpawn and buffer[1] == &"undoStack":
+			if buffer[2] is SerialisedUndoStack: buffer[0].undoStack.assign(buffer[2].serialisedStack)
+			else: buffer[0].undoStack.assign(buffer[2])
 
 	#if levelStart != -1:
 	#	Game.levelStart = Game.objects[levelStart]

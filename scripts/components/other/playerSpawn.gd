@@ -32,7 +32,7 @@ var key:Array[PackedInt64Array] = []
 var star:Array[bool]
 var curse:Array[bool]
 var glisten:Array[PackedInt64Array] = []
-var undoStack:Array[RefCounted] = []
+var undoStack:Array[Array] = []
 var saveBuffered:bool = false
 
 var drawMain:RID
