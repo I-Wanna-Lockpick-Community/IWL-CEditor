@@ -389,7 +389,7 @@ func duplicateLock(lock:Lock) -> void:
 	Changes.addChange(Changes.PropertyChange.new(self,&"type",TYPE.COMBO))
 	for property in Lock.PROPERTIES:
 		if property not in Lock.CREATE_PARAMETERS and property != &"id":
-			Changes.addChange(Changes.PropertyChange.new(newLock,property,Changes.copy(lock.get(property))))
+			Changes.addChange(Changes.PropertyChange.new(newLock,property,lock.get(property)))
 	Changes.bufferSave()
 
 func getFirstFreePosition(lockOffset:Vector2=Vector2(7,7), lockSize:Vector2=Vector2(18,18)) -> Vector2:
