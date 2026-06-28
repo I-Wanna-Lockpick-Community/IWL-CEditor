@@ -67,7 +67,7 @@ func findProblems(component:GameComponent) -> void:
 			var problem:Mods.Problem = mod.problems[problemName]
 			match problem.get_script():
 				Mods.ComponentProblem:
-					if component.get_script() in problem.components or (component is GameObject and GameObject in problem.components) or GameComponent in problem.components:
+					if component.get_script() in problem.types or (component is GameObject and GameObject in problem.types) or GameComponent in problem.types:
 						noteProblem(modName, problemName, component, problem.checker.call(component))
 				Mods.ColorProblem:
 					for color in component.getColors():
