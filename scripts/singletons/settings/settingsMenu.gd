@@ -7,12 +7,7 @@ class_name SettingsMenu
 
 var configFile:ConfigFile = ConfigFile.new()
 
-var textDraw:RID
-
 func _ready() -> void:
-	textDraw = RenderingServer.canvas_item_create()
-	RenderingServer.canvas_item_set_z_index(textDraw,1)
-	RenderingServer.canvas_item_set_parent(textDraw,%followWorld.get_canvas_item())
 	if OS.has_feature("web"):
 		%fileDialogWorkaroundCont.visible = false
 		%thumbnailClarifier.visible = false
@@ -53,15 +48,6 @@ func _tabSelected(tab:int) -> void:
 	mouse_filter = Control.MOUSE_FILTER_PASS if tab == 0 else Control.MOUSE_FILTER_STOP
 	mouse_default_cursor_shape = CURSOR_ARROW
 	queue_redraw()
-
-func _draw() -> void:
-	RenderingServer.canvas_item_clear(textDraw)
-	if %levelSettings.visible:
-		TextDraw.outlinedCentered2(Game.FLEVELID,textDraw,%levelNumber.text,Color.WHITE,Color.BLACK,24,Vector2(400,218))
-		TextDraw.outlinedCentered2(Game.FLEVELNAME,textDraw,%levelName.text,Color.WHITE,Color.BLACK,36,Vector2(400,282))
-		TextDraw.outlinedCentered2(Game.FLEVELNAME,textDraw,%levelAuthor.text,Color.BLACK,Color.WHITE,36,Vector2(400,378))
-		TextDraw.outlinedCentered(Game.FROOMNUM,textDraw,"PUZZLE",Color("#d6cfc9"),Color("#3e2d1c"),20,Vector2(732,524))
-		TextDraw.outlinedCentered(Game.FROOMNUM,textDraw,%levelShortNumber.text,Color("#8c50c8"),Color("#140064"),20,Vector2(732,554))
 
 func opened() -> void:
 	configFile.load("user://config.ini")

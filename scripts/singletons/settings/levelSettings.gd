@@ -1,6 +1,21 @@
 extends MarginContainer
 class_name LevelSettings
 
+var textDraw:RID
+
+func _ready() -> void:
+	textDraw = RenderingServer.canvas_item_create()
+	RenderingServer.canvas_item_set_z_index(textDraw,1)
+	RenderingServer.canvas_item_set_parent(textDraw,%followWorld.get_canvas_item())
+
+func _draw() -> void:
+	RenderingServer.canvas_item_clear(textDraw)
+	TextDraw.outlinedCentered2(Game.FLEVELID,textDraw,%levelNumber.text,Color.WHITE,Color.BLACK,24,Vector2(400,218))
+	TextDraw.outlinedCentered2(Game.FLEVELNAME,textDraw,%levelName.text,Color.WHITE,Color.BLACK,36,Vector2(400,282))
+	TextDraw.outlinedCentered2(Game.FLEVELNAME,textDraw,%levelAuthor.text,Color.BLACK,Color.WHITE,36,Vector2(400,378))
+	TextDraw.outlinedCentered(Game.FROOMNUM,textDraw,"PUZZLE",Color("#d6cfc9"),Color("#3e2d1c"),20,Vector2(732,524))
+	TextDraw.outlinedCentered(Game.FROOMNUM,textDraw,%levelShortNumber.text,Color("#8c50c8"),Color("#140064"),20,Vector2(732,554))
+
 func opened(configFile:ConfigFile) -> void:
 	updateLevelSettingsPosition()
 	%levelNumber.text = Game.level.number

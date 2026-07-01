@@ -7,7 +7,7 @@
 [ext_resource type="PackedScene" uid="uid://bjwgb1n83p512" path="res://scenes/pda.tscn" id="5_huxtg"]
 [ext_resource type="Theme" uid="uid://bvfthh0vm4fbp" path="res://resources/uiTheme.tres" id="5_n2d1d"]
 [ext_resource type="Script" uid="uid://bsmyhhhm08v2u" path="res://scripts/singletons/game/mouseover.gd" id="5_y4ge2"]
-[ext_resource type="PackedScene" uid="uid://cudl265jx2hk6" path="res://scenes/gameSettings.tscn" id="6_m88lo"]
+[ext_resource type="PackedScene" uid="uid://cudl265jx2hk6" path="res://scenes/settings/gameSettings.tscn" id="6_m88lo"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_abwwd"]
 bg_color = Color(0, 0, 0, 1)

@@ -28,7 +28,7 @@
 [ext_resource type="Script" uid="uid://cgjhnhjwymb8g" path="res://scripts/resources/controlExplanation.gd" id="17_bn54a"]
 [ext_resource type="Texture2D" uid="uid://bdtmt4y2pnoo0" path="res://assets/ui/playControls/savestate.png" id="17_lo5f0"]
 [ext_resource type="Script" uid="uid://c7ptucaohcnil" path="res://scripts/singletons/editor/outline.gd" id="23_lo5f0"]
-[ext_resource type="PackedScene" uid="uid://uojm0pynavni" path="res://scenes/settingsMenu.tscn" id="25_6lm8n"]
+[ext_resource type="PackedScene" uid="uid://uojm0pynavni" path="res://scenes/settings/settingsMenu.tscn" id="25_6lm8n"]
 [ext_resource type="Texture2D" uid="uid://ba540b55427af" path="res://assets/ui/settings/setings.png" id="27_1abrv"]
 [ext_resource type="PackedScene" uid="uid://r7q8sdncd4jo" path="res://scenes/outlineViewport.tscn" id="28_e62bx"]
 [ext_resource type="Shader" uid="uid://y4p3snw4y2xy" path="res://resources/materials/placePreview.gdshader" id="28_ndxgo"]

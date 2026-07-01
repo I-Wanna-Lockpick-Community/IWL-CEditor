@@ -8,8 +8,8 @@
 [ext_resource type="FontFile" uid="uid://cdifvlr6awojn" path="res://resources/fonts/fLevelName.fnt" id="4_egwj7"]
 [ext_resource type="Texture2D" uid="uid://cpllfu67xbr0h" path="res://assets/ui/settings/clarifier.png" id="5_iswfj"]
 [ext_resource type="Texture2D" uid="uid://fegj6p13p4ot" path="res://assets/game/gameUI/description.png" id="6_3e3b5"]
-[ext_resource type="PackedScene" uid="uid://cu8dqerqlrkm1" path="res://scenes/hotkeySetting.tscn" id="6_dkncv"]
-[ext_resource type="PackedScene" uid="uid://cudl265jx2hk6" path="res://scenes/gameSettings.tscn" id="6_tyaol"]
+[ext_resource type="PackedScene" uid="uid://cu8dqerqlrkm1" path="res://scenes/settings/hotkeySetting.tscn" id="6_dkncv"]
+[ext_resource type="PackedScene" uid="uid://cudl265jx2hk6" path="res://scenes/settings/gameSettings.tscn" id="6_tyaol"]
 [ext_resource type="Script" uid="uid://b43xpe67iop1m" path="res://scripts/nodes/settings/colorQuicksetSetting.gd" id="7_07bsi"]
 [ext_resource type="FontFile" uid="uid://c81fuf05yiuem" path="res://resources/fonts/fRoomNum.fnt" id="7_etcr4"]
 [ext_resource type="Script" uid="uid://upqgnu1wo3et" path="res://scripts/nodes/settings/lockSizeQuicksetSetting.gd" id="8_huukw"]
@@ -72,7 +72,7 @@ MarginContainer/constants/margin_right = 0
 MarginContainer/constants/margin_top = 0
 VBoxContainer/constants/separation = 2
 
-[sub_resource type="ButtonGroup" id="ButtonGroup_mesti"]
+[sub_resource type="ButtonGroup" id="ButtonGroup_xp6gv"]
 
 [node name="settingsMenu" type="PanelContainer" unique_id=1534647259 groups=["modUI"]]
 anchors_preset = 15
@@ -145,10 +145,26 @@ layout_mode = 2
 text = "Level Number"
 horizontal_alignment = 1
 
-[node name="levelNumber" type="LineEdit" parent="c/levelSettings/c/followWorld/c/c" unique_id=334955009]
-unique_name_in_owner = true
+[node name="c" type="Control" parent="c/levelSettings/c/followWorld/c/c" unique_id=743669763]
 custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="levelNumber" type="LineEdit" parent="c/levelSettings/c/followWorld/c/c/c" unique_id=334955009]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -66.0
+offset_top = -20.0
+offset_right = 66.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
 size_flags_horizontal = 4
 theme_override_colors/font_color = Color(0.88, 0.88, 0.88, 0)
 theme_override_colors/font_selected_color = Color(1, 1, 1, 0)
@@ -165,9 +181,25 @@ text = "Level Name"
 horizontal_alignment = 1
 vertical_alignment = 2
 
-[node name="levelName" type="LineEdit" parent="c/levelSettings/c/followWorld/c/c" unique_id=267397089]
-unique_name_in_owner = true
+[node name="c2" type="Control" parent="c/levelSettings/c/followWorld/c/c" unique_id=1139775483]
+custom_minimum_size = Vector2(0, 44)
 layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="levelName" type="LineEdit" parent="c/levelSettings/c/followWorld/c/c/c2" unique_id=267397089]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -62.0
+offset_top = -22.0
+offset_right = 62.0
+offset_bottom = 22.0
+grow_horizontal = 2
+grow_vertical = 2
 size_flags_horizontal = 4
 theme_override_colors/font_color = Color(0.88, 0.88, 0.88, 0)
 theme_override_colors/font_selected_color = Color(1, 1, 1, 0)
@@ -184,9 +216,25 @@ text = "Author"
 horizontal_alignment = 1
 vertical_alignment = 2
 
-[node name="levelAuthor" type="LineEdit" parent="c/levelSettings/c/followWorld/c/c" unique_id=40076093]
-unique_name_in_owner = true
+[node name="c3" type="Control" parent="c/levelSettings/c/followWorld/c/c" unique_id=1324711987]
+custom_minimum_size = Vector2(0, 44)
 layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="levelAuthor" type="LineEdit" parent="c/levelSettings/c/followWorld/c/c/c3" unique_id=40076093]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -62.0
+offset_top = -22.0
+offset_right = 62.0
+offset_bottom = 22.0
+grow_horizontal = 2
+grow_vertical = 2
 size_flags_horizontal = 4
 theme_override_colors/font_color = Color(0.88, 0.88, 0.88, 0)
 theme_override_colors/font_selected_color = Color(1, 1, 1, 0)
@@ -1027,19 +1075,17 @@ layout_mode = 2
 label = "Leave Savestate"
 action = &"focusPlayerSavestate"
 
-[node name="gameSettings" parent="c" unique_id=631771401 instance=ExtResource("6_tyaol")]
+[node name="gameSettings" parent="c" unique_id=2039076092 instance=ExtResource("6_tyaol")]
 unique_name_in_owner = true
-visible = false
 layout_mode = 2
-size_flags_vertical = 3
-toneButtonGroup = SubResource("ButtonGroup_mesti")
+toneButtonGroup = SubResource("ButtonGroup_xp6gv")
 
-[connection signal="focus_exited" from="c/levelSettings/c/followWorld/c/c/levelNumber" to="c/levelSettings" method="_defocus"]
-[connection signal="text_changed" from="c/levelSettings/c/followWorld/c/c/levelNumber" to="c/levelSettings" method="_levelNumberSet"]
-[connection signal="focus_exited" from="c/levelSettings/c/followWorld/c/c/levelName" to="c/levelSettings" method="_defocus"]
-[connection signal="text_changed" from="c/levelSettings/c/followWorld/c/c/levelName" to="c/levelSettings" method="_levelNameSet"]
-[connection signal="focus_exited" from="c/levelSettings/c/followWorld/c/c/levelAuthor" to="c/levelSettings" method="_defocus"]
-[connection signal="text_changed" from="c/levelSettings/c/followWorld/c/c/levelAuthor" to="c/levelSettings" method="_levelAuthorSet"]
+[connection signal="focus_exited" from="c/levelSettings/c/followWorld/c/c/c/levelNumber" to="c/levelSettings" method="_defocus"]
+[connection signal="text_changed" from="c/levelSettings/c/followWorld/c/c/c/levelNumber" to="c/levelSettings" method="_levelNumberSet"]
+[connection signal="focus_exited" from="c/levelSettings/c/followWorld/c/c/c2/levelName" to="c/levelSettings" method="_defocus"]
+[connection signal="text_changed" from="c/levelSettings/c/followWorld/c/c/c2/levelName" to="c/levelSettings" method="_levelNameSet"]
+[connection signal="focus_exited" from="c/levelSettings/c/followWorld/c/c/c3/levelAuthor" to="c/levelSettings" method="_defocus"]
+[connection signal="text_changed" from="c/levelSettings/c/followWorld/c/c/c3/levelAuthor" to="c/levelSettings" method="_levelAuthorSet"]
 [connection signal="text_changed" from="c/levelSettings/c/followWorld/description/c/c/c/levelDescription" to="c/levelSettings" method="_levelDescriptionSet"]
 [connection signal="text_changed" from="c/levelSettings/c/followWorld/description/c/c2/levelShortNumber" to="c/levelSettings" method="_levelShortNumberSet"]
 [connection signal="value_changed" from="c/levelSettings/c/followWorld/c2/c/c/levelRevision" to="c/levelSettings" method="_levelRevisionSet"]
