@@ -2,102 +2,102 @@ extends MarginContainer
 class_name EditorSettingss
 
 static var HotkeyTree:Array = [
-	Hotkey.new("Half Tile Snap", &"heldTileSize16", [eventKey(KEY_CTRL)]).setHeld(),
-	Hotkey.new("Eighth Tile Snap", &"heldTileSize4", [eventKey(KEY_ALT)]).setHeld(),
-	Hotkey.new("Keep Mode After Placing Object", &"heldKeepMode", [eventKey(KEY_SHIFT)]).setHeld(),
-	Hotkey.new("Start Playtest", &"editStartPlaytest", [eventKey(KEY_SPACE)]),
-	Hotkey.new("Start Playtest From Latest Spawn", &"editStartPlaytestFromState", [eventKey(KEY_MASK_CTRL+KEY_SPACE)]),
+	Hotkey.new("Half Tile Snap",							&"heldTileSize16",					[eventKey("Ctrl")]).setHeld(),
+	Hotkey.new("Eighth Tile Snap",							&"heldTileSize4",					[eventKey("Alt")]).setHeld(),
+	Hotkey.new("Keep Mode After Placing Object",			&"heldKeepMode",					[eventKey("Shift")]).setHeld(),
+	Hotkey.new("Start Playtest",							&"editStartPlaytest",				[eventKey("Space")]),
+	Hotkey.new("Start Playtest From Latest Spawn",			&"editStartPlaytestFromState",		[eventKey("Ctrl+Space")]),
 	SubTree.new("Playtesting", [
-		Hotkey.new("Pause Playtest", &"editPausePlaytest", [eventKey(KEY_P)]),
-		Hotkey.new("Stop Playtest", &"editStopPlaytest", [eventKey(KEY_O)]),
-		Hotkey.new("Leave Savestate", &"editSavestate", []),
+		Hotkey.new("Pause Playtest",						&"editPausePlaytest",				[eventKey("P")]),
+		Hotkey.new("Stop Playtest",							&"editStopPlaytest",				[eventKey("O")]),
+		Hotkey.new("Leave Savestate",						&"editSavestate",					[]),
 	]).setClarification("Game controls also apply, though these hotkeys take priority."),
-	Hotkey.new("Select Mode", &"editModeSelect", [eventKey(KEY_ESCAPE)]),
-	Hotkey.new("Tile Mode", &"editModeTile", [eventKey(KEY_T)]),
-	Hotkey.new("Key Mode", &"editModeKey", [eventKey(KEY_B)]),
-	Hotkey.new("Door Mode", &"editModeDoor", [eventKey(KEY_D)]),
-	Hotkey.new("Other Objects Mode", &"editModeOther", [eventKey(KEY_X)]),
-	Hotkey.new("Search Other Objects", &"editObjectSearch", [eventKey(KEY_S)]),
-	Hotkey.new("Pipette", &"editPipette", [eventKey(KEY_Q)]),
-	Hotkey.new("Open Settings", &"editOpenSettings", [eventKey(KEY_MASK_SHIFT+KEY_ESCAPE)]),
-	Hotkey.new("New Puzzle", &"editNew", []),
-	Hotkey.new("Open Puzzle", &"editOpen", []),
-	Hotkey.new("Save Puzzle", &"editSave", [eventKey(KEY_MASK_CTRL+KEY_S)]),
-	Hotkey.new("Save Puzzle As", &"editSaveAs", [eventKey(KEY_MASK_CTRL+KEY_MASK_SHIFT+KEY_S)]),
-	Hotkey.new("Export Puzzle", &"editExport", [eventKey(KEY_MASK_CTRL+KEY_E)]),
-	Hotkey.new("Reset Camera", &"editHome", [eventKey(KEY_H)]),
-	Hotkey.new("Copy Component(s)", &"editCopy", [eventKey(KEY_MASK_CTRL+KEY_C)]),
-	Hotkey.new("Cut Component(s)", &"editCut", [eventKey(KEY_MASK_CTRL+KEY_X)]),
-	Hotkey.new("Paste Component(s)", &"editPaste", [eventKey(KEY_MASK_CTRL+KEY_V)]),
-	Hotkey.new("Undo", &"editUndo", [eventKey(KEY_MASK_CTRL+KEY_Z)]),
-	Hotkey.new("Redo", &"editRedo", [eventKey(KEY_MASK_CTRL+KEY_Y)]),
-	Hotkey.new("Move Camera Up", &"editCameraUp", [eventKey(KEY_UP)]),
-	Hotkey.new("Move Camera Left", &"editCameraLeft", [eventKey(KEY_LEFT)]),
-	Hotkey.new("Move Camera Down", &"editCameraDown", [eventKey(KEY_DOWN)]),
-	Hotkey.new("Move Camera Right", &"editCameraRight", [eventKey(KEY_RIGHT)]),
-	Hotkey.new("Drag Selected Component(s)", &"editDrag", [eventKey(KEY_M)]),
-	Hotkey.new("Delete Selected Component(s)", &"editDelete", [eventKey(KEY_DELETE)]),
+	Hotkey.new("Select Mode",								&"editModeSelect",					[eventKey("Escape")]),
+	Hotkey.new("Tile Mode",									&"editModeTile",					[eventKey("T")]),
+	Hotkey.new("Key Mode",									&"editModeKey",						[eventKey("B")]),
+	Hotkey.new("Door Mode",									&"editModeDoor",					[eventKey("D")]),
+	Hotkey.new("Other Objects Mode",						&"editModeOther",					[eventKey("X")]),
+	Hotkey.new("Search Other Objects",						&"editObjectSearch",				[eventKey("S")]),
+	Hotkey.new("Pipette",									&"editPipette",						[eventKey("Q")]),
+	Hotkey.new("Open Settings",								&"editOpenSettings",				[eventKey("Shift+Escape")]),
+	Hotkey.new("New Puzzle",								&"editNew",							[]),
+	Hotkey.new("Open Puzzle",								&"editOpen",						[]),
+	Hotkey.new("Save Puzzle",								&"editSave",						[eventKey("Ctrl+S")]),
+	Hotkey.new("Save Puzzle As",							&"editSaveAs",						[eventKey("Ctrl+Shift+S")]),
+	Hotkey.new("Export Puzzle",								&"editExport",						[eventKey("Ctrl+E")]),
+	Hotkey.new("Reset Camera",								&"editHome",						[eventKey("H")]),
+	Hotkey.new("Copy Component(s)",							&"editCopy",						[eventKey("Ctrl+C")]),
+	Hotkey.new("Cut Component(s)",							&"editCut",							[eventKey("Ctrl+X")]),
+	Hotkey.new("Paste Component(s)",						&"editPaste",						[eventKey("Ctrl+V")]),
+	Hotkey.new("Undo",										&"editUndo",						[eventKey("Ctrl+Z")]),
+	Hotkey.new("Redo",										&"editRedo",						[eventKey("Ctrl+Y")]),
+	Hotkey.new("Move Camera Up",							&"editCameraUp",					[eventKey("Up")]),
+	Hotkey.new("Move Camera Left",							&"editCameraLeft",					[eventKey("Left")]),
+	Hotkey.new("Move Camera Down",							&"editCameraDown",					[eventKey("Down")]),
+	Hotkey.new("Move Camera Right",							&"editCameraRight",					[eventKey("Right")]),
+	Hotkey.new("Drag Selected Component(s)",				&"editDrag",						[eventKey("M")]),
+	Hotkey.new("Delete Selected Component(s)",				&"editDelete",						[eventKey("Delete")]),
 	SubTree.new("Component Focused", [
-		QuicksetHotkey.new("Quickset Color", &"quicksetColor", [eventKey(KEY_C)], ColorQuicksetSetting),
+		QuicksetHotkey.new("Quickset Color",				&"quicksetColor",					[eventKey("C")], ColorQuicksetSetting),
 		SubTree.new("Number Input Selected", [
-			Hotkey.new("Multiply By -1", &"numberNegate", [eventKey(KEY_MINUS), eventKey(KEY_KP_SUBTRACT), eventKey(KEY_QUOTELEFT)]),
-			Hotkey.new("Multiply By i", &"numberTimesI", [eventKey(KEY_I)]),
-			Hotkey.new("Evaluate Expression", &"numberEvaluate", [eventKey(KEY_ENTER)]),
+			Hotkey.new("Multiply By -1",					&"numberNegate",					[eventKey("Minus"), eventKey("Kp Subtract"), eventKey("QuoteLeft")]),
+			Hotkey.new("Multiply By i",						&"numberTimesI",					[eventKey("I")]),
+			Hotkey.new("Evaluate Expression",				&"numberEvaluate",					[eventKey("Enter")]),
 		]),
 		SubTree.new("Key Focused", [
-			Hotkey.new("Set Normal Type", &"focusKeyNormal", [eventKey(KEY_N)]),
-			Hotkey.new("Set Exact Type", &"focusKeyExact", [eventKey(KEY_E)]),
-			Hotkey.new("Toggle Star Type", &"focusKeyStar", [eventKey(KEY_S)]),
-			Hotkey.new("Advance Rotor Type", &"focusKeyRotor", [eventKey(KEY_R)]),
-			Hotkey.new("Toggle Curse Type", &"focusKeyCurse", [eventKey(KEY_U)], &"CurseKeys"),
-			Hotkey.new("Set Operator Type", &"focusKeyOperator", [eventKey(KEY_O)], &"OperatorKeys"),
-			Hotkey.new("Toggle Infinite", &"focusKeyInfinite", [eventKey(KEY_Y)]),
-			Hotkey.new("Toggle Glistening", &"focusKeyGlistening", [eventKey(KEY_G)], &"Glistening"),
+			Hotkey.new("Set Normal Type",					&"focusKeyNormal",					[eventKey("N")]),
+			Hotkey.new("Set Exact Type",					&"focusKeyExact",					[eventKey("E")]),
+			Hotkey.new("Toggle Star Type",					&"focusKeyStar",					[eventKey("S")]),
+			Hotkey.new("Advance Rotor Type",				&"focusKeyRotor",					[eventKey("R")]),
+			Hotkey.new("Toggle Curse Type",					&"focusKeyCurse",					[eventKey("U")], &"CurseKeys"),
+			Hotkey.new("Set Operator Type",					&"focusKeyOperator",				[eventKey("O")], &"OperatorKeys"),
+			Hotkey.new("Toggle Infinite",					&"focusKeyInfinite",				[eventKey("Y")]),
+			Hotkey.new("Toggle Glistening",					&"focusKeyGlistening",				[eventKey("G")], &"Glistening"),
 			SubTree.new("Operator Key Focused", [
-				Hotkey.new("Set Set Operation", &"focusKeyOperationSet", [eventKey(KEY_MASK_SHIFT+KEY_S)], &"OperatorKeys"),
-				Hotkey.new("Set Add Operation", &"focusKeyOperationAdd", [eventKey(KEY_MASK_SHIFT+KEY_A)], &"OperatorKeys"),
-				Hotkey.new("Set Subtract Operation", &"focusKeyOperationSubtract", [eventKey(KEY_MASK_SHIFT+KEY_M)], &"OperatorKeys"),
-				Hotkey.new("Set Multiply Operation", &"focusKeyOperationMultiply", [eventKey(KEY_MASK_SHIFT+KEY_X)], &"OperatorKeys"),
-				Hotkey.new("Set Divide Operation", &"focusKeyOperationDivide", [eventKey(KEY_MASK_SHIFT+KEY_D)], &"OperatorKeys"),
-				Hotkey.new("Set Modulo Operation", &"focusKeyOperationModulo", [eventKey(KEY_MASK_SHIFT+KEY_R)], &"OperatorKeys"),
+				Hotkey.new("Set Set Operation",				&"focusKeyOperationSet",			[eventKey("Shift+S")], &"OperatorKeys"),
+				Hotkey.new("Set Add Operation",				&"focusKeyOperationAdd",			[eventKey("Shift+A")], &"OperatorKeys"),
+				Hotkey.new("Set Subtract Operation",		&"focusKeyOperationSubtract",		[eventKey("Shift+M")], &"OperatorKeys"),
+				Hotkey.new("Set Multiply Operation",		&"focusKeyOperationMultiply",		[eventKey("Shift+X")], &"OperatorKeys"),
+				Hotkey.new("Set Divide Operation",			&"focusKeyOperationDivide",			[eventKey("Shift+D")], &"OperatorKeys"),
+				Hotkey.new("Set Modulo Operation",			&"focusKeyOperationModulo",			[eventKey("Shift+R")], &"OperatorKeys"),
 			], &"OperatorKeys"),
 		]),
 		SubTree.new("Door Focused", [
-			Hotkey.new("Add Lock", &"focusDoorAddLock", [eventKey(KEY_MASK_CTRL+KEY_E)]),
-			Hotkey.new("Toggle Color Link", &"focusDoorColorLink", [eventKey(KEY_MASK_SHIFT+KEY_C)]),
+			Hotkey.new("Add Lock",							&"focusDoorAddLock",				[eventKey("Ctrl+E")]),
+			Hotkey.new("Toggle Color Link",					&"focusDoorColorLink",				[eventKey("Shift+C")]),
 			SubTree.new("Editing Door Properties", [
-				Hotkey.new("Toggle Frozen", &"focusDoorFrozen", [eventKey(KEY_F)]),
-				Hotkey.new("Toggle Crumbled", &"focusDoorCrumbled", [eventKey(KEY_R)]),
-				Hotkey.new("Toggle Painted", &"focusDoorPainted", [eventKey(KEY_T)]),
-				Hotkey.new("Toggle Spend Armament", &"focusDoorSpendArmament", [eventKey(KEY_MASK_SHIFT+KEY_A)], &"Armaments"),
+				Hotkey.new("Toggle Frozen",					&"focusDoorFrozen",					[eventKey("F")]),
+				Hotkey.new("Toggle Crumbled",				&"focusDoorCrumbled",				[eventKey("R")]),
+				Hotkey.new("Toggle Painted",				&"focusDoorPainted",				[eventKey("T")]),
+				Hotkey.new("Toggle Spend Armament",			&"focusDoorSpendArmament",			[eventKey("Shift+A")], &"Armaments"),
 				# oscillate
 			]),
 			SubTree.new("Editing Lock Properties", [
-				Hotkey.new("Duplicate Lock", &"focusLockDuplicate", [eventKey(KEY_MASK_CTRL+KEY_D)]),
-				Hotkey.new("Set Normal Type", &"focusLockNormal", [eventKey(KEY_N)]),
-				Hotkey.new("Set Blank Type", &"focusLockBlank", [eventKey(KEY_B)]),
-				Hotkey.new("Set Blast Type", &"focusLockBlast", [eventKey(KEY_X)]),
-				Hotkey.new("Set All Type", &"focusLockAll", [eventKey(KEY_A)]),
-				Hotkey.new("Set Exact Type", &"focusLockExact", [eventKey(KEY_E)], &"ExactLocks"),
-				Hotkey.new("Set Glistening Type", &"focusLockGlistening", [eventKey(KEY_G)], &"Glistening"),
-				Hotkey.new("Set Remainder Type", &"focusLockRemainder", [eventKey(KEY_R)], &"RemainderLocks"),
-				Hotkey.new("Toggle Negated", &"focusLockNegated", [eventKey(KEY_MASK_SHIFT+KEY_N)], &"NegatedLocks"),
-				Hotkey.new("Toggle Armament", &"focusLockArmament", [eventKey(KEY_MASK_SHIFT+KEY_A)], &"Armaments"),
-				Hotkey.new("Convert To Remote Lock", &"focusLockConvertRemote", [eventKey(KEY_MASK_SHIFT+KEY_R)], &"RemoteLocks"),
-				QuicksetHotkey.new("Quickset Lock Size", &"quicksetLockSize", [eventKey(KEY_S)], LockSizeQuicksetSetting),
+				Hotkey.new("Duplicate Lock",				&"focusLockDuplicate",				[eventKey("Ctrl+D")]),
+				Hotkey.new("Set Normal Type",				&"focusLockNormal",					[eventKey("N")]),
+				Hotkey.new("Set Blank Type",				&"focusLockBlank",					[eventKey("B")]),
+				Hotkey.new("Set Blast Type",				&"focusLockBlast",					[eventKey("X")]),
+				Hotkey.new("Set All Type",					&"focusLockAll",					[eventKey("A")]),
+				Hotkey.new("Set Exact Type",				&"focusLockExact",					[eventKey("E")], &"ExactLocks"),
+				Hotkey.new("Set Glistening Type",			&"focusLockGlistening",				[eventKey("G")], &"Glistening"),
+				Hotkey.new("Set Remainder Type",			&"focusLockRemainder",				[eventKey("R")], &"RemainderLocks"),
+				Hotkey.new("Toggle Negated",				&"focusLockNegated",				[eventKey("Shift+N")], &"NegatedLocks"),
+				Hotkey.new("Toggle Armament",				&"focusLockArmament",				[eventKey("Shift+A")], &"Armaments"),
+				Hotkey.new("Convert To Remote Lock",		&"focusLockConvertRemote",			[eventKey("Shift+R")], &"RemoteLocks"),
+				QuicksetHotkey.new("Quickset Lock Size",	&"quicksetLockSize",				[eventKey("S")], LockSizeQuicksetSetting),
 			]),
 		]),
 		SubTree.new("Key Counter Focused", [
-			Hotkey.new("Add Element", &"focusKeyCounterAddElement", [eventKey(KEY_MASK_CTRL+KEY_E)]),
+			Hotkey.new("Add Element",						&"focusKeyCounterAddElement",		[eventKey("Ctrl+E")]),
 		]).setClarification("Relevant hotkeys from \"Editing Door Properties\" and \"Editing Lock Properties\" also apply and take priority."),
 		SubTree.new("Remote Lock Focused", [
-			Hotkey.new("Add Connection", &"focusRemoteLockAddConnection", [eventKey(KEY_MASK_CTRL+KEY_E)], &"RemoteLocks"),
+			Hotkey.new("Add Connection",					&"focusRemoteLockAddConnection",	[eventKey("Ctrl+E")], &"RemoteLocks"),
 		], &"RemoteLocks"),
 		SubTree.new("Player/Savestate Focused", [
-			Hotkey.new("Start Playtest From Focused Spawn", &"focusPlayerStart", [eventKey(KEY_SPACE)]),
-			Hotkey.new("Toggle Star", &"focusPlayerStar", [eventKey(KEY_S)]),
-			Hotkey.new("Toggle Curse", &"focusPlayerCurse", [eventKey(KEY_U)], &"CurseKeys"),
-			Hotkey.new("Leave Savestate", &"focusPlayerSavestate", [eventKey(KEY_MASK_SHIFT+KEY_S)]),
+			Hotkey.new("Start Playtest From Focused Spawn",	&"focusPlayerStart",				[eventKey("Space")]),
+			Hotkey.new("Toggle Star",						&"focusPlayerStar",					[eventKey("S")]),
+			Hotkey.new("Toggle Curse",						&"focusPlayerCurse",				[eventKey("U")], &"CurseKeys"),
+			Hotkey.new("Leave Savestate",					&"focusPlayerSavestate",			[eventKey("Shift+S")]),
 		]),
 	]),
 ]
@@ -153,20 +153,21 @@ class SubTree extends RefCounted:
 		clarification = _clarification
 		return self
 
-static func eventKey(key:int) -> InputEventKey:
+static func eventKey(pattern:String) -> InputEventKey:
+	var key:Key = OS.find_keycode_from_string(pattern)
 	var event:InputEventKey = InputEventKey.new()
 	if key & KEY_MASK_ALT:
 		event.alt_pressed = true
-		key -= KEY_MASK_ALT
+		key = (key - KEY_MASK_ALT) as Key
 	if key & KEY_MASK_CTRL:
 		event.ctrl_pressed = true
-		key -= KEY_MASK_CTRL
+		key = (key - KEY_MASK_CTRL) as Key
 	if key & KEY_MASK_META:
 		event.meta_pressed = true
-		key -= KEY_MASK_META
+		key = (key - KEY_MASK_META) as Key
 	if key & KEY_MASK_SHIFT:
 		event.shift_pressed = true
-		key -= KEY_MASK_SHIFT
+		key = (key - KEY_MASK_SHIFT) as Key
 	event.physical_keycode = key as Key
 	return event
 
