@@ -7,7 +7,7 @@
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_8d666"]
 bg_color = Color(1, 1, 1, 0.07058824)
 
-[node name="hotkeySetting" type="MarginContainer" unique_id=427433704 groups=["hotkeySetting", "modUI"]]
+[node name="hotkeySetting" type="MarginContainer" unique_id=427433704 groups=["modUI"]]
 custom_minimum_size = Vector2(0, 30)
 offset_right = 273.0
 offset_bottom = 34.0
@@ -16,7 +16,6 @@ theme_override_constants/margin_top = 0
 theme_override_constants/margin_right = 0
 theme_override_constants/margin_bottom = 0
 script = ExtResource("1_yo22g")
-label = "label"
 
 [node name="hover" type="Panel" parent="." unique_id=1120603887]
 unique_name_in_owner = true

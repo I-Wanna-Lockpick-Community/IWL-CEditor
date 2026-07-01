@@ -24,14 +24,14 @@ func opened(configFile:ConfigFile) -> void:
 	%levelDescription.text = Game.level.description
 	%levelShortNumber.text = Game.level.shortNumber
 	%levelRevision.value = Game.level.revision
-	%thumbnailHideDescription.button_pressed = configFile.get_value("Game.editor", "thumbnailHideDescription", false)
-	%thumbnailEntireLevel.button_pressed = configFile.get_value("Game.editor", "thumbnailEntireLevel", true)
-	%thumbnailWithText.button_pressed = configFile.get_value("Game.editor", "thumbnailWithText", true)
+	%thumbnailHideDescription.button_pressed = configFile.get_value("editor", "thumbnailHideDescription", false)
+	%thumbnailEntireLevel.button_pressed = configFile.get_value("editor", "thumbnailEntireLevel", true)
+	%thumbnailWithText.button_pressed = configFile.get_value("editor", "thumbnailWithText", true)
 
 func closed(configFile:ConfigFile) -> void:
-	configFile.set_value("Game.editor", "thumbnailHideDescription", %thumbnailHideDescription.button_pressed)
-	configFile.set_value("Game.editor", "thumbnailEntireLevel", %thumbnailEntireLevel.button_pressed)
-	configFile.set_value("Game.editor", "thumbnailWithText", %thumbnailWithText.button_pressed)
+	configFile.set_value("editor", "thumbnailHideDescription", %thumbnailHideDescription.button_pressed)
+	configFile.set_value("editor", "thumbnailEntireLevel", %thumbnailEntireLevel.button_pressed)
+	configFile.set_value("editor", "thumbnailWithText", %thumbnailWithText.button_pressed)
 
 func updateLevelSettingsPosition() -> void:
 	%followWorld.worldOffset = Game.editor.levelStartCameraCenter()

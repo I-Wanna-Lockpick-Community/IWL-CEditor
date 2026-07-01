@@ -1,30 +1,16 @@
 extends MarginContainer
 class_name HotkeySetting
-
-## The label displayed to the user
-@export var label:String
-## The name of the action (in Project -> Project Settings -> Input Map)
-@export var action:StringName
-## A prerequisite mod, if this is a modded hotkey. Leave blank for no prerequisite
-@export var prerequisite:StringName
-## Whether or not this is a held modifier.
-@export var held:bool = false
+var definition:EditorSettingss.Hotkey
 var input:InputEvent
 
-var default:Array[InputEvent]
 var buttons:Array[HotkeySettingButton]
 
 func _ready() -> void:
-	%label.text = label + (" (held modifier)" if held else "")
-	default = InputMap.action_get_events(action)
-	for event in InputMap.action_get_events(action):
-		var button:HotkeySettingButton = HotkeySettingButton.new(self)
-		button.event = event
-		%buttons.add_child(button)
-		buttons.append(button)
+	%label.text = definition.label + (" (held modifier)" if definition.held else "")
+	InputMap.add_action(definition.action)
 
 func changedMods() -> void:
-	visible = !prerequisite or Mods.active(prerequisite)
+	visible = !definition.prerequisite or Mods.active(definition.prerequisite)
 	for button in buttons: button.check()
 
 func _hover() -> void: %label.add_theme_color_override("font_color", Color("#ffffff")); %hover.visible = true
@@ -41,18 +27,18 @@ func updateReset() -> void:
 	%reset.disabled = equalToDefault()
 
 func equalToDefault() -> bool:
-	var events:Array[InputEvent] = InputMap.action_get_events(action)
-	if len(default) != len(events): return false
-	for i in len(default):
-		if !default[i].is_match(events[i]): return false
+	var events:Array[InputEvent] = InputMap.action_get_events(definition.action)
+	if len(definition.defaultEvents) != len(events): return false
+	for i in len(definition.defaultEvents):
+		if !definition.defaultEvents[i].is_match(events[i]): return false
 	return true
 
-func _reset(to:Array[InputEvent]=default):
+func _reset(to:Array[InputEvent]=definition.defaultEvents):
 	for button in buttons.duplicate(): button.remove()
 	buttons.clear()
-	InputMap.action_erase_events(action)
+	InputMap.action_erase_events(definition.action)
 	for event in to:
-		InputMap.action_add_event(action, event)
+		InputMap.action_add_event(definition.action, event)
 		var button:HotkeySettingButton = HotkeySettingButton.new(self)
 		button.event = event
 		%buttons.add_child(button)
@@ -89,7 +75,7 @@ class HotkeySettingButton extends Button:
 			if Input.is_key_pressed(KEY_SHIFT): text += "Shift+"
 			if Input.is_key_pressed(KEY_ALT): text += "Alt+"
 			if !text: text = "(Unhover to cancel)"
-			elif hotkey.held: text = text.left(-1)
+			elif hotkey.definition.held: text = text.left(-1)
 		else:
 			assert(event is InputEventKey)
 			text = event.as_text_physical_keycode()
@@ -97,7 +83,7 @@ class HotkeySettingButton extends Button:
 	func _startSet() -> void:
 		button_pressed = true
 		setting = true
-		if event: InputMap.action_erase_event(hotkey.action, event)
+		if event: InputMap.action_erase_event(hotkey.definition.action, event)
 		setText()
 	
 	func _cancelSet() -> void:
@@ -105,7 +91,7 @@ class HotkeySettingButton extends Button:
 		setting = false
 		if !event: remove()
 		else:
-			InputMap.action_add_event(hotkey.action, event)
+			InputMap.action_add_event(hotkey.definition.action, event)
 			setText()
 		if changed:
 			changed = false
@@ -118,7 +104,7 @@ class HotkeySettingButton extends Button:
 					MOUSE_BUTTON_LEFT: _startSet()
 					MOUSE_BUTTON_RIGHT:
 						if event:
-							InputMap.action_erase_event(hotkey.action, event)
+							InputMap.action_erase_event(hotkey.definition.action, event)
 							check()
 						remove()
 					_: return
@@ -127,11 +113,11 @@ class HotkeySettingButton extends Button:
  
 	func _input(_event:InputEvent) -> void:
 		if !setting or _event is InputEventMouse or !_event.pressed: return
-		if _event is InputEventKey and _event.keycode in [KEY_SHIFT, KEY_CTRL, KEY_ALT, KEY_META] and !hotkey.held: return
+		if _event is InputEventKey and _event.keycode in [KEY_SHIFT, KEY_CTRL, KEY_ALT, KEY_META] and !hotkey.definition.held: return
 		_event.keycode = 0
 		_event.unicode = 0
 		_event.pressed = false
-		for checkEvent in InputMap.action_get_events(hotkey.action):
+		for checkEvent in InputMap.action_get_events(hotkey.definition.action):
 			if checkEvent.is_match(_event): return
 		event = _event
 		changed = true

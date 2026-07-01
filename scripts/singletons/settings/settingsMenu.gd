@@ -15,11 +15,6 @@ func _ready() -> void:
 
 	_tabSelected(0)
 
-func _modsChanged() -> void:
-	%operatorKeyFocused.visible = Mods.active(&"OperatorKey")
-	%remoteLockFocused.visible = Mods.active(&"RemoteLocks")
-	%remainderLockFocused.visible = Mods.active(&"RemainderLock")
-
 func _input(event:InputEvent) -> void:
 	if !Game.editor.settingsOpen: return
 	if event is InputEventKey and event.is_pressed():
