@@ -1,7 +1,8 @@
 [gd_scene format=3 uid="uid://uojm0pynavni"]
 
 [ext_resource type="Theme" uid="uid://bvfthh0vm4fbp" path="res://resources/uiTheme.tres" id="1_c8k7n"]
-[ext_resource type="Script" uid="uid://cp1r75v1n7qs1" path="res://scripts/singletons/editor/settingsMenu.gd" id="2_onm7i"]
+[ext_resource type="Script" uid="uid://cp1r75v1n7qs1" path="res://scripts/singletons/settings/settingsMenu.gd" id="2_onm7i"]
+[ext_resource type="Script" uid="uid://b71a7ufm6gj51" path="res://scripts/singletons/settings/levelSettings.gd" id="3_n2dfo"]
 [ext_resource type="Script" uid="uid://d1dnk5hils44t" path="res://scripts/nodes/settings/followWorld.gd" id="3_psrcj"]
 [ext_resource type="FontFile" uid="uid://dftdrhvd8mdyi" path="res://resources/fonts/fLevelID.fnt" id="3_tixgc"]
 [ext_resource type="FontFile" uid="uid://cdifvlr6awojn" path="res://resources/fonts/fLevelName.fnt" id="4_egwj7"]
@@ -12,6 +13,7 @@
 [ext_resource type="Script" uid="uid://b43xpe67iop1m" path="res://scripts/nodes/settings/colorQuicksetSetting.gd" id="7_07bsi"]
 [ext_resource type="FontFile" uid="uid://c81fuf05yiuem" path="res://resources/fonts/fRoomNum.fnt" id="7_etcr4"]
 [ext_resource type="Script" uid="uid://upqgnu1wo3et" path="res://scripts/nodes/settings/lockSizeQuicksetSetting.gd" id="8_huukw"]
+[ext_resource type="Script" uid="uid://bavqifkywnf0q" path="res://scripts/singletons/settings/editorSettings.gd" id="10_3fl6e"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_a5etv"]
 content_margin_left = 0.0
@@ -70,7 +72,7 @@ MarginContainer/constants/margin_right = 0
 MarginContainer/constants/margin_top = 0
 VBoxContainer/constants/separation = 2
 
-[sub_resource type="ButtonGroup" id="ButtonGroup_3e3b5"]
+[sub_resource type="ButtonGroup" id="ButtonGroup_mesti"]
 
 [node name="settingsMenu" type="PanelContainer" unique_id=1534647259 groups=["modUI"]]
 anchors_preset = 15
@@ -102,6 +104,7 @@ theme_override_constants/margin_left = 10
 theme_override_constants/margin_top = 8
 theme_override_constants/margin_right = 10
 theme_override_constants/margin_bottom = 10
+script = ExtResource("3_n2dfo")
 
 [node name="c" type="Control" parent="c/levelSettings" unique_id=376531002]
 layout_mode = 2
@@ -356,6 +359,7 @@ unique_name_in_owner = true
 visible = false
 layout_mode = 2
 size_flags_vertical = 3
+script = ExtResource("10_3fl6e")
 
 [node name="c2" type="ScrollContainer" parent="c/editorSettings" unique_id=951074222]
 layout_mode = 2
@@ -1028,23 +1032,23 @@ unique_name_in_owner = true
 visible = false
 layout_mode = 2
 size_flags_vertical = 3
-toneButtonGroup = SubResource("ButtonGroup_3e3b5")
+toneButtonGroup = SubResource("ButtonGroup_mesti")
 
-[connection signal="focus_exited" from="c/levelSettings/c/followWorld/c/c/levelNumber" to="." method="_defocus"]
-[connection signal="text_changed" from="c/levelSettings/c/followWorld/c/c/levelNumber" to="." method="_levelNumberSet"]
-[connection signal="focus_exited" from="c/levelSettings/c/followWorld/c/c/levelName" to="." method="_defocus"]
-[connection signal="text_changed" from="c/levelSettings/c/followWorld/c/c/levelName" to="." method="_levelNameSet"]
-[connection signal="focus_exited" from="c/levelSettings/c/followWorld/c/c/levelAuthor" to="." method="_defocus"]
-[connection signal="text_changed" from="c/levelSettings/c/followWorld/c/c/levelAuthor" to="." method="_levelAuthorSet"]
-[connection signal="text_changed" from="c/levelSettings/c/followWorld/description/c/c/c/levelDescription" to="." method="_levelDescriptionSet"]
-[connection signal="text_changed" from="c/levelSettings/c/followWorld/description/c/c2/levelShortNumber" to="." method="_levelShortNumberSet"]
-[connection signal="value_changed" from="c/levelSettings/c/followWorld/c2/c/c/levelRevision" to="." method="_levelRevisionSet"]
-[connection signal="toggled" from="c/levelSettings/c/followWorld/c2/c/thumbnailHideDescription" to="." method="_thumbnailHideDescriptionSet"]
-[connection signal="toggled" from="c/levelSettings/c/followWorld/c2/c/c3/thumbnailEntireLevel" to="." method="_thumbnailEntireLevelSet"]
-[connection signal="toggled" from="c/levelSettings/c/followWorld/c2/c/c4/thumbnailWithText" to="." method="_thumbnailWithText"]
-[connection signal="pressed" from="c/levelSettings/c/followWorld/c2/c/c2/generateThumbnail" to="." method="_generateThumbnail"]
-[connection signal="toggled" from="c/editorSettings/c2/c/fileDialogWorkaroundCont/fileDialogWorkaround" to="." method="_fileDialogWorkaroundSet"]
-[connection signal="toggled" from="c/editorSettings/c2/c/fullscreen" to="." method="_fullscreenSet"]
-[connection signal="drag_ended" from="c/editorSettings/c2/c/c2/uiScale" to="." method="_uiScaleSet" unbinds=1]
-[connection signal="value_changed" from="c/editorSettings/c2/c/c2/uiScale" to="." method="_uiScaleChanged"]
-[connection signal="toggled" from="c/editorSettings/c2/c/edgeResizing" to="." method="_edgeResizingSet"]
+[connection signal="focus_exited" from="c/levelSettings/c/followWorld/c/c/levelNumber" to="c/levelSettings" method="_defocus"]
+[connection signal="text_changed" from="c/levelSettings/c/followWorld/c/c/levelNumber" to="c/levelSettings" method="_levelNumberSet"]
+[connection signal="focus_exited" from="c/levelSettings/c/followWorld/c/c/levelName" to="c/levelSettings" method="_defocus"]
+[connection signal="text_changed" from="c/levelSettings/c/followWorld/c/c/levelName" to="c/levelSettings" method="_levelNameSet"]
+[connection signal="focus_exited" from="c/levelSettings/c/followWorld/c/c/levelAuthor" to="c/levelSettings" method="_defocus"]
+[connection signal="text_changed" from="c/levelSettings/c/followWorld/c/c/levelAuthor" to="c/levelSettings" method="_levelAuthorSet"]
+[connection signal="text_changed" from="c/levelSettings/c/followWorld/description/c/c/c/levelDescription" to="c/levelSettings" method="_levelDescriptionSet"]
+[connection signal="text_changed" from="c/levelSettings/c/followWorld/description/c/c2/levelShortNumber" to="c/levelSettings" method="_levelShortNumberSet"]
+[connection signal="value_changed" from="c/levelSettings/c/followWorld/c2/c/c/levelRevision" to="c/levelSettings" method="_levelRevisionSet"]
+[connection signal="toggled" from="c/levelSettings/c/followWorld/c2/c/thumbnailHideDescription" to="c/levelSettings" method="_thumbnailHideDescriptionSet"]
+[connection signal="toggled" from="c/levelSettings/c/followWorld/c2/c/c3/thumbnailEntireLevel" to="c/levelSettings" method="_thumbnailEntireLevelSet"]
+[connection signal="toggled" from="c/levelSettings/c/followWorld/c2/c/c4/thumbnailWithText" to="c/levelSettings" method="_thumbnailWithText"]
+[connection signal="pressed" from="c/levelSettings/c/followWorld/c2/c/c2/generateThumbnail" to="c/levelSettings" method="_generateThumbnail"]
+[connection signal="toggled" from="c/editorSettings/c2/c/fileDialogWorkaroundCont/fileDialogWorkaround" to="c/editorSettings" method="_fileDialogWorkaroundSet"]
+[connection signal="toggled" from="c/editorSettings/c2/c/fullscreen" to="c/editorSettings" method="_fullscreenSet"]
+[connection signal="drag_ended" from="c/editorSettings/c2/c/c2/uiScale" to="c/editorSettings" method="_uiScaleSet" unbinds=1]
+[connection signal="value_changed" from="c/editorSettings/c2/c/c2/uiScale" to="c/editorSettings" method="_uiScaleChanged"]
+[connection signal="toggled" from="c/editorSettings/c2/c/edgeResizing" to="c/editorSettings" method="_edgeResizingSet"]
