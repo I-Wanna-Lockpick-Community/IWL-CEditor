@@ -8,11 +8,6 @@ class_name SettingsMenu
 var configFile:ConfigFile = ConfigFile.new()
 
 func _ready() -> void:
-	if OS.has_feature("web"):
-		%fileDialogWorkaroundCont.visible = false
-		%thumbnailClarifier.visible = false
-		%editSaveAs.visible = false
-
 	_tabSelected(0)
 
 func _input(event:InputEvent) -> void:
@@ -24,17 +19,7 @@ func _input(event:InputEvent) -> void:
 				get_viewport().set_input_as_handled()
 
 func receiveMouseInput(event:InputEvent) -> void:
-	# resizing
-	if !Game.editor.edgeResizing: return
-	var dragCornerSize:Vector2 = Vector2(8,8)/Game.editor.cameraZoom
-	var diffSign:Vector2 = Editor.rectSign(Rect2(Vector2(Game.levelBounds.position)+dragCornerSize,Vector2(Game.levelBounds.size)-dragCornerSize*2), Game.editor.mouseWorldPosition)
-	if !diffSign or !Game.levelBounds.has_point(Game.editor.mouseWorldPosition): return
-	elif !diffSign.x: mouse_default_cursor_shape = Control.CURSOR_VSIZE
-	elif !diffSign.y: mouse_default_cursor_shape = Control.CURSOR_HSIZE
-	elif (diffSign.x > 0) == (diffSign.y > 0): mouse_default_cursor_shape = Control.CURSOR_FDIAGSIZE
-	else: mouse_default_cursor_shape = Control.CURSOR_BDIAGSIZE
-	if Editor.isLeftClick(event):
-		Game.editor.startSizeDrag(Game.editor.levelBoundsObject, diffSign)
+	%levelSettings.receiveMouseInput(event)
 
 func _tabSelected(tab:int) -> void:
 	%levelSettings.visible = tab == 0

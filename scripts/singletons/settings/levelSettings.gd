@@ -7,6 +7,8 @@ func _ready() -> void:
 	textDraw = RenderingServer.canvas_item_create()
 	RenderingServer.canvas_item_set_z_index(textDraw,1)
 	RenderingServer.canvas_item_set_parent(textDraw,%followWorld.get_canvas_item())
+	if OS.has_feature("web"):
+		%thumbnailClarifier.visible = false
 
 func _draw() -> void:
 	RenderingServer.canvas_item_clear(textDraw)
@@ -15,6 +17,19 @@ func _draw() -> void:
 	TextDraw.outlinedCentered2(Game.FLEVELNAME,textDraw,%levelAuthor.text,Color.BLACK,Color.WHITE,36,Vector2(400,378))
 	TextDraw.outlinedCentered(Game.FROOMNUM,textDraw,"PUZZLE",Color("#d6cfc9"),Color("#3e2d1c"),20,Vector2(732,524))
 	TextDraw.outlinedCentered(Game.FROOMNUM,textDraw,%levelShortNumber.text,Color("#8c50c8"),Color("#140064"),20,Vector2(732,554))
+
+func receiveMouseInput(event:InputEvent) -> void:
+	# resizing
+	if !Game.editor.edgeResizing: return
+	var dragCornerSize:Vector2 = Vector2(8,8)/Game.editor.cameraZoom
+	var diffSign:Vector2 = Editor.rectSign(Rect2(Vector2(Game.levelBounds.position)+dragCornerSize,Vector2(Game.levelBounds.size)-dragCornerSize*2), Game.editor.mouseWorldPosition)
+	if !diffSign or !Game.levelBounds.has_point(Game.editor.mouseWorldPosition): return
+	elif !diffSign.x: mouse_default_cursor_shape = Control.CURSOR_VSIZE
+	elif !diffSign.y: mouse_default_cursor_shape = Control.CURSOR_HSIZE
+	elif (diffSign.x > 0) == (diffSign.y > 0): mouse_default_cursor_shape = Control.CURSOR_FDIAGSIZE
+	else: mouse_default_cursor_shape = Control.CURSOR_BDIAGSIZE
+	if Editor.isLeftClick(event):
+		Game.editor.startSizeDrag(Game.editor.levelBoundsObject, diffSign)
 
 func opened(configFile:ConfigFile) -> void:
 	updateLevelSettingsPosition()

@@ -5,12 +5,18 @@ var input:InputEvent
 
 var buttons:Array[HotkeySettingButton]
 
+var invisibleOverride:bool = false
+
+func overrideVisibility() -> void:
+	invisibleOverride = true
+	visible = false
+
 func _ready() -> void:
 	%label.text = definition.label + (" (held modifier)" if definition.held else "")
 	InputMap.add_action(definition.action)
 
 func changedMods() -> void:
-	visible = !definition.prerequisite or Mods.active(definition.prerequisite)
+	visible = (!definition.prerequisite or Mods.active(definition.prerequisite)) and !invisibleOverride
 	for button in buttons: button.check()
 
 func _hover() -> void: %label.add_theme_color_override("font_color", Color("#ffffff")); %hover.visible = true

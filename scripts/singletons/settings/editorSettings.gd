@@ -104,6 +104,7 @@ static var HotkeyTree:Array = [
 const HOTKEY_SETTING:PackedScene = preload("res://scenes/settings/hotkeySetting.tscn")
 const HOTKEY_GROUP_LABEL_SETTINGS:LabelSettings = preload("res://resources/hotkeyGroupLabelSettings.tres")
 static var prerequistedSubTrees:Array[SubTree]
+static var hotkeys:Dictionary[StringName, Hotkey]
 
 class Hotkey extends RefCounted:
 	var label:String
@@ -121,6 +122,7 @@ class Hotkey extends RefCounted:
 		action = _action
 		defaultEvents = _defaultEvents
 		prerequisite = _prerequisite
+		EditorSettingss.hotkeys[action] = self
 	
 	func setHeld() -> Hotkey:
 		held = true
@@ -173,6 +175,9 @@ static func eventKey(pattern:String) -> InputEventKey:
 
 func _ready() -> void:
 	addHotkeyTree(HotkeyTree, %hotkeys)
+	if OS.has_feature("web"):
+		%fileDialogWorkaroundCont.visible = false
+		hotkeys[&"editSaveAs"].node.overrideVisibility()
 
 func addHotkeyTree(tree:Array, root:Control) -> void:
 	for entry in tree:
