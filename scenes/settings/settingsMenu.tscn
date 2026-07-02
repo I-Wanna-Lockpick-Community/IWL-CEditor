@@ -71,7 +71,7 @@ MarginContainer/constants/margin_right = 0
 MarginContainer/constants/margin_top = 0
 VBoxContainer/constants/separation = 2
 
-[sub_resource type="ButtonGroup" id="ButtonGroup_xp6gv"]
+[sub_resource type="ButtonGroup" id="ButtonGroup_0t5ct"]
 
 [node name="settingsMenu" type="PanelContainer" unique_id=1534647259]
 anchors_preset = 15
@@ -490,7 +490,7 @@ tooltip_text = "Contextual hotkeys (marked by context and indent) are only activ
 texture = ExtResource("5_iswfj")
 
 [node name="c3" type="ScrollContainer" parent="c/editorSettings/c2/c" unique_id=1717071197]
-custom_minimum_size = Vector2(0, 600)
+custom_minimum_size = Vector2(0, 400)
 layout_mode = 2
 
 [node name="hotkeys" type="VBoxContainer" parent="c/editorSettings/c2/c/c3" unique_id=1637801536]
@@ -502,7 +502,7 @@ theme = SubResource("Theme_dkncv")
 [node name="gameSettings" parent="c" unique_id=2039076092 instance=ExtResource("6_tyaol")]
 unique_name_in_owner = true
 layout_mode = 2
-toneButtonGroup = SubResource("ButtonGroup_xp6gv")
+toneButtonGroup = SubResource("ButtonGroup_0t5ct")
 
 [connection signal="focus_exited" from="c/levelSettings/c/followWorld/c/c/c/levelNumber" to="c/levelSettings" method="_defocus"]
 [connection signal="text_changed" from="c/levelSettings/c/followWorld/c/c/c/levelNumber" to="c/levelSettings" method="_levelNumberSet"]

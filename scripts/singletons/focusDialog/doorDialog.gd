@@ -150,7 +150,8 @@ func receiveKey(event:InputEvent) -> bool:
 		if Editor.eventIs(event, &"focusDoorFrozen"): _frozenSet(!main.focused.frozen)
 		elif Editor.eventIs(event, &"focusDoorCrumbled"): _crumbledSet(!main.focused.crumbled)
 		elif Editor.eventIs(event, &"focusDoorPainted"): _paintedSet(!main.focused.painted)
-		elif Editor.eventIs(event, &"focusDoorSpendArmament"): _spendArmamentSet(!main.focused.armament)
+		elif Editor.eventIs(event, &"focusDoorSpendArmament") and Mods.active(&"Armaments"): _spendArmamentSet(!main.focused.armament)
+		elif Editor.eventIs(event, &"focusDoorOscillate") and Mods.active(&"Fractions"): _spendArmamentSet(!main.focused.armament)
 		elif Editor.eventIs(event, &"focusDoorAddLock", true): main.focused.addLock()
 		elif Editor.eventIs(event, &"focusDoorColorLink"): %colorLink.button_pressed = !%colorLink.button_pressed
 		elif Editor.eventIs(event, &"quicksetColor"): Game.editor.quickSet.startQuick(&"quicksetColor", main.focused)

@@ -276,7 +276,7 @@ func _gui_input(event:InputEvent) -> void:
 							var key:KeyBulk = Changes.addChange(Changes.CreateComponentChange.new(KeyBulk,{&"position":mouseTilePosition})).result
 							focusDialog.defocus()
 							if !Input.is_action_pressed(&"heldKeepMode"):
-								modes.setMode(MODE.SELECT)
+								modes._setMode(MODE.SELECT)
 								startPositionDrag(key)
 					if Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT):
 						if objectHovered is KeyBulk:
@@ -295,7 +295,7 @@ func _gui_input(event:InputEvent) -> void:
 								startSizeDrag(door)
 								Changes.addChange(Changes.CreateComponentChange.new(Lock,{&"position":Vector2.ZERO,&"parentId":door.id}))
 								if !Input.is_action_pressed(&"heldKeepMode"):
-									modes.setMode(MODE.SELECT)
+									modes._setMode(MODE.SELECT)
 					if Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT):
 						if objectHovered is Door:
 							Changes.addChange(Changes.DeleteComponentChange.new(objectHovered))
@@ -313,7 +313,7 @@ func _gui_input(event:InputEvent) -> void:
 							if otherObjects.selected == KeyCounter:
 								Changes.addChange(Changes.CreateComponentChange.new(KeyCounterElement,{&"position":Vector2(12,12),&"parentId":object.id}))
 							if !Input.is_action_pressed(&"heldKeepMode"):
-								modes.setMode(MODE.SELECT)
+								modes._setMode(MODE.SELECT)
 								startPositionDrag(object)
 					if Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT):
 						if objectHovered and objectHovered.get_script() == otherObjects.selected:
@@ -323,7 +323,7 @@ func _gui_input(event:InputEvent) -> void:
 					if isLeftClick(event):
 						multiselect.paste()
 						if !Input.is_action_pressed(&"heldKeepMode"):
-							modes.setMode(MODE.SELECT)
+							modes._setMode(MODE.SELECT)
 
 func stopDrag() -> void:
 	if componentDragged == levelBoundsObject:
@@ -480,11 +480,11 @@ func _input(event:InputEvent) -> void:
 			elif eventIs(event, &"editStartPlaytest") and !topBar.play.disabled: await get_tree().process_frame; Game.playTest(Game.levelStart)
 			elif eventIs(event, &"editStartPlaytestFromState") and !topBar.play.disabled: await get_tree().process_frame; Game.playTest(Game.latestSpawn)
 			elif eventIs(event, &"editStopPlaytest") and Game.playState == Game.PLAY_STATE.PAUSED: Game.stopTest()
-			elif eventIs(event, &"editModeSelect"): modes.setMode(MODE.SELECT); focusDialog.defocus(); componentDragged = null; multiselect.deselect()
-			elif eventIs(event, &"editModeTile"): modes.setMode(MODE.TILE)
-			elif eventIs(event, &"editModeKey"): modes.setMode(MODE.KEY)
-			elif eventIs(event, &"editModeDoor"): modes.setMode(MODE.DOOR)
-			elif eventIs(event, &"editModeOther"): modes.setMode(MODE.OTHER)
+			elif eventIs(event, &"editModeSelect"): modes._setMode(MODE.SELECT); focusDialog.defocus(); componentDragged = null; multiselect.deselect()
+			elif eventIs(event, &"editModeTile"): modes._setMode(MODE.TILE)
+			elif eventIs(event, &"editModeKey"): modes._setMode(MODE.KEY)
+			elif eventIs(event, &"editModeDoor"): modes._setMode(MODE.DOOR)
+			elif eventIs(event, &"editModeOther"): modes._setMode(MODE.OTHER)
 			elif eventIs(event, &"editObjectSearch"): otherObjects.objectSearch.grab_focus()
 			elif eventIs(event, &"editPipette"): pipette()
 			elif eventIs(event, &"editOpenSettings"): _toggleSettingsMenu(true)
@@ -496,7 +496,7 @@ func _input(event:InputEvent) -> void:
 			elif eventIs(event, &"editHome"): home()
 			elif eventIs(event, &"editCopy"): multiselect.copySelection()
 			elif eventIs(event, &"editCut"): multiselect.copySelection(); multiselect.delete()
-			elif eventIs(event, &"editPaste") and multiselect.clipboard != []: modes.setMode(MODE.PASTE)
+			elif eventIs(event, &"editPaste") and multiselect.clipboard != []: modes._setMode(MODE.PASTE)
 			elif eventIs(event, &"editUndo"): multiselect.deselect(); Changes.undo()
 			elif eventIs(event, &"editRedo"): multiselect.deselect(); Changes.redo()
 			elif eventIs(event, &"editDrag"):
@@ -532,10 +532,10 @@ func pipette() -> void:
 		multiselect.selectRect.position = objectHovered.position
 		multiselect.clipboard.assign([multiselect.createObjectCopy(objectHovered)])
 		paste.disabled = false
-		modes.setMode(MODE.PASTE)
+		modes._setMode(MODE.PASTE)
 		@warning_ignore("integer_division")
-	elif Game.tiles.get_cell_source_id(mouseTilePosition/32) != -1: modes.setMode(MODE.TILE)
-	else: modes.setMode(MODE.SELECT)
+	elif Game.tiles.get_cell_source_id(mouseTilePosition/32) != -1: modes._setMode(MODE.TILE)
+	else: modes._setMode(MODE.SELECT)
 
 func worldspaceToScreenspace(vector:Vector2) -> Vector2:
 	if Game.playState == Game.PLAY_STATE.PLAY: return (vector - playtestCamera.get_screen_center_position())*playtestCamera.zoom/Game.uiScale + gameCont.position + gameCont.size/2

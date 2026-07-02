@@ -70,7 +70,7 @@ static var HotkeyTree:Array = [
 				Hotkey.new("Toggle Crumbled",				&"focusDoorCrumbled",				[eventKey("R")]),
 				Hotkey.new("Toggle Painted",				&"focusDoorPainted",				[eventKey("T")]),
 				Hotkey.new("Toggle Spend Armament",			&"focusDoorSpendArmament",			[eventKey("Shift+A")], &"Armaments"),
-				# oscillate
+				Hotkey.new("Toggle Oscillate",				&"focusDoorOscillate",				[eventKey("Shift+O")], &"Fractions"),
 			]),
 			SubTree.new("Editing Lock Properties", [
 				Hotkey.new("Duplicate Lock",				&"focusLockDuplicate",				[eventKey("Ctrl+D")]),
