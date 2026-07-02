@@ -44,7 +44,7 @@ func matchesSearch(object:GDScript, search:String) -> bool:
 func objectSelected(object:GDScript, quiet:bool=false) -> void:
 	%other.icon = object.SEARCH_ICON
 	selected = object
-	if !quiet: editor.modes.setMode(Editor.MODE.OTHER)
+	if !quiet: editor.modes._setMode(Editor.MODE.OTHER)
 
 func _searchSubmitted() -> void:
 	if firstResult: objectSelected(firstResult)

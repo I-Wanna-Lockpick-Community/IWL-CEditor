@@ -108,7 +108,7 @@ func clear() -> void:
 		editor.connectionSource = null
 		if editor.modsWindow: editor.modsWindow._close()
 		editor.quickSet.applyOrCancel()
-		editor.modes.setMode(Editor.MODE.SELECT)
+		editor.modes._setMode(Editor.MODE.SELECT)
 		editor.otherObjects.objectSelected(PlayerSpawn, true)
 		editor.multiselect.deselect()
 		editor.multiselect.clipboard.clear()
