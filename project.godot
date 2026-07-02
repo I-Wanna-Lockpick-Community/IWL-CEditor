@@ -38,10 +38,6 @@ window/size/viewport_height=697
 window/subwindows/embed_subwindows=false
 window/per_pixel_transparency/allowed=true
 
-[dotnet]
-
-project/assembly_name="IWLCEditor"
-
 [global_group]
 
 modUI="UI affected by mod changes"
