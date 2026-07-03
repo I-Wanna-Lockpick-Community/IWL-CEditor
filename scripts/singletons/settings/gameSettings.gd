@@ -7,7 +7,8 @@ var editor:Editor
 var playGame:PlayGame
 
 @export var toneButtonGroup:ButtonGroup
-var selectedTone:Array[Color] = Game.highTone
+enum TONE {High, Main, Dark}
+var selectedTone:TONE
 var selectedColor:Color
 
 var keyDrawMain:RID
@@ -81,9 +82,9 @@ func _simpleLocksSet(toggled_on:bool):
 
 func _toneSelected(button:Button) -> void:
 	match button.text:
-		"High": selectedTone = Game.highTone
-		"Main": selectedTone = Game.mainTone
-		"Dark": selectedTone = Game.darkTone
+		"High": selectedTone = TONE.High
+		"Main": selectedTone = TONE.Main
+		"Dark": selectedTone = TONE.Dark
 	updateLabels()
 
 func _colorSelected(color:C.olors) -> void:
@@ -91,7 +92,10 @@ func _colorSelected(color:C.olors) -> void:
 	updateLabels()
 
 func updateLabels() -> void:
-	selectedColor = selectedTone[%colorSelector.selected]
+	match selectedTone:
+		TONE.High: selectedColor = Colors.getHighTone(%colorSelector.selected)
+		TONE.Main: selectedColor = Colors.getMainTone(%colorSelector.selected)
+		TONE.Dark: selectedColor = Colors.getDarkTone(%colorSelector.selected)
 	%redLabel.text = str(selectedColor.r8)
 	%greenLabel.text = str(selectedColor.g8)
 	%blueLabel.text = str(selectedColor.b8)
@@ -105,20 +109,32 @@ func updateLabels() -> void:
 	if editor: for component in editor.previewComponents: if component.get_script() in [Lock, KeyCounterElement, KeyBulk, Door, RemoteLock]: component.queue_redraw()
 
 func _redSet(value:float) -> void:
-	selectedTone[%colorSelector.selected].r8 = round(value)
+	var def:Colors.ColorDef = Colors.getDef(%colorSelector.selected)
+	match selectedTone:
+		TONE.High: def.highTone.r8 = round(value)
+		TONE.Main: def.mainTone.r8 = round(value)
+		TONE.Dark: def.darkTone.r8 = round(value)
 	updateLabels()
 
 func _greenSet(value:float) -> void:
-	selectedTone[%colorSelector.selected].g8 = round(value)
+	var def:Colors.ColorDef = Colors.getDef(%colorSelector.selected)
+	match selectedTone:
+		TONE.High: def.highTone.g8 = round(value)
+		TONE.Main: def.mainTone.g8 = round(value)
+		TONE.Dark: def.darkTone.g8 = round(value)
 	updateLabels()
 
 func _blueSet(value:float) -> void:
-	selectedTone[%colorSelector.selected].b8 = round(value)
+	var def:Colors.ColorDef = Colors.getDef(%colorSelector.selected)
+	match selectedTone:
+		TONE.High: def.highTone.b8 = round(value)
+		TONE.Main: def.mainTone.b8 = round(value)
+		TONE.Dark: def.darkTone.b8 = round(value)
 	updateLabels()
 
 func _setTonesToMain() -> void:
-	Game.highTone[%colorSelector.selected] = Game.mainTone[%colorSelector.selected]
-	Game.darkTone[%colorSelector.selected] = Game.mainTone[%colorSelector.selected]
+	Colors.getDef(%colorSelector.selected).highTone = Colors.getMainTone(%colorSelector.selected)
+	Colors.getDef(%colorSelector.selected).darkTone = Colors.getMainTone(%colorSelector.selected)
 	updateLabels()
 
 func _setPreset(id:int) -> void:

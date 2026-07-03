@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://14n0wplwrru2"]
 
-[ext_resource type="Script" uid="uid://bkfqkqmgfbtem" path="res://devTools/gms_font_importer.gd" id="1_5l1cu"]
+[ext_resource type="Script" uid="uid://bkfqkqmgfbtem" path="res://devTools/gmsFontImporter.gd" id="1_5l1cu"]
 
 [node name="FontMaker" type="Node" unique_id=537584301]
 script = ExtResource("1_5l1cu")

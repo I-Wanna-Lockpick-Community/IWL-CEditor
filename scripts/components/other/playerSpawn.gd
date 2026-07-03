@@ -28,12 +28,14 @@ static var ARRAYS:Dictionary[StringName,Variant] = {
 	&"glisten":TYPE_PACKED_INT64_ARRAY
 }
 
-var key:Array[PackedInt64Array] = []
-var star:Array[bool]
-var curse:Array[bool]
-var glisten:Array[PackedInt64Array] = []
-var undoStack:Array[Array] = []
-var saveBuffered:bool = false
+@export_group("SavedArrays")
+@export var key:Array[PackedInt64Array] = []
+@export var star:Array[bool]
+@export var curse:Array[bool]
+@export var glisten:Array[PackedInt64Array] = []
+@export_group("SavedProperties")
+@export var undoStack:Array[Array] = []
+@export var saveBuffered:bool = false
 
 var drawMain:RID
 

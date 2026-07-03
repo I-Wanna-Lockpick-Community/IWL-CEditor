@@ -1,3 +1,4 @@
+@tool
 extends Node
 
 static var COMPONENTS:Array[GDScript] = [Lock, KeyCounterElement, KeyBulk, Door, Goal, KeyCounter, PlayerSpawn, FloatingTile, RemoteLock, PlaceholderObject, PlayerPlaceholderObject]
@@ -15,135 +16,7 @@ static var COLOR_TEXTURES:ColorsTextureLoader = ColorsTextureLoader.new("res://a
 const EMPTY:Texture2D = preload("res://assets/empty.png")
 const FILLED:Texture2D = preload("res://assets/filled.png")
 
-var highTone:Array[Color] = DEFAULT_HIGH.duplicate()
-const DEFAULT_HIGH:Array[Color] = [
-	Color("#e7bf98"),
-	Color("#edeae7"), Color("#e7bf98"), Color("#bfa4db"),
-	Color("#c83737"), Color("#70cf88"), Color("#8795b8"),
-	Color("#e4afca"), Color("#8acaca"), Color("#554b40"),
-	Color("#aa6015"),
-	Color("#edeae7"),
-	Color("#78be00"),
-	Color("#96a0a5"),
-	Color("#d18866"), Color("#ffffff"),
-	Color("#6d4040"), Color("#3f5c3f"), Color("#49496b"),
-	Color("#d1ffff"), Color("#b57ea7"), Color("#f2e380"),
-	Color("#00000000"),
-	Color("#fff"),
-	Color("#240a44"),
-	Color("#A79437"),
-	Color("#54A7FF"),
-	Color("#99BB00"),
-	Color("#A6CCEE")
-]
-const BRIGHT_HIGH:Array[Color] = [
-	Color("#e7bf98"),
-	Color("#edeae7"), Color("#e7bf98"), Color("#bfa4db"),
-	Color("#eb3737"), Color("#70cf88"), Color("#8795b8"),
-	Color("#e4afca"), Color("#8acaf8"), Color("#554b40"),
-	Color("#aa6015"),
-	Color("#edeae7"),
-	Color("#78be00"),
-	Color("#96a0a5"),
-	Color("#d18866"), Color("#ffffff"),
-	Color("#6d4040"), Color("#3f5c3f"), Color("#49496b"),
-	Color("#d1ffff"), Color("#b57ea7"), Color("#f2e380"),
-	Color("#00000000"),
-	Color("#fff"),
-	Color("#340e62"),
-	Color("#A79437"),
-	Color("#54A7FF"),
-	Color("#99BB00"),
-	Color("#A6CCEE")
-]
-
-var mainTone:Array[Color] = DEFAULT_MAIN.duplicate()
-const DEFAULT_MAIN:Array[Color] = [
-	Color("#d68f49"),
-	Color("#d6cfc9"), Color("#d68f49"), Color("#8f5fc0"),
-	Color("#8f1b1b"), Color("#359f50"), Color("#5f71a0"),
-	Color("#cf709f"), Color("#50afaf"), Color("#363029"),
-	Color("#704010"),
-	Color("#d6cfc9"),
-	Color("#b49600"),
-	Color("#647378"),
-	Color("#d34728"), Color("#b8b8b8"),
-	Color("#583232"), Color("#2c3b2c"), Color("#333352"),
-	Color("#82f0ff"), Color("#966489"), Color("#e2c961"),
-	Color("#00000000"),
-	Color("#006dff"),
-	Color("#19072f"),
-	Color("#ad511b"),
-	Color("#3D95F5"),
-	Color("#779900"),
-	Color("#86ACCC")
-	
-]
-const BRIGHT_MAIN:Array[Color] = [
-	Color("#d68f49"),
-	Color("#d6cfc9"), Color("#d68f49"), Color("#8f5fc0"),
-	Color("#a11b1b"), Color("#359f50"), Color("#5f71a0"),
-	Color("#cf709f"), Color("#50afd1"), Color("#363029"),
-	Color("#704010"),
-	Color("#d6cfc9"),
-	Color("#b49600"),
-	Color("#647378"),
-	Color("#d34728"), Color("#b8b8b8"),
-	Color("#583232"), Color("#2c3b2c"), Color("#333352"),
-	Color("#82f0ff"), Color("#966489"), Color("#e2c961"),
-	Color("#00000000"),
-	Color("#006dff"),
-	Color("#240a44"),
-	Color("#ad511b"),
-	Color("#3D95F5"),
-	Color("#779900"),
-	Color("#86ACCC")
-]
-
-var darkTone:Array[Color] = DEFAULT_DARK.duplicate()
-const DEFAULT_DARK:Array[Color] = [
-	Color("#9c6023"),
-	Color("#bbaea4"), Color("#9c6023"), Color("#603689"),
-	Color("#480d0d"), Color("#1b5028"), Color("#3a4665"),
-	Color("#af3a75"), Color("#357575"), Color("#181512"),
-	Color("#382007"),
-	Color("#bbaea4"),
-	Color("#dc6e00"),
-	Color("#3c4b50"),
-	Color("#7a3117"), Color("#818181"),
-	Color("#3b1f1f"), Color("#1d2b1d"), Color("#262633"),
-	Color("#62b6c1"), Color("#7f4972"), Color("#c6af51"),
-	Color("#00000000"),
-	Color("#006dff"),
-	Color("#110521"),
-	Color("#8e0d0d"),
-	Color("#166CCC"),
-	Color("#664400"),
-	Color("#688CAC")
-
-]
-const BRIGHT_DARK:Array[Color] = [
-	Color("#9c6023"),
-	Color("#bbaea4"), Color("#9c6023"), Color("#603689"),
-	Color("#6b0d0d"), Color("#1b5028"), Color("#3a4665"),
-	Color("#af3a75"), Color("#357592"), Color("#181512"),
-	Color("#382007"),
-	Color("#bbaea4"),
-	Color("#dc6e00"),
-	Color("#3c4b50"),
-	Color("#7a3117"), Color("#818181"),
-	Color("#3b1f1f"), Color("#1d2b1d"), Color("#262633"),
-	Color("#62b6c1"), Color("#7f4972"), Color("#c6af51"),
-	Color("#00000000"),
-	Color("#006dff"),
-	Color("#19072f"),
-	Color("#8e0d0d"),
-	Color("#166CCC"),
-	Color("#664400"),
-	Color("#688CAC")
-]
-
-@onready var editor:Editor = get_node("/root/editor")
+var editor:Editor
 var playGame:PlayGame
 var world:World
 var tiles:TileMapLayer
@@ -265,7 +138,12 @@ func setWorld(_world:World) -> void:
 	level.activate()
 	updateWindowName()
 
+func _ready() -> void:
+	if Engine.is_editor_hint(): return
+	editor = get_node("/root/editor")
+
 func _process(delta:float) -> void:
+	if Engine.is_editor_hint(): return
 	goldIndexFloat += delta*6 # 0.1 per frame, 60fps
 	if goldIndexFloat > 12: goldIndexFloat -= 12
 	if goldIndex != int(goldIndexFloat):

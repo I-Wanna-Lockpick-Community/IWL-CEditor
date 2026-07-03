@@ -626,6 +626,12 @@ func autoRun() -> void:
 	%settingsMenu.gameSettings.closed(%settingsMenu.configFile)
 	%settingsMenu.configFile.save("user://config.ini")
 
+static func scriptExtends(script:GDScript, base:GDScript) -> bool:
+	while script != null:
+		if script == base: return true
+		script = script.get_base_script()
+	return false
+
 func takeScreenshot() -> void:
 	%screenshotViewportCont.visible = true
 	%thumbnailTop.visible = false

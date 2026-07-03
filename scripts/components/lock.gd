@@ -124,22 +124,23 @@ const PROPERTIES:Array[StringName] = [
 ]
 static var ARRAYS:Dictionary[StringName,Variant] = {}
 
-var parent:Door
-var parentId:int
-var color:C.olors = C.olors.WHITE
-var type:TYPE = TYPE.NORMAL
-var configuration:CONFIGURATION = CONFIGURATION.spr1A
-var sizeType:SIZE_TYPE = SIZE_TYPE.AnyS
-var count:PackedInt64Array = M.ONE()
-var zeroI:bool = false # if the count is zeroI, for exact locks
-var isPartial:bool = false # for partial blast
-var denominator:PackedInt64Array = M.ONE() # for partial blast
-var negated:bool = false
-var armament:bool = false
-var index:int
-var displayIndex:int # split into armaments and nonarmaments
+@export_group("SavedProperties")
+@export var parent:Door
+@export var parentId:int
+@export var color:C.olors = C.olors.WHITE
+@export var type:TYPE = TYPE.NORMAL
+@export var configuration:CONFIGURATION = CONFIGURATION.spr1A
+@export var sizeType:SIZE_TYPE = SIZE_TYPE.AnyS
+@export var count:PackedInt64Array = M.ONE()
+@export var zeroI:bool = false # if the count is zeroI, for exact locks
+@export var isPartial:bool = false # for partial blast
+@export var denominator:PackedInt64Array = M.ONE() # for partial blast
+@export var negated:bool = false
+@export var armament:bool = false
+@export var index:int
+@export var displayIndex:int # split into armaments and nonarmaments
 # in my mind, two buttons to toggle "spends star" and "spends normal" is more intuitive than 4 buttons which toggle
-var spendType = SPEND_TYPE.NORMAL
+@export var spendType = SPEND_TYPE.NORMAL
 
 func getColors() -> Array[C.olors]: return [color]
 
@@ -243,19 +244,19 @@ static func drawLock(lockDrawScaled:RID, lockDrawAuraBreaker:RID, lockDrawGlitch
 			RenderingServer.canvas_item_add_texture_rect(lockDrawScaled,rect,Game.COLOR_TEXTURES.current([lockBaseColor]),tileTexture)
 		elif lockBaseColor == C.olors.GLITCH:
 			RenderingServer.canvas_item_set_material(lockDrawGlitch,Game.GLITCH_MATERIAL.get_rid())
-			RenderingServer.canvas_item_add_rect(lockDrawGlitch,Rect2(rect.position+Vector2.ONE,rect.size-Vector2(2,2)),Game.mainTone[lockBaseColor])
+			RenderingServer.canvas_item_add_rect(lockDrawGlitch,Rect2(rect.position+Vector2.ONE,rect.size-Vector2(2,2)),Colors.getMainTone(lockBaseColor))
 			if lockGlitchColor != C.olors.GLITCH:
 				if lockSizeType == SIZE_TYPE.ANY:
 					if Colors.getDef(lockGlitchColor).doorTexture: RenderingServer.canvas_item_add_nine_patch(lockDrawMain,rect,GLITCH_ANY_RECT,GLITCH_FILL_TEXTURE.current([lockGlitchColor,lockSizeType]),GLITCH_CORNER_SIZE,GLITCH_CORNER_SIZE,TILE,TILE)
-					else: RenderingServer.canvas_item_add_nine_patch(lockDrawMain,rect,GLITCH_ANY_RECT,GLITCH_FILL.current([lockSizeType]),GLITCH_CORNER_SIZE,GLITCH_CORNER_SIZE,TILE,TILE,true,Game.mainTone[lockGlitchColor])
+					else: RenderingServer.canvas_item_add_nine_patch(lockDrawMain,rect,GLITCH_ANY_RECT,GLITCH_FILL.current([lockSizeType]),GLITCH_CORNER_SIZE,GLITCH_CORNER_SIZE,TILE,TILE,true,Colors.getMainTone(lockGlitchColor))
 				elif Colors.getDef(lockGlitchColor).doorTexture: RenderingServer.canvas_item_add_texture_rect(lockDrawMain,rect,GLITCH_FILL_TEXTURE.current([lockGlitchColor,lockSizeType]))
-				else: RenderingServer.canvas_item_add_texture_rect(lockDrawMain,rect,GLITCH_FILL.current([lockSizeType]),false,Game.mainTone[lockGlitchColor])
+				else: RenderingServer.canvas_item_add_texture_rect(lockDrawMain,rect,GLITCH_FILL.current([lockSizeType]),false,Colors.getMainTone(lockGlitchColor))
 		elif lockBaseColor in [C.olors.ICE, C.olors.MUD, C.olors.GRAFFITI]:
 			RenderingServer.canvas_item_set_material(lockDrawScaled,Game.NO_MATERIAL.get_rid())
-			RenderingServer.canvas_item_add_rect(lockDrawScaled,Rect2(rect.position+Vector2.ONE,rect.size-Vector2(2,2)),Game.mainTone[lockBaseColor])
+			RenderingServer.canvas_item_add_rect(lockDrawScaled,Rect2(rect.position+Vector2.ONE,rect.size-Vector2(2,2)),Colors.getMainTone(lockBaseColor))
 			Door.drawAuras(lockDrawAuraBreaker,lockDrawAuraBreaker,lockDrawAuraBreaker,lockBaseColor==C.olors.ICE,lockBaseColor==C.olors.MUD,lockBaseColor==C.olors.GRAFFITI,rect)
 		else:
-			RenderingServer.canvas_item_add_rect(lockDrawMain,Rect2(rect.position+Vector2.ONE,rect.size-Vector2(2,2)),Game.mainTone[lockBaseColor])
+			RenderingServer.canvas_item_add_rect(lockDrawMain,Rect2(rect.position+Vector2.ONE,rect.size-Vector2(2,2)),Colors.getMainTone(lockBaseColor))
 	# background (spend types)
 	var bgColor:Color
 	# lighter if negative, darker if positive

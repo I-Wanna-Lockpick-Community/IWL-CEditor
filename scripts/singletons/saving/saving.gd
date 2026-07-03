@@ -1,3 +1,4 @@
+@tool
 extends Node
 
 var editor:Editor
@@ -30,6 +31,7 @@ const FILE_FORMAT_VERSION:int = 3
 # - objects
 
 func _ready() -> void:
+	if Engine.is_editor_hint(): return
 	if OS.has_feature('web'):
 		JavaScriptBridge.eval("window.callbacks = {loadJs: null};")
 

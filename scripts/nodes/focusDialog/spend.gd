@@ -21,4 +21,4 @@ func _draw() -> void:
 		RenderingServer.canvas_item_add_texture_rect(drawMain,rect,GATE_FILL,true)
 	else:
 		if Colors.getDef(door.colorSpend).doorTexture: RenderingServer.canvas_item_add_texture_rect(drawMain,rect,Game.COLOR_TEXTURES.current([door.colorSpend]))
-		else: RenderingServer.canvas_item_add_rect(drawMain,rect,Game.mainTone[door.colorSpend])
+		else: RenderingServer.canvas_item_add_rect(drawMain,rect,Colors.getMainTone(door.colorSpend))

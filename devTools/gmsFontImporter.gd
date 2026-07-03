@@ -1,5 +1,7 @@
 @tool
+# taken from lpe
 extends Node
+class_name GmsFontImporter
 
 @export var font_name := "fn_UT"
 var gamemaker_fonts_path := ""

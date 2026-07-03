@@ -78,5 +78,5 @@ class LockHandlerButton extends HandlerButton:
 		if lock.color == C.olors.GLITCH: RenderingServer.canvas_item_set_material(drawMain, Game.GLITCH_MATERIAL)
 		else: RenderingServer.canvas_item_set_material(drawMain, Game.NO_MATERIAL)
 		if Colors.getDef(lock.color).doorTexture: RenderingServer.canvas_item_add_texture_rect(drawMain,rect,Game.COLOR_TEXTURES.current([lock.color]))
-		else: RenderingServer.canvas_item_add_rect(drawMain,rect,Game.mainTone[lock.color])
+		else: RenderingServer.canvas_item_add_rect(drawMain,rect,Colors.getMainTone(lock.color))
 		icon = ICONS[lock.type*2 + int(M.isNonzeroImag(lock.count))]

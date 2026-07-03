@@ -67,5 +67,5 @@ class KeyCounterHandlerButton extends HandlerButton:
 		if deleted: return
 		var rect:Rect2 = Rect2(Vector2.ONE, size-Vector2(2,2))
 		if Colors.getDef(element.color).doorTexture: RenderingServer.canvas_item_add_texture_rect(drawMain,rect,Game.COLOR_TEXTURES.current([element.color]))
-		elif element.color == C.olors.GLITCH: RenderingServer.canvas_item_add_rect(drawGlitch,rect,Game.mainTone[element.color])
-		else: RenderingServer.canvas_item_add_rect(drawMain,rect,Game.mainTone[element.color])
+		elif element.color == C.olors.GLITCH: RenderingServer.canvas_item_add_rect(drawGlitch,rect,Colors.getMainTone(element.color))
+		else: RenderingServer.canvas_item_add_rect(drawMain,rect,Colors.getMainTone(element.color))

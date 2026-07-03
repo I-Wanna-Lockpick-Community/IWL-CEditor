@@ -54,7 +54,9 @@ func _init() -> void:
 
 func getDef(color:C.olors) -> ColorDef: return DEFINITIONS[color]
 func getName(color:C.olors) -> String: return DEFINITIONS[color].name
-
+func getHighTone(color:C.olors) -> Color: return DEFINITIONS[color].highTone
+func getMainTone(color:C.olors) -> Color: return DEFINITIONS[color].mainTone
+func getDarkTone(color:C.olors) -> Color: return DEFINITIONS[color].darkTone
 
 func defineColor(_name:String, _highTone:Color, _mainTone:Color, _darkTone:Color) -> ColorDef:
 	var color:ColorDef = ColorDef.new()

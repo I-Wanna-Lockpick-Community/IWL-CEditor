@@ -60,4 +60,4 @@ class ColorSelectorButton extends SelectorButton:
 		var rect:Rect2 = Rect2(Vector2.ONE, size-Vector2(2,2))
 		if Colors.getDef(value).doorTexture: RenderingServer.canvas_item_add_texture_rect(drawMain,rect,Game.COLOR_TEXTURES.current([value]))
 		elif value == C.olors.NONE: RenderingServer.canvas_item_add_texture_rect(drawMain,rect,NONE_COLOR)
-		else: RenderingServer.canvas_item_add_rect(drawMain,rect,Game.mainTone[value])
+		else: RenderingServer.canvas_item_add_rect(drawMain,rect,Colors.getMainTone(value))

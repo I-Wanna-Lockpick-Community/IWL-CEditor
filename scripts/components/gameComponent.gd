@@ -3,8 +3,9 @@ extends Node2D
 class_name GameComponent
 # game objects and also door locks
 
-var id:int
-var size:Vector2
+@export_group("SavedProperties")
+@export var id:int
+@export var size:Vector2
 var problems:Array[Array] = [] # array[array[mod, problemtype]]
 
 var isReady:bool = false

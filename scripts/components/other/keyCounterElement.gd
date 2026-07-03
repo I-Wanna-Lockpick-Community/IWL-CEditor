@@ -19,9 +19,11 @@ const STAR:Texture2D = preload("res://assets/game/keyCounter/star.png")
 const STAR_COLOR:Color = Color("#ffffb4")
 
 var parent:KeyCounter
-var parentId:int
-var color:C.olors = C.olors.WHITE
-var index:int
+
+@export_group("SavedProperties")
+@export var parentId:int
+@export var color:C.olors = C.olors.WHITE
+@export var index:int
 
 func getColors() -> Array[C.olors]: return [color]
 

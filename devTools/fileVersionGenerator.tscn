@@ -1,0 +1,7 @@
+[gd_scene format=3 uid="uid://srrjdqy5vwp8"]
+
+[ext_resource type="Script" uid="uid://c1uoww0issbfc" path="res://devTools/fileVersionGenerator.gd" id="1_6fa0n"]
+
+[node name="FileVersionGenerator" type="Node" unique_id=24637127]
+script = ExtResource("1_6fa0n")
+metadata/_custom_type_script = "uid://c1uoww0issbfc"

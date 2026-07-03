@@ -65,15 +65,16 @@ static var ARRAYS:Dictionary[StringName,Variant] = {
 	&"remoteLocks":RemoteLock
 }
 
-var colorSpend:C.olors = C.olors.WHITE
-var copies:PackedInt64Array = M.ONE()
-var infCopies:PackedInt64Array = M.ZERO() # axes with infinite copies
-var type:TYPE = TYPE.SIMPLE
-var frozen:bool = false
-var crumbled:bool = false
-var painted:bool = false
-var armament:bool = false
-var oscillate:bool = false
+@export_group("SavedProperties")
+@export var colorSpend:C.olors = C.olors.WHITE
+@export var copies:PackedInt64Array = M.ONE()
+@export var infCopies:PackedInt64Array = M.ZERO() # axes with infinite copies
+@export var type:TYPE = TYPE.SIMPLE
+@export var frozen:bool = false
+@export var crumbled:bool = false
+@export var painted:bool = false
+@export var armament:bool = false
+@export var oscillate:bool = false
 
 func getColors() -> Array[C.olors]: return [colorSpend]
 
@@ -90,7 +91,8 @@ var drawSymbols:RID
 var drawNegative:RID
 
 var locks:Array[Lock] = []
-var remoteLocks:Array[RemoteLock] = []
+@export_group("SavedComponentArrays")
+@export var remoteLocks:Array[RemoteLock] = []
 
 @onready var locksParent:Node2D = %locksParent
 
@@ -238,26 +240,26 @@ static func drawDoor(doorDrawScaled:RID,doorDrawAuraBreaker:RID,doorDrawGlitch:R
 				var tileTexture:bool = Colors.getDef(doorBaseColor).doorTextureTile
 				RenderingServer.canvas_item_add_texture_rect(doorDrawScaled,rect,Game.COLOR_TEXTURES.current([doorBaseColor]),tileTexture)
 			elif doorBaseColor == C.olors.GLITCH:
-				RenderingServer.canvas_item_add_nine_patch(doorDrawGlitch,rect,TEXTURE_RECT,SPEND_HIGH,CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,Game.highTone[C.olors.GLITCH])
-				RenderingServer.canvas_item_add_nine_patch(doorDrawGlitch,rect,TEXTURE_RECT,SPEND_MAIN,CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,Game.mainTone[C.olors.GLITCH])
-				RenderingServer.canvas_item_add_nine_patch(doorDrawGlitch,rect,TEXTURE_RECT,SPEND_DARK,CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,Game.darkTone[C.olors.GLITCH])
+				RenderingServer.canvas_item_add_nine_patch(doorDrawGlitch,rect,TEXTURE_RECT,SPEND_HIGH,CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,Colors.getHighTone(C.olors.GLITCH))
+				RenderingServer.canvas_item_add_nine_patch(doorDrawGlitch,rect,TEXTURE_RECT,SPEND_MAIN,CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,Colors.getMainTone(C.olors.GLITCH))
+				RenderingServer.canvas_item_add_nine_patch(doorDrawGlitch,rect,TEXTURE_RECT,SPEND_DARK,CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,Colors.getDarkTone(C.olors.GLITCH))
 				if doorGlitchColor != C.olors.GLITCH:
 					if Colors.getDef(doorGlitchColor).doorTexture:
 						RenderingServer.canvas_item_add_nine_patch(doorDrawMain,rect,TEXTURE_RECT,GLITCH.current([doorGlitchColor]),GLITCH_CORNER_SIZE,GLITCH_CORNER_SIZE,TILE,TILE)
 					else:
-						RenderingServer.canvas_item_add_nine_patch(doorDrawMain,rect,TEXTURE_RECT,GLITCH_HIGH,GLITCH_CORNER_SIZE,GLITCH_CORNER_SIZE,TILE,TILE,true,Game.highTone[doorGlitchColor])
-						RenderingServer.canvas_item_add_nine_patch(doorDrawMain,rect,TEXTURE_RECT,GLITCH_MAIN,GLITCH_CORNER_SIZE,GLITCH_CORNER_SIZE,TILE,TILE,true,Game.mainTone[doorGlitchColor])
-						RenderingServer.canvas_item_add_nine_patch(doorDrawMain,rect,TEXTURE_RECT,GLITCH_DARK,GLITCH_CORNER_SIZE,GLITCH_CORNER_SIZE,TILE,TILE,true,Game.darkTone[doorGlitchColor])
+						RenderingServer.canvas_item_add_nine_patch(doorDrawMain,rect,TEXTURE_RECT,GLITCH_HIGH,GLITCH_CORNER_SIZE,GLITCH_CORNER_SIZE,TILE,TILE,true,Colors.getHighTone(doorGlitchColor))
+						RenderingServer.canvas_item_add_nine_patch(doorDrawMain,rect,TEXTURE_RECT,GLITCH_MAIN,GLITCH_CORNER_SIZE,GLITCH_CORNER_SIZE,TILE,TILE,true,Colors.getMainTone(doorGlitchColor))
+						RenderingServer.canvas_item_add_nine_patch(doorDrawMain,rect,TEXTURE_RECT,GLITCH_DARK,GLITCH_CORNER_SIZE,GLITCH_CORNER_SIZE,TILE,TILE,true,Colors.getDarkTone(doorGlitchColor))
 			elif doorBaseColor in [C.olors.ICE, C.olors.MUD, C.olors.GRAFFITI]:
 				RenderingServer.canvas_item_set_material(doorDrawScaled,Game.NO_MATERIAL.get_rid())
-				RenderingServer.canvas_item_add_nine_patch(doorDrawScaled,rect,TEXTURE_RECT,SPEND_HIGH,CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,Game.highTone[doorBaseColor])
-				RenderingServer.canvas_item_add_nine_patch(doorDrawScaled,rect,TEXTURE_RECT,SPEND_MAIN,CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,Game.mainTone[doorBaseColor])
-				RenderingServer.canvas_item_add_nine_patch(doorDrawScaled,rect,TEXTURE_RECT,SPEND_DARK,CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,Game.darkTone[doorBaseColor])
+				RenderingServer.canvas_item_add_nine_patch(doorDrawScaled,rect,TEXTURE_RECT,SPEND_HIGH,CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,Colors.getHighTone(doorBaseColor))
+				RenderingServer.canvas_item_add_nine_patch(doorDrawScaled,rect,TEXTURE_RECT,SPEND_MAIN,CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,Colors.getMainTone(doorBaseColor))
+				RenderingServer.canvas_item_add_nine_patch(doorDrawScaled,rect,TEXTURE_RECT,SPEND_DARK,CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,Colors.getDarkTone(doorBaseColor))
 				drawAuras(doorDrawAuraBreaker,doorDrawAuraBreaker,doorDrawAuraBreaker,doorBaseColor==C.olors.ICE,doorBaseColor==C.olors.MUD,doorBaseColor==C.olors.GRAFFITI,rect)
 			else:
-				RenderingServer.canvas_item_add_nine_patch(doorDrawMain,rect,TEXTURE_RECT,SPEND_HIGH,CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,Game.highTone[doorBaseColor])
-				RenderingServer.canvas_item_add_nine_patch(doorDrawMain,rect,TEXTURE_RECT,SPEND_MAIN,CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,Game.mainTone[doorBaseColor])
-				RenderingServer.canvas_item_add_nine_patch(doorDrawMain,rect,TEXTURE_RECT,SPEND_DARK,CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,Game.darkTone[doorBaseColor])
+				RenderingServer.canvas_item_add_nine_patch(doorDrawMain,rect,TEXTURE_RECT,SPEND_HIGH,CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,Colors.getHighTone(doorBaseColor))
+				RenderingServer.canvas_item_add_nine_patch(doorDrawMain,rect,TEXTURE_RECT,SPEND_MAIN,CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,Colors.getMainTone(doorBaseColor))
+				RenderingServer.canvas_item_add_nine_patch(doorDrawMain,rect,TEXTURE_RECT,SPEND_DARK,CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,Colors.getDarkTone(doorBaseColor))
 		# frame
 		if doorDrawComplex:
 			RenderingServer.canvas_item_add_nine_patch(doorDrawMain,rect,TEXTURE_RECT,FRAME_HIGH,CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,Color.from_hsv(Game.complexViewHue,0.4901960784,1))
@@ -1017,9 +1019,9 @@ class Debris extends Node2D:
 	func _draw() -> void:
 		var rect:Rect2 = Rect2(Vector2.ZERO,Vector2(16,16))
 		RenderingServer.canvas_item_add_texture_rect(get_canvas_item(),rect,FRAME)
-		RenderingServer.canvas_item_add_texture_rect(get_canvas_item(),rect,HIGH,false,Game.highTone[color])
-		RenderingServer.canvas_item_add_texture_rect(get_canvas_item(),rect,MAIN,false,Game.mainTone[color])
-		RenderingServer.canvas_item_add_texture_rect(get_canvas_item(),rect,DARK,false,Game.darkTone[color])
+		RenderingServer.canvas_item_add_texture_rect(get_canvas_item(),rect,HIGH,false,Colors.getHighTone(color))
+		RenderingServer.canvas_item_add_texture_rect(get_canvas_item(),rect,MAIN,false,Colors.getMainTone(color))
+		RenderingServer.canvas_item_add_texture_rect(get_canvas_item(),rect,DARK,false,Colors.getDarkTone(color))
 
 class AddCopyDebris extends Debris:
 	
@@ -1030,9 +1032,9 @@ class AddCopyDebris extends Debris:
 	func _draw() -> void:
 		var rect:Rect2 = Rect2(Vector2.ZERO,Vector2(16,16))
 		RenderingServer.canvas_item_add_texture_rect(get_canvas_item(),rect,FRAME)
-		RenderingServer.canvas_item_add_texture_rect(get_canvas_item(),rect,HIGH,false,Game.highTone[color].inverted())
-		RenderingServer.canvas_item_add_texture_rect(get_canvas_item(),rect,MAIN,false,Game.mainTone[color].inverted())
-		RenderingServer.canvas_item_add_texture_rect(get_canvas_item(),rect,DARK,false,Game.darkTone[color].inverted())
+		RenderingServer.canvas_item_add_texture_rect(get_canvas_item(),rect,HIGH,false,Colors.getHighTone(color).inverted())
+		RenderingServer.canvas_item_add_texture_rect(get_canvas_item(),rect,MAIN,false,Colors.getMainTone(color).inverted())
+		RenderingServer.canvas_item_add_texture_rect(get_canvas_item(),rect,DARK,false,Colors.getDarkTone(color).inverted())
 
 class RelockDebris extends Debris:
 	var angle:float = randf_range(0,TAU)
@@ -1063,7 +1065,7 @@ class RelockDebris extends Debris:
 	func _draw() -> void:
 		var rect:Rect2 = Rect2(Vector2.ZERO,Vector2(16,16))
 		RenderingServer.canvas_item_add_texture_rect(get_canvas_item(),rect,FRAME)
-		RenderingServer.canvas_item_add_texture_rect(get_canvas_item(),rect,HIGH,false,Game.highTone[color])
-		RenderingServer.canvas_item_add_texture_rect(get_canvas_item(),rect,MAIN,false,Game.mainTone[color])
-		RenderingServer.canvas_item_add_texture_rect(get_canvas_item(),rect,DARK,false,Game.darkTone[color])
+		RenderingServer.canvas_item_add_texture_rect(get_canvas_item(),rect,HIGH,false,Colors.getHighTone(color))
+		RenderingServer.canvas_item_add_texture_rect(get_canvas_item(),rect,MAIN,false,Colors.getMainTone(color))
+		RenderingServer.canvas_item_add_texture_rect(get_canvas_item(),rect,DARK,false,Colors.getDarkTone(color))
 		RenderingServer.canvas_item_add_rect(get_canvas_item(),rect,Color(Color.WHITE,whiteAmt))

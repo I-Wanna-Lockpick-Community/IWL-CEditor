@@ -22,24 +22,26 @@ static var ARRAYS:Dictionary[StringName,Variant] = {
 	&"doors":RemoteLock
 }
 
-var color:C.olors = C.olors.WHITE
-var type:Lock.TYPE = Lock.TYPE.NORMAL
-var configuration:Lock.CONFIGURATION = Lock.CONFIGURATION.spr1A
-var sizeType:Lock.SIZE_TYPE = Lock.SIZE_TYPE.AnyS
-var count:PackedInt64Array = M.ONE()
-var zeroI:bool = false
-var isPartial:bool = false # for partial blast
-var denominator:PackedInt64Array = M.ONE() # for partial blast
-var negated:bool = false
-var armament:bool = false
-var frozen:bool = false
-var crumbled:bool = false
-var painted:bool = false
-var spendType = Lock.SPEND_TYPE.NORMAL
+@export_group("SavedProperties")
+@export var color:C.olors = C.olors.WHITE
+@export var type:Lock.TYPE = Lock.TYPE.NORMAL
+@export var configuration:Lock.CONFIGURATION = Lock.CONFIGURATION.spr1A
+@export var sizeType:Lock.SIZE_TYPE = Lock.SIZE_TYPE.AnyS
+@export var count:PackedInt64Array = M.ONE()
+@export var zeroI:bool = false
+@export var isPartial:bool = false # for partial blast
+@export var denominator:PackedInt64Array = M.ONE() # for partial blast
+@export var negated:bool = false
+@export var armament:bool = false
+@export var frozen:bool = false
+@export var crumbled:bool = false
+@export var painted:bool = false
+@export var spendType = Lock.SPEND_TYPE.NORMAL
 
 func getColors() -> Array[C.olors]: return [color]
 
-var doors:Array[Door] = []
+@export_group("SavedComponentArrays")
+@export var doors:Array[Door] = []
 
 var drawDropShadow:RID
 var drawConnections:RID
@@ -130,12 +132,12 @@ func _draw() -> void:
 		if editor and self == editor.focusDialog.focused and index == editor.focusDialog.doorDialog.doorsHandler.selected:
 			RenderingServer.canvas_item_add_line(drawConnections,from,to,Color("#00a2ff"),4+4/editor.cameraZoom)
 		RenderingServer.canvas_item_add_line(drawConnections,from,to,Color.WHITE if satisfied or Game.playState == Game.PLAY_STATE.EDIT else Color.BLACK,4)
-		RenderingServer.canvas_item_add_line(drawConnections,from,to,Game.mainTone[color] if satisfied or Game.playState == Game.PLAY_STATE.EDIT else Color.BLACK,2)
+		RenderingServer.canvas_item_add_line(drawConnections,from,to,Colors.getMainTone(color) if satisfied or Game.playState == Game.PLAY_STATE.EDIT else Color.BLACK,2)
 		index += 1
 	if editor and self == editor.connectionSource:
 		var to:Vector2 = editor.mouseWorldPosition - position
 		RenderingServer.canvas_item_add_line(drawConnections,from,to,Color.WHITE if satisfied or Game.playState == Game.PLAY_STATE.EDIT else Color.BLACK,4)
-		RenderingServer.canvas_item_add_line(drawConnections,from,to,Game.mainTone[color] if satisfied or Game.playState == Game.PLAY_STATE.EDIT else Color.BLACK,2)
+		RenderingServer.canvas_item_add_line(drawConnections,from,to,Colors.getMainTone(color) if satisfied or Game.playState == Game.PLAY_STATE.EDIT else Color.BLACK,2)
 	# auras
 	Door.drawAuras(drawCrumbled,drawPainted,drawFrozen,
 		frozen if Game.playState == Game.PLAY_STATE.EDIT else gameFrozen,

@@ -13,6 +13,7 @@ func colorFrames(color:C.ColorDef) -> int: return color.doorTextureFrames
 
 ## replaces $c in path with color name, and if there are more than 1 frames, puts the frame index before the .
 func _init(path:String, useIndices:bool=true, capitalised:bool=false, params:Dictionary={}) -> void:
+	if Engine.is_editor_hint(): return
 	for color in Colors.DEFINITIONS:
 		if colorSelect(color):
 			var colorName:String = color.name if capitalised else color.name.to_lower()
