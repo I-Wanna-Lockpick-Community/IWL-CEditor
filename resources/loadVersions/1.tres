@@ -1,0 +1,75 @@
+[gd_resource type="Resource" script_class="FileVersion" format=3 uid="uid://bpbpklrgqobtc"]
+
+[ext_resource type="Script" uid="uid://6nrl0j18e7ks" path="res://devTools/fileVersionGenerator/fileVersion.gd" id="1_1y2yn"]
+[ext_resource type="Script" uid="uid://cnxt8q1v7vqu5" path="res://devTools/fileVersionGenerator/componentTypeDef.gd" id="2_ma267"]
+[ext_resource type="Script" uid="uid://diua1qbbeu4mt" path="res://scripts/components/lock.gd" id="3_kcxw2"]
+[ext_resource type="Script" uid="uid://bkioxgnw3twa3" path="res://scripts/components/other/keyCounterElement.gd" id="4_71bwo"]
+[ext_resource type="Script" uid="uid://boiwo8vk6byve" path="res://scripts/components/keyBulk.gd" id="5_6uvr7"]
+[ext_resource type="Script" uid="uid://ilxjbdbs4jx0" path="res://scripts/components/door.gd" id="6_ax4qq"]
+[ext_resource type="Script" uid="uid://clmtd8tgbgxiy" path="res://scripts/components/other/remoteLock.gd" id="7_mt0da"]
+[ext_resource type="Script" uid="uid://tcvoc8kk3gte" path="res://scripts/components/other/goal.gd" id="8_bt5eg"]
+[ext_resource type="Script" uid="uid://dfersmim7c45o" path="res://scripts/components/other/keyCounter.gd" id="9_ktnda"]
+[ext_resource type="Script" uid="uid://lqnann51ivxu" path="res://scripts/components/other/playerSpawn.gd" id="10_e35ai"]
+[ext_resource type="Script" uid="uid://bkp3fklu8mlnk" path="res://scripts/components/other/floatingTile.gd" id="11_j60cm"]
+
+[sub_resource type="Resource" id="Resource_qumbd"]
+script = ExtResource("2_ma267")
+savedProperties = Array[StringName]([&"id", &"position", &"size", &"parentId", &"color", &"type", &"sizeType", &"count", &"configuration", &"zeroI", &"isPartial", &"denominator", &"negated", &"armament", &"index", &"displayIndex"])
+numberProperties = Array[StringName]([&"count", &"denominator"])
+
+[sub_resource type="Resource" id="Resource_3yepd"]
+script = ExtResource("2_ma267")
+savedProperties = Array[StringName]([&"id", &"position", &"size", &"parentId", &"color", &"index"])
+
+[sub_resource type="Resource" id="Resource_gd0de"]
+script = ExtResource("2_ma267")
+savedProperties = Array[StringName]([&"id", &"position", &"size", &"color", &"type", &"count", &"infinite", &"un"])
+numberProperties = Array[StringName]([&"count"])
+
+[sub_resource type="Resource" id="Resource_unkoy"]
+script = ExtResource("2_ma267")
+savedProperties = Array[StringName]([&"id", &"position", &"size", &"colorSpend", &"copies", &"infCopies", &"type", &"frozen", &"crumbled", &"painted"])
+numberProperties = Array[StringName]([&"copies", &"infCopies"])
+savedComponentArrays = Dictionary[StringName, GDScript]({
+&"remoteLocks": ExtResource("7_mt0da")
+})
+
+[sub_resource type="Resource" id="Resource_viqhu"]
+script = ExtResource("2_ma267")
+savedProperties = Array[StringName]([&"id", &"position", &"size", &"type"])
+
+[sub_resource type="Resource" id="Resource_f3p2l"]
+script = ExtResource("2_ma267")
+savedProperties = Array[StringName]([&"id", &"position", &"size"])
+
+[sub_resource type="Resource" id="Resource_ncjb2"]
+script = ExtResource("2_ma267")
+savedProperties = Array[StringName]([&"id", &"position", &"size", &"undoStack", &"saveBuffered"])
+savedArrays = Array[StringName]([&"key", &"star", &"curse"])
+
+[sub_resource type="Resource" id="Resource_6lfok"]
+script = ExtResource("2_ma267")
+savedProperties = Array[StringName]([&"id", &"position", &"size"])
+
+[sub_resource type="Resource" id="Resource_81y2y"]
+script = ExtResource("2_ma267")
+savedProperties = Array[StringName]([&"id", &"position", &"size", &"color", &"type", &"configuration", &"sizeType", &"count", &"zeroI", &"isPartial", &"denominator", &"negated", &"armament", &"frozen", &"crumbled", &"painted"])
+numberProperties = Array[StringName]([&"count", &"denominator"])
+savedComponentArrays = Dictionary[StringName, GDScript]({
+&"doors": ExtResource("6_ax4qq")
+})
+
+[resource]
+script = ExtResource("1_1y2yn")
+version = 2
+typeDefs = Dictionary[GDScript, ExtResource("2_ma267")]({
+ExtResource("3_kcxw2"): SubResource("Resource_qumbd"),
+ExtResource("4_71bwo"): SubResource("Resource_3yepd"),
+ExtResource("5_6uvr7"): SubResource("Resource_gd0de"),
+ExtResource("6_ax4qq"): SubResource("Resource_unkoy"),
+ExtResource("8_bt5eg"): SubResource("Resource_viqhu"),
+ExtResource("9_ktnda"): SubResource("Resource_f3p2l"),
+ExtResource("10_e35ai"): SubResource("Resource_ncjb2"),
+ExtResource("11_j60cm"): SubResource("Resource_6lfok"),
+ExtResource("7_mt0da"): SubResource("Resource_81y2y")
+})

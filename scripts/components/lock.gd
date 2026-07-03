@@ -124,8 +124,8 @@ const PROPERTIES:Array[StringName] = [
 ]
 static var ARRAYS:Dictionary[StringName,Variant] = {}
 
+var parent:Door
 @export_group("SavedProperties")
-@export var parent:Door
 @export var parentId:int
 @export var color:C.olors = C.olors.WHITE
 @export var type:TYPE = TYPE.NORMAL

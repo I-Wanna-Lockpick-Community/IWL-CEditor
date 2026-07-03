@@ -21,7 +21,6 @@ func _generate() -> void:
 		if componentType in Game.NON_OBJECT_COMPONENTS: sample = componentType.new()
 		else: sample = componentType.SCENE.instantiate()
 		var typeDef:ComponentTypeDef = ComponentTypeDef.new()
-		typeDef.savedProperties.append(&"position")
 		var exportGroup:EXPORT_GROUP = EXPORT_GROUP.None
 		for property in sample.get_property_list():
 			if property.usage & PROPERTY_USAGE_GROUP or property.usage & PROPERTY_USAGE_CATEGORY:
@@ -32,7 +31,7 @@ func _generate() -> void:
 					_: exportGroup = EXPORT_GROUP.None
 			if property.name in node2DPropertyNames: continue
 			if property.name.begins_with("metadata"): continue
-			if exportGroup != EXPORT_GROUP.None and (property.usage & PROPERTY_USAGE_STORAGE):
+			if exportGroup == EXPORT_GROUP.SavedProperties and (property.usage & PROPERTY_USAGE_STORAGE):
 				typeDef.savedProperties.append(property.name)
 			match property.type:
 				TYPE_PACKED_INT64_ARRAY:
@@ -43,10 +42,11 @@ func _generate() -> void:
 							typeDef.savedArrays.append(property.name)
 						EXPORT_GROUP.SavedComponentArrays:
 							var found:int = componentTypeNames.find(property.hint_string.split(":")[1])
-							if found != -1: typeDef.savedComponentArrays[property.name] = Game.COMPONENTS[componentTypeNames.find(property.hint_string)]
+							if found != -1: typeDef.savedComponentArrays[property.name] = Game.COMPONENTS[found]
 							else: push_error("SavedComponentArray %s.%s doesn't contain a type of component" % [componentType.get_global_name(), property.name])
+		typeDef.savedProperties.append(&"position")
 		loadVersion.typeDefs[componentType] = typeDef
 	var path:String = LOAD_VERSIONS_PATH+str(loadVersion.version)+".tres"
 	loadVersion.take_over_path(path)
 	ResourceSaver.save(loadVersion)
-	EditorInterface.get_resource_filesystem().scan()
+	EditorInterface.call_deferred(&"edit_resource", loadVersion)
