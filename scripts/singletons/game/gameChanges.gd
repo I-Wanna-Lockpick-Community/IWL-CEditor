@@ -30,12 +30,13 @@ func applyChange(change:Array) -> Array:
 
 func doChange(change:Array) -> void:
 	var type:TYPE = change[0]
+	print(change)
 	match type:
 		# color, before, after
-		TYPE.KeyChange: Game.player.key[change[0]] = copy(change[3])
-		TYPE.StarChange: Game.player.star[change[0]] = copy(change[3])
-		TYPE.CurseChange: Game.player.curse[change[0]] = copy(change[3])
-		TYPE.GlistenChange: Game.player.glisten[change[0]] = copy(change[3])
+		TYPE.KeyChange: Game.player.key[change[1]] = copy(change[3])
+		TYPE.StarChange: Game.player.star[change[1]] = copy(change[3])
+		TYPE.CurseChange: Game.player.curse[change[1]] = copy(change[3])
+		TYPE.GlistenChange: Game.player.glisten[change[1]] = copy(change[3])
 		# nonObject, id, property, before, after
 		TYPE.PropertyChange: propertyChange_(change[1], change[2], change[3], change[5])
 		_: assert(false)
@@ -44,10 +45,10 @@ func undoChange(change:Array) -> void:
 	var type:TYPE = change[0]
 	match type:
 		# color, before, after
-		TYPE.KeyChange: Game.player.key[change[0]] = copy(change[2])
-		TYPE.StarChange: Game.player.star[change[0]] = copy(change[2])
-		TYPE.CurseChange: Game.player.curse[change[0]] = copy(change[2])
-		TYPE.GlistenChange: Game.player.glisten[change[0]] = copy(change[2])
+		TYPE.KeyChange: Game.player.key[change[1]] = copy(change[2])
+		TYPE.StarChange: Game.player.star[change[1]] = copy(change[2])
+		TYPE.CurseChange: Game.player.curse[change[1]] = copy(change[2])
+		TYPE.GlistenChange: Game.player.glisten[change[1]] = copy(change[2])
 		# nonObject, id, property, before, after
 		TYPE.PropertyChange: propertyChange_(change[1], change[2], change[3], change[4])
 		_: assert(false)
