@@ -30,8 +30,8 @@ savedProperties = Array[StringName]([&"id", &"position", &"size", &"color", &"ty
 script = ExtResource("2_gjd5o")
 savedProperties = Array[StringName]([&"id", &"position", &"size", &"colorSpend", &"copies", &"infCopies", &"type", &"frozen", &"crumbled", &"painted"])
 savedComponentArrays = Dictionary[StringName, GDScript]({
-&"locks": ExtResource("3_l4dpt"),
-&"remoteLocks": ExtResource("12_rmsia")
+&"remoteLocks": ExtResource("12_rmsia"),
+&"locks": ExtResource("3_l4dpt")
 })
 
 [sub_resource type="Resource" id="Resource_viqhu"]
