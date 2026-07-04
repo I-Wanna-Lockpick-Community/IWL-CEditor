@@ -1,6 +1,8 @@
 extends Node
 class_name LoadV1toCurrent
 
+const TEST_PRINTING:bool = false
+
 # LEVEL METADATA:
 # - level name
 # - level description
@@ -96,7 +98,7 @@ static func loadFile(file:FileAccess, fileVersion:FileVersion) -> void:
 
 static func getVar(file:FileAccess, reason:String, allowObjects:bool=false):
 	var value = file.get_var(allowObjects)
-	if OS.is_debug_build(): print(reason, value)
+	if TEST_PRINTING: print(reason, value)
 	return value
 
 static func migrateProperty(value, component:GameComponent, property:StringName, fileVersion:FileVersion):
