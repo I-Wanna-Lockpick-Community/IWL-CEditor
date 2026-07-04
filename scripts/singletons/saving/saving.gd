@@ -232,7 +232,10 @@ func loadFile(path:String, immediate:bool=false) -> OpenWindow:
 	var file:FileAccess = FileAccess.open(path,FileAccess.ModeFlags.READ)
 
 	var checkString:String = file.get_pascal_string()
-	if checkString != "IWLCEditorLevel": errorPopup("Unrecognised file format, check string was " + checkString); return null
+	if checkString != "IWLCEditorLevel":
+		if len(checkString) > 30: errorPopup("Unrecognised file format, check string was %s..." + checkString.substr(0, 30))
+		else: errorPopup("Unrecognised file format, check string was " + checkString)
+		return null
 	var formatVersion:int = file.get_32()
 	var editorVersion:String = file.get_pascal_string()
 	openWindow.fileVersion = FILE_VERSIONS[formatVersion-1]
