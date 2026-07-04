@@ -100,6 +100,6 @@ static func getVar(file:FileAccess, reason:String, allowObjects:bool=false):
 	return value
 
 static func migrateProperty(value, component:GameComponent, property:StringName, fileVersion:FileVersion):
-	if fileVersion.version < 3 and component is PlayerSpawn and property == &"undoStack": return value.serialisedStack
+	if fileVersion.version < 3 and component is PlayerSpawn and property == &"undoStack": return value.serialisedStack if value else []
 	elif fileVersion.version < 3 and component is KeyBulk and property == &"boolType": return int(value)
 	else: return value
