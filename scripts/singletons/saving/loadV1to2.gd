@@ -1,6 +1,8 @@
 extends Node
 class_name LoadV1to2
 
+const TEST_PRINTING:bool = false
+
 static var COMPONENTS:Array[GDScript] = [Lock, KeyCounterElement, KeyBulk, Door, Goal, KeyCounter, PlayerSpawn, FloatingTile, RemoteLock]
 static var NON_OBJECT_COMPONENTS:Array[GDScript] = [Lock, KeyCounterElement]
 
@@ -79,7 +81,7 @@ static func loadFile(file:FileAccess, formatVersion:int) -> void:
 		ARRAYS.get(PlayerSpawn)[&"glisten"] = TYPE_PACKED_INT64_ARRAY
 	# LEVEL DATA
 	# tiles
-	Game.tiles.tile_map_data = file.get_var()
+	Game.tiles.tile_map_data = getVar(file, "tile map data")
 	Game.tilesDropShadow.tile_map_data = Game.tiles.tile_map_data
 	# components
 	Game.componentIdIter = file.get_64()
@@ -89,13 +91,13 @@ static func loadFile(file:FileAccess, formatVersion:int) -> void:
 		var component = type.new()
 		if Game.editor: component.editor = Game.editor
 		for property in PROPERTIES[type]:
-			var value = file.get_var(true)
+			var value = getVar(file, "comprop %s %s" % [type, property], true)
 			if property == &"id":
 				Game.components[value] = component
 			component.set(property, value)
 			component.propertyChangedDo(property)
 		for array in ARRAYS[type].keys():
-			componentBufferedArrays[component.id][array] = file.get_var() # handle it at the end; not all components will be ready
+			componentBufferedArrays[component.id][array] = getVar(file, "comarray %s %s" % [type, array]) # handle it at the end; not all components will be ready
 	# objects
 	Game.objectIdIter = file.get_64()
 	var objectBufferedArrays:Dictionary[int,Dictionary] = {} # dictionary[object id, dictionary[property name, array]]
@@ -105,7 +107,7 @@ static func loadFile(file:FileAccess, formatVersion:int) -> void:
 		var object = type.SCENE.instantiate()
 		if Game.editor: object.editor = Game.editor
 		for property in PROPERTIES[type]:
-			var value = file.get_var(true)
+			var value = getVar(file, "objprop %s %s" % [type, property], true)
 			if property == &"id":
 				Game.objects[value] = object
 				Game.objectsParent.add_child(object)
@@ -114,15 +116,15 @@ static func loadFile(file:FileAccess, formatVersion:int) -> void:
 			object.propertyChangedDo(property)
 		objectBufferedArrays[object.id] = {}
 		for array in ARRAYS[type].keys():
-			objectBufferedArrays[object.id][array] = file.get_var() # handle it at the end
+			objectBufferedArrays[object.id][array] = getVar(file, "objarray %s %s" % [type, array]) # handle it at the end
 		if type == Door:
-			object.locks.assign(Saving.IDArraytoComponents(Lock, file.get_var()))
+			object.locks.assign(Saving.IDArraytoComponents(Lock, getVar(file, "lockarray")))
 			for lock in object.locks:
 				lock.parent = object
 				object.add_child(lock)
 			object.reindexLocks()
 		if type == KeyCounter:
-			object.elements.assign(Saving.IDArraytoComponents(KeyCounterElement, file.get_var()))
+			object.elements.assign(Saving.IDArraytoComponents(KeyCounterElement, getVar(file, "keycounterarray")))
 			for element in object.elements:
 				element.parent = object
 				object.add_child(element)
@@ -154,3 +156,8 @@ static func loadFile(file:FileAccess, formatVersion:int) -> void:
 	if Game.editor:
 		Game.editor.settingsMenu.opened()
 	Game.get_tree().call_group("modUI", "changedMods")
+
+static func getVar(file:FileAccess, reason:String, allowObjects:bool=false):
+	var value = file.get_var(allowObjects)
+	if TEST_PRINTING: print(reason, value)
+	return value
