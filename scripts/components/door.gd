@@ -90,8 +90,8 @@ var drawFrozen:RID
 var drawSymbols:RID
 var drawNegative:RID
 
-var locks:Array[Lock] = []
 @export_group("SavedComponentArrays")
+@export var locks:Array[Lock] = []
 @export var remoteLocks:Array[RemoteLock] = []
 
 @onready var locksParent:Node2D = %locksParent

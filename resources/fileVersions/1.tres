@@ -10,12 +10,13 @@
 [ext_resource type="Script" uid="uid://tcvoc8kk3gte" path="res://scripts/components/other/goal.gd" id="8_bt5eg"]
 [ext_resource type="Script" uid="uid://dfersmim7c45o" path="res://scripts/components/other/keyCounter.gd" id="9_ktnda"]
 [ext_resource type="Script" uid="uid://lqnann51ivxu" path="res://scripts/components/other/playerSpawn.gd" id="10_e35ai"]
+[ext_resource type="Script" uid="uid://cn21u18h1dfcf" path="res://scripts/components/placeholderObject.gd" id="10_ycl87"]
+[ext_resource type="Script" uid="uid://b2spragav4p7a" path="res://scripts/components/playerPlaceholderObject.gd" id="11_iny3r"]
 [ext_resource type="Script" uid="uid://bkp3fklu8mlnk" path="res://scripts/components/other/floatingTile.gd" id="11_j60cm"]
 
 [sub_resource type="Resource" id="Resource_qumbd"]
 script = ExtResource("2_ma267")
 savedProperties = Array[StringName]([&"id", &"position", &"size", &"parentId", &"color", &"type", &"sizeType", &"count", &"configuration", &"zeroI", &"isPartial", &"denominator", &"negated", &"armament", &"index", &"displayIndex"])
-numberProperties = Array[StringName]([&"count", &"denominator"])
 
 [sub_resource type="Resource" id="Resource_3yepd"]
 script = ExtResource("2_ma267")
@@ -23,14 +24,13 @@ savedProperties = Array[StringName]([&"id", &"position", &"size", &"parentId", &
 
 [sub_resource type="Resource" id="Resource_gd0de"]
 script = ExtResource("2_ma267")
-savedProperties = Array[StringName]([&"id", &"position", &"size", &"color", &"type", &"count", &"infinite", &"un"])
-numberProperties = Array[StringName]([&"count"])
+savedProperties = Array[StringName]([&"id", &"position", &"size", &"color", &"type", &"count", &"infinite", &"boolType"])
 
 [sub_resource type="Resource" id="Resource_unkoy"]
 script = ExtResource("2_ma267")
 savedProperties = Array[StringName]([&"id", &"position", &"size", &"colorSpend", &"copies", &"infCopies", &"type", &"frozen", &"crumbled", &"painted"])
-numberProperties = Array[StringName]([&"copies", &"infCopies"])
 savedComponentArrays = Dictionary[StringName, GDScript]({
+&"locks": ExtResource("3_kcxw2"),
 &"remoteLocks": ExtResource("7_mt0da")
 })
 
@@ -41,6 +41,9 @@ savedProperties = Array[StringName]([&"id", &"position", &"size", &"type"])
 [sub_resource type="Resource" id="Resource_f3p2l"]
 script = ExtResource("2_ma267")
 savedProperties = Array[StringName]([&"id", &"position", &"size"])
+savedComponentArrays = Dictionary[StringName, GDScript]({
+&"elements": ExtResource("4_71bwo")
+})
 
 [sub_resource type="Resource" id="Resource_ncjb2"]
 script = ExtResource("2_ma267")
@@ -54,14 +57,15 @@ savedProperties = Array[StringName]([&"id", &"position", &"size"])
 [sub_resource type="Resource" id="Resource_81y2y"]
 script = ExtResource("2_ma267")
 savedProperties = Array[StringName]([&"id", &"position", &"size", &"color", &"type", &"configuration", &"sizeType", &"count", &"zeroI", &"isPartial", &"denominator", &"negated", &"armament", &"frozen", &"crumbled", &"painted"])
-numberProperties = Array[StringName]([&"count", &"denominator"])
 savedComponentArrays = Dictionary[StringName, GDScript]({
 &"doors": ExtResource("6_ax4qq")
 })
 
 [resource]
 script = ExtResource("1_1y2yn")
-version = 2
+version = 1
+firstEditorVersion = "1.0.0"
+componentTypes = Array[GDScript]([ExtResource("3_kcxw2"), ExtResource("4_71bwo"), ExtResource("5_6uvr7"), ExtResource("6_ax4qq"), ExtResource("8_bt5eg"), ExtResource("9_ktnda"), ExtResource("10_e35ai"), ExtResource("11_j60cm"), ExtResource("7_mt0da"), ExtResource("10_ycl87"), ExtResource("11_iny3r")])
 typeDefs = Dictionary[GDScript, ExtResource("2_ma267")]({
 ExtResource("3_kcxw2"): SubResource("Resource_qumbd"),
 ExtResource("4_71bwo"): SubResource("Resource_3yepd"),

@@ -1,62 +1,6 @@
 extends Node
 class_name LoadV1toCurrent
 
-static var COMPONENTS:Array[GDScript] = [Lock, KeyCounterElement, KeyBulk, Door, Goal, KeyCounter, PlayerSpawn, FloatingTile, RemoteLock]
-static var NON_OBJECT_COMPONENTS:Array[GDScript] = [Lock, KeyCounterElement]
-
-# dont put new properties in this, put injectors for them with the correct formatVersion boundary, down in loadFile()
-static var BASE_PROPERTIES:Dictionary[GDScript,Array] = {
-	Lock: [
-		&"id", &"position", &"size",
-		&"parentId", &"color", &"type", &"sizeType", &"count", &"configuration", &"zeroI", &"isPartial", &"denominator", &"negated", &"armament",
-		&"index", &"displayIndex"
-	],
-	KeyCounterElement: [
-		&"id", &"position", &"size",
-		&"parentId", &"color",
-		&"index"
-	],
-	KeyBulk: [
-		&"id", &"position", &"size",
-		&"color", &"type", &"count", &"infinite", &"un"
-	],
-	Door: [
-		&"id", &"position", &"size",
-		&"colorSpend", &"copies", &"infCopies", &"type",
-		&"frozen", &"crumbled", &"painted"
-	],
-	Goal: [
-		&"id", &"position", &"size",
-		&"type"
-	],
-	KeyCounter: [
-		&"id", &"position", &"size",
-	],
-	PlayerSpawn: [
-		&"id", &"position", &"size", &"undoStack", &"saveBuffered"
-	],
-	FloatingTile: [
-		&"id", &"position", &"size",
-	],
-	RemoteLock: [
-		&"id", &"position", &"size",
-		&"color", &"type", &"configuration", &"sizeType", &"count", &"zeroI", &"isPartial", &"denominator", &"negated", &"armament",
-		&"frozen", &"crumbled", &"painted"
-	]
-}
-# dont put new arrays in this, put injectors for them with the correct formatVersion boundary, down in loadFile()
-static var BASE_ARRAYS:Dictionary[GDScript,Dictionary] = {
-	Lock: {},
-	KeyCounterElement: {},
-	KeyBulk: {},
-	Door: {&"remoteLocks":RemoteLock},
-	Goal: {},
-	KeyCounter: {},
-	PlayerSpawn: {&"key":TYPE_PACKED_INT64_ARRAY,&"star":TYPE_BOOL,&"curse":TYPE_BOOL},
-	FloatingTile: {},
-	RemoteLock: {&"doors":Door},
-}
-
 # LEVEL METADATA:
 # - level name
 # - level description
@@ -70,20 +14,9 @@ static var BASE_ARRAYS:Dictionary[GDScript,Dictionary] = {
 # - components
 # - objects
 
-static func loadFile(file:FileAccess, formatVersion:int) -> void:
-	var PROPERTIES:Dictionary[GDScript,Array] = BASE_PROPERTIES.duplicate(true)
-	var ARRAYS:Dictionary[GDScript, Dictionary] = BASE_ARRAYS.duplicate(true)
-	# format version 2 is v1.0.18
-	if formatVersion > 1:
-		PROPERTIES.get(KeyBulk).insert(7, &"glistening")
-		ARRAYS.get(PlayerSpawn)[&"glisten"] = TYPE_PACKED_INT64_ARRAY
-	# format version 3 is v1.1.0
-	if formatVersion > 2:
-		PROPERTIES.get(KeyBulk).append_array([&"altColor", &"operation", &"collectType"])
-		PROPERTIES.get(KeyBulk).set(PROPERTIES.get(KeyBulk).find(&"un"),&"boolType") #juuust in case
-		PROPERTIES.get(Door).append_array([&"oscillate"])
-		PROPERTIES.get(Lock).insert(14, &"spendType")
-		PROPERTIES.get(RemoteLock).insert(14, &"spendType")
+# TODO: move keybulk un
+
+static func loadFile(file:FileAccess, fileVersion:FileVersion) -> void:
 	# LEVEL DATA
 	# tiles
 	Game.tiles.tile_map_data = file.get_var()
@@ -92,68 +25,65 @@ static func loadFile(file:FileAccess, formatVersion:int) -> void:
 	Game.componentIdIter = file.get_64()
 	var componentBufferedArrays:Dictionary[int,Dictionary] = {} # dictionary[object id, dictionary[property name, array]]
 	for _i in file.get_64():
-		var type:GDScript = COMPONENTS[file.get_16()]
+		var type:GDScript = fileVersion.componentTypes[file.get_16()]
 		var component = type.new()
 		if Game.editor: component.editor = Game.editor
-		for property in PROPERTIES[type]:
-			var value = file.get_var(true)
+		var typeDef:ComponentTypeDef = fileVersion.typeDefs[type]
+		for property in typeDef.savedProperties:
+			var value = migrateProperty(file.get_var(true), component, property, fileVersion)
 			if property == &"id":
 				Game.components[value] = component
-			component.set(property, value)
+			if value is Array: component.get(property).assign(value)
+			else: component.set(property, value)
 			component.propertyChangedDo(property)
-		for array in ARRAYS[type].keys():
-			componentBufferedArrays[component.id][array] = file.get_var() # handle it at the end; not all components will be ready
+		for array in typeDef.savedArrays: component.get(array).assign(file.get_var())
+		# handle it at the end; not all referenced components will be ready
+		for array in typeDef.savedComponentArrays: componentBufferedArrays[component.id][array] = file.get_var()
 	# objects
 	Game.objectIdIter = file.get_64()
 	var objectBufferedArrays:Dictionary[int,Dictionary] = {} # dictionary[object id, dictionary[property name, array]]
-	var otherBuffers:Array[Array] # array[component, property name, value]
 	for _i in file.get_64():
-		var type:GDScript = COMPONENTS[file.get_16()]
+		var type:GDScript = fileVersion.componentTypes[file.get_16()]
 		var object = type.SCENE.instantiate()
 		if Game.editor: object.editor = Game.editor
-		for property in PROPERTIES[type]:
-			var value = file.get_var(true)
+		var typeDef:ComponentTypeDef = fileVersion.typeDefs[type]
+		for property in typeDef.savedProperties:
+			var value = migrateProperty(file.get_var(true), object, property, fileVersion)
 			if property == &"id":
 				Game.objects[value] = object
 				Game.objectsParent.add_child(object)
-			if type == PlayerSpawn and property == &"undoStack" and value: otherBuffers.append([object, property, value])
+			if value is Array: object.get(property).assign(value)
 			else: object.set(property, value)
 			object.propertyChangedDo(property)
 		objectBufferedArrays[object.id] = {}
-		for array in ARRAYS[type].keys():
-			objectBufferedArrays[object.id][array] = file.get_var() # handle it at the end
-		if type == Door:
-			object.locks.assign(Saving.IDArraytoComponents(Lock, file.get_var()))
-			for lock in object.locks:
-				lock.parent = object
-				object.add_child(lock)
-			object.reindexLocks()
-		if type == KeyCounter:
-			object.elements.assign(Saving.IDArraytoComponents(KeyCounterElement, file.get_var()))
-			for element in object.elements:
-				element.parent = object
-				object.add_child(element)
+		for array in typeDef.savedArrays: object.get(array).assign(file.get_var())
+		# handle it at the end; not all referenced components will be ready
+		for array in typeDef.savedComponentArrays: objectBufferedArrays[object.id][array] = file.get_var()
 	
 	for componentId in componentBufferedArrays.keys():
 		var component:GameComponent = Game.components[componentId]
-		for array in ARRAYS[component.get_script()]:
+		var typeDef:ComponentTypeDef = fileVersion.typeDefs[component.get_script()]
+		for array in typeDef.savedComponentArrays:
 			var value:Array = componentBufferedArrays[componentId][array]
-			var arrayType = ARRAYS[component.get_script()][array]
-			if Saving.arrayTypeIsComponent(arrayType): value = Saving.IDArraytoComponents(arrayType,value)
-			component.get(array).assign(value)
+			var arrayType = typeDef.savedComponentArrays[array]
+			component.get(array).assign(Saving.IDArraytoComponents(arrayType,value))
 
 	for objectId in objectBufferedArrays.keys():
 		var object:GameObject = Game.objects[objectId]
-		for array in ARRAYS[object.get_script()]:
+		var typeDef:ComponentTypeDef = fileVersion.typeDefs[object.get_script()]
+		for array in typeDef.savedComponentArrays:
 			var value:Array = objectBufferedArrays[objectId][array]
-			var arrayType = ARRAYS[object.get_script()][array]
-			if Saving.arrayTypeIsComponent(arrayType): value = Saving.IDArraytoComponents(arrayType,value)
-			object.get(array).assign(value)
-
-	for buffer in otherBuffers:
-		if buffer[0] is PlayerSpawn and buffer[1] == &"undoStack":
-			if buffer[2] is SerialisedUndoStack: buffer[0].undoStack.assign(buffer[2].serialisedStack)
-			else: buffer[0].undoStack.assign(buffer[2])
+			var arrayType = typeDef.savedComponentArrays[array]
+			object.get(array).assign(Saving.IDArraytoComponents(arrayType,value))
+			if object is Door and array == &"locks":
+				for lock in object.locks:
+					lock.parent = object
+					object.add_child(lock)
+				object.reindexLocks()
+			elif object is KeyCounter and array == &"elements":
+				for element in object.elements:
+					element.parent = object
+					object.add_child(element)
 
 	#if levelStart != -1:
 	#	Game.levelStart = Game.objects[levelStart]
@@ -163,3 +93,8 @@ static func loadFile(file:FileAccess, formatVersion:int) -> void:
 	if Game.editor:
 		Game.editor.settingsMenu.opened()
 	Game.get_tree().call_group("modUI", "changedMods")
+
+static func migrateProperty(value, component:GameComponent, property:StringName, fileVersion:FileVersion):
+	if fileVersion.version < 3 and component is PlayerSpawn and property == &"undoStack": return value.serialisedStack
+	elif fileVersion.version < 3 and component is KeyBulk and property == &"boolType": return int(value)
+	else: return value

@@ -9,7 +9,7 @@ const CREATE_PARAMETERS:Array[StringName] = [
 const PROPERTIES:Array[StringName] = [
 	&"id", &"position", &"size",
 	&"parentId", &"color",
-	&"index" # implciit
+	&"index" # implicit
 ]
 static var ARRAYS:Dictionary[StringName,Variant] = {}
 
