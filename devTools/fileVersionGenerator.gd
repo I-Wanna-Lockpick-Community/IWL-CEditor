@@ -8,7 +8,8 @@ var c:Callable = _generate
 enum EXPORT_GROUP {None, SavedProperties, SavedArrays, SavedComponentArrays}
 
 func _generate() -> void:
-	var fileVersion:FileVersion = FileVersion.new(Saving.FILE_FORMAT_VERSION)
+	var fileVersion:FileVersion = FileVersion.new()
+	fileVersion.version = Saving.FILE_FORMAT_VERSION
 	fileVersion.firstEditorVersion = ProjectSettings.get_setting("application/config/version")
 	fileVersion.componentTypes = Game.COMPONENTS
 	var node2DPropertyNames:Array[String] = []

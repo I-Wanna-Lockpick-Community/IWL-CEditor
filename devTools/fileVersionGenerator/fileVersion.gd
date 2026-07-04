@@ -5,6 +5,3 @@ extends Resource
 @export var firstEditorVersion:String
 @export var componentTypes:Array[GDScript] = []
 @export var typeDefs:Dictionary[GDScript, ComponentTypeDef] = {}
-
-func _init(_version:int) -> void:
-	version = _version
