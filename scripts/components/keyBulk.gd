@@ -323,11 +323,11 @@ func collect(player:Player) -> void:
 		TYPE.STAR, TYPE.CURSE:
 			var changeType:GameChanges.TYPE = GameChanges.TYPE.StarChange if type == TYPE.STAR else GameChanges.TYPE.CurseChange
 			match boolType:
-				BOOL_TYPE.ENABLE: GameChanges.addChange(GameChanges.newColorChange(changeType, collectColor, true))
-				BOOL_TYPE.DISABLE: GameChanges.addChange(GameChanges.newColorChange(changeType, collectColor, false))
+				BOOL_TYPE.ENABLE: GameChanges.applyChange(GameChanges.newColorChange(changeType, collectColor, true))
+				BOOL_TYPE.DISABLE: GameChanges.applyChange(GameChanges.newColorChange(changeType, collectColor, false))
 				BOOL_TYPE.TOGGLE, _:
-					if type == TYPE.STAR: GameChanges.addChange(GameChanges.newColorChange(changeType, collectColor, !player.star[collectColor]))
-					else: GameChanges.addChange(GameChanges.newColorChange(changeType, collectColor, !player.curse[collectColor]))
+					if type == TYPE.STAR: GameChanges.applyChange(GameChanges.newColorChange(changeType, collectColor, !player.star[collectColor]))
+					else: GameChanges.applyChange(GameChanges.newColorChange(changeType, collectColor, !player.curse[collectColor]))
 		TYPE.OPERATOR:
 			match operation:
 				OPERATION.SET: player.changeKeys(collectColor, player.key[collectAltColor], collectType)
