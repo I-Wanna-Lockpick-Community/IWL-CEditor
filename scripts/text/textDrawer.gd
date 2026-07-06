@@ -39,31 +39,41 @@ func evaluate() -> void:
 				font.draw_string(drawMain, Vector2(x, 0), text[1], HORIZONTAL_ALIGNMENT_LEFT, -1, fontSize, color)
 				x += font.get_string_size(text[1], HORIZONTAL_ALIGNMENT_LEFT, -1, fontSize).x
 			TYPE.Number, TYPE.NumberMixedMode, TYPE.NumberImproperMode:
-				var number:PackedInt64Array = text[1]
+				const FRACTION_VERTICAL_OFFSET:float = 2
 				var color:Color = text[2]
 				var mixedMode:bool = text[0] == TYPE.NumberMixedMode or (text[0] != TYPE.NumberImproperMode and Game.mixedFractionsMode)
-				if !M.isInteger(number):
-					const FRACTION_VERTICAL_OFFSET:float = 2
-					if mixedMode:
-						var wholePart:PackedInt64Array = M.trunc(number)
-						if M.ex(wholePart):
-							number = M.sub(number, wholePart)
-							var string:String = M.str(wholePart)
+				var real:PackedInt64Array = M.r(text[1])
+				var imag:PackedInt64Array = M.i(text[1])
+				var first:bool = true
+				for part in [real, imag]:
+					if M.ex(part):
+						if M.hasNegative(part):
+							font.draw_string(drawMain, Vector2(x, 0), "-", HORIZONTAL_ALIGNMENT_LEFT, -1, fontSize, color)
+							x += font.get_string_size("-", HORIZONTAL_ALIGNMENT_LEFT, -1, fontSize).x
+							part = M.negate(part)
+						elif !first:
+							font.draw_string(drawMain, Vector2(x, 0), "+", HORIZONTAL_ALIGNMENT_LEFT, -1, fontSize, color)
+							x += font.get_string_size("+", HORIZONTAL_ALIGNMENT_LEFT, -1, fontSize).x
+						if M.isInteger(part) or (mixedMode and M.ex(M.trunc(part))):
+							var string:String = M.str(M.trunc(part))
 							font.draw_string(drawMain, Vector2(x, 0), string, HORIZONTAL_ALIGNMENT_LEFT, -1, fontSize, color)
-							x += font.get_string_size(string, HORIZONTAL_ALIGNMENT_LEFT, -1, fontSize).x + 2
-					var numerator:String = M.str(M.numer(number))
-					var denominator:String = M.str(M.denom(number))
-					var numerSize:Vector2 = font.get_string_size(numerator, HORIZONTAL_ALIGNMENT_LEFT, -1, smallFontSize)
-					var denomSize:Vector2 = font.get_string_size(denominator, HORIZONTAL_ALIGNMENT_LEFT, -1, smallFontSize)
-					var width:float = max(numerSize.x, denomSize.x)
-					RenderingServer.canvas_item_add_rect(drawMain, Rect2(Vector2(x,2+FRACTION_VERTICAL_OFFSET), Vector2(width,2)), color)
-					font.draw_string(drawMain, Vector2(x+(width-numerSize.x)/2, -numerSize.y/2-4+FRACTION_VERTICAL_OFFSET), numerator, HORIZONTAL_ALIGNMENT_LEFT, -1, smallFontSize, color)
-					font.draw_string(drawMain, Vector2(x+(width-denomSize.x)/2, denomSize.y/2+4+FRACTION_VERTICAL_OFFSET), denominator, HORIZONTAL_ALIGNMENT_LEFT, -1, smallFontSize, color)
-					x += width
-				else:
-					var string:String = M.str(number)
-					font.draw_string(drawMain, Vector2(x, 0), string, HORIZONTAL_ALIGNMENT_LEFT, -1, fontSize, color)
-					x += font.get_string_size(string, HORIZONTAL_ALIGNMENT_LEFT, -1, fontSize).x
+							x += font.get_string_size(string, HORIZONTAL_ALIGNMENT_LEFT, -1, fontSize).x
+							if !M.isInteger(part): x += 2
+						if !M.isInteger(M.simplify(part)):
+							var fraction:PackedInt64Array = M.simplify(M.remainder(part, M.ONE()) if mixedMode else part)
+							var numerator:String = M.str(M.numer(fraction))
+							var denominator:String = M.str(M.denom(fraction))
+							var numerSize:Vector2 = font.get_string_size(numerator, HORIZONTAL_ALIGNMENT_LEFT, -1, smallFontSize)
+							var denomSize:Vector2 = font.get_string_size(denominator, HORIZONTAL_ALIGNMENT_LEFT, -1, smallFontSize)
+							var width:float = max(numerSize.x, denomSize.x)
+							RenderingServer.canvas_item_add_rect(drawMain, Rect2(Vector2(x,2+FRACTION_VERTICAL_OFFSET), Vector2(width,2)), color)
+							font.draw_string(drawMain, Vector2(x+(width-numerSize.x)/2, -numerSize.y/2-4+FRACTION_VERTICAL_OFFSET), numerator, HORIZONTAL_ALIGNMENT_LEFT, -1, smallFontSize, color)
+							font.draw_string(drawMain, Vector2(x+(width-denomSize.x)/2, denomSize.y/2+4+FRACTION_VERTICAL_OFFSET), denominator, HORIZONTAL_ALIGNMENT_LEFT, -1, smallFontSize, color)
+							x += width
+						first = false
+				if first:
+					font.draw_string(drawMain, Vector2(x, 0), "0", HORIZONTAL_ALIGNMENT_LEFT, -1, fontSize, color)
+					x += font.get_string_size("0", HORIZONTAL_ALIGNMENT_LEFT, -1, fontSize).x
 			TYPE.Spacing:
 				x += text[1]
 
