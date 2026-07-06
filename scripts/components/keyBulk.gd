@@ -91,6 +91,7 @@ var drawError:RID
 var drawAdditionalGlitch:RID
 var drawAdditional:RID
 var drawOverlay:RID
+var textDrawer:TextDrawer
 func _init() -> void: size = Vector2(32,32)
 
 func _ready() -> void:
@@ -109,6 +110,8 @@ func _ready() -> void:
 	RenderingServer.canvas_item_set_parent(drawGlitch,get_canvas_item())
 	RenderingServer.canvas_item_set_parent(drawMain,get_canvas_item())
 	RenderingServer.canvas_item_set_parent(drawSymbol,get_canvas_item())
+	textDrawer = TextDrawer.new(self, TextDrawer.SETTING.FKEYBULK)
+	textDrawer.position = Vector2(1,25)
 	RenderingServer.canvas_item_set_parent(drawError,get_canvas_item())
 	RenderingServer.canvas_item_set_self_modulate(drawError, "#ffffffaa")
 	RenderingServer.canvas_item_set_material(drawError,Game.ADDITIVE_MATERIAL)
@@ -161,6 +164,7 @@ func _draw() -> void:
 	RenderingServer.canvas_item_clear(drawError)
 	RenderingServer.canvas_item_clear(drawAdditionalGlitch)
 	RenderingServer.canvas_item_clear(drawAdditional)
+	textDrawer.queue_redraw()
 	if !active and Game.playState == Game.PLAY_STATE.PLAY: return
 	var rect:Rect2 = Rect2(Vector2.ZERO, size)
 	RenderingServer.canvas_item_add_texture_rect(drawDropShadow,Rect2(Vector2(3,3),size),getOutlineTexture(color,type,boolType,operation),false,Game.DROP_SHADOW_COLOR)
@@ -171,7 +175,7 @@ func _draw() -> void:
 	if animState == ANIM_STATE.FLASH: RenderingServer.canvas_item_add_texture_rect(drawSymbol,rect,outlineTex(),false,Color(Color.WHITE,animAlpha))
 	match type:
 		KeyBulk.TYPE.NORMAL, KeyBulk.TYPE.EXACT:
-			if !M.eq(count, M.ONE()): TextDraw.outlined2(FKEYBULK,drawSymbol,M.str(count),keycountColor(),keycountOutlineColor(),14,Vector2(1,25))
+			if !M.eq(count, M.ONE()): textDrawer.addNumber(count, keycountColor(), keycountOutlineColor())
 		KeyBulk.TYPE.ROTOR:
 			if reciprocal:
 				if M.eq(count, M.nONE()): RenderingServer.canvas_item_add_texture_rect(drawSymbol,rect,RECIPROCAL_FLIP_SYMBOL)

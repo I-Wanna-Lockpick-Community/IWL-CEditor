@@ -48,7 +48,7 @@ func _ready() -> void:
 	RenderingServer.canvas_item_set_parent(drawGlitch,drawParent.get_canvas_item())
 	RenderingServer.canvas_item_set_parent(drawMain,drawParent.get_canvas_item())
 	Game.connect(&"goldIndexChanged",queue_redraw)
-	textDrawer = TextDrawer.new(self, Game.FKEYNUM, 22, 14)
+	textDrawer = TextDrawer.new(self, TextDrawer.SETTING.FKEYNUM)
 	textDrawer.position = Vector2(38,14)
 
 func _freed() -> void:
@@ -60,6 +60,7 @@ func _draw() -> void:
 	RenderingServer.canvas_item_clear(drawStar)
 	RenderingServer.canvas_item_clear(drawGlitch)
 	RenderingServer.canvas_item_clear(drawMain)
+	textDrawer.queue_redraw()
 	if color == C.olors.NONE: return
 	if Game.player and Game.player.star[color]:
 		RenderingServer.canvas_item_set_transform(drawStar,Transform2D(parent.starAngle,Vector2(16,16)))
@@ -74,7 +75,6 @@ func _draw() -> void:
 			textDrawer.addNumber(Game.player.glistening[color], TEXT_COLOR)
 			textDrawer.addString(")", TEXT_COLOR)
 	else: textDrawer.addString("0", TEXT_COLOR)
-	textDrawer.evaluate()
 
 func _process(_delta:float) -> void:
 	queue_redraw()

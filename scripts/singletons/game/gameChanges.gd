@@ -30,7 +30,6 @@ func applyChange(change:Array) -> Array:
 
 func doChange(change:Array) -> void:
 	var type:TYPE = change[0]
-	print(change)
 	match type:
 		# color, before, after
 		TYPE.KeyChange: Game.player.key[change[1]] = copy(change[3])
