@@ -5,11 +5,13 @@ var drawMain:RID
 var setting:SETTING
 
 enum SETTING {FKEYNUM, FKEYBULK}
-enum TYPE {String, Number, NumberMixedMode, NumberImproperMode, Spacing}
+enum TYPE {String, Number, Spacing}
 
 var texts:Array[Array] = []
 var textsChanged:bool = false
 var textsIndex:int = 0
+
+var mixedFractionsMode:bool = false
 
 func _init(parent:Node2D, _setting:SETTING) -> void:
 	drawMain = RenderingServer.canvas_item_create()
@@ -17,10 +19,12 @@ func _init(parent:Node2D, _setting:SETTING) -> void:
 	setting = _setting
 	parent.add_child(self)
 
+func setMixedFractionsMode(to:bool) -> void:
+	if mixedFractionsMode != to: textsChanged = true
+	mixedFractionsMode = to
+
 func addString(string:String, color:Color, outline:Color=Color.TRANSPARENT) -> void: addValue_([TYPE.String, string, color, outline])
 func addNumber(number:PackedInt64Array, color:Color, outline:Color=Color.TRANSPARENT) -> void: addValue_([TYPE.Number, number, color, outline])
-func addNumberMixedMode(number:PackedInt64Array, color:Color, outline:Color=Color.TRANSPARENT) -> void: addValue_([TYPE.NumberMixedMode, number, color, outline])
-func addNumberImproperMode(number:PackedInt64Array, color:Color, outline:Color=Color.TRANSPARENT) -> void: addValue_([TYPE.NumberImproperMode, number, color, outline])
 func addSpacing(spacing:float) -> void: addValue_([TYPE.Spacing, spacing])
 
 func _draw() -> void:
@@ -39,14 +43,13 @@ func _draw() -> void:
 		match text[0]:
 			TYPE.String:
 				x += drawText_(font, text[1], Vector2(x, 0), fontSize, text[2], text[3]).x
-			TYPE.Number, TYPE.NumberMixedMode, TYPE.NumberImproperMode:
+			TYPE.Number:
 				var fractionVerticalOffset:float = getFractionVerticalOffset()
 				var color:Color = text[2]
 				var outline:Color = text[3]
 				if M.isError(text[1]):
 					x += drawText_(font, "ERROR", Vector2(x, 0), fontSize, color, outline).x
 					continue
-				var mixedMode:bool = text[0] == TYPE.NumberMixedMode or (text[0] != TYPE.NumberImproperMode and Game.mixedFractionsMode)
 				var first:bool = true
 				for part in [M.r(text[1]), M.i(text[1])]:
 					if M.ex(part):
@@ -55,11 +58,11 @@ func _draw() -> void:
 							part = M.negate(part)
 						elif !first:
 							x += drawText_(font, "+", Vector2(x, 0), fontSize, color, outline).x
-						if M.isInteger(part) or (mixedMode and M.ex(M.trunc(part))):
+						if M.isInteger(part) or (mixedFractionsMode and M.ex(M.trunc(part))):
 							x += drawText_(font, M.str(M.trunc(part)), Vector2(x, 0), fontSize, color, outline).x
 							if !M.isInteger(part): x += 2
 						if !M.isInteger(part):
-							var fraction:PackedInt64Array = M.remainder(part, M.ONE()) if mixedMode else part
+							var fraction:PackedInt64Array = M.remainder(part, M.ONE()) if mixedFractionsMode else part
 							var numerator:String = M.str(M.numer(fraction))
 							var denominator:String = M.str(M.denom(fraction))
 							var numerSize:Vector2 = font.get_string_size(numerator, HORIZONTAL_ALIGNMENT_LEFT, -1, fractionFontSize)

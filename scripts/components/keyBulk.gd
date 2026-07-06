@@ -165,6 +165,7 @@ func _draw() -> void:
 	RenderingServer.canvas_item_clear(drawAdditionalGlitch)
 	RenderingServer.canvas_item_clear(drawAdditional)
 	textDrawer.queue_redraw()
+	textDrawer.setMixedFractionsMode(Game.mixedFractionsMode)
 	if !active and Game.playState == Game.PLAY_STATE.PLAY: return
 	var rect:Rect2 = Rect2(Vector2.ZERO, size)
 	RenderingServer.canvas_item_add_texture_rect(drawDropShadow,Rect2(Vector2(3,3),size),getOutlineTexture(color,type,boolType,operation),false,Game.DROP_SHADOW_COLOR)
