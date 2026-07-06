@@ -30,6 +30,7 @@ func getColors() -> Array[C.olors]: return [color]
 var drawStar:RID
 var drawGlitch:RID
 var drawMain:RID
+var textDrawer:TextDrawer
 var drawCurse:CurseParticle
 
 func _init() -> void: size = Vector2(32,32)
@@ -47,6 +48,8 @@ func _ready() -> void:
 	RenderingServer.canvas_item_set_parent(drawGlitch,drawParent.get_canvas_item())
 	RenderingServer.canvas_item_set_parent(drawMain,drawParent.get_canvas_item())
 	Game.connect(&"goldIndexChanged",queue_redraw)
+	textDrawer = TextDrawer.new(self, Game.FKEYNUM, 22, 14)
+	textDrawer.position = Vector2(38,14)
 
 func _freed() -> void:
 	RenderingServer.free_rid(drawStar)
@@ -62,9 +65,16 @@ func _draw() -> void:
 		RenderingServer.canvas_item_set_transform(drawStar,Transform2D(parent.starAngle,Vector2(16,16)))
 		RenderingServer.canvas_item_add_texture_rect(drawStar,Rect2(Vector2(-25.6,-25.6),Vector2(51.2,51.2)),STAR,false,STAR_COLOR)
 	KeyBulk.drawKey(drawGlitch,drawMain,Vector2.ZERO,color)
-	Game.FKEYNUM.draw_string(drawMain,Vector2(38,14),"x",HORIZONTAL_ALIGNMENT_LEFT,-1,22,TEXT_COLOR)
-	# below code edited to add the glistening part if it is non-zero
-	Game.FKEYNUM.draw_string(drawMain,Vector2(58,14),"0" if !Game.player else (M.str(Game.player.key[color]) + " (" + M.str(Game.player.glisten[color]) + ")" if Game.player.glisten[color] != M.ZERO() else M.str(Game.player.key[color])),HORIZONTAL_ALIGNMENT_LEFT,-1,22,TEXT_COLOR)
+	textDrawer.addString("x", TEXT_COLOR)
+	textDrawer.addSpacing(4)
+	if Game.player:
+		textDrawer.addNumber(Game.player.key[color], TEXT_COLOR)
+		if M.ex(Game.player.glisten[color]):
+			textDrawer.addString("(", TEXT_COLOR)
+			textDrawer.addNumber(Game.player.glistening[color], TEXT_COLOR)
+			textDrawer.addString(")", TEXT_COLOR)
+	else: textDrawer.addString("0", TEXT_COLOR)
+	textDrawer.evaluate()
 
 func _process(_delta:float) -> void:
 	queue_redraw()

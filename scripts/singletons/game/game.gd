@@ -122,6 +122,7 @@ var playTime:float
 var autoRun:bool = true
 var fullJumps:bool = false
 var fastAnimations:bool = false
+var mixedFractionsMode:bool = true
 
 var won:bool = false
 enum CRASH_STATE {NONE, NONE_COLOR}
