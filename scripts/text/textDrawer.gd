@@ -5,7 +5,7 @@ var drawMain:RID
 var setting:SETTING
 
 enum SETTING {FKEYNUM, FKEYBULK, FTALK}
-enum TYPE {String, Number, Image, Spacing, SetPosition}
+enum TYPE {String, Number, Spacing, SetPosition}
 
 var texts:Array[Array] = []
 var textsChanged:bool = false
@@ -26,7 +26,6 @@ func setMixedFractionsMode(to:bool) -> void:
 
 func addString(string:String, color:Color, outline:Color=Color.TRANSPARENT) -> void: addValue_([TYPE.String, string, color, outline])
 func addNumber(number:PackedInt64Array, color:Color, outline:Color=Color.TRANSPARENT) -> void: addValue_([TYPE.Number, number, color, outline])
-func addImage(image:Texture2D, color:Color, offset:Vector2=Vector2.ZERO, width:float=image.get_size().x) -> void: addValue_([TYPE.Image, image, color, offset, width])
 func addSpacing(spacing:float) -> void: addValue_([TYPE.Spacing, spacing])
 func addSetPosition(pos:Vector2, rightToLeft:bool = false) -> void: addValue_([TYPE.SetPosition, pos, rightToLeft])
 
@@ -54,7 +53,9 @@ func drawTexts() -> void:
 			TYPE.String:
 				drawPosition += drawText_(font, text[1], drawPosition, fontSize, text[2], text[3], rtl)
 			TYPE.Number:
+				var fractionTextHorizontalOffset:float = getFractionTextHorizontalOffset()
 				var fractionVerticalOffset:float = getFractionVerticalOffset()
+				var fractionVerticalDistance:float = getFractionVerticalDistance()
 				var color:Color = text[2]
 				var outline:Color = text[3]
 				if M.isError(text[1]):
@@ -88,19 +89,16 @@ func drawTexts() -> void:
 							if outline.a: RenderingServer.canvas_item_add_rect(drawMain, Rect2(fractionLineRect.position-Vector2.ONE,fractionLineRect.size+Vector2.ONE*2), outline)
 							RenderingServer.canvas_item_add_rect(drawMain, fractionLineRect, color)
 							var direction:float = -1 if rtl else 1
-							drawText_(font, numerator, drawPosition+Vector2((width-numerSize.x)*direction/2, -numerSize.y/2-4+fractionVerticalOffset), fractionFontSize, color, outline, rtl)
-							drawText_(font, denominator, drawPosition+Vector2((width-denomSize.x)*direction/2, denomSize.y/2+4+fractionVerticalOffset), fractionFontSize, color, outline, rtl)
-							if rtl: drawPosition.x -= width
-							else: drawPosition.x += width
+							drawText_(font, numerator, drawPosition+Vector2(fractionTextHorizontalOffset+(width-numerSize.x)*direction/2, -numerSize.y/2-fractionVerticalDistance+fractionVerticalOffset), fractionFontSize, color, outline, rtl)
+							drawText_(font, denominator, drawPosition+Vector2(fractionTextHorizontalOffset+(width-denomSize.x)*direction/2, denomSize.y/2+fractionVerticalDistance+fractionVerticalOffset), fractionFontSize, color, outline, rtl)
+							if rtl: drawPosition.x -= width+2
+							else: drawPosition.x += width+2
 						if rtl:
 							if M.hasNegative(part):
 								drawPosition += drawText_(font, "-", drawPosition, fontSize, color, outline, rtl)
 								part = M.negate(part)
 							elif partIndex < len(parts)-1:
 								drawPosition += drawText_(font, "+", drawPosition, fontSize, color, outline, rtl)
-			TYPE.Image:
-				RenderingServer.canvas_item_add_texture_rect(drawMain, Rect2(drawPosition+text[3], text[1].get_size()), text[1], false, text[2])
-				drawPosition.x += text[4]
 			TYPE.Spacing:
 				if rtl: drawPosition.x -= text[1]
 				else: drawPosition.x += text[1]
@@ -132,19 +130,31 @@ func getFractionFontSize() -> int:
 	match setting:
 		SETTING.FKEYNUM: return 14
 		SETTING.FKEYBULK: return 10
-		SETTING.FTALK, _: return 8
+		SETTING.FTALK, _: return 12
 
 func getFractionLineVerticalPosition() -> int:
 	match setting:
 		SETTING.FKEYNUM: return 2
 		SETTING.FKEYBULK: return -2
-		SETTING.FTALK, _: return -2
+		SETTING.FTALK, _: return -8
 
 func getFractionVerticalOffset() -> float:
 	match setting:
 		SETTING.FKEYNUM: return 2
 		SETTING.FKEYBULK: return 3
-		SETTING.FTALK, _: return 3
+		SETTING.FTALK, _: return 0
+
+func getFractionVerticalDistance() -> float:
+	match setting:
+		SETTING.FKEYNUM: return 4
+		SETTING.FKEYBULK: return 4
+		SETTING.FTALK, _: return 1
+
+func getFractionTextHorizontalOffset() -> float:
+	match setting:
+		SETTING.FKEYNUM: return 0
+		SETTING.FKEYBULK: return 0
+		SETTING.FTALK, _: return 1
 
 func _notification(what:int) -> void:
 	match what:
