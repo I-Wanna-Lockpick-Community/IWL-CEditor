@@ -150,6 +150,7 @@ var drawGlitch:RID
 var drawMain:RID
 var drawError:RID
 var drawConfiguration:RID
+var textDrawer:TextDrawer
 
 static func getConfigurationColor(_isNegative:bool) -> Color:
 	if _isNegative: return Color("#ebdfd3")
@@ -171,6 +172,7 @@ func _ready() -> void:
 	RenderingServer.canvas_item_set_parent(drawMain,get_canvas_item())
 	RenderingServer.canvas_item_set_parent(drawError,get_canvas_item())
 	RenderingServer.canvas_item_set_parent(drawConfiguration,get_canvas_item())
+	textDrawer = TextDrawer.new(self, TextDrawer.SETTING.FTALK)
 	RenderingServer.canvas_item_set_self_modulate(drawError, "#ffffffaa")
 	RenderingServer.canvas_item_set_material(drawError,Game.ADDITIVE_MATERIAL)
 	Game.connect(&"goldIndexChanged",func(): if animated(): queue_redraw())
@@ -200,8 +202,10 @@ func _draw() -> void:
 	RenderingServer.canvas_item_clear(drawMain)
 	RenderingServer.canvas_item_clear(drawError)
 	RenderingServer.canvas_item_clear(drawConfiguration)
-	if !parent.active and Game.playState == Game.PLAY_STATE.PLAY: return
-	drawLock(drawScaled,drawAuraBreaker,drawGlitch,drawMain,drawConfiguration,
+	if !parent.active and Game.playState == Game.PLAY_STATE.PLAY:
+		textDrawer.evaluate()
+		return
+	drawLock(drawScaled,drawAuraBreaker,drawGlitch,drawMain,drawConfiguration,textDrawer,
 		size,getColor(COLOR_STEP.DRAW_BASE),getColor(COLOR_STEP.Glitch),type,effectiveConfiguration(),sizeType,effectiveCount(),effectiveZeroI(),isPartial,effectiveDenominator(),negated,armament,
 		getFrameHighColor(isNegative(), negated),
 		getFrameMainColor(isNegative(), negated),
@@ -213,8 +217,9 @@ func _draw() -> void:
 	)
 	if getColor(COLOR_STEP.BASE) == C.olors.ERROR:
 		RenderingServer.canvas_item_add_texture_rect(drawError,Rect2(-offsetFromType(sizeType), size),ERROR_FX.current([randi_range(0,2)]))
+	textDrawer.evaluate()
 
-static func drawLock(lockDrawScaled:RID, lockDrawAuraBreaker:RID, lockDrawGlitch:RID, lockDrawMain:RID, lockDrawConfiguration:RID,
+static func drawLock(lockDrawScaled:RID, lockDrawAuraBreaker:RID, lockDrawGlitch:RID, lockDrawMain:RID, lockDrawConfiguration:RID, lockTextDrawer:TextDrawer,
 	lockSize:Vector2,
 	lockBaseColor:C.olors, lockGlitchColor:C.olors,
 	lockType:TYPE,

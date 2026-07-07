@@ -51,6 +51,7 @@ var drawAuraBreaker:RID
 var drawMain:RID
 var drawError:RID
 var drawConfiguration:RID
+var textDrawer:TextDrawer
 var drawCrumbled:RID
 var drawPainted:RID
 var drawFrozen:RID
@@ -66,6 +67,7 @@ func _ready() -> void:
 	drawMain = RenderingServer.canvas_item_create()
 	drawError = RenderingServer.canvas_item_create()
 	drawConfiguration = RenderingServer.canvas_item_create()
+	textDrawer = TextDrawer.new(self, TextDrawer.SETTING.FTALK)
 	drawCrumbled = RenderingServer.canvas_item_create()
 	drawPainted = RenderingServer.canvas_item_create()
 	drawFrozen = RenderingServer.canvas_item_create()
@@ -115,9 +117,11 @@ func _draw() -> void:
 	RenderingServer.canvas_item_clear(drawCrumbled)
 	RenderingServer.canvas_item_clear(drawPainted)
 	RenderingServer.canvas_item_clear(drawFrozen)
-	if !active and Game.playState == Game.PLAY_STATE.PLAY: return
+	if !active and Game.playState == Game.PLAY_STATE.PLAY:
+		textDrawer.evaluate()
+		return
 	RenderingServer.canvas_item_add_rect(drawDropShadow,Rect2(Vector2(3,3)-getOffset(),size),Game.DROP_SHADOW_COLOR)
-	Lock.drawLock(drawScaled,drawAuraBreaker,drawGlitch,drawMain,drawConfiguration,
+	Lock.drawLock(drawScaled,drawAuraBreaker,drawGlitch,drawMain,drawConfiguration,textDrawer,
 		size,getColor(Lock.COLOR_STEP.DRAW_BASE),getColor(Lock.COLOR_STEP.Glitch),type,configuration,sizeType,count,zeroI,isPartial,denominator,negated,armament,
 		Lock.getFrameHighColor(isNegative(), negated).blend(Color(animColor,animAlpha)),
 		Lock.getFrameMainColor(isNegative(), negated).blend(Color(animColor,animAlpha)),
@@ -146,6 +150,7 @@ func _draw() -> void:
 		Rect2(-getOffset(),size))
 	if getColor(Lock.COLOR_STEP.BASE) == C.olors.ERROR:
 		RenderingServer.canvas_item_add_texture_rect(drawError,Rect2(-Lock.offsetFromType(sizeType), size),Lock.ERROR_FX.current([randi_range(0,2)]))
+	textDrawer.evaluate()
 
 func getDrawPosition() -> Vector2: return position - getOffset()
 

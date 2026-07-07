@@ -164,9 +164,10 @@ func _draw() -> void:
 	RenderingServer.canvas_item_clear(drawError)
 	RenderingServer.canvas_item_clear(drawAdditionalGlitch)
 	RenderingServer.canvas_item_clear(drawAdditional)
-	textDrawer.queue_redraw()
 	textDrawer.setMixedFractionsMode(Game.mixedFractionsMode)
-	if !active and Game.playState == Game.PLAY_STATE.PLAY: return
+	if !active and Game.playState == Game.PLAY_STATE.PLAY:
+		textDrawer.evaluate()
+		return
 	var rect:Rect2 = Rect2(Vector2.ZERO, size)
 	RenderingServer.canvas_item_add_texture_rect(drawDropShadow,Rect2(Vector2(3,3),size),getOutlineTexture(color,type,boolType,operation),false,Game.DROP_SHADOW_COLOR)
 	drawKey(drawGlitch,drawMain,Vector2.ZERO,getColor(COLOR_STEP.DRAW_BASE),type,boolType,glitchMimic,partialInfiniteAlpha)
@@ -210,6 +211,7 @@ func _draw() -> void:
 		Player.KEYCHANGE_TYPE.NONE: RenderingServer.canvas_item_add_texture_rect(drawSymbol,rect,OVERLAY_WEAK, false, Color(Colors.getDarkTone(getColor(COLOR_STEP.FINAL)),0.6))
 		Player.KEYCHANGE_TYPE.ALL: RenderingServer.canvas_item_add_texture_rect(drawSymbol,rect,OVERLAY_FORCEFUL, false, Color(Colors.getDarkTone(getColor(COLOR_STEP.FINAL)),0.6))
 		Player.KEYCHANGE_TYPE.STAR: RenderingServer.canvas_item_add_texture_rect(drawSymbol,rect,OVERLAY_STAR, false, Color(Colors.getDarkTone(getColor(COLOR_STEP.FINAL)),0.6))
+	textDrawer.evaluate()
 
 func keycountColor() -> Color: return Color("#363029") if M.negative(M.sign(count)) else Color("#ebe3dd")
 func keycountOutlineColor() -> Color: return Color("#d6cfc9") if M.negative(M.sign(count)) else Color("#363029")

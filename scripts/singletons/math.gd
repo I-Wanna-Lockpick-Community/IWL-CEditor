@@ -465,6 +465,9 @@ func isError(n:PackedInt64Array) -> bool:
 
 # util
 
+func parts(n:PackedInt64Array) -> Array[PackedInt64Array]:
+	return [r(n), i(n)]
+
 func toIpow(n:PackedInt64Array) -> int:
 	if eq(n, ONE()): return 0
 	elif eq(n, I()): return 1

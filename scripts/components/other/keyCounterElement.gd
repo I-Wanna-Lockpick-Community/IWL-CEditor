@@ -60,7 +60,6 @@ func _draw() -> void:
 	RenderingServer.canvas_item_clear(drawStar)
 	RenderingServer.canvas_item_clear(drawGlitch)
 	RenderingServer.canvas_item_clear(drawMain)
-	textDrawer.queue_redraw()
 	textDrawer.setMixedFractionsMode(Game.mixedFractionsMode)
 	if color == C.olors.NONE: return
 	if Game.player and Game.player.star[color]:
@@ -76,6 +75,7 @@ func _draw() -> void:
 			textDrawer.addNumber(Game.player.glistening[color], TEXT_COLOR)
 			textDrawer.addString(")", TEXT_COLOR)
 	else: textDrawer.addString("0", TEXT_COLOR)
+	textDrawer.evaluate()
 
 func _process(_delta:float) -> void:
 	queue_redraw()
