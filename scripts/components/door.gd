@@ -362,6 +362,19 @@ func propertyChangedInit(property:StringName) -> void:
 	if property == &"infCopies":
 		editor.focusDialog.doorDialog.updateDoorCopiesEdit = true
 		if M.neq(copies, M.orelse(infCopies, copies)): Changes.addChange(Changes.PropertyChange.new(self,&"copies", M.orelse(infCopies, copies)))
+	if property == &"armament" and armament: _allowAurasCheck()
+
+func _allowAurasCheck() -> void:
+	if !allowAuras():
+		Changes.addChange(Changes.PropertyChange.new(self,&"frozen",false))
+		Changes.addChange(Changes.PropertyChange.new(self,&"crumbled",false))
+		Changes.addChange(Changes.PropertyChange.new(self,&"painted",false))
+
+func allowAuras() -> bool:
+	if !armament: return true
+	for lock in locks:
+		if !lock.armament: return true
+	return false
 
 func propertyChangedDo(property:StringName) -> void:
 	super(property)
@@ -845,6 +858,7 @@ func auraCheck(player:Player) -> void:
 	if type == TYPE.GATE: return
 	if animState != ANIM_STATE.IDLE: return
 	if starred != STAR_STATE.UNSTARRED: return
+	if !allowAuras(): return
 	var playSound:bool = false
 	if player.auraRed and gameFrozen and !hasEffectiveColor(C.olors.MAROON):
 		GameChanges.applyChange(GameChanges.newPropertyChange(self,&"gameFrozen",false))

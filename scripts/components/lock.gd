@@ -481,6 +481,8 @@ func propertyChangedInit(property:StringName) -> void:
 	if property in [&"count", &"sizeType", &"type"]: _setAutoConfiguration()
 	lockPropertyChangedInit(self, property)
 	if property in [&"color", &"type"] and editor.focusDialog.focused == parent: editor.focusDialog.doorDialog.lockHandler.redrawButton(index)
+	if property == &"armament" and armament:
+		parent._allowAurasCheck()
 
 static func lockPropertyChangedInit(lock:GameComponent, property:StringName) -> void:
 	if property == &"type":

@@ -481,7 +481,11 @@ unique_name_in_owner = true
 layout_mode = 2
 alignment = 1
 
-[node name="frozen" type="Button" parent="doorDialog/c/lock/c/c/doorBooleans" unique_id=1221504007 groups=["explained"]]
+[node name="doorAuras" type="HBoxContainer" parent="doorDialog/c/lock/c/c/doorBooleans" unique_id=1414428540]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="frozen" type="Button" parent="doorDialog/c/lock/c/c/doorBooleans/doorAuras" unique_id=1221504007 groups=["explained"]]
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"SelectorButton"
@@ -489,7 +493,7 @@ toggle_mode = true
 icon = ExtResource("28_8gwon")
 metadata/explanation = SubResource("Resource_p7jkh")
 
-[node name="crumbled" type="Button" parent="doorDialog/c/lock/c/c/doorBooleans" unique_id=961008234 groups=["explained"]]
+[node name="crumbled" type="Button" parent="doorDialog/c/lock/c/c/doorBooleans/doorAuras" unique_id=961008234 groups=["explained"]]
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"SelectorButton"
@@ -497,7 +501,7 @@ toggle_mode = true
 icon = ExtResource("29_vydri")
 metadata/explanation = SubResource("Resource_ft2jg")
 
-[node name="painted" type="Button" parent="doorDialog/c/lock/c/c/doorBooleans" unique_id=1835139374 groups=["explained"]]
+[node name="painted" type="Button" parent="doorDialog/c/lock/c/c/doorBooleans/doorAuras" unique_id=1835139374 groups=["explained"]]
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"SelectorButton"
@@ -976,9 +980,9 @@ default_color = Color(0.8352941, 0.8352941, 0.8352941, 1)
 [connection signal="toggled" from="doorDialog/c/lock/c/c/lockSettings/c/lockArmament" to="doorDialog" method="_lockArmamentSet"]
 [connection signal="pressed" from="doorDialog/c/lock/c/c/lockSettings/c/remoteLockConvert" to="doorDialog" method="_remoteLockConvert"]
 [connection signal="select" from="doorDialog/c/lock/c/c/lockSettings/lockSpendTypeSelector" to="doorDialog" method="_lockSpendTypeSet"]
-[connection signal="toggled" from="doorDialog/c/lock/c/c/doorBooleans/frozen" to="doorDialog" method="_frozenSet"]
-[connection signal="toggled" from="doorDialog/c/lock/c/c/doorBooleans/crumbled" to="doorDialog" method="_crumbledSet"]
-[connection signal="toggled" from="doorDialog/c/lock/c/c/doorBooleans/painted" to="doorDialog" method="_paintedSet"]
+[connection signal="toggled" from="doorDialog/c/lock/c/c/doorBooleans/doorAuras/frozen" to="doorDialog" method="_frozenSet"]
+[connection signal="toggled" from="doorDialog/c/lock/c/c/doorBooleans/doorAuras/crumbled" to="doorDialog" method="_crumbledSet"]
+[connection signal="toggled" from="doorDialog/c/lock/c/c/doorBooleans/doorAuras/painted" to="doorDialog" method="_paintedSet"]
 [connection signal="toggled" from="doorDialog/c/lock/c/c/doorBooleans/oscillate" to="doorDialog" method="_oscillateSet"]
 [connection signal="toggled" from="doorDialog/c/lock/c/c/doorBooleans/spendArmament" to="doorDialog" method="_spendArmamentSet"]
 [connection signal="valueSet" from="doorDialog/c/lock/c/c/doorCopySettings/c/doorCopiesEdit" to="doorDialog" method="_doorCopiesSet"]

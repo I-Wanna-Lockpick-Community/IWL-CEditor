@@ -41,6 +41,8 @@ func focus(focused:GameObject, new:bool, dontRedirect:bool) -> void: # Door or R
 			%lockSettings.visible = false
 			%lockCountEdit.visible = false
 			%doorBooleans.visible = focused.type != Door.TYPE.GATE
+			if focused.type != Door.TYPE.GATE:
+				%doorAuras.visible = focused.allowAuras()
 			%doorCopySettings.visible = focused.type != Door.TYPE.GATE
 			%doorColorSelector.setSelect(focused.colorSpend)
 			%spend.button_pressed = true
