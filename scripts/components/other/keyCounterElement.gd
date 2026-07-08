@@ -60,7 +60,7 @@ func _draw() -> void:
 	RenderingServer.canvas_item_clear(drawStar)
 	RenderingServer.canvas_item_clear(drawGlitch)
 	RenderingServer.canvas_item_clear(drawMain)
-	textDrawer.setMixedFractionsMode(Game.mixedFractionsMode)
+	textDrawer.setmixedFractions(Game.mixedFractions)
 	if color == C.olors.NONE: return
 	if Game.player and Game.player.star[color]:
 		RenderingServer.canvas_item_set_transform(drawStar,Transform2D(parent.starAngle,Vector2(16,16)))

@@ -35,6 +35,7 @@
 [ext_resource type="Shader" uid="uid://b7ek3evjsfuc5" path="res://resources/materials/outline.gdshader" id="29_65evm"]
 [ext_resource type="PackedScene" uid="uid://bjwgb1n83p512" path="res://scenes/pda.tscn" id="30_65evm"]
 [ext_resource type="Script" uid="uid://bsmyhhhm08v2u" path="res://scripts/singletons/game/mouseover.gd" id="30_e62bx"]
+[ext_resource type="Script" uid="uid://bu3gpjupflfc2" path="res://scripts/singletons/game/quickSwitcher.gd" id="32_pgu5w"]
 [ext_resource type="Texture2D" uid="uid://d10g6pdt4sjs2" path="res://assets/ui/mods/iconSmall/Refactored.png" id="33_mxdmd"]
 [ext_resource type="PackedScene" uid="uid://dhp8ohn6mj5pr" path="res://scenes/resizeHandles.tscn" id="35_e62bx"]
 
@@ -116,7 +117,7 @@ shader_parameter/rChannel = Color(1, 1, 1, 1)
 shader_parameter/gChannel = Color(0, 0, 0, 1)
 shader_parameter/bChannel = Color(0, 0, 0, 1)
 
-[sub_resource type="ViewportTexture" id="ViewportTexture_65evm"]
+[sub_resource type="ViewportTexture" id="ViewportTexture_qqt88"]
 viewport_path = NodePath("viewport")
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ndxgo"]
@@ -126,7 +127,7 @@ shader_parameter/rChannel = Color(0, 0.63529414, 1, 1)
 shader_parameter/gChannel = Color(1, 1, 1, 1)
 shader_parameter/bChannel = Color(0, 0, 0, 1)
 
-[sub_resource type="ViewportTexture" id="ViewportTexture_pgu5w"]
+[sub_resource type="ViewportTexture" id="ViewportTexture_1mc7a"]
 viewport_path = NodePath("viewport")
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_e62bx"]
@@ -440,13 +441,13 @@ script = ExtResource("13_0u1f5")
 unique_name_in_owner = true
 material = SubResource("ShaderMaterial_pgu5w")
 layout_mode = 2
-texture = SubResource("ViewportTexture_65evm")
+texture = SubResource("ViewportTexture_qqt88")
 
 [node name="outlineViewport2" parent="c/gameCont" unique_id=2071303993 instance=ExtResource("28_e62bx")]
 unique_name_in_owner = true
 material = SubResource("ShaderMaterial_ndxgo")
 layout_mode = 2
-texture = SubResource("ViewportTexture_pgu5w")
+texture = SubResource("ViewportTexture_1mc7a")
 
 [node name="outline" type="Node2D" parent="c/gameCont/outlineViewport2" unique_id=1982434259]
 unique_name_in_owner = true
@@ -501,6 +502,11 @@ mouse_filter = 2
 theme_override_constants/separation = 2
 script = ExtResource("30_e62bx")
 metadata/_custom_type_script = "uid://bsmyhhhm08v2u"
+
+[node name="quickSwitcher" type="Node2D" parent="c/gameCont" unique_id=2019553172]
+unique_name_in_owner = true
+script = ExtResource("32_pgu5w")
+metadata/_custom_type_script = "uid://bu3gpjupflfc2"
 
 [node name="c3" type="PanelContainer" parent="c" unique_id=374923697]
 z_index = 3

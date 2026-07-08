@@ -69,8 +69,6 @@ var tileSize:Vector2i = Vector2i(32,32)
 var settingsOpen:bool = false
 
 var drawMain:RID
-var drawAutoRunGradient:RID
-var autoRunTimer:float = 2
 
 var screenshot:Image
 var drawThumbnail:RID
@@ -87,12 +85,9 @@ func _ready() -> void:
 	Saving.editor = self
 	Explainer.editor = self
 	drawMain = RenderingServer.canvas_item_create()
-	drawAutoRunGradient = RenderingServer.canvas_item_create()
 	drawThumbnail = RenderingServer.canvas_item_create()
-	RenderingServer.canvas_item_set_material(drawAutoRunGradient, Game.TEXT_GRADIENT_MATERIAL)
 	RenderingServer.canvas_item_set_z_index(drawThumbnail,1)
 	RenderingServer.canvas_item_set_parent(drawMain, %gameCont.get_canvas_item())
-	RenderingServer.canvas_item_set_parent(drawAutoRunGradient, %gameCont.get_canvas_item())
 	RenderingServer.canvas_item_set_parent(drawThumbnail, %thumbnail.get_canvas_item())
 	Game.setWorld(%world)
 	%settingsText.text = "IWLCEditor v" + ProjectSettings.get_setting("application/config/version")
@@ -110,6 +105,8 @@ func _ready() -> void:
 	playerObject.id = -1
 	%screenshotViewportCont.visible = false
 	Game.pda = %PDA
+	%quickSwitcher.gameSettings = settingsMenu.gameSettings
+	%quickSwitcher.configFile = settingsMenu.configFile
 
 func _process(delta:float) -> void:
 	queue_redraw()
@@ -166,11 +163,6 @@ func _process(delta:float) -> void:
 		%mouseover.describe(objectsHovered, %gameViewportDisplay.get_local_mouse_position(), %gameViewportDisplay.size)
 	else: %mouseover.visible = false
 	Game.tiles.z_index = 3 if mode == MODE.TILE and Game.playState != Game.PLAY_STATE.PLAY else -3
-
-	if autoRunTimer < 2:
-		autoRunTimer += delta
-		queue_redraw()
-		if autoRunTimer >= 2: autoRunTimer = 2
 
 	%placePreviewWorld.visible = Game.playState != Game.PLAY_STATE.PLAY and !settingsOpen
 	placePreviewWorld.tiles.position = floor(mouseWorldPosition/32)*32
@@ -463,7 +455,8 @@ func _input(event:InputEvent) -> void:
 			if eventIs(event, &"editHome"): home()
 		elif Game.playState == Game.PLAY_STATE.PLAY:
 			# IN PLAY
-			if eventIs(event, &"gameAutoRun", false): autoRun()
+			if eventIs(event, &"gameAutoRun", false): %quickSwitcher.toggleAutoRun()
+			elif eventIs(event, &"gameMixedFractionsSwitch", false) and Mods.active(&"Fractions"): %quickSwitcher.toggleMixedFractions()
 			match event.keycode:
 				KEY_ESCAPE: _toggleSettingsMenu(true)
 				_: Game.player.receiveKey(event)
@@ -596,15 +589,6 @@ func _toggleSettingsMenu(toggled_on:bool) -> void:
 
 func _draw() -> void:
 	RenderingServer.canvas_item_clear(drawMain)
-	RenderingServer.canvas_item_clear(drawAutoRunGradient)
-	var autoRunAlpha:float = abs(sin(autoRunTimer*PI))
-	if autoRunAlpha > 0:
-		TextDraw.outlinedGradient(Game.FMINIID,drawMain,drawAutoRunGradient,
-			"[%s] Auto-Run is " % Explainer.hotkeyMap(&"gameAutoRun") + ("on" if Game.autoRun else "off"),
-			Color(Color("#e6ffe6") if Game.autoRun else Color("#dcffe6"),autoRunAlpha),
-			Color(Color("#e6c896") if Game.autoRun else Color("#64dc8c"),autoRunAlpha),
-			Color(Color.BLACK,autoRunAlpha),12,Vector2(4,20)
-		)
 	if Game.playState == Game.PLAY_STATE.PLAY and Game.player.cameraAnimVal > 0:
 		var topLeft:Vector2 = - Vector2(8,8) + Vector2(16,16)*Game.player.cameraAnimVal
 		var bottomRight:Vector2 = gameCont.size + Vector2(8,8) - Vector2(16,16)*Game.player.cameraAnimVal
@@ -618,13 +602,6 @@ func _draw() -> void:
 		], [Color.BLACK,Color.BLACK,Color.BLACK,Color.BLACK])
 		TextDraw.outlined(Game.FPRESENTS, drawMain, "[%s] to zoom" % Explainer.hotkeyMap(&"gameAction"),Color(Color.WHITE,Game.player.cameraAnimVal),Color(Color.BLACK,Game.player.cameraAnimVal),14,Vector2(11,gameCont.size.y-16))
 		TextDraw.outlined(Game.FPRESENTS, drawMain, "[%s] to exit" % Explainer.hotkeyMap(&"gameCamera"),Color(Color.WHITE,Game.player.cameraAnimVal),Color(Color.BLACK,Game.player.cameraAnimVal),14,gameCont.size+Vector2(-108,-16))
-
-func autoRun() -> void:
-	Game.autoRun = !Game.autoRun
-	AudioManager.play(preload("res://resources/sounds/autoRun.wav"), 1.0, 1.0 if Game.autoRun else 0.7)
-	autoRunTimer = 0
-	%settingsMenu.gameSettings.closed(%settingsMenu.configFile)
-	%settingsMenu.configFile.save("user://config.ini")
 
 static func scriptExtends(script:GDScript, base:GDScript) -> bool:
 	while script != null:

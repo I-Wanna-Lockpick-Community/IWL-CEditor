@@ -1,0 +1,139 @@
+[gd_scene format=3 uid="uid://k2lktliankr8"]
+
+[ext_resource type="Script" uid="uid://bavqifkywnf0q" path="res://scripts/singletons/settings/editorSettings.gd" id="1_p5em1"]
+[ext_resource type="Texture2D" uid="uid://cpllfu67xbr0h" path="res://assets/ui/settings/clarifier.png" id="2_w0lol"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_xp6gv"]
+font_size = 14
+
+[sub_resource type="LabelSettings" id="LabelSettings_3e3b5"]
+font_size = 12
+font_color = Color(0.7490196, 0.7490196, 0.7490196, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_ivc6c"]
+font_size = 14
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_dkncv"]
+content_margin_left = 2.0
+content_margin_top = 2.0
+content_margin_right = 2.0
+content_margin_bottom = 2.0
+bg_color = Color(0.13319641, 0.13319641, 0.13319638, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(1, 0, 0.4, 1)
+corner_detail = 5
+
+[sub_resource type="Theme" id="Theme_dkncv"]
+ConflictedHotkeySettingButton/base_type = &"RadioButtonText"
+ConflictedHotkeySettingButton/styles/normal = SubResource("StyleBoxFlat_dkncv")
+GridContainer/constants/h_separation = 2
+GridContainer/constants/v_separation = 2
+MarginContainer/constants/margin_bottom = 8
+MarginContainer/constants/margin_left = 32
+MarginContainer/constants/margin_right = 0
+MarginContainer/constants/margin_top = 0
+VBoxContainer/constants/separation = 2
+
+[node name="editorSettings" type="MarginContainer" unique_id=919030709 groups=["modUI"]]
+size_flags_vertical = 3
+script = ExtResource("1_p5em1")
+
+[node name="c2" type="ScrollContainer" parent="." unique_id=200688558]
+layout_mode = 2
+
+[node name="c" type="VBoxContainer" parent="c2" unique_id=739097590]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="l" type="Label" parent="c2/c" unique_id=941681233]
+custom_minimum_size = Vector2(0, 16)
+layout_mode = 2
+text = "Miscellaneous"
+label_settings = SubResource("LabelSettings_xp6gv")
+vertical_alignment = 2
+
+[node name="fileDialogWorkaroundCont" type="HBoxContainer" parent="c2/c" unique_id=176853374]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="fileDialogWorkaround" type="CheckBox" parent="c2/c/fileDialogWorkaroundCont" unique_id=632186191]
+unique_name_in_owner = true
+layout_mode = 2
+text = "File Dialog Workaround"
+
+[node name="clarifier" type="TextureRect" parent="c2/c/fileDialogWorkaroundCont" unique_id=1048178414]
+layout_mode = 2
+size_flags_vertical = 0
+tooltip_text = "Uses godot's built-in file dialog instead of the OS native one. If file dialogs aren't opening correctly (eg. Save As does nothing), turn this on."
+texture = ExtResource("2_w0lol")
+
+[node name="fullscreen" type="CheckBox" parent="c2/c" unique_id=1127899333]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 0
+text = "Enable Fullscreen (in editor)"
+
+[node name="c2" type="HBoxContainer" parent="c2/c" unique_id=783146026]
+layout_mode = 2
+
+[node name="l" type="Label" parent="c2/c/c2" unique_id=1798272568]
+layout_mode = 2
+text = "UI scale "
+label_settings = SubResource("LabelSettings_3e3b5")
+
+[node name="uiScale" type="HSlider" parent="c2/c/c2" unique_id=894389773]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+min_value = -2.0
+max_value = 2.0
+step = 0.25
+tick_count = 5
+ticks_on_borders = true
+
+[node name="uiScaleLabel" type="Label" parent="c2/c/c2" unique_id=71692127]
+unique_name_in_owner = true
+layout_mode = 2
+text = " (1.00x)"
+label_settings = SubResource("LabelSettings_3e3b5")
+
+[node name="edgeResizing" type="CheckButton" parent="c2/c" unique_id=1594789437]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 0
+text = "Resizing Controls (Handles/Edge)"
+
+[node name="c" type="HBoxContainer" parent="c2/c" unique_id=624733950]
+layout_mode = 2
+
+[node name="l" type="Label" parent="c2/c/c" unique_id=390984451]
+custom_minimum_size = Vector2(0, 16)
+layout_mode = 2
+text = "Hotkeys"
+label_settings = SubResource("LabelSettings_ivc6c")
+vertical_alignment = 2
+
+[node name="clarifier" type="TextureRect" parent="c2/c/c" unique_id=1410312440]
+layout_mode = 2
+size_flags_vertical = 0
+tooltip_text = "Contextual hotkeys (marked by context and indent) are only active within the described context and take priority over others."
+texture = ExtResource("2_w0lol")
+
+[node name="c3" type="ScrollContainer" parent="c2/c" unique_id=1766302266]
+custom_minimum_size = Vector2(0, 400)
+layout_mode = 2
+
+[node name="hotkeys" type="VBoxContainer" parent="c2/c/c3" unique_id=609252510]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme = SubResource("Theme_dkncv")
+
+[connection signal="toggled" from="c2/c/fileDialogWorkaroundCont/fileDialogWorkaround" to="." method="_fileDialogWorkaroundSet"]
+[connection signal="toggled" from="c2/c/fullscreen" to="." method="_fullscreenSet"]
+[connection signal="drag_ended" from="c2/c/c2/uiScale" to="." method="_uiScaleSet" unbinds=1]
+[connection signal="value_changed" from="c2/c/c2/uiScale" to="." method="_uiScaleChanged"]
+[connection signal="toggled" from="c2/c/edgeResizing" to="." method="_edgeResizingSet"]

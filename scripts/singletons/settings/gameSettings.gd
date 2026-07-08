@@ -35,6 +35,7 @@ func opened(configFile:ConfigFile) -> void:
 	%fullscreen.button_pressed = configFile.get_value("game", "fullscreen", false)
 	%smoothingMode.button_pressed = configFile.get_value("game", "smoothingMode", false)
 	%simpleLocks.button_pressed = configFile.get_value("game", "simpleLocks", false)
+	%mixedFractions.button_pressed = configFile.get_value("game", "mixedFractions", true)
 	for color in Colors.DEFINITIONS:
 		if !color.toneConfigurable: continue
 		color.highTone = configFile.get_value("game", "highTone"+str(color.id), color.DEFAULT_HIGH)
@@ -54,6 +55,7 @@ func closed(configFile:ConfigFile) -> void:
 	configFile.set_value("game", "fullscreen", %fullscreen.button_pressed)
 	configFile.set_value("game", "smoothingMode", %smoothingMode.button_pressed)
 	configFile.set_value("game", "simpleLocks", %simpleLocks.button_pressed)
+	configFile.set_value("game", "mixedFractions", %mixedFractions.button_pressed)
 	for color in Colors.DEFINITIONS:
 		if !color.toneConfigurable: continue
 		configFile.set_value("game", "highTone"+str(color.id), color.highTone)
@@ -67,6 +69,10 @@ func closed(configFile:ConfigFile) -> void:
 		if setting is not ControlsSetting: continue
 		configFile.set_value("editor", "hotkey_"+setting.action, setting.event)
 
+func changedMods() -> void:
+	%mixedFractions.visible = Mods.active(&"Fractions")
+	%mixedFractionsSwitch.visible = Mods.active(&"Fractions")
+
 func _volumeSet(value:float) -> void:
 	AudioServer.set_bus_volume_linear(AudioManager.masterBus, lerpf(0,MAX_VOLUME,value))
 
@@ -77,8 +83,11 @@ func _smoothingModeSet(toggled_on:bool) -> void:
 	if editor: editor.gameViewport.canvas_item_default_texture_filter = Viewport.DEFAULT_CANVAS_ITEM_TEXTURE_FILTER_LINEAR if toggled_on else Viewport.DEFAULT_CANVAS_ITEM_TEXTURE_FILTER_NEAREST
 	if playGame: playGame.gameViewport.canvas_item_default_texture_filter = Viewport.DEFAULT_CANVAS_ITEM_TEXTURE_FILTER_LINEAR if toggled_on else Viewport.DEFAULT_CANVAS_ITEM_TEXTURE_FILTER_NEAREST
 
-func _simpleLocksSet(toggled_on:bool):
+func _simpleLocksSet(toggled_on:bool) -> void:
 	Game.simpleLocks = toggled_on
+
+func _mixedFractionsSet(toggled_on:bool) -> void:
+	Game.mixedFractions = toggled_on
 
 func _toneSelected(button:Button) -> void:
 	match button.text:

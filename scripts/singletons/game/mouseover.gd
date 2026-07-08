@@ -1,9 +1,11 @@
 extends VBoxContainer
 class_name Mouseover
 
+var objectsWithMouseover:Array[GDScript] = [KeyBulk, Door, RemoteLock]
 var panels:Array[MouseoverPanel] = []
 
 func describe(objects:Array[GameObject], pos:Vector2, screenBottomRight:Vector2) -> void:
+	objects = objects.filter(func(o:GameObject)->bool: return o.get_script() in objectsWithMouseover)
 	if len(objects) == 0 or Game.pda.visible:
 		visible = false
 		return

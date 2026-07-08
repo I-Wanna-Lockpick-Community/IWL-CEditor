@@ -11,7 +11,7 @@
 font_size = 10
 font_color = Color(0.79482806, 0.794828, 0.794828, 1)
 
-[node name="gameSettings" type="MarginContainer" unique_id=2039076092]
+[node name="gameSettings" type="MarginContainer" unique_id=2039076092 groups=["modUI"]]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -71,7 +71,7 @@ layout_mode = 2
 size_flags_horizontal = 0
 text = "Smoothing Mode"
 
-[node name="CheckBox3" type="CheckBox" parent="c/c" unique_id=1953553437]
+[node name="lowFX" type="CheckBox" parent="c/c" unique_id=1953553437]
 visible = false
 layout_mode = 2
 text = "Low FX"
@@ -81,6 +81,13 @@ unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 0
 text = "Simple Locks"
+
+[node name="mixedFractions" type="CheckBox" parent="c/c" unique_id=1637544846]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 0
+button_pressed = true
+text = "Mixed Fractions"
 
 [node name="l3" type="Label" parent="c/c" unique_id=1182816198]
 custom_minimum_size = Vector2(0, 16)
@@ -336,7 +343,7 @@ label = "Run"
 action = &"gameRun"
 metadata/_custom_type_script = "uid://4muxkbry8eqk"
 
-[node name="gameDown" type="Button" parent="c/c/controls" unique_id=1452075810]
+[node name="down" type="Button" parent="c/c/controls" unique_id=1452075810]
 layout_mode = 2
 script = ExtResource("4_t6p7j")
 label = "Down"
@@ -391,10 +398,19 @@ metadata/_custom_type_script = "uid://4muxkbry8eqk"
 [node name="interact" type="Control" parent="c/c/controls" unique_id=1758816483]
 layout_mode = 2
 
+[node name="mixedFractionsSwitch" type="Button" parent="c/c/controls" unique_id=50061864]
+unique_name_in_owner = true
+layout_mode = 2
+script = ExtResource("4_t6p7j")
+label = "Fractions Switch"
+action = &"gameMixedFractionsSwitch"
+metadata/_custom_type_script = "uid://4muxkbry8eqk"
+
 [connection signal="value_changed" from="c/c/c/volume" to="." method="_volumeSet"]
 [connection signal="toggled" from="c/c/fullscreen" to="." method="_fullscreenSet"]
 [connection signal="toggled" from="c/c/smoothingMode" to="." method="_smoothingModeSet"]
 [connection signal="toggled" from="c/c/simpleLocks" to="." method="_simpleLocksSet"]
+[connection signal="toggled" from="c/c/mixedFractions" to="." method="_mixedFractionsSet"]
 [connection signal="select" from="c/c/c2/c/c3/colorSelector" to="." method="_colorSelected"]
 [connection signal="value_changed" from="c/c/c2/c/red/redSlider" to="." method="_redSet"]
 [connection signal="value_changed" from="c/c/c2/c/green/greenSlider" to="." method="_greenSet"]

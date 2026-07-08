@@ -14,7 +14,7 @@ var textsChanged:bool = false
 var textsIndex:int = 0
 var drawPosition:Vector2
 
-var mixedFractionsMode:bool = false
+var mixedFractions:bool = false
 
 func _init(parent:Node2D, _setting:SETTING) -> void:
 	drawMain = RenderingServer.canvas_item_create()
@@ -25,9 +25,9 @@ func _init(parent:Node2D, _setting:SETTING) -> void:
 	setting = _setting
 	parent.add_child(self)
 
-func setMixedFractionsMode(to:bool) -> void:
-	if mixedFractionsMode != to: textsChanged = true
-	mixedFractionsMode = to
+func setmixedFractions(to:bool) -> void:
+	if mixedFractions != to: textsChanged = true
+	mixedFractions = to
 
 func addString(string:String, color:Color, outline:Color=Color.TRANSPARENT) -> Array: return addValue_([TYPE.String, string, color, outline])
 func addNumber(number:PackedInt64Array, color:Color, outline:Color=Color.TRANSPARENT) -> Array: return addValue_([TYPE.Number, number, color, outline])
@@ -80,11 +80,11 @@ func drawTexts() -> void:
 							part = M.negate(part)
 						elif partIndex > 0:
 							drawPosition += drawText_(font, "+", drawPosition, fontSize, color, outline)
-						if M.isInteger(part) or (mixedFractionsMode and M.ex(M.trunc(part))):
+						if M.isInteger(part) or (mixedFractions and M.ex(M.trunc(part))):
 							drawPosition += drawText_(font, M.str(M.trunc(part)), drawPosition, fontSize, color, outline)
 							if !M.isInteger(part): drawPosition.x += 2
 						if !M.isInteger(part):
-							var fraction:PackedInt64Array = M.remainder(part, M.ONE()) if mixedFractionsMode else part
+							var fraction:PackedInt64Array = M.remainder(part, M.ONE()) if mixedFractions else part
 							var numerator:String = M.str(M.numer(fraction))
 							var denominator:String = M.str(M.denom(fraction))
 							var numerSize:Vector2 = font.get_string_size(numerator, HORIZONTAL_ALIGNMENT_LEFT, -1, fractionFontSize)
@@ -140,11 +140,11 @@ func getWidth(text:Array) -> float:
 						part = M.negate(part)
 					elif partIndex > 0:
 						width += font.get_string_size("+", HORIZONTAL_ALIGNMENT_LEFT, -1, fontSize).x
-					if M.isInteger(part) or (mixedFractionsMode and M.ex(M.trunc(part))):
+					if M.isInteger(part) or (mixedFractions and M.ex(M.trunc(part))):
 						width += font.get_string_size(M.str(M.trunc(part)), HORIZONTAL_ALIGNMENT_LEFT, -1, fontSize).x
 						if !M.isInteger(part): drawPosition.x += 2
 					if !M.isInteger(part):
-						var fraction:PackedInt64Array = M.remainder(part, M.ONE()) if mixedFractionsMode else part
+						var fraction:PackedInt64Array = M.remainder(part, M.ONE()) if mixedFractions else part
 						var numerator:String = M.str(M.numer(fraction))
 						var denominator:String = M.str(M.denom(fraction))
 						var numerSize:Vector2 = font.get_string_size(numerator, HORIZONTAL_ALIGNMENT_LEFT, -1, fractionFontSize)

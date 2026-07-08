@@ -122,7 +122,11 @@ var playTime:float
 var autoRun:bool = true
 var fullJumps:bool = false
 var fastAnimations:bool = false
-var mixedFractionsMode:bool = true
+var mixedFractions:bool = true:
+	set(value):
+		mixedFractions = value
+		for object in objects.values():
+			if object is KeyBulk: object.queue_redraw()
 
 var won:bool = false
 enum CRASH_STATE {NONE, NONE_COLOR}

@@ -8,6 +8,7 @@
 [ext_resource type="Theme" uid="uid://bvfthh0vm4fbp" path="res://resources/uiTheme.tres" id="5_n2d1d"]
 [ext_resource type="Script" uid="uid://bsmyhhhm08v2u" path="res://scripts/singletons/game/mouseover.gd" id="5_y4ge2"]
 [ext_resource type="PackedScene" uid="uid://cudl265jx2hk6" path="res://scenes/settings/gameSettings.tscn" id="6_m88lo"]
+[ext_resource type="Script" uid="uid://bu3gpjupflfc2" path="res://scripts/singletons/game/quickSwitcher.gd" id="9_qwd05"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_abwwd"]
 bg_color = Color(0, 0, 0, 1)
@@ -23,7 +24,7 @@ bg_color = Color(0, 0, 0, 1)
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_wfiui"]
 bg_color = Color(0.15727392, 0.15727398, 0.15727389, 1)
 
-[sub_resource type="ButtonGroup" id="ButtonGroup_huxtg"]
+[sub_resource type="ButtonGroup" id="ButtonGroup_bkf81"]
 
 [node name="playGame" type="PanelContainer" unique_id=974390549]
 anchors_preset = 15
@@ -116,7 +117,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_wfiui")
 [node name="gameSettings" parent="aspectRatioContainer/gameViewportCont/gameViewport/pauseMenu" unique_id=1574010737 instance=ExtResource("6_m88lo")]
 unique_name_in_owner = true
 layout_mode = 1
-toneButtonGroup = SubResource("ButtonGroup_huxtg")
+toneButtonGroup = SubResource("ButtonGroup_bkf81")
 
 [node name="main" type="MarginContainer" parent="aspectRatioContainer/gameViewportCont/gameViewport/pauseMenu" unique_id=1384260393]
 unique_name_in_owner = true
@@ -218,6 +219,12 @@ layout_mode = 2
 theme_type_variation = &"RadioButtonText"
 theme_override_font_sizes/font_size = 16
 text = "Quit Game (Instantly)"
+
+[node name="quickSwitcher" type="Node2D" parent="aspectRatioContainer/gameViewportCont/gameViewport" unique_id=945949474]
+unique_name_in_owner = true
+position = Vector2(0, 36.899994)
+script = ExtResource("9_qwd05")
+metadata/_custom_type_script = "uid://bu3gpjupflfc2"
 
 [connection signal="pressed" from="aspectRatioContainer/gameViewportCont/gameViewport/pauseMenu/main/c/resume" to="." method="pause"]
 [connection signal="pressed" from="aspectRatioContainer/gameViewportCont/gameViewport/pauseMenu/main/c/edit" to="." method="editLevel"]

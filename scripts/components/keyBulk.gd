@@ -164,7 +164,7 @@ func _draw() -> void:
 	RenderingServer.canvas_item_clear(drawError)
 	RenderingServer.canvas_item_clear(drawAdditionalGlitch)
 	RenderingServer.canvas_item_clear(drawAdditional)
-	textDrawer.setMixedFractionsMode(Game.mixedFractionsMode)
+	textDrawer.setmixedFractions(Game.mixedFractions)
 	if !active and Game.playState == Game.PLAY_STATE.PLAY:
 		textDrawer.evaluate()
 		return
