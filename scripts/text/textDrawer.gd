@@ -49,6 +49,7 @@ func _draw() -> void:
 
 func drawTexts() -> void:
 	RenderingServer.canvas_item_clear(drawMain)
+	RenderingServer.canvas_item_clear(drawUpsideDown)
 	var font:Font = getFont()
 	var fontSize:int = getFontSize()
 	var fractionFontSize:int = getFractionFontSize()
@@ -98,7 +99,7 @@ func drawTexts() -> void:
 			TYPE.Image: # [TYPE.Image, image, upsideDown, color, effectiveWidth, offset]
 				var imageSize:Vector2 = text[1].get_size()
 				var imageRect:Rect2 = Rect2(drawPosition+text[5]+round((Vector2(text[4],0)-imageSize)/2), imageSize)
-				if text[2]: imageRect.position *= -1
+				if text[2]: imageRect.position = -imageRect.position-imageSize
 				RenderingServer.canvas_item_add_texture_rect(drawUpsideDown if text[2] else drawMain, imageRect, text[1], false, text[3])
 				drawPosition.x += text[4]
 			TYPE.Spacing: # [TYPE.Spacing, spacing]
