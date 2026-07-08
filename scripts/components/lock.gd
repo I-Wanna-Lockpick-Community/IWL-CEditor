@@ -89,6 +89,9 @@ const SYMBOL_GLISTENINGI = preload("res://assets/game/lock/symbols/glisteningi.p
 const SYMBOL_REMAINDER = preload("res://assets/game/lock/symbols/remainder.png")
 const SYMBOL_SIZE:Vector2 = Vector2(32,32)
 
+const PARTIAL_BLAST_HORIZONTAL = preload("res://assets/game/lock/symbols/partialBlastHorizontal.png")
+const PARTIAL_BLAST_HORIZONTAL_BIG = preload("res://assets/game/lock/symbols/partialBlastHorizontalBig.png")
+
 static var GLITCH_FILL:LockTextureLoader = LockTextureLoader.new("res://assets/game/lock/fill/$tglitch.png")
 static var GLITCH_FILL_TEXTURE:LockColorsTextureLoader = LockColorsTextureLoader.new("res://assets/game/lock/fill/$tglitch$c.png",false,true)
 
@@ -135,6 +138,7 @@ var parent:Door
 @export var zeroI:bool = false # if the count is zeroI, for exact locks
 @export var isPartial:bool = false # for partial blast
 @export var denominator:PackedInt64Array = M.ONE() # for partial blast
+@export var partialBlastHorizontal:bool = false # for partial blast
 @export var negated:bool = false
 @export var armament:bool = false
 @export var index:int
@@ -206,7 +210,7 @@ func _draw() -> void:
 		textDrawer.evaluate()
 		return
 	drawLock(drawScaled,drawAuraBreaker,drawGlitch,drawMain,drawConfiguration,textDrawer,
-		size,getColor(COLOR_STEP.DRAW_BASE),getColor(COLOR_STEP.Glitch),type,effectiveConfiguration(),sizeType,effectiveCount(),effectiveZeroI(),isPartial,effectiveDenominator(),negated,armament,
+		size,getColor(COLOR_STEP.DRAW_BASE),getColor(COLOR_STEP.Glitch),type,effectiveConfiguration(),sizeType,effectiveCount(),effectiveZeroI(),isPartial,effectiveDenominator(),partialBlastHorizontal,negated,armament,
 		getFrameHighColor(isNegative(), negated),
 		getFrameMainColor(isNegative(), negated),
 		getFrameDarkColor(isNegative(), negated),
@@ -227,14 +231,14 @@ static func drawLock(lockDrawScaled:RID, lockDrawAuraBreaker:RID, lockDrawGlitch
 	lockCount:PackedInt64Array,
 	lockZeroI:bool,
 	lockIsPartial:bool,
-	lockDenominator,
+	lockDenominator:PackedInt64Array,
+	lockPartialBlastHorizontal:bool,
 	lockNegated:bool,
 	lockArmament:bool,
 	frameHigh:Color,frameMain:Color,frameDark:Color,
 	negative:bool, drawFill:bool=true, noCopies:bool=false,
 	spendTypes:SPEND_TYPE=SPEND_TYPE.NORMAL
 ) -> void:
-	var alreadyEvaluatedTextDrawer:bool = false
 	var rect:Rect2 = Rect2(-offsetFromType(lockSizeType), lockSize)
 	if lockNegated:
 		RenderingServer.canvas_item_set_transform(lockDrawScaled,Transform2D(PI,lockSize-offsetFromType(lockSizeType)*2))
@@ -270,13 +274,16 @@ static func drawLock(lockDrawScaled:RID, lockDrawAuraBreaker:RID, lockDrawGlitch
 	if spendTypes == SPEND_TYPE.STAR: RenderingServer.canvas_item_add_texture_rect(lockDrawMain, rect, BACKGROUND_STARRY, true, bgColor)
 	if spendTypes == SPEND_TYPE.NONE: RenderingServer.canvas_item_add_texture_rect(lockDrawMain, rect, BACKGROUND_WEAK, true, bgColor)
 	if spendTypes == SPEND_TYPE.ALL: RenderingServer.canvas_item_add_texture_rect(lockDrawMain, rect, BACKGROUND_FORCEFUL, true, bgColor)
-	if noCopies: return # no copies in this direction; go away
+	if noCopies:
+		lockTextDrawer.evaluate()
+		return # no copies in this direction; go away
 	# frame
 	RenderingServer.canvas_item_add_nine_patch(lockDrawMain,rect,ANY_RECT,FRAME_HIGH,CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,frameHigh)
 	RenderingServer.canvas_item_add_nine_patch(lockDrawMain,rect,ANY_RECT,FRAME_MAIN,CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,frameMain)
 	RenderingServer.canvas_item_add_nine_patch(lockDrawMain,rect,ANY_RECT,FRAME_DARK,CORNER_SIZE,CORNER_SIZE,TILE,TILE,true,frameDark)
 	if lockArmament: RenderingServer.canvas_item_add_nine_patch(lockDrawMain,rect,ARMAMENT_RECT,ARMAMENT[Game.goldIndex%4],ARMAMENT_CORNER_SIZE,ARMAMENT_CORNER_SIZE,TILE,TILE,false)
 	# configuration
+	var center:Vector2 = rect.position+round(lockSize/2)
 	if lockConfiguration == CONFIGURATION.NONE:
 		match lockType:
 			TYPE.NORMAL,TYPE.EXACT,TYPE.GLISTENING,TYPE.REMAINDER:
@@ -313,76 +320,76 @@ static func drawLock(lockDrawScaled:RID, lockDrawAuraBreaker:RID, lockDrawGlitch
 							TYPE.REMAINDER:
 								symbol = SYMBOL_REMAINDER
 								effectiveSymbolWidth = 14
-				if !noNumber: lockTextDrawer.addNumber(M.abs(lockCount), drawColor)
-				if lockType == TYPE.NORMAL and M.isNonzeroImag(lockCount):
-					lockTextDrawer.addString("i", drawColor)
-				lockTextDrawer.evaluate()
-				alreadyEvaluatedTextDrawer = true
-				var strWidth:float = lockTextDrawer.drawPosition.x
 				if vertical:
 					var strHeight:float = 11 if M.isInteger(lockCount) else 29
 					const verticalSpace:float = 6
-					var drawPosition = rect.position + round((lockSize-Vector2(0,strHeight+effectiveSymbolHeight+verticalSpace))/2)
-					lockTextDrawer.position = drawPosition + round(Vector2(-strWidth,strHeight)/2)+Vector2(1,7 if M.isInteger(lockCount) else 9)
-					if !noSymbol:
-						var symbolPosition:Vector2 = drawPosition+Vector2(0,strHeight+verticalSpace+round(effectiveSymbolHeight/2)) - SYMBOL_SIZE/2
-						symbolPosition.y += 2 if M.isInteger(lockCount) else -2
-						if lockNegated: symbolPosition = -symbolPosition-SYMBOL_SIZE+(lockSize-offsetFromType(lockSizeType)*2)
-						RenderingServer.canvas_item_add_texture_rect(lockDrawConfiguration,Rect2(symbolPosition,SYMBOL_SIZE),symbol,false,drawColor)
+					var drawPosition:Vector2 = center - round(Vector2(0,strHeight+effectiveSymbolHeight+verticalSpace)/2)
+					var numberPosition:Vector2 = drawPosition + round(Vector2(0,strHeight)/2)+Vector2(1,7 if M.isInteger(lockCount) else 9)
+					var symbolPosition:Vector2 = drawPosition+Vector2(0,strHeight+verticalSpace+round(effectiveSymbolHeight/2))
+					symbolPosition.y += 2 if M.isInteger(lockCount) else -2
+					if !noNumber:
+						lockTextDrawer.addSetPosition(numberPosition, TextDrawer.TEXT_ALIGN.CENTER)
+						lockTextDrawer.addNumber(M.abs(lockCount), drawColor)
+					if lockType == TYPE.NORMAL and M.isNonzeroImag(lockCount):
+						lockTextDrawer.addSetPosition(symbolPosition, TextDrawer.TEXT_ALIGN.CENTER)
+						lockTextDrawer.addString("i", drawColor)
+					elif !noSymbol:
+						lockTextDrawer.addSetPosition(symbolPosition, TextDrawer.TEXT_ALIGN.CENTER)
+						lockTextDrawer.addImage(symbol, lockNegated, drawColor, effectiveSymbolWidth)
 				else:
-					var drawPosition:Vector2 = rect.position + round((lockSize - Vector2(strWidth+effectiveSymbolWidth, 0))/2)
-					lockTextDrawer.position = drawPosition+Vector2(0,7)
-					if symbolLast: drawPosition.x += strWidth
-					else: lockTextDrawer.position.x += effectiveSymbolWidth
-					if !noSymbol:
-						var symbolPosition:Vector2 = drawPosition+round((Vector2(effectiveSymbolWidth,0)-SYMBOL_SIZE)/2)
-						if lockNegated: symbolPosition = -symbolPosition-SYMBOL_SIZE+(lockSize-offsetFromType(lockSizeType)*2)
-						RenderingServer.canvas_item_add_texture_rect(lockDrawConfiguration,Rect2(symbolPosition,SYMBOL_SIZE),symbol,false,drawColor)
+					var drawPosition:Vector2 = center
+					lockTextDrawer.addSetPosition(drawPosition+Vector2(0,7), TextDrawer.TEXT_ALIGN.CENTER)
+					if symbolLast and !noNumber: lockTextDrawer.addNumber(M.abs(lockCount), drawColor)
+					if !noSymbol: lockTextDrawer.addImage(symbol, lockNegated, drawColor, effectiveSymbolWidth, Vector2(0,-7))
+					if !symbolLast and !noNumber: lockTextDrawer.addNumber(M.abs(lockCount), drawColor)
 			TYPE.BLANK: pass # nothing really
 			TYPE.BLAST, TYPE.ALL:
-				var numerator:String
+				var drawColor:Color = getConfigurationColor(negative)
+				var numer:PackedInt64Array
+				var denom:PackedInt64Array
 				var ipow:int = 0
-				if M.isComplex(lockDenominator) or M.nex(lockDenominator): numerator = M.str(lockCount)
+				if M.isComplex(lockDenominator) or M.nex(lockDenominator) or M.isComplex(lockCount):
+					numer = lockCount
+					denom = lockDenominator
 				else:
-					numerator = M.str(M.divide(lockCount, M.saxis(lockDenominator)))
+					numer = M.divide(lockCount, M.axis(lockDenominator))
+					denom = M.abs(lockDenominator)
 					ipow = M.toIpow(M.axis(lockDenominator))
-				if numerator == "1": numerator = ""
-				
-				const symbolOffsetX:float = 10
-				
-				var denom:String
-				if lockIsPartial:
-					if M.isComplex(lockDenominator) or M.nex(lockDenominator) or M.isComplex(lockCount):
-						numerator = M.str(lockCount)
-						denom = M.str(lockDenominator)
-						ipow = 0
-					else: denom = M.str(M.abs(lockDenominator))
-				
-				var strWidth:float = Game.FTALK.get_string_size(numerator,HORIZONTAL_ALIGNMENT_LEFT,-1,12).x + symbolOffsetX
-				var startX:int = round((lockSize.x - strWidth)/2)
-				var startY:int = round((lockSize.y+14)/2)
-
-				if lockIsPartial:
-					var denomWidth:float = Game.FTALK.get_string_size(denom,HORIZONTAL_ALIGNMENT_LEFT,-1,12).x
-					var denomStartX = round((lockSize.x - denomWidth)/2)
-					var denomStartY = startY + 10
-					startY -= 10
-					Game.FTALK.draw_string(lockDrawMain,Vector2(denomStartX, denomStartY)-offsetFromType(lockSizeType),denom,HORIZONTAL_ALIGNMENT_LEFT,-1,12,getConfigurationColor(negative))
-					
-					var lineWidth:float = max(strWidth,denomWidth)
-					RenderingServer.canvas_item_add_rect(lockDrawMain,Rect2(Vector2(round((lockSize.x - lineWidth)/2),startY+2)-offsetFromType(lockSizeType),Vector2(lineWidth,2)),getConfigurationColor(negative))
-
-				Game.FTALK.draw_string(lockDrawMain,Vector2(startX, startY)-offsetFromType(lockSizeType),numerator,HORIZONTAL_ALIGNMENT_LEFT,-1,12,getConfigurationColor(negative))
-
-				var symbolRect:Rect2 = Rect2(Vector2(startX+strWidth-symbolOffsetX/2,startY-7)-SYMBOL_SIZE/2-offsetFromType(lockSizeType),Vector2(32,32))
+				var noNumeratorNumber:bool = M.eq(numer, M.ONE())
 				var symbol:Texture2D
 				match ipow:
 					0, 2: symbol = SYMBOL_BLAST
 					1, 3: symbol = SYMBOL_BLASTI
 				if lockType == TYPE.ALL: symbol = SYMBOL_ALL
-				RenderingServer.canvas_item_add_texture_rect(lockDrawMain,symbolRect,symbol,false,getConfigurationColor(negative))
+
+				if lockPartialBlastHorizontal:
+					lockTextDrawer.addSetPosition(center+Vector2(0,7), TextDrawer.TEXT_ALIGN.CENTER)
+					if !noNumeratorNumber: lockTextDrawer.addNumber(numer, drawColor)
+					lockTextDrawer.addImage(symbol, lockNegated, drawColor, 10, Vector2(0,-7))
+					lockTextDrawer.addImage(PARTIAL_BLAST_HORIZONTAL if M.isInteger(numer) and M.isInteger(denom) else PARTIAL_BLAST_HORIZONTAL_BIG, lockNegated, drawColor, 10, Vector2(0,-7))
+					lockTextDrawer.addNumber(denom, drawColor)
+				else:
+					var numeratorPosition:Vector2 = center
+					var numeratorWidth:float = 0
+					if lockIsPartial:
+						if M.isInteger(numer): numeratorPosition.y -= 2
+						else: numeratorPosition.y -= 11
+					else: numeratorPosition.y += 7
+					lockTextDrawer.addSetPosition(numeratorPosition, TextDrawer.TEXT_ALIGN.CENTER)
+					if !noNumeratorNumber: numeratorWidth += lockTextDrawer.getWidth(lockTextDrawer.addNumber(numer, drawColor))
+					numeratorWidth += lockTextDrawer.getWidth(lockTextDrawer.addImage(symbol, lockNegated, drawColor, 10, Vector2(0,-7)))
+
+					if lockIsPartial:
+						var denominatorPosition:Vector2 = center + Vector2(1,17)
+						if !M.isInteger(denom): denominatorPosition.y += 9
+						lockTextDrawer.addSetPosition(denominatorPosition, TextDrawer.TEXT_ALIGN.CENTER)
+						var denominatorWidth:float = lockTextDrawer.getWidth(lockTextDrawer.addNumber(denom, drawColor))
+						var maxWidth:float = max(numeratorWidth, denominatorWidth)
+						RenderingServer.canvas_item_add_rect(lockDrawMain, Rect2(center-Vector2(1,3), Vector2(2,6)), drawColor)
+						RenderingServer.canvas_item_add_rect(lockDrawMain, Rect2(center-Vector2(round(maxWidth/2), 1), Vector2(maxWidth, 2)), drawColor)
+				
 	else: RenderingServer.canvas_item_add_texture_rect(lockDrawConfiguration,rect,getPredefinedLockSprite(lockCount,lockType,lockConfiguration),false,getConfigurationColor(negative))
-	if !alreadyEvaluatedTextDrawer: lockTextDrawer.evaluate()
+	lockTextDrawer.evaluate()
 
 func getDrawPosition() -> Vector2: return position + parent.position - getOffset()
 

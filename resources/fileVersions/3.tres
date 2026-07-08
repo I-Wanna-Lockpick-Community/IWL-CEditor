@@ -16,7 +16,7 @@
 
 [sub_resource type="Resource" id="Resource_fi2gj"]
 script = ExtResource("2_gd0de")
-savedProperties = Array[StringName]([&"parentId", &"color", &"type", &"configuration", &"sizeType", &"count", &"zeroI", &"isPartial", &"denominator", &"negated", &"armament", &"index", &"displayIndex", &"spendType", &"id", &"size", &"position"])
+savedProperties = Array[StringName]([&"parentId", &"color", &"type", &"configuration", &"sizeType", &"count", &"zeroI", &"isPartial", &"denominator", &"partialBlastHorizontal", &"negated", &"armament", &"index", &"displayIndex", &"spendType", &"id", &"size", &"position"])
 
 [sub_resource type="Resource" id="Resource_rdsu1"]
 script = ExtResource("2_gd0de")
@@ -56,7 +56,7 @@ savedProperties = Array[StringName]([&"id", &"size", &"position"])
 
 [sub_resource type="Resource" id="Resource_8mhyg"]
 script = ExtResource("2_gd0de")
-savedProperties = Array[StringName]([&"color", &"type", &"configuration", &"sizeType", &"count", &"zeroI", &"isPartial", &"denominator", &"negated", &"armament", &"frozen", &"crumbled", &"painted", &"spendType", &"id", &"size", &"position"])
+savedProperties = Array[StringName]([&"color", &"type", &"configuration", &"sizeType", &"count", &"zeroI", &"isPartial", &"denominator", &"partialBlastHorizontal", &"negated", &"armament", &"frozen", &"crumbled", &"painted", &"spendType", &"id", &"size", &"position"])
 savedComponentArrays = Dictionary[StringName, GDScript]({
 &"doors": ExtResource("6_ncjb2")
 })

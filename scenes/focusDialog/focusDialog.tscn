@@ -33,8 +33,10 @@
 [ext_resource type="Texture2D" uid="uid://b38kvgugo2qsu" path="res://assets/ui/focusDialog/door/blastLockSettings/i.png" id="23_h1xy2"]
 [ext_resource type="Texture2D" uid="uid://ddautei1wlnil" path="res://assets/ui/focusDialog/otherObjects/playtest.png" id="24_7tfe2"]
 [ext_resource type="Script" uid="uid://lbaubg2qq1s1" path="res://scripts/nodes/focusDialog/keyCounterHandler.gd" id="25_1rcup"]
+[ext_resource type="Texture2D" uid="uid://biht8y3t1quo7" path="res://assets/ui/focusDialog/door/lockConfiguration/partialBlastV.png" id="25_4u0vg"]
 [ext_resource type="Script" uid="uid://ckcofkmbukj5o" path="res://scripts/nodes/focusDialog/selector/keyCounterWidthSelector.gd" id="25_7tfe2"]
 [ext_resource type="Script" uid="uid://bg8oswa2bhdsv" path="res://scripts/nodes/focusDialog/goalTypeSelector.gd" id="26_1rcup"]
+[ext_resource type="Texture2D" uid="uid://ho244me6p7sn" path="res://assets/ui/focusDialog/door/lockConfiguration/partialBlastH.png" id="26_4g8uu"]
 [ext_resource type="Texture2D" uid="uid://bu7byi0rwpqwd" path="res://assets/ui/focusDialog/door/booleans/frozen.png" id="28_8gwon"]
 [ext_resource type="Texture2D" uid="uid://cln0osp8um3ti" path="res://assets/ui/focusDialog/numberEdit/partialBlast.png" id="29_di8ev"]
 [ext_resource type="Texture2D" uid="uid://wxcf08achmfc" path="res://assets/ui/focusDialog/door/booleans/crumbled.png" id="29_vydri"]
@@ -133,7 +135,8 @@ hotkeys = Array[StringName]([&"numberNegate"])
 script = ExtResource("22_s5h3h")
 explanation = "[%s]×i"
 hotkeys = Array[StringName]([&"numberTimesI"])
-metadata/_custom_type_script = "uid://lwocqakgt4qr"
+
+[sub_resource type="ButtonGroup" id="ButtonGroup_4u0vg"]
 
 [sub_resource type="ButtonGroup" id="ButtonGroup_xwnfa"]
 allow_unpress = true
@@ -408,7 +411,11 @@ layout_mode = 2
 layout_mode = 2
 theme_override_constants/separation = 2
 
-[node name="lockConfigurationSelector" type="HBoxContainer" parent="doorDialog/c/lock/c/c" unique_id=1466233714]
+[node name="c" type="HBoxContainer" parent="doorDialog/c/lock/c/c" unique_id=1595573232]
+layout_mode = 2
+alignment = 1
+
+[node name="lockConfigurationSelector" type="HBoxContainer" parent="doorDialog/c/lock/c/c/c" unique_id=1466233714]
 unique_name_in_owner = true
 layout_mode = 2
 alignment = 1
@@ -583,7 +590,7 @@ icon = ExtResource("37_wu5cm")
 custom_minimum_size = Vector2(29, 0)
 layout_mode = 2
 
-[node name="doorAxialNumberEdit" parent="doorDialog/c/lock/c/c" unique_id=1443733692 instance=ExtResource("20_gx4cd")]
+[node name="lockCountEdit" parent="doorDialog/c/lock/c/c" unique_id=1443733692 instance=ExtResource("20_gx4cd")]
 unique_name_in_owner = true
 layout_mode = 2
 type = 1
@@ -645,17 +652,39 @@ toggle_mode = true
 icon = ExtResource("23_h1xy2")
 metadata/explanation = SubResource("Resource_rmnx8")
 
-[node name="partialDenominator" type="HBoxContainer" parent="doorDialog/c/lock/c/c/blastLockSettings/c" unique_id=1469452128]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_horizontal = 3
-
-[node name="partialBlastDenominatorEdit" parent="doorDialog/c/lock/c/c/blastLockSettings/c/partialDenominator" unique_id=1928037066 instance=ExtResource("20_gx4cd")]
+[node name="partialBlastDenominatorEdit" parent="doorDialog/c/lock/c/c/blastLockSettings/c" unique_id=1928037066 instance=ExtResource("20_gx4cd")]
 unique_name_in_owner = true
 layout_mode = 2
 type = null
 allowZeroI = null
 allowZero = false
+
+[node name="partialBlastConfiguration" type="VBoxContainer" parent="doorDialog/c/lock/c/c/blastLockSettings" unique_id=1425348192]
+unique_name_in_owner = true
+layout_mode = 2
+alignment = 1
+
+[node name="c" type="Control" parent="doorDialog/c/lock/c/c/blastLockSettings/partialBlastConfiguration" unique_id=1979919895]
+custom_minimum_size = Vector2(0, 4)
+layout_mode = 2
+
+[node name="c2" type="HBoxContainer" parent="doorDialog/c/lock/c/c/blastLockSettings/partialBlastConfiguration" unique_id=1600347033]
+layout_mode = 2
+alignment = 1
+
+[node name="partialBlastConfigurationV" type="Button" parent="doorDialog/c/lock/c/c/blastLockSettings/partialBlastConfiguration/c2" unique_id=1386481049]
+unique_name_in_owner = true
+layout_mode = 2
+toggle_mode = true
+button_group = SubResource("ButtonGroup_4u0vg")
+icon = ExtResource("25_4u0vg")
+
+[node name="partialBlastConfigurationH" type="Button" parent="doorDialog/c/lock/c/c/blastLockSettings/partialBlastConfiguration/c2" unique_id=1665125423]
+unique_name_in_owner = true
+layout_mode = 2
+toggle_mode = true
+button_group = SubResource("ButtonGroup_4u0vg")
+icon = ExtResource("26_4g8uu")
 
 [node name="remoteLock" type="PanelContainer" parent="doorDialog/c" unique_id=381581047]
 unique_name_in_owner = true
@@ -940,7 +969,7 @@ default_color = Color(0.8352941, 0.8352941, 0.8352941, 1)
 [connection signal="pressed" from="doorDialog/c/door/c/c/doorTypes/combo" to="doorDialog" method="_doorTypeSelected" binds= [1]]
 [connection signal="pressed" from="doorDialog/c/door/c/c/doorTypes/gate" to="doorDialog" method="_doorTypeSelected" binds= [2]]
 [connection signal="pressed" from="doorDialog/c/door/c/c/doorTypes/spend" to="doorDialog" method="_spendSelected"]
-[connection signal="select" from="doorDialog/c/lock/c/c/lockConfigurationSelector" to="doorDialog" method="_lockConfigurationSelected"]
+[connection signal="select" from="doorDialog/c/lock/c/c/c/lockConfigurationSelector" to="doorDialog" method="_lockConfigurationSelected"]
 [connection signal="select" from="doorDialog/c/lock/c/c/doorColorSelector" to="doorDialog" method="_doorColorSelected"]
 [connection signal="select" from="doorDialog/c/lock/c/c/lockSettings/c/lockTypeSelector" to="doorDialog" method="_lockTypeSelected"]
 [connection signal="toggled" from="doorDialog/c/lock/c/c/lockSettings/c/lockNegated" to="doorDialog" method="_lockNegatedSet"]
@@ -957,12 +986,13 @@ default_color = Color(0.8352941, 0.8352941, 0.8352941, 1)
 [connection signal="toggled" from="doorDialog/c/lock/c/c/doorCopySettings/doorInfCopiesSettings/c/realInfiniteNegCopy" to="doorDialog" method="_doorRealInfiniteSet"]
 [connection signal="toggled" from="doorDialog/c/lock/c/c/doorCopySettings/doorInfCopiesSettings/c/imagInfinitePosCopy" to="doorDialog" method="_doorImaginaryInfiniteSet"]
 [connection signal="toggled" from="doorDialog/c/lock/c/c/doorCopySettings/doorInfCopiesSettings/c/imagInfiniteNegCopy" to="doorDialog" method="_doorImaginaryInfiniteSet"]
-[connection signal="valueSet" from="doorDialog/c/lock/c/c/doorAxialNumberEdit" to="doorDialog" method="_doorAxialNumberSet"]
+[connection signal="valueSet" from="doorDialog/c/lock/c/c/lockCountEdit" to="doorDialog" method="_lockCountSet"]
 [connection signal="valueSet" from="doorDialog/c/lock/c/c/blastLockSettings/partialBlastSettings/partialBlastNumeratorEdit" to="doorDialog" method="_partialBlastNumeratorSet"]
 [connection signal="toggled" from="doorDialog/c/lock/c/c/blastLockSettings/c/isPartial" to="doorDialog" method="_isPartialSet"]
 [connection signal="toggled" from="doorDialog/c/lock/c/c/blastLockSettings/c/discreteBlastSettings/blastLockSign" to="doorDialog" method="_blastLockSignSet"]
 [connection signal="toggled" from="doorDialog/c/lock/c/c/blastLockSettings/c/discreteBlastSettings/blastLockAxis" to="doorDialog" method="_blastLockAxisSet"]
-[connection signal="valueSet" from="doorDialog/c/lock/c/c/blastLockSettings/c/partialDenominator/partialBlastDenominatorEdit" to="doorDialog" method="_partialBlastDenominatorSet"]
+[connection signal="valueSet" from="doorDialog/c/lock/c/c/blastLockSettings/c/partialBlastDenominatorEdit" to="doorDialog" method="_partialBlastDenominatorSet"]
+[connection signal="toggled" from="doorDialog/c/lock/c/c/blastLockSettings/partialBlastConfiguration/c2/partialBlastConfigurationH" to="doorDialog" method="_partialBlastHorizontalSet"]
 [connection signal="pressed" from="playerDialog/c/c/c/c/playerSpawnSettings/c/playTest" to="playerDialog" method="_playTest"]
 [connection signal="pressed" from="playerDialog/c/c/c/c/playerSpawnSettings/c/levelStart" to="playerDialog" method="_setLevelStart"]
 [connection signal="pressed" from="playerDialog/c/c/c/c/playerSpawnSettings/c/savestate" to="playerDialog" method="_setSavestate"]

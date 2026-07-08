@@ -31,6 +31,7 @@ static var ARRAYS:Dictionary[StringName,Variant] = {
 @export var zeroI:bool = false
 @export var isPartial:bool = false # for partial blast
 @export var denominator:PackedInt64Array = M.ONE() # for partial blast
+@export var partialBlastHorizontal:bool = false # for partial blast
 @export var negated:bool = false
 @export var armament:bool = false
 @export var frozen:bool = false
@@ -122,7 +123,7 @@ func _draw() -> void:
 		return
 	RenderingServer.canvas_item_add_rect(drawDropShadow,Rect2(Vector2(3,3)-getOffset(),size),Game.DROP_SHADOW_COLOR)
 	Lock.drawLock(drawScaled,drawAuraBreaker,drawGlitch,drawMain,drawConfiguration,textDrawer,
-		size,getColor(Lock.COLOR_STEP.DRAW_BASE),getColor(Lock.COLOR_STEP.Glitch),type,configuration,sizeType,count,zeroI,isPartial,denominator,negated,armament,
+		size,getColor(Lock.COLOR_STEP.DRAW_BASE),getColor(Lock.COLOR_STEP.Glitch),type,configuration,sizeType,count,zeroI,isPartial,denominator,partialBlastHorizontal,negated,armament,
 		Lock.getFrameHighColor(isNegative(), negated).blend(Color(animColor,animAlpha)),
 		Lock.getFrameMainColor(isNegative(), negated).blend(Color(animColor,animAlpha)),
 		Lock.getFrameDarkColor(isNegative(), negated).blend(Color(animColor,animAlpha)),
