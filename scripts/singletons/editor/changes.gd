@@ -191,7 +191,8 @@ class DeleteComponentChange extends Change:
 	var type:GDScript
 	var prop:Dictionary[StringName, Variant] = {}
 	var dictionary:Dictionary
-	var arrays:Dictionary[StringName, Array] = {} # dictionary[property, array[type, array]]
+	var arrays:Dictionary[StringName, Array] = {} # dictionary[property, array]
+	var componentArrays:Dictionary[StringName, Array] = {} # dictionary[property, array]
 
 	func _init(component:GameComponent) -> void:
 		if component is PlayerPlaceholderObject:
@@ -200,18 +201,7 @@ class DeleteComponentChange extends Change:
 			return
 
 		type = component.get_script()
-		for property in component.PROPERTIES:
-			prop[property] = Changes.copy(component.get(property))
-		for array in component.ARRAYS.keys():
-			var copiedArray = []
-			for element in component.get(array):
-				if element is GameComponent: copiedArray.append(element.id)
-				else: copiedArray.append(Changes.copy(element))
-			arrays[array] = [component.ARRAYS[array], copiedArray]
 
-		if component.get_script() in Game.NON_OBJECT_COMPONENTS: dictionary = Game.components
-		else: dictionary = Game.objects
-		
 		if type == Door:
 			for lock in component.locks.duplicate():
 				Changes.addChange(DeleteComponentChange.new(lock))
@@ -219,6 +209,17 @@ class DeleteComponentChange extends Change:
 			for element in component.elements.duplicate():
 				Changes.addChange(DeleteComponentChange.new(element))
 		
+
+		for property in Saving.FILE_VERSION.typeDefs[type].savedProperties:
+			prop[property] = Changes.copy(component.get(property))
+		for array in Saving.FILE_VERSION.typeDefs[type].savedArrays:
+			arrays[array] = component.get(array).map(Changes.copy)
+		for array in Saving.FILE_VERSION.typeDefs[type].savedComponentArrays:
+			componentArrays[array] = Saving.componentArrayToIDs(component.get(array))
+
+		if component.get_script() in Game.NON_OBJECT_COMPONENTS: dictionary = Game.components
+		else: dictionary = Game.objects
+
 		if type == PlayerSpawn and component == Game.levelStart:
 			Changes.addChange(GlobalObjectChange.new(Game,&"levelStart",null))
 		
@@ -259,18 +260,14 @@ class DeleteComponentChange extends Change:
 		
 		component.editor = Game.editor
 
-		for property in component.PROPERTIES:
+		for property in Saving.FILE_VERSION.typeDefs[type].savedProperties:
 			component.set(property, Changes.copy(prop[property]))
 			component.propertyChangedDo(property)
-		for array in component.ARRAYS.keys():
-			var componentArray = component.get(array)
-			componentArray.clear()
-			if arrays[array][0] in Game.COMPONENTS:
-				@warning_ignore("incompatible_ternary")
-				var arrayDictionary:Dictionary = Game.components if arrays[array][0] in Game.NON_OBJECT_COMPONENTS else Game.objects
-				for element in arrays[array][1]: componentArray.append(arrayDictionary[element])
-			else:
-				for element in arrays[array][1]: componentArray.append(Changes.copy(element))
+		for array in Saving.FILE_VERSION.typeDefs[type].savedArrays:
+			component.get(array).assign(arrays[array].map(Changes.copy))
+		for array in Saving.FILE_VERSION.typeDefs[type].savedComponentArrays:
+			var arrayType:GDScript = Saving.FILE_VERSION.typeDefs[type].savedComponentArrays[array]
+			component.get(array).assign(Saving.IDArraytoComponents(arrayType, componentArrays[array]))
 		dictionary[prop[&"id"]] = component
 		
 		if type == Lock:

@@ -31,19 +31,19 @@ func _setMode(mode:Editor.MODE) -> void:
 						Game.editor.placePreviewWorld.tilesDropShadow.set_cell(copy.position/32,1,Vector2i(1,1))
 				elif copy is Multiselect.ObjectCopy:
 					var object:GameObject = copy.type.SCENE.instantiate()
-					for property in object.PROPERTIES:
+					for property in Saving.FILE_VERSION.typeDefs[copy.type].savedProperties:
 						object.set(property, copy.properties[property])
 					Game.editor.placePreviewWorld.objectsParent.add_child(object)
 					if object is PlayerSpawn and !Game.levelStart: object.forceDrawStart = true
 					elif copy is Multiselect.DoorCopy:
 						for lockCopy in copy.locks:
 							var lock = addLock(object)
-							for property in lock.PROPERTIES:
+							for property in Saving.FILE_VERSION.typeDefs[lock.get_script()].savedProperties:
 								lock.set(property, lockCopy.properties[property])
 					elif copy is Multiselect.KeyCounterCopy:
 						for elementCopy in copy.elements:
 							var element = addElement(object)
-							for property in element.PROPERTIES:
+							for property in Saving.FILE_VERSION.typeDefs[element.get_script()].savedProperties:
 								element.set(property, elementCopy.properties[property])
 
 func addLock(door:Door) -> Lock:

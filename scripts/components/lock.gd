@@ -120,12 +120,6 @@ func getOffset() -> Vector2: return offsetFromType(sizeType)
 const CREATE_PARAMETERS:Array[StringName] = [
 	&"position", &"parentId"
 ]
-const PROPERTIES:Array[StringName] = [
-	&"id", &"position", &"size",
-	&"parentId", &"color", &"type", &"sizeType", &"count", &"configuration", &"zeroI", &"isPartial", &"denominator", &"negated", &"armament", &"spendType",
-	&"index", &"displayIndex" # implcit
-]
-static var ARRAYS:Dictionary[StringName,Variant] = {}
 
 var parent:Door
 @export_group("SavedProperties")
@@ -141,8 +135,8 @@ var parent:Door
 @export var partialBlastHorizontal:bool = false # for partial blast
 @export var negated:bool = false
 @export var armament:bool = false
-@export var index:int
-@export var displayIndex:int # split into armaments and nonarmaments
+@export var index:int # implicit
+@export var displayIndex:int # implicit, split into armaments and nonarmaments
 # in my mind, two buttons to toggle "spends star" and "spends normal" is more intuitive than 4 buttons which toggle
 @export var spendType = SPEND_TYPE.NORMAL
 

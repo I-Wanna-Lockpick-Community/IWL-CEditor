@@ -56,14 +56,6 @@ const SYMBOL_RECT:Rect2 = Rect2(Vector2.ZERO,Vector2(25,25)) # size of symbol te
 const CREATE_PARAMETERS:Array[StringName] = [
 	&"position"
 ]
-const PROPERTIES:Array[StringName] = [
-	&"id", &"position", &"size",
-	&"colorSpend", &"copies", &"infCopies", &"type",
-	&"frozen", &"crumbled", &"painted", &"armament", &"oscillate"
-]
-static var ARRAYS:Dictionary[StringName,Variant] = {
-	&"remoteLocks":RemoteLock
-}
 
 @export_group("SavedProperties")
 @export var colorSpend:C.olors = C.olors.WHITE
@@ -402,7 +394,7 @@ func addLock() -> void:
 func duplicateLock(lock:Lock) -> void:
 	var newLock:Lock = Changes.addChange(Changes.CreateComponentChange.new(Lock,{&"position":getFirstFreePosition(lock.getOffset(), lock.size),&"parentId":id})).result
 	Changes.addChange(Changes.PropertyChange.new(self,&"type",TYPE.COMBO))
-	for property in Lock.PROPERTIES:
+	for property in Saving.FILE_VERSION.typeDefs[lock.get_script()].savedProperties:
 		if property not in Lock.CREATE_PARAMETERS and property != &"id":
 			Changes.addChange(Changes.PropertyChange.new(newLock,property,lock.get(property)))
 	Changes.bufferSave()

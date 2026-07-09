@@ -13,6 +13,7 @@ var jsCallback:JavaScriptObject
 const FILE_FORMAT_VERSION:int = 3
 const FILE_VERSIONS_PATH:String = "res://resources/fileVersions/"
 var FILE_VERSIONS:Array[FileVersion] = []
+var FILE_VERSION:FileVersion
 
 # Okay.
 # Here's how we'll do it
@@ -36,6 +37,7 @@ func _ready() -> void:
 	if Engine.is_editor_hint(): return
 	for i in FILE_FORMAT_VERSION:
 		FILE_VERSIONS.append(load(FILE_VERSIONS_PATH + str(i+1) + ".tres"))
+	FILE_VERSION = FILE_VERSIONS[-1]
 	if OS.has_feature('web'):
 		JavaScriptBridge.eval("window.callbacks = {loadJs: null};")
 
@@ -173,8 +175,6 @@ func save(path:String="") -> void:
 			print("giving up")
 			return
 
-	var fileVersion:FileVersion = FILE_VERSIONS[-1]
-
 	# HEADER
 	file.store_pascal_string("IWLCEditorLevel")
 	file.store_32(FILE_FORMAT_VERSION)
@@ -196,7 +196,7 @@ func save(path:String="") -> void:
 	file.store_64(len(Game.components))
 	for component in Game.components.values():
 		file.store_16(Game.COMPONENTS.find(component.get_script()))
-		var typeDef:ComponentTypeDef = fileVersion.typeDefs[component.get_script()]
+		var typeDef:ComponentTypeDef = FILE_VERSION.typeDefs[component.get_script()]
 		for property in typeDef.savedProperties: file.store_var(component.get(property), true)
 		for array in typeDef.savedArrays: file.store_var(component.get(array))
 		for array in typeDef.savedComponentArrays: file.store_var(componentArrayToIDs(component.get(array)))
@@ -206,7 +206,7 @@ func save(path:String="") -> void:
 	for object in Game.objects.values():
 		if object is PlaceholderObject: continue
 		file.store_16(Game.COMPONENTS.find(object.get_script()))
-		var typeDef:ComponentTypeDef = fileVersion.typeDefs[object.get_script()]
+		var typeDef:ComponentTypeDef = FILE_VERSION.typeDefs[object.get_script()]
 		for property in typeDef.savedProperties: file.store_var(object.get(property), true)
 		for array in typeDef.savedArrays: file.store_var(object.get(array))
 		for array in typeDef.savedComponentArrays: file.store_var(componentArrayToIDs(object.get(array)))

@@ -337,7 +337,7 @@ func stopDrag() -> void:
 
 static func convertLock(lock:Lock) -> RemoteLock:
 	var remoteLock = Changes.addChange(Changes.CreateComponentChange.new(RemoteLock,{&"position":lock.position+lock.parent.position})).result
-	for property in Lock.PROPERTIES:
+	for property in Saving.FILE_VERSION.typeDefs[lock.get_script()].savedProperties:
 		if property not in [&"id", &"position", &"parentId", &"index"]:
 			Changes.addChange(Changes.PropertyChange.new(remoteLock,property,lock.get(property)))
 	remoteLock._connectTo(lock.parent)

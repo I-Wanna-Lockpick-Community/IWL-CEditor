@@ -60,12 +60,6 @@ const FKEYBULK:Font = preload("res://resources/fonts/fKeyBulk.fnt")
 const CREATE_PARAMETERS:Array[StringName] = [
 	&"position"
 ]
-const PROPERTIES:Array[StringName] = [
-	&"id", &"position", &"size",
-	&"color", &"type", &"count", &"infinite", &"glistening", &"boolType", &"altColor", &"operation", &"collectType"
-]
-
-static var ARRAYS:Dictionary[StringName,Variant] = {}
 
 @export_group("SavedProperties")
 @export var collectType:Player.KEYCHANGE_TYPE = Player.KEYCHANGE_TYPE.NORMAL

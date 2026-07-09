@@ -27,10 +27,6 @@ const TILE:RenderingServer.NinePatchAxisMode = RenderingServer.NinePatchAxisMode
 const CREATE_PARAMETERS:Array[StringName] = [
 	&"position"
 ]
-const PROPERTIES:Array[StringName] = [
-	&"id", &"position", &"size",
-]
-static var ARRAYS:Dictionary[StringName,Variant] = {}
 
 var drawMain:RID
 

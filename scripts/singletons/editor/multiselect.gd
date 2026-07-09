@@ -240,7 +240,7 @@ class ObjectCopy extends Copy:
 	func _init(object:GameObject) -> void:
 		type = object.get_script()
 
-		for property in object.PROPERTIES:
+		for property in Saving.FILE_VERSION.typeDefs[type].savedProperties:
 			properties[property] = object.get(property)
 		
 		properties[&"position"] -= Game.editor.multiselect.selectRect.position
@@ -248,7 +248,7 @@ class ObjectCopy extends Copy:
 	func paste() -> GameComponent:
 		if Game.levelBounds.has_point(Vector2i(properties[&"position"])+Game.editor.mouseTilePosition):
 			var object:GameObject = Changes.addChange(Changes.CreateComponentChange.new(type,{&"position":properties[&"position"]+Vector2(Game.editor.mouseTilePosition)})).result
-			for property in object.PROPERTIES:
+			for property in Saving.FILE_VERSION.typeDefs[type].savedProperties:
 				if property != &"id" and property not in object.CREATE_PARAMETERS:
 					Changes.addChange(Changes.PropertyChange.new(object,property,properties[property]))
 			return object
@@ -276,14 +276,14 @@ class LockCopy extends Copy:
 	var properties:Dictionary[StringName, Variant]
 
 	func _init(lock:Lock) -> void:
-		for property in Lock.PROPERTIES:
+		for property in Saving.FILE_VERSION.typeDefs[lock.get_script()].savedProperties:
 			properties[property] = lock.get(property)
 
 	func paste(door:Door) -> Lock:
 		var lock:Lock = Changes.addChange(Changes.CreateComponentChange.new(Lock,
 			{&"position":properties[&"position"], &"parentId":door.id}
 		)).result
-		for property in lock.PROPERTIES:
+		for property in Saving.FILE_VERSION.typeDefs[lock.get_script()].savedProperties:
 			if property != &"id" and property not in lock.CREATE_PARAMETERS:
 				Changes.addChange(Changes.PropertyChange.new(lock,property,properties[property]))
 		return lock
@@ -307,14 +307,14 @@ class KeyCounterElementCopy extends Copy:
 	var properties:Dictionary[StringName, Variant]
 
 	func _init(element:KeyCounterElement) -> void:
-		for property in KeyCounterElement.PROPERTIES:
+		for property in Saving.FILE_VERSION.typeDefs[element.get_script()].savedProperties:
 			properties[property] = element.get(property)
 
 	func paste(keyCounter:KeyCounter) -> KeyCounterElement:
 		var element:KeyCounterElement = Changes.addChange(Changes.CreateComponentChange.new(KeyCounterElement,
 			{&"position":properties[&"position"], &"parentId":keyCounter.id}
 		)).result
-		for property in element.PROPERTIES:
+		for property in Saving.FILE_VERSION.typeDefs[element.get_script()].savedProperties:
 			if property != &"id" and property not in element.CREATE_PARAMETERS:
 				Changes.addChange(Changes.PropertyChange.new(element,property,properties[property]))
 		return element

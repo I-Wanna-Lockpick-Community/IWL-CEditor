@@ -6,12 +6,6 @@ func outlineTex() -> Texture2D: return KeyBulk.getOutlineTexture(color)
 const CREATE_PARAMETERS:Array[StringName] = [
 	&"position", &"parentId"
 ]
-const PROPERTIES:Array[StringName] = [
-	&"id", &"position", &"size",
-	&"parentId", &"color",
-	&"index" # implicit
-]
-static var ARRAYS:Dictionary[StringName,Variant] = {}
 
 const TEXT_COLOR:Color = Color("#2c221c")
 
@@ -23,7 +17,7 @@ var parent:KeyCounter
 @export_group("SavedProperties")
 @export var parentId:int
 @export var color:C.olors = C.olors.WHITE
-@export var index:int
+@export var index:int # implicit
 
 func getColors() -> Array[C.olors]: return [color]
 

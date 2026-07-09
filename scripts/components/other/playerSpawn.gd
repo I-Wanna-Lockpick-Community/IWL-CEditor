@@ -16,17 +16,6 @@ const SAVESTATE_ICON:Texture2D = preload("res://assets/game/playerSpawn/savestat
 const CREATE_PARAMETERS:Array[StringName] = [
 	&"position"
 ]
-const PROPERTIES:Array[StringName] = [
-	&"id", &"position", &"size",
-	&"undoStack", # undostack is a "property" and not an "array" because we wont ever interact with the elements; its basically just a selfcontained datum
-	&"saveBuffered"
-]
-static var ARRAYS:Dictionary[StringName,Variant] = {
-	&"key":TYPE_PACKED_INT64_ARRAY,
-	&"star":TYPE_BOOL,
-	&"curse":TYPE_BOOL,
-	&"glisten":TYPE_PACKED_INT64_ARRAY
-}
 
 @export_group("SavedArrays")
 @export var key:Array[PackedInt64Array] = []

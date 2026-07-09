@@ -26,11 +26,6 @@ const KEY_PARTICLE_2_COLOR:Color = Color("#ffffb4")
 const CREATE_PARAMETERS:Array[StringName] = [
 	&"position"
 ]
-const PROPERTIES:Array[StringName] = [
-	&"id", &"position", &"size",
-	&"type"
-]
-static var ARRAYS:Dictionary[StringName,Variant] = {}
 
 const TYPES:int = 3
 enum TYPE {NORMAL, STAR, OMEGA}

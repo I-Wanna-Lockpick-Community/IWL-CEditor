@@ -13,14 +13,6 @@ func getAvailableConfigurations() -> Array[Array]: return Lock.availableConfigur
 const CREATE_PARAMETERS:Array[StringName] = [
 	&"position"
 ]
-const PROPERTIES:Array[StringName] = [
-	&"id", &"position", &"size",
-	&"color", &"type", &"configuration", &"sizeType", &"count", &"zeroI", &"isPartial", &"denominator", &"negated", &"armament", &"spendType",
-	&"frozen", &"crumbled", &"painted"
-]
-static var ARRAYS:Dictionary[StringName,Variant] = {
-	&"doors":RemoteLock
-}
 
 @export_group("SavedProperties")
 @export var color:C.olors = C.olors.WHITE

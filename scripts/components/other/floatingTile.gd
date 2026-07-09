@@ -11,10 +11,6 @@ const TEXTURE:Texture2D = preload("res://assets/ui/modes/tile.png")
 const CREATE_PARAMETERS:Array[StringName] = [
 	&"position"
 ]
-const PROPERTIES:Array[StringName] = [
-	&"id", &"position", &"size"
-]
-static var ARRAYS:Dictionary[StringName,Variant] = {}
 
 var drawDropShadow:RID
 var drawMain:RID
