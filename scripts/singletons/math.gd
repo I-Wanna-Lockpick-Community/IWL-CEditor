@@ -217,6 +217,7 @@ func simplify(n:PackedInt64Array) -> PackedInt64Array:
 		SYSTEM.FRACTIONS, _:
 			if n[2] == 0: return ERROR() # propagate error state
 			var divisor:int = gcd(gcd(n[0], n[1]), n[2])
+			# abs so that even if it overflows its still valid
 			@warning_ignore("integer_division") return [n[0]/divisor, n[1]/divisor, abs(n[2]/divisor)]
 
 ## (n -> r(n))
@@ -403,6 +404,7 @@ func simplies(a:PackedInt64Array, b:PackedInt64Array) -> bool:
 
 ## "exists"
 func ex(n:PackedInt64Array) -> bool:
+	if M.isError(n): return false
 	return neq(n, ZERO())
 
 func nex(n:PackedInt64Array) -> bool:
