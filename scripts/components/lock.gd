@@ -293,54 +293,48 @@ static func drawLock(lockDrawScaled:RID, lockDrawAuraBreaker:RID, lockDrawGlitch
 				var vertical:bool = lockSize.x == 18 and lockSize.y != 18 and !noNumber
 				var symbolLast:bool = false
 				var symbol:Texture2D
-				var effectiveSymbolWidth:float = 0
-				var effectiveSymbolHeight:float = 0
+				var effectiveSymbolSize:Vector2 = Vector2.ZERO
 				if !noSymbol:
-					effectiveSymbolHeight = 12
+					effectiveSymbolSize.y = 12
 					match lockType:
 							TYPE.NORMAL:
 								symbol = SYMBOL_NORMAL
-								effectiveSymbolWidth = 14
+								effectiveSymbolSize.x = 14
 							TYPE.EXACT:
 								if M.isNonzeroImag(lockCount) or lockZeroI:
 									symbol = SYMBOL_EXACTI
-									effectiveSymbolWidth = 6
+									effectiveSymbolSize.x = 6
 									symbolLast = true
 								else:
 									symbol = SYMBOL_EXACT
-									effectiveSymbolWidth = 12
+									effectiveSymbolSize.x = 12
 							TYPE.GLISTENING:
 								if M.isNonzeroImag(lockCount) or lockZeroI:
 									symbol = SYMBOL_GLISTENINGI
-									effectiveSymbolWidth = 8
+									effectiveSymbolSize.x = 8
 									symbolLast = true
 								else:
 									symbol = SYMBOL_GLISTENING
-									effectiveSymbolWidth = 12
+									effectiveSymbolSize.x = 12
 							TYPE.REMAINDER:
 								symbol = SYMBOL_REMAINDER
-								effectiveSymbolWidth = 14
+								effectiveSymbolSize.x = 14
+				lockTextDrawer.addVerticalContext(center+Vector2(0,2) if vertical and M.isInteger(lockCount) else center, TextDrawer.VERTICAL_ALIGN.CENTER)
+				lockTextDrawer.addHorizontalContext(Vector2.ZERO, TextDrawer.HORIZONTAL_ALIGN.CENTER)
+				lockTextDrawer.addSpacing(2)
 				if vertical:
-					var strHeight:float = 11 if M.isInteger(lockCount) else 29
-					const verticalSpace:float = 6
-					var drawPosition:Vector2 = center - round(Vector2(0,strHeight+effectiveSymbolHeight+verticalSpace)/2)
-					var numberPosition:Vector2 = drawPosition + round(Vector2(0,strHeight)/2)+Vector2(1,7 if M.isInteger(lockCount) else 9)
-					var symbolPosition:Vector2 = drawPosition+Vector2(0,strHeight+verticalSpace+round(effectiveSymbolHeight/2))
-					symbolPosition.y += 2 if M.isInteger(lockCount) else -2
+					var gap:float = 7 if M.isInteger(lockCount) else 2
 					if !noNumber:
-						lockTextDrawer.addSetPosition(numberPosition, TextDrawer.TEXT_ALIGN.CENTER)
 						lockTextDrawer.addNumber(M.abs(lockCount), drawColor)
 					if lockType == TYPE.NORMAL and M.isNonzeroImag(lockCount):
-						lockTextDrawer.addSetPosition(symbolPosition, TextDrawer.TEXT_ALIGN.CENTER)
+						lockTextDrawer.addNewline(gap,TextDrawer.HORIZONTAL_ALIGN.CENTER)
 						lockTextDrawer.addString("i", drawColor)
 					elif !noSymbol:
-						lockTextDrawer.addSetPosition(symbolPosition, TextDrawer.TEXT_ALIGN.CENTER)
-						lockTextDrawer.addImage(symbol, lockNegated, drawColor, effectiveSymbolWidth)
+						lockTextDrawer.addNewline(gap,TextDrawer.HORIZONTAL_ALIGN.CENTER)
+						lockTextDrawer.addImage(symbol, lockNegated, drawColor, effectiveSymbolSize)
 				else:
-					var drawPosition:Vector2 = center
-					lockTextDrawer.addSetPosition(drawPosition+Vector2(0,7), TextDrawer.TEXT_ALIGN.CENTER)
 					if symbolLast and !noNumber: lockTextDrawer.addNumber(M.abs(lockCount), drawColor)
-					if !noSymbol: lockTextDrawer.addImage(symbol, lockNegated, drawColor, effectiveSymbolWidth, Vector2(0,-7))
+					if !noSymbol: lockTextDrawer.addImage(symbol, lockNegated, drawColor, effectiveSymbolSize)
 					if !symbolLast and !noNumber: lockTextDrawer.addNumber(M.abs(lockCount), drawColor)
 			TYPE.BLANK: pass # nothing really
 			TYPE.BLAST, TYPE.ALL:
@@ -362,34 +356,36 @@ static func drawLock(lockDrawScaled:RID, lockDrawAuraBreaker:RID, lockDrawGlitch
 					1, 3: symbol = SYMBOL_BLASTI
 				if lockType == TYPE.ALL: symbol = SYMBOL_ALL
 
+				lockTextDrawer.addVerticalContext(center, TextDrawer.VERTICAL_ALIGN.CENTER)
+				lockTextDrawer.addHorizontalContext(Vector2.ZERO, TextDrawer.HORIZONTAL_ALIGN.CENTER)
 				if lockPartialBlastHorizontal:
-					lockTextDrawer.addSetPosition(center+Vector2(0,7), TextDrawer.TEXT_ALIGN.CENTER)
 					if !noNumeratorNumber: lockTextDrawer.addNumber(numer, drawColor)
-					lockTextDrawer.addImage(symbol, lockNegated, drawColor, 10, Vector2(0,-7))
-					lockTextDrawer.addImage(PARTIAL_BLAST_HORIZONTAL if M.isInteger(numer) and M.isInteger(denom) else PARTIAL_BLAST_HORIZONTAL_BIG, lockNegated, drawColor, 10, Vector2(0,-7))
+					lockTextDrawer.addImage(symbol, lockNegated, drawColor, Vector2(10,12))
+					lockTextDrawer.addImage(PARTIAL_BLAST_HORIZONTAL if M.isInteger(numer) and M.isInteger(denom) else PARTIAL_BLAST_HORIZONTAL_BIG, lockNegated, drawColor, Vector2(10,12))
 					lockTextDrawer.addNumber(denom, drawColor)
 				else:
-					var numeratorPosition:Vector2 = center
-					var numeratorWidth:float = 0
-					if lockIsPartial:
-						if M.isInteger(numer): numeratorPosition.y -= 2
-						else: numeratorPosition.y -= 11
-					else: numeratorPosition.y += 7
-					lockTextDrawer.addSetPosition(numeratorPosition, TextDrawer.TEXT_ALIGN.CENTER)
-					if !noNumeratorNumber: numeratorWidth += lockTextDrawer.getWidth(lockTextDrawer.addNumber(numer, drawColor))
-					numeratorWidth += lockTextDrawer.getWidth(lockTextDrawer.addImage(symbol, lockNegated, drawColor, 10, Vector2(0,-7)))
+					if !noNumeratorNumber: lockTextDrawer.addNumber(numer, drawColor)
+					lockTextDrawer.addImage(symbol, lockNegated, drawColor, Vector2(10,12))
 
 					if lockIsPartial:
-						var denominatorPosition:Vector2 = center + Vector2(1,17)
-						if !M.isInteger(denom): denominatorPosition.y += 9
-						lockTextDrawer.addSetPosition(denominatorPosition, TextDrawer.TEXT_ALIGN.CENTER)
-						var denominatorWidth:float = lockTextDrawer.getWidth(lockTextDrawer.addNumber(denom, drawColor))
+						var numeratorWidth:float = 10
+						if !noNumeratorNumber: numeratorWidth += lockTextDrawer.getNumberWidth(numer)
+						var denominatorWidth:float = lockTextDrawer.getNumberWidth(denom)
 						var maxWidth:float = max(numeratorWidth, denominatorWidth)
-						RenderingServer.canvas_item_add_rect(lockDrawMain, Rect2(center-Vector2(1,3), Vector2(2,6)), drawColor)
-						RenderingServer.canvas_item_add_rect(lockDrawMain, Rect2(center-Vector2(round(maxWidth/2), 1), Vector2(maxWidth, 2)), drawColor)
+						lockTextDrawer.addNewline(1, TextDrawer.HORIZONTAL_ALIGN.CENTER)
+						lockTextDrawer.addCustom(drawPartialBlastVerticalLine, [maxWidth, drawColor], 0, 3, 3)
+						lockTextDrawer.addNewline(1, TextDrawer.HORIZONTAL_ALIGN.CENTER)
+						lockTextDrawer.addSpacing(2)
+						lockTextDrawer.addNumber(denom, drawColor)
 				
 	else: RenderingServer.canvas_item_add_texture_rect(lockDrawConfiguration,rect,getPredefinedLockSprite(lockCount,lockType,lockConfiguration),false,getConfigurationColor(negative))
 	lockTextDrawer.evaluate()
+
+static func drawPartialBlastVerticalLine(lockDrawMain:RID, drawPosition:Vector2, params:Array) -> void:
+	var maxWidth:float = params[0]
+	var drawColor:Color = params[1]
+	RenderingServer.canvas_item_add_rect(lockDrawMain, Rect2(drawPosition-Vector2(1,3), Vector2(2,6)), drawColor)
+	RenderingServer.canvas_item_add_rect(lockDrawMain, Rect2(drawPosition-Vector2(round(maxWidth/2), 1), Vector2(maxWidth, 2)), drawColor)
 
 func getDrawPosition() -> Vector2: return position + parent.position - getOffset()
 

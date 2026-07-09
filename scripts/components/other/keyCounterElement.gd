@@ -49,7 +49,7 @@ func _ready() -> void:
 	RenderingServer.canvas_item_set_parent(drawMain,drawParent.get_canvas_item())
 	Game.connect(&"goldIndexChanged",queue_redraw)
 	textDrawer = TextDrawer.new(self, TextDrawer.SETTING.FKEYNUM)
-	textDrawer.position = Vector2(38,14)
+	textDrawer.position = Vector2(38,29)
 
 func _freed() -> void:
 	RenderingServer.free_rid(drawStar)

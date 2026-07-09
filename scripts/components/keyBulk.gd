@@ -111,7 +111,7 @@ func _ready() -> void:
 	RenderingServer.canvas_item_set_parent(drawMain,get_canvas_item())
 	RenderingServer.canvas_item_set_parent(drawSymbol,get_canvas_item())
 	textDrawer = TextDrawer.new(self, TextDrawer.SETTING.FKEYBULK)
-	textDrawer.position = Vector2(1,25)
+	textDrawer.position = Vector2(1,30)
 	RenderingServer.canvas_item_set_parent(drawError,get_canvas_item())
 	RenderingServer.canvas_item_set_self_modulate(drawError, "#ffffffaa")
 	RenderingServer.canvas_item_set_material(drawError,Game.ADDITIVE_MATERIAL)
