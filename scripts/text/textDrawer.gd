@@ -81,10 +81,10 @@ func drawTexts() -> void:
 						elif partIndex > 0:
 							drawPosition += drawText_(font, "+", drawPosition, fontSize, color, outline)
 						if M.isInteger(part) or (mixedFractions and M.ex(M.trunc(part))):
-							drawPosition += drawText_(font, M.str(M.trunc(part)), drawPosition, fontSize, color, outline)
+							drawPosition += drawText_(font, M.str(M.abs(M.trunc(part))), drawPosition, fontSize, color, outline)
 							if !M.isInteger(part): drawPosition.x += 2
 						if !M.isInteger(part):
-							var fraction:PackedInt64Array = M.remainder(part, M.ONE()) if mixedFractions else part
+							var fraction:PackedInt64Array = M.abs(M.remainder(part, M.ONE()) if mixedFractions else part)
 							var numerator:String = M.str(M.numer(fraction))
 							var denominator:String = M.str(M.denom(fraction))
 							var numerSize:Vector2 = font.get_string_size(numerator, HORIZONTAL_ALIGNMENT_LEFT, -1, fractionFontSize)
@@ -96,6 +96,7 @@ func drawTexts() -> void:
 							drawText_(font, numerator, drawPosition+Vector2(fractionTextHorizontalOffset+(width-numerSize.x)/2, -numerSize.y/2-fractionVerticalDistance+fractionVerticalOffset), fractionFontSize, color, outline)
 							drawText_(font, denominator, drawPosition+Vector2(fractionTextHorizontalOffset+(width-denomSize.x)/2, denomSize.y/2+fractionVerticalDistance+fractionVerticalOffset), fractionFontSize, color, outline)
 							drawPosition.x += width+2
+						if M.isImag(part): drawPosition += drawText_(font, "i", drawPosition, fontSize, color, outline)
 			TYPE.Image: # [TYPE.Image, image, upsideDown, color, effectiveWidth, offset]
 				var imageSize:Vector2 = text[1].get_size()
 				var imageRect:Rect2 = Rect2(drawPosition+text[5]+round((Vector2(text[4],0)-imageSize)/2), imageSize)

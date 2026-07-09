@@ -217,7 +217,7 @@ func simplify(n:PackedInt64Array) -> PackedInt64Array:
 		SYSTEM.FRACTIONS, _:
 			if n[2] == 0: return ERROR() # propagate error state
 			var divisor:int = gcd(gcd(n[0], n[1]), n[2])
-			@warning_ignore("integer_division") return [n[0]/divisor, n[1]/divisor, n[2]/divisor]
+			@warning_ignore("integer_division") return [n[0]/divisor, n[1]/divisor, abs(n[2]/divisor)]
 
 ## (n -> r(n))
 func r(n:PackedInt64Array) -> PackedInt64Array:
