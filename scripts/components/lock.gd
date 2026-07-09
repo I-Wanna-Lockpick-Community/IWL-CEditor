@@ -366,9 +366,9 @@ static func drawLock(lockDrawScaled:RID, lockDrawAuraBreaker:RID, lockDrawGlitch
 						if !noNumeratorNumber: numeratorWidth += lockTextDrawer.getNumberWidth(numer)
 						var denominatorWidth:float = lockTextDrawer.getNumberWidth(denom)
 						var maxWidth:float = max(numeratorWidth, denominatorWidth)
-						lockTextDrawer.addNewline(1, TextDrawer.HORIZONTAL_ALIGN.CENTER)
-						lockTextDrawer.addCustom(drawPartialBlastVerticalLine, [maxWidth, drawColor], 0, 3, 3)
-						lockTextDrawer.addNewline(1, TextDrawer.HORIZONTAL_ALIGN.CENTER)
+						lockTextDrawer.addNewline(3, TextDrawer.HORIZONTAL_ALIGN.CENTER)
+						lockTextDrawer.addCustom(drawPartialBlastVerticalLine, [maxWidth, drawColor], 0, 0, 2)
+						lockTextDrawer.addNewline(3, TextDrawer.HORIZONTAL_ALIGN.CENTER)
 						lockTextDrawer.addSpacing(2)
 						lockTextDrawer.addNumber(denom, drawColor)
 				
@@ -378,7 +378,7 @@ static func drawLock(lockDrawScaled:RID, lockDrawAuraBreaker:RID, lockDrawGlitch
 static func drawPartialBlastVerticalLine(lockDrawMain:RID, drawPosition:Vector2, params:Array) -> void:
 	var maxWidth:float = params[0]
 	var drawColor:Color = params[1]
-	RenderingServer.canvas_item_add_rect(lockDrawMain, Rect2(drawPosition-Vector2(round(maxWidth/2), 1), Vector2(maxWidth, 2)), drawColor)
+	RenderingServer.canvas_item_add_rect(lockDrawMain, Rect2(drawPosition-Vector2(round(maxWidth/2), 0), Vector2(maxWidth, 2)), drawColor)
 
 func getDrawPosition() -> Vector2: return position + parent.position - getOffset()
 
