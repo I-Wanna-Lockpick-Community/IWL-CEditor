@@ -342,7 +342,7 @@ static func drawLock(lockDrawScaled:RID, lockDrawAuraBreaker:RID, lockDrawGlitch
 				var numer:PackedInt64Array
 				var denom:PackedInt64Array
 				var ipow:int = 0
-				if M.isComplex(lockDenominator) or M.nex(lockDenominator) or M.isComplex(lockCount):
+				if M.isComplex(lockDenominator) or M.nex(lockDenominator) or M.isComplex(lockCount) or M.isError(lockDenominator):
 					numer = lockCount
 					denom = lockDenominator
 				else:
@@ -361,7 +361,7 @@ static func drawLock(lockDrawScaled:RID, lockDrawAuraBreaker:RID, lockDrawGlitch
 				if lockPartialBlastHorizontal:
 					if !noNumeratorNumber: lockTextDrawer.addNumber(numer, drawColor)
 					lockTextDrawer.addImage(symbol, lockNegated, drawColor, Vector2(10,12))
-					lockTextDrawer.addImage(PARTIAL_BLAST_HORIZONTAL if M.isInteger(numer) and M.isInteger(denom) else PARTIAL_BLAST_HORIZONTAL_BIG, lockNegated, drawColor, Vector2(10,12))
+					lockTextDrawer.addImage(PARTIAL_BLAST_HORIZONTAL if M.isInteger(numer) and M.isInteger(denom) else PARTIAL_BLAST_HORIZONTAL_BIG, lockNegated, drawColor, Vector2(8,12))
 					lockTextDrawer.addNumber(denom, drawColor)
 				else:
 					if !noNumeratorNumber: lockTextDrawer.addNumber(numer, drawColor)
@@ -384,7 +384,6 @@ static func drawLock(lockDrawScaled:RID, lockDrawAuraBreaker:RID, lockDrawGlitch
 static func drawPartialBlastVerticalLine(lockDrawMain:RID, drawPosition:Vector2, params:Array) -> void:
 	var maxWidth:float = params[0]
 	var drawColor:Color = params[1]
-	RenderingServer.canvas_item_add_rect(lockDrawMain, Rect2(drawPosition-Vector2(1,3), Vector2(2,6)), drawColor)
 	RenderingServer.canvas_item_add_rect(lockDrawMain, Rect2(drawPosition-Vector2(round(maxWidth/2), 1), Vector2(maxWidth, 2)), drawColor)
 
 func getDrawPosition() -> Vector2: return position + parent.position - getOffset()
