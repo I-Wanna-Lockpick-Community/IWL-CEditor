@@ -117,7 +117,7 @@ shader_parameter/rChannel = Color(1, 1, 1, 1)
 shader_parameter/gChannel = Color(0, 0, 0, 1)
 shader_parameter/bChannel = Color(0, 0, 0, 1)
 
-[sub_resource type="ViewportTexture" id="ViewportTexture_qqt88"]
+[sub_resource type="ViewportTexture" id="ViewportTexture_pgu5w"]
 viewport_path = NodePath("viewport")
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ndxgo"]
@@ -127,7 +127,7 @@ shader_parameter/rChannel = Color(0, 0.63529414, 1, 1)
 shader_parameter/gChannel = Color(1, 1, 1, 1)
 shader_parameter/bChannel = Color(0, 0, 0, 1)
 
-[sub_resource type="ViewportTexture" id="ViewportTexture_1mc7a"]
+[sub_resource type="ViewportTexture" id="ViewportTexture_qqt88"]
 viewport_path = NodePath("viewport")
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_e62bx"]
@@ -441,13 +441,13 @@ script = ExtResource("13_0u1f5")
 unique_name_in_owner = true
 material = SubResource("ShaderMaterial_pgu5w")
 layout_mode = 2
-texture = SubResource("ViewportTexture_qqt88")
+texture = SubResource("ViewportTexture_pgu5w")
 
 [node name="outlineViewport2" parent="c/gameCont" unique_id=2071303993 instance=ExtResource("28_e62bx")]
 unique_name_in_owner = true
 material = SubResource("ShaderMaterial_ndxgo")
 layout_mode = 2
-texture = SubResource("ViewportTexture_1mc7a")
+texture = SubResource("ViewportTexture_qqt88")
 
 [node name="outline" type="Node2D" parent="c/gameCont/outlineViewport2" unique_id=1982434259]
 unique_name_in_owner = true

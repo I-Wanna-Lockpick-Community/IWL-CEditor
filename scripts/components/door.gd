@@ -41,6 +41,7 @@ const GLITCH_DARK:Texture2D = preload("res://assets/game/door/glitch/dark.png")
 const STARRED_SYMBOL_ON:Texture2D = preload("res://assets/game/door/symbols/starOn.png")
 const STARRED_SYMBOL_OFF:Texture2D = preload("res://assets/game/door/symbols/starOff.png")
 const OSCILLATE_SYMBOL:Texture2D = preload("res://assets/game/door/symbols/oscillate.png")
+const OSCILLATE_MATERIAL:ShaderMaterial = preload("res://resources/materials/oscillateDrawMaterial.tres")
 
 static var GLITCH:ColorsTextureLoader = ColorsTextureLoader.new("res://assets/game/door/glitch/$c.png", false, false, {capitalised=false})
 
@@ -79,6 +80,7 @@ var drawError:RID
 var drawCrumbled:RID
 var drawPainted:RID
 var drawFrozen:RID
+var drawOscillate:RID
 var drawSymbols:RID
 var drawNegative:RID
 
@@ -103,9 +105,11 @@ func _ready() -> void:
 	drawCrumbled = RenderingServer.canvas_item_create()
 	drawPainted = RenderingServer.canvas_item_create()
 	drawFrozen = RenderingServer.canvas_item_create()
+	drawOscillate = RenderingServer.canvas_item_create()
 	drawSymbols = RenderingServer.canvas_item_create()
 	drawNegative = RenderingServer.canvas_item_create()
 	RenderingServer.canvas_item_set_material(drawGlitch,Game.GLITCH_MATERIAL.get_rid())
+	RenderingServer.canvas_item_set_material(drawOscillate,OSCILLATE_MATERIAL.get_rid())
 	RenderingServer.canvas_item_set_material(drawNegative,Game.NEGATIVE_MATERIAL.get_rid())
 	RenderingServer.canvas_item_set_z_index(drawDropShadow,-3)
 	RenderingServer.canvas_item_set_z_index(drawSymbols,2)
@@ -119,6 +123,7 @@ func _ready() -> void:
 	RenderingServer.canvas_item_set_parent(drawCrumbled, %auraParent.get_canvas_item())
 	RenderingServer.canvas_item_set_parent(drawPainted, %auraParent.get_canvas_item())
 	RenderingServer.canvas_item_set_parent(drawFrozen, %auraParent.get_canvas_item())
+	RenderingServer.canvas_item_set_parent(drawOscillate,%auraParent.get_canvas_item())
 	RenderingServer.canvas_item_set_parent(drawSymbols,get_canvas_item())
 	RenderingServer.canvas_item_set_parent(drawNegative,get_canvas_item())
 	RenderingServer.canvas_item_set_self_modulate(drawError, "#ffffffaa")
@@ -142,6 +147,7 @@ func _freed() -> void:
 	RenderingServer.free_rid(drawCrumbled)
 	RenderingServer.free_rid(drawPainted)
 	RenderingServer.free_rid(drawFrozen)
+	RenderingServer.free_rid(drawOscillate)
 	RenderingServer.free_rid(drawSymbols)
 	RenderingServer.free_rid(drawNegative)
 
@@ -160,6 +166,7 @@ func _draw() -> void:
 	RenderingServer.canvas_item_clear(drawCrumbled)
 	RenderingServer.canvas_item_clear(drawPainted)
 	RenderingServer.canvas_item_clear(drawFrozen)
+	RenderingServer.canvas_item_clear(drawOscillate)
 	RenderingServer.canvas_item_clear(drawSymbols)
 	RenderingServer.canvas_item_clear(drawNegative)
 	if !active and Game.playState == Game.PLAY_STATE.PLAY: return
@@ -207,7 +214,9 @@ func _draw() -> void:
 	match starred:
 		STAR_STATE.STARRED_UNLOCKED: RenderingServer.canvas_item_add_texture_rect(drawSymbols,Rect2(Vector2(size.x/2-12,size.y-12),Vector2(24,24)),STARRED_SYMBOL_ON)
 		STAR_STATE.STARRED_LOCKED: RenderingServer.canvas_item_add_texture_rect(drawSymbols,Rect2(Vector2(size.x/2-12,size.y-12),Vector2(24,24)),STARRED_SYMBOL_OFF)
-	if oscillate: RenderingServer.canvas_item_add_texture_rect(drawSymbols,Rect2(Vector2(size.x-10,-6),Vector2(16,16)),OSCILLATE_SYMBOL)
+	if oscillate:
+		# RenderingServer.canvas_item_add_texture_rect(drawSymbols,Rect2(Vector2(size.x-10,-6),Vector2(16,16)),OSCILLATE_SYMBOL)
+		RenderingServer.canvas_item_add_rect(drawOscillate,rect,Color(1/rect.size.x, 1/rect.size.y, 1))
 
 static func drawDoor(doorDrawScaled:RID,doorDrawAuraBreaker:RID,doorDrawGlitch:RID,doorDrawMain:RID,
 	doorSize:Vector2,

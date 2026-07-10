@@ -1,0 +1,15 @@
+[gd_resource type="ShaderMaterial" format=3 uid="uid://dewssfc1nrear"]
+
+[ext_resource type="Shader" uid="uid://bu6xxgpx6cr34" path="res://resources/materials/oscillateDraw.gdshader" id="1_37bmx"]
+
+[resource]
+shader = ExtResource("1_37bmx")
+shader_parameter/squineEpsilon = 0.1
+shader_parameter/driftSpeed = 20.0
+shader_parameter/waveSpeed = 15.0
+shader_parameter/waveScale = 10.0
+shader_parameter/hueCycleSpeed = 0.25
+shader_parameter/saturation = 0.9
+shader_parameter/darkValue = 0.6
+shader_parameter/brightValue = 1.0
+shader_parameter/alpha = 0.4
