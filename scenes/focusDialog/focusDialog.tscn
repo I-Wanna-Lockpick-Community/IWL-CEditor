@@ -112,6 +112,12 @@ explanation = "[%s]Toggle spend armament"
 hotkeys = Array[StringName]([&"focusDoorSpendArmament"])
 metadata/_custom_type_script = "uid://cgjhnhjwymb8g"
 
+[sub_resource type="Resource" id="Resource_4u0vg"]
+script = ExtResource("22_s5h3h")
+explanation = "[%s]Toggle oscillate"
+hotkeys = Array[StringName]([&"focusDoorOscillate"])
+metadata/_custom_type_script = "uid://cgjhnhjwymb8g"
+
 [sub_resource type="ButtonGroup" id="ButtonGroup_8gwon"]
 allow_unpress = true
 
@@ -509,19 +515,20 @@ toggle_mode = true
 icon = ExtResource("30_sb8el")
 metadata/explanation = SubResource("Resource_16i1m")
 
-[node name="oscillate" type="Button" parent="doorDialog/c/lock/c/c/doorBooleans" unique_id=733062959]
-unique_name_in_owner = true
-layout_mode = 2
-toggle_mode = true
-icon = ExtResource("31_sb8el")
-vertical_icon_alignment = 0
-
 [node name="spendArmament" type="Button" parent="doorDialog/c/lock/c/c/doorBooleans" unique_id=2039200117 groups=["explained"]]
 unique_name_in_owner = true
 layout_mode = 2
 toggle_mode = true
 icon = ExtResource("31_vydri")
 metadata/explanation = SubResource("Resource_vydri")
+
+[node name="oscillate" type="Button" parent="doorDialog/c/lock/c/c/doorBooleans" unique_id=733062959 groups=["explained"]]
+unique_name_in_owner = true
+layout_mode = 2
+toggle_mode = true
+icon = ExtResource("31_sb8el")
+vertical_icon_alignment = 0
+metadata/explanation = SubResource("Resource_4u0vg")
 
 [node name="doorCopySettings" type="VBoxContainer" parent="doorDialog/c/lock/c/c" unique_id=1160178579]
 unique_name_in_owner = true
@@ -983,8 +990,8 @@ default_color = Color(0.8352941, 0.8352941, 0.8352941, 1)
 [connection signal="toggled" from="doorDialog/c/lock/c/c/doorBooleans/doorAuras/frozen" to="doorDialog" method="_frozenSet"]
 [connection signal="toggled" from="doorDialog/c/lock/c/c/doorBooleans/doorAuras/crumbled" to="doorDialog" method="_crumbledSet"]
 [connection signal="toggled" from="doorDialog/c/lock/c/c/doorBooleans/doorAuras/painted" to="doorDialog" method="_paintedSet"]
-[connection signal="toggled" from="doorDialog/c/lock/c/c/doorBooleans/oscillate" to="doorDialog" method="_oscillateSet"]
 [connection signal="toggled" from="doorDialog/c/lock/c/c/doorBooleans/spendArmament" to="doorDialog" method="_spendArmamentSet"]
+[connection signal="toggled" from="doorDialog/c/lock/c/c/doorBooleans/oscillate" to="doorDialog" method="_oscillateSet"]
 [connection signal="valueSet" from="doorDialog/c/lock/c/c/doorCopySettings/c/doorCopiesEdit" to="doorDialog" method="_doorCopiesSet"]
 [connection signal="toggled" from="doorDialog/c/lock/c/c/doorCopySettings/doorInfCopiesSettings/c/realInfinitePosCopy" to="doorDialog" method="_doorRealInfiniteSet"]
 [connection signal="toggled" from="doorDialog/c/lock/c/c/doorCopySettings/doorInfCopiesSettings/c/realInfiniteNegCopy" to="doorDialog" method="_doorRealInfiniteSet"]
