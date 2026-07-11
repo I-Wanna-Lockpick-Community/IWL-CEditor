@@ -10,6 +10,7 @@ func focus(focused:Pencilmark, _new:bool, _dontRedirect:bool, skipInput:Control)
 	%pencilmarkSymbolSelector.setSelect(focused.symbol)
 	%pencilmarkSymbolSelector.visible = focused.type == Pencilmark.TYPE.SYMBOL
 	%pencilmarkNumberEdit.visible = focused.type == Pencilmark.TYPE.NUMBER
+	%textMargin.visible = focused.type == Pencilmark.TYPE.TEXT
 	%pencilmarkTextEdit.visible = focused.type == Pencilmark.TYPE.TEXT
 	if skipInput != %pencilmarkNumberEdit: %pencilmarkNumberEdit.setValue(focused.number)
 	if skipInput != %pencilmarkTextEdit: %pencilmarkTextEdit.text = focused.text
@@ -51,9 +52,9 @@ func _pencilmarkNumberSet(value:PackedInt64Array) -> void:
 	Changes.addChange(Changes.PropertyChange.new(main.focused,&"number",value,%pencilmarkNumberEdit))
 	Changes.bufferSave()
 
-func _pencilmarkTextSet(value:String) -> void:
+func _pencilmarkTextSet() -> void:
 	if main.focused is not Pencilmark: return
-	Changes.addChange(Changes.PropertyChange.new(main.focused,&"text",value,%pencilmarkTextEdit))
+	Changes.addChange(Changes.PropertyChange.new(main.focused,&"text",%pencilmarkTextEdit.text,%pencilmarkTextEdit))
 	Changes.bufferSave()
 
 func _done() -> void:

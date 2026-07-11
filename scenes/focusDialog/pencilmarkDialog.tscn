@@ -76,6 +76,11 @@ metadata/_custom_type_script = "uid://c8i3xewhf1hvm"
 custom_minimum_size = Vector2(0, 4)
 layout_mode = 2
 
+[node name="textMargin" type="Control" parent="c/c/c" unique_id=1016381887]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 4)
+layout_mode = 2
+
 [node name="pencilmarkSymbolSelector" type="GridContainer" parent="c/c/c" unique_id=1804293792]
 unique_name_in_owner = true
 layout_mode = 2
@@ -87,9 +92,16 @@ metadata/_custom_type_script = "uid://dvxmyqknv1g38"
 unique_name_in_owner = true
 layout_mode = 2
 
-[node name="pencilmarkTextEdit" type="LineEdit" parent="c/c/c" unique_id=2044559388]
+[node name="pencilmarkTextEdit" type="TextEdit" parent="c/c/c" unique_id=1630491439]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 24)
+custom_minimum_size = Vector2(0, 20)
+layout_mode = 2
+placeholder_text = "(multiline)"
+wrap_mode = 1
+scroll_fit_content_height = true
+
+[node name="c2" type="Control" parent="c/c/c" unique_id=1887979163]
+custom_minimum_size = Vector2(0, 4)
 layout_mode = 2
 
 [connection signal="pressed" from="c/c/c/weirdButtons/c/done" to="." method="_done"]

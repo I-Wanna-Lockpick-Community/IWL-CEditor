@@ -87,7 +87,10 @@ func _draw() -> void:
 			textDrawer.addNumber(number, drawColor, Color.BLACK)
 		TYPE.TEXT:
 			textDrawer.setDropShadow(Vector2(2,2), Color(Color.BLACK, 0.35))
-			textDrawer.addString(text, drawColor, Color.BLACK)
+			var lines:PackedStringArray = text.split("\n")
+			for line in len(lines):
+				textDrawer.addString(lines[line], drawColor, Color.BLACK)
+				if line != len(lines)-1: textDrawer.addNewline(4, TextDrawer.HORIZONTAL_ALIGN.CENTER)
 	textDrawer.evaluate()
 
 func propertyChangedInit(property:StringName) -> void:

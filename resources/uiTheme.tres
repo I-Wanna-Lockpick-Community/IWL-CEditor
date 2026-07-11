@@ -97,6 +97,20 @@ color = Color(0.49803922, 0.49803922, 0.49803922, 1)
 grow_begin = -4.0
 grow_end = -4.0
 
+[sub_resource type="DPITexture" id="DPITexture_bmmxy"]
+_source = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\"><circle cx=\"4\" cy=\"4\" r=\"1.5\" fill=\"#b2b2b2\" fill-opacity=\".25\"/></svg>
+"
+
+[sub_resource type="DPITexture" id="DPITexture_0b2ua"]
+_source = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\"><path fill=\"#b2b2b2\" fill-opacity=\".25\" d=\"M6 0v8h2V0zM1 0a1 1 0 0 0-.693 1.705L2.6 3.998.307 6.291A1 1 0 0 0 1.72 7.705l3-3a1 1 0 0 0 0-1.414l-3-3A1 1 0 0 0 1 0z\"/></svg>
+"
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_w58ka"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_1fv4g"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_0b2ua"]
+
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_jnf66"]
 content_margin_left = 2.0
 content_margin_top = 2.0
@@ -266,19 +280,35 @@ content_margin_top = 2.0
 content_margin_right = 8.0
 content_margin_bottom = 2.0
 
-[sub_resource type="DPITexture" id="DPITexture_bmmxy"]
-_source = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\"><circle cx=\"4\" cy=\"4\" r=\"1.5\" fill=\"#b2b2b2\" fill-opacity=\".25\"/></svg>
-"
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_vukqh"]
+content_margin_left = 2.0
+content_margin_top = 2.0
+content_margin_right = 2.0
+content_margin_bottom = 2.0
+bg_color = Color(0.6, 0.6, 0.6, 0)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0, 0.5137255, 0.99215686, 1)
+corner_detail = 5
+expand_margin_top = 4.0
+expand_margin_bottom = 4.0
 
-[sub_resource type="DPITexture" id="DPITexture_0b2ua"]
-_source = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"8\"><path fill=\"#b2b2b2\" fill-opacity=\".25\" d=\"M6 0v8h2V0zM1 0a1 1 0 0 0-.693 1.705L2.6 3.998.307 6.291A1 1 0 0 0 1.72 7.705l3-3a1 1 0 0 0 0-1.414l-3-3A1 1 0 0 0 1 0z\"/></svg>
-"
-
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_w58ka"]
-
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_1fv4g"]
-
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_0b2ua"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_420dv"]
+content_margin_left = 8.0
+content_margin_top = 2.0
+content_margin_right = 8.0
+content_margin_bottom = 2.0
+bg_color = Color(0.1, 0.1, 0.1, 0.6)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.5764706, 0.5764706, 0.5764706, 1)
+corner_detail = 5
+expand_margin_top = 4.0
+expand_margin_bottom = 4.0
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_eyl0i"]
 
@@ -372,6 +402,30 @@ HSeparatorThin/constants/separation = 1
 HSeparatorThin/styles/separator = SubResource("StyleBoxLine_1fv4g")
 Label/font_sizes/font_size = 12
 Label/fonts/font = ExtResource("1_bmmxy")
+LevelDescriptionTextEdit/base_type = &"TextEdit"
+LevelDescriptionTextEdit/colors/background_color = Color(0, 0, 0, 0)
+LevelDescriptionTextEdit/colors/caret_background_color = Color(0, 0, 0, 1)
+LevelDescriptionTextEdit/colors/caret_color = Color(0.1254902, 0, 0.1254902, 1)
+LevelDescriptionTextEdit/colors/current_line_color = Color(0.25, 0.25, 0.26, 0.8)
+LevelDescriptionTextEdit/colors/font_color = Color(0.1254902, 0, 0.1254902, 1)
+LevelDescriptionTextEdit/colors/font_outline_color = Color(0, 0, 0, 1)
+LevelDescriptionTextEdit/colors/font_placeholder_color = Color(0.4424, 0.48295337, 0.79, 1)
+LevelDescriptionTextEdit/colors/font_readonly_color = Color(0.1254902, 0, 0.1254902, 1)
+LevelDescriptionTextEdit/colors/font_selected_color = Color(0, 0, 0, 0)
+LevelDescriptionTextEdit/colors/search_result_border_color = Color(0.3, 0.3, 0.3, 0.4)
+LevelDescriptionTextEdit/colors/search_result_color = Color(0.3, 0.3, 0.3, 1)
+LevelDescriptionTextEdit/colors/selection_color = Color(0.6328224, 0.72446007, 0.98391825, 1)
+LevelDescriptionTextEdit/colors/word_highlighted_color = Color(0.5, 0.5, 0.5, 0.25)
+LevelDescriptionTextEdit/constants/caret_width = 1
+LevelDescriptionTextEdit/constants/line_spacing = 0
+LevelDescriptionTextEdit/constants/outline_size = 0
+LevelDescriptionTextEdit/font_sizes/font_size = 12
+LevelDescriptionTextEdit/fonts/font = ExtResource("2_0b2ua")
+LevelDescriptionTextEdit/icons/space = SubResource("DPITexture_bmmxy")
+LevelDescriptionTextEdit/icons/tab = SubResource("DPITexture_0b2ua")
+LevelDescriptionTextEdit/styles/focus = SubResource("StyleBoxEmpty_w58ka")
+LevelDescriptionTextEdit/styles/normal = SubResource("StyleBoxEmpty_1fv4g")
+LevelDescriptionTextEdit/styles/read_only = SubResource("StyleBoxEmpty_0b2ua")
 LineEdit/font_sizes/font_size = 12
 LineEdit/fonts/font = ExtResource("2_0b2ua")
 LineEdit/styles/focus = SubResource("StyleBoxFlat_jnf66")
@@ -439,29 +493,16 @@ TabBar/styles/tab_focus = SubResource("StyleBoxEmpty_bmmxy")
 TabBar/styles/tab_hovered = SubResource("StyleBoxFlat_0b2ua")
 TabBar/styles/tab_selected = SubResource("StyleBoxFlat_w58ka")
 TabBar/styles/tab_unselected = SubResource("StyleBoxEmpty_mie15")
-TextEdit/colors/background_color = Color(0, 0, 0, 0)
-TextEdit/colors/caret_background_color = Color(0, 0, 0, 1)
-TextEdit/colors/caret_color = Color(0.1254902, 0, 0.1254902, 1)
-TextEdit/colors/current_line_color = Color(0.25, 0.25, 0.26, 0.8)
-TextEdit/colors/font_color = Color(0.1254902, 0, 0.1254902, 1)
-TextEdit/colors/font_outline_color = Color(0, 0, 0, 1)
-TextEdit/colors/font_placeholder_color = Color(0.4424, 0.48295337, 0.79, 1)
-TextEdit/colors/font_readonly_color = Color(0.1254902, 0, 0.1254902, 1)
-TextEdit/colors/font_selected_color = Color(0, 0, 0, 0)
-TextEdit/colors/search_result_border_color = Color(0.3, 0.3, 0.3, 0.4)
-TextEdit/colors/search_result_color = Color(0.3, 0.3, 0.3, 1)
-TextEdit/colors/selection_color = Color(0.6328224, 0.72446007, 0.98391825, 1)
-TextEdit/colors/word_highlighted_color = Color(0.5, 0.5, 0.5, 0.25)
 TextEdit/constants/caret_width = 1
 TextEdit/constants/line_spacing = 0
 TextEdit/constants/outline_size = 0
+TextEdit/constants/wrap_offset = 0
 TextEdit/font_sizes/font_size = 12
 TextEdit/fonts/font = ExtResource("2_0b2ua")
 TextEdit/icons/space = SubResource("DPITexture_bmmxy")
 TextEdit/icons/tab = SubResource("DPITexture_0b2ua")
-TextEdit/styles/focus = SubResource("StyleBoxEmpty_w58ka")
-TextEdit/styles/normal = SubResource("StyleBoxEmpty_1fv4g")
-TextEdit/styles/read_only = SubResource("StyleBoxEmpty_0b2ua")
+TextEdit/styles/focus = SubResource("StyleBoxFlat_vukqh")
+TextEdit/styles/normal = SubResource("StyleBoxFlat_420dv")
 Tree/constants/v_separation = 2
 Tree/font_sizes/font_size = 12
 Tree/fonts/font = ExtResource("1_bmmxy")

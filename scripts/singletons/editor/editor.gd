@@ -533,13 +533,12 @@ func _input(event:InputEvent) -> void:
 		if settingsOpen:
 			if !settingsMenu.has_focus(): return
 			if eventIs(event, &"editHome"): home()
+		elif isTextInput(get_viewport().gui_get_focus_owner()):
+			match event.keycode:
+				KEY_ESCAPE: grab_focus()
+				KEY_TAB: modes.otherObjects._searchSubmitted()
 		elif Game.playState == Game.PLAY_STATE.PLAY:
 			# IN PLAY
-			if get_viewport().gui_get_focus_owner() is LineEdit:
-				match event.keycode:
-					KEY_ESCAPE: grab_focus()
-					KEY_TAB: modes.otherObjects._searchSubmitted()
-				return
 			if focusDialog.interacted and focusDialog.interacted.receiveKey(event): return
 			elif focusDialog.focused and focusDialog.receiveKey(event): return
 			elif focusDialog.interacted and focusDialog.interacted.receiveUnhandledKey(event): return
@@ -552,11 +551,6 @@ func _input(event:InputEvent) -> void:
 				_: Game.player.receiveKey(event)
 		else:
 			# IN EDIT
-			if get_viewport().gui_get_focus_owner() is LineEdit:
-				match event.keycode:
-					KEY_ESCAPE: grab_focus()
-					KEY_TAB: modes.otherObjects._searchSubmitted()
-				return
 			if focusDialog.interacted and focusDialog.interacted.receiveKey(event): return
 			elif focusDialog.focused and focusDialog.receiveKey(event): return
 			elif focusDialog.interacted and focusDialog.interacted.receiveUnhandledKey(event): return
@@ -598,6 +592,8 @@ func _input(event:InputEvent) -> void:
 				KEY_F3: takeThumbnailScreenshot(thumbnailWithText)
 
 static func eventIs(event:InputEvent, action:StringName, exactMatch:bool=true) -> bool: return event.is_action_pressed(action, false, exactMatch)
+
+static func isTextInput(control:Control) -> bool: return control is LineEdit or control is TextEdit
 
 func home() -> void:
 	targetCameraZoom = 1

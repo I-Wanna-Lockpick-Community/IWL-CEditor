@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://qrdba8qjtdip"]
 
 [ext_resource type="Script" uid="uid://b71a7ufm6gj51" path="res://scripts/singletons/settings/levelSettings.gd" id="1_iadmf"]
+[ext_resource type="Theme" uid="uid://bvfthh0vm4fbp" path="res://resources/uiTheme.tres" id="1_towrg"]
 [ext_resource type="Script" uid="uid://d1dnk5hils44t" path="res://scripts/nodes/settings/followWorld.gd" id="2_towrg"]
 [ext_resource type="FontFile" uid="uid://dftdrhvd8mdyi" path="res://resources/fonts/fLevelID.fnt" id="3_8wi13"]
 [ext_resource type="FontFile" uid="uid://cdifvlr6awojn" path="res://resources/fonts/fLevelName.fnt" id="4_llh53"]
@@ -18,8 +19,8 @@
 font_size = 14
 
 [node name="levelSettings" type="MarginContainer" unique_id=1360193335]
-visible = false
 size_flags_vertical = 3
+theme = ExtResource("1_towrg")
 theme_override_constants/margin_left = 10
 theme_override_constants/margin_top = 8
 theme_override_constants/margin_right = 10
@@ -207,6 +208,7 @@ unique_name_in_owner = true
 layout_mode = 0
 offset_right = 667.0
 offset_bottom = 68.0
+theme_type_variation = &"LevelDescriptionTextEdit"
 placeholder_text = "No description set; box will not be visible"
 wrap_mode = 1
 scroll_fit_content_height = true
