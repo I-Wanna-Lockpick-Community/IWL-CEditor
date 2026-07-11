@@ -305,6 +305,7 @@ func playSaved(fromOpenWindow:OpenWindow=null) -> void:
 	if !OS.has_feature("web"): get_window().size = Vector2(800,608) * uiScale
 	objects.clear()
 	components.clear()
+	notes.clear()
 	await get_tree().scene_changed
 	setWorld(playGame.world)
 	if fromOpenWindow: fromOpenWindow.resolve()
@@ -324,6 +325,7 @@ func edit() -> void:
 	if !OS.has_feature("web"): get_window().size = editorWindowSize
 	objects.clear()
 	components.clear()
+	notes.clear()
 	await get_tree().scene_changed
 	Saving.loadFile(Saving.savePath, true)
 	await get_tree().process_frame

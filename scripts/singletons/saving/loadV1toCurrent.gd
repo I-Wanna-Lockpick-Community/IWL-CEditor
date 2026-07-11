@@ -65,22 +65,23 @@ static func loadFile(file:FileAccess, fileVersion:FileVersion) -> void:
 	var noteBufferedArrays:Dictionary[int,Dictionary] = {} # dictionary[note id, dictionary[property name, array]]
 	if fileVersion.version >= 3:
 		Game.noteIdIter = file.get_64()
-		var type:GDScript = fileVersion.componentTypes[file.get_16()]
-		var note = type.SCENE.instantiate()
-		if Game.editor: note.editor = Game.editor
-		var typeDef:ComponentTypeDef = fileVersion.typeDefs[type]
-		for property in typeDef.savedProperties:
-			var value = migrateProperty(getVar(file, "objprop %s %s" % [type, property], true), note, property, fileVersion)
-			if property == &"id":
-				Game.notes[value] = note
-				Game.notesParent.add_child(note)
-			if value is Array: note.get(property).assign(value)
-			else: note.set(property, value)
-			note.propertyChangedDo(property)
-		noteBufferedArrays[note.id] = {}
-		for array in typeDef.savedArrays: note.get(array).assign(getVar(file, "objarray %s %s" % [type, array]))
-		# handle it at the end; not all referenced components will be ready
-		for array in typeDef.savedComponentArrays: noteBufferedArrays[note.id][array] = getVar(file, "notcomarray %s %s" % [type, array])
+		for _i in file.get_64():
+			var type:GDScript = fileVersion.componentTypes[file.get_16()]
+			var note = type.SCENE.instantiate()
+			if Game.editor: note.editor = Game.editor
+			var typeDef:ComponentTypeDef = fileVersion.typeDefs[type]
+			for property in typeDef.savedProperties:
+				var value = migrateProperty(getVar(file, "notprop %s %s" % [type, property], true), note, property, fileVersion)
+				if property == &"id":
+					Game.notes[value] = note
+					Game.notesParent.add_child(note)
+				if value is Array: note.get(property).assign(value)
+				else: note.set(property, value)
+				note.propertyChangedDo(property)
+			noteBufferedArrays[note.id] = {}
+			for array in typeDef.savedArrays: note.get(array).assign(getVar(file, "notarray %s %s" % [type, array]))
+			# handle it at the end; not all referenced components will be ready
+			for array in typeDef.savedComponentArrays: noteBufferedArrays[note.id][array] = getVar(file, "notcomarray %s %s" % [type, array])
 	
 	handleBufferedArrays(fileVersion, componentBufferedArrays, Game.components)
 	handleBufferedArrays(fileVersion, objectBufferedArrays, Game.objects)

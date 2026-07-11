@@ -38,7 +38,9 @@ var drawStar:RID
 var drawMain:RID
 var textDrawer:TextDrawer
 
-func _init() -> void: size = Vector2(18,18)
+func _init() -> void:
+	size = Vector2(18,18)
+	active = false
 
 func _ready() -> void:
 	drawStar = RenderingServer.canvas_item_create()
@@ -66,6 +68,9 @@ func isFocused() -> bool: return Game.editor.focusDialog.focused == self if Game
 func _draw() -> void:
 	RenderingServer.canvas_item_clear(drawStar)
 	RenderingServer.canvas_item_clear(drawMain)
+	if !active and !Game.editor:
+		textDrawer.evaluate()
+		return
 	var rect:Rect2 = Rect2(-getOffset(), size)
 	var center:Vector2 = size/2-getOffset()
 	var drawColor:Color = getColor(color)
