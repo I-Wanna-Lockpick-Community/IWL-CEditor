@@ -8,6 +8,7 @@ class_name FocusDialog
 @onready var playerDialog:PlayerDialog = %playerDialog
 @onready var keyCounterDialog:KeyCounterDialog = %keyCounterDialog
 @onready var goalDialog:GoalDialog = %goalDialog
+@onready var pencilmarkDialog:PencilmarkDialog = %pencilmarkDialog
 
 var focused:GameObject # the object that is currently focused
 var componentFocused:GameComponent # you can focus both a door and a lock at the same time so
@@ -29,7 +30,8 @@ func focus(object:GameObject, dontRedirect:bool=false) -> void:
 	var new:bool = object != focused
 	if new: focusOffsetAmount = -8
 	focused = object
-	Game.objectsParent.move_child(focused, -1)
+	if focused is GameNote: Game.notesParent.move_child(focused, -1)
+	else: Game.objectsParent.move_child(focused, -1)
 	showCorrectDialog()
 	if new: deinteract()
 	if activeDialog: activeDialog.focus(focused, new, dontRedirect)
@@ -47,6 +49,7 @@ func showCorrectDialog() -> void:
 		PlayerSpawn, PlayerPlaceholderObject: activeDialog = playerDialog
 		KeyCounter: activeDialog = keyCounterDialog; above = true
 		Goal: activeDialog = goalDialog
+		Pencilmark: activeDialog = pencilmarkDialog
 		_: %speechBubbler.visible = false
 	if activeDialog: activeDialog.visible = true
 

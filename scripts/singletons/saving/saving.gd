@@ -32,6 +32,7 @@ var FILE_VERSION:FileVersion
 # - tiles
 # - components
 # - objects
+# - notes
 
 func _ready() -> void:
 	if Engine.is_editor_hint(): return
@@ -116,7 +117,8 @@ func clear() -> void:
 		editor.connectionSource = null
 		if editor.modsWindow: editor.modsWindow._close()
 		editor.quickSet.applyOrCancel()
-		editor.modes._setMode(Editor.MODE.SELECT)
+		editor.modes.setMode(Editor.MODE.SELECT)
+		editor.modes.setView(Editor.VIEW.NORMAL)
 		editor.modes.otherObjects.objectSelected(PlayerSpawn, true)
 		editor.multiselect.deselect()
 		editor.multiselect.clipboard.clear()
@@ -130,6 +132,7 @@ func clear() -> void:
 	Game.goldIndexFloat = 0
 	Game.objectIdIter = 0
 	Game.componentIdIter = 0
+	Game.noteIdIter = 0
 	for object in Game.objects.values(): object.queue_free()
 	Game.objects.clear()
 	for component in Game.components.values(): component.queue_free()
@@ -194,27 +197,28 @@ func save(path:String="") -> void:
 	# components
 	file.store_64(Game.componentIdIter)
 	file.store_64(len(Game.components))
-	for component in Game.components.values():
-		file.store_16(Game.COMPONENTS.find(component.get_script()))
-		var typeDef:ComponentTypeDef = FILE_VERSION.typeDefs[component.get_script()]
-		for property in typeDef.savedProperties: file.store_var(component.get(property), true)
-		for array in typeDef.savedArrays: file.store_var(component.get(array))
-		for array in typeDef.savedComponentArrays: file.store_var(componentArrayToIDs(component.get(array)))
+	for component in Game.components.values(): storeComponent(file, component)
 	# objects
 	file.store_64(Game.objectIdIter)
 	file.store_64(len(Game.objects))
-	for object in Game.objects.values():
-		if object is PlaceholderObject: continue
-		file.store_16(Game.COMPONENTS.find(object.get_script()))
-		var typeDef:ComponentTypeDef = FILE_VERSION.typeDefs[object.get_script()]
-		for property in typeDef.savedProperties: file.store_var(object.get(property), true)
-		for array in typeDef.savedArrays: file.store_var(object.get(array))
-		for array in typeDef.savedComponentArrays: file.store_var(componentArrayToIDs(object.get(array)))
+	for object in Game.objects.values(): storeComponent(file, object)
+	# notes
+	file.store_64(Game.noteIdIter)
+	file.store_64(len(Game.notes))
+	for note in Game.notes.values(): storeComponent(file, note)
 	file.close()
 	if OS.has_feature('web') and confirmAction != ACTION.SAVE_FOR_PLAY:
 		JavaScriptBridge.download_buffer(FileAccess.get_file_as_bytes(path),Game.level.name+".cedit")
 	
 	if confirmAction == ACTION.SAVE_FOR_PLAY: Game.playSaved()
+
+func storeComponent(file:FileAccess, component:GameComponent) -> void:
+	if component is PlaceholderObject: return
+	file.store_16(Game.COMPONENTS.find(component.get_script()))
+	var typeDef:ComponentTypeDef = FILE_VERSION.typeDefs[component.get_script()]
+	for property in typeDef.savedProperties: file.store_var(component.get(property), true)
+	for array in typeDef.savedArrays: file.store_var(component.get(array))
+	for array in typeDef.savedComponentArrays: file.store_var(componentArrayToIDs(component.get(array)))
 
 func arrayTypeIsComponent(arrayType) -> bool: return arrayType is GDScript and arrayType in Game.COMPONENTS
 

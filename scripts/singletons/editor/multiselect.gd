@@ -61,12 +61,13 @@ func continueSelect() -> void:
 	size = Game.editor.worldspaceToScreenspace(rect.end) - position - Game.editor.gameCont.position
 	selected = []
 	# tiles
-	for x in range(floor(rect.position.x/32), ceil(rect.end.x/32)):
-		for y in range(floor(rect.position.y/32), ceil(rect.end.y/32)):
-			if Game.tiles.get_cell_source_id(Vector2i(x,y)) != -1: selected.append(TileSelect.new(Vector2i(x,y)*32))
+	if Game.editor.tilesInView():
+		for x in range(floor(rect.position.x/32), ceil(rect.end.x/32)):
+			for y in range(floor(rect.position.y/32), ceil(rect.end.y/32)):
+				if Game.tiles.get_cell_source_id(Vector2i(x,y)) != -1: selected.append(TileSelect.new(Vector2i(x,y)*32))
 	# objects
-	for object in Game.objectsParent.get_children():
-		if Rect2(object.position,object.size).intersects(rect):
+	for object in Game.editor.objectsInView():
+		if Rect2(object.getDrawPosition(),object.size).intersects(rect):
 			selected.append(ObjectSelect.new(object))
 	draw()
 
@@ -208,8 +209,7 @@ class ObjectSelect extends Select:
 	func delete() -> void: Changes.addChange(Changes.DeleteComponentChange.new(object))
 
 	func getDrawPosition() -> Vector2:
-		if object is RemoteLock or object is PlayerPlaceholderObject: return pos()-object.getOffset()
-		else: return pos()
+		return pos()-object.getOffset()
 
 	func getDrawSize() -> Vector2: return object.getDrawSize()
 

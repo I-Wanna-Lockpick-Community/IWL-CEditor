@@ -1,0 +1,10 @@
+[gd_resource type="ShaderMaterial" format=3 uid="uid://bxbxt7pdnuouh"]
+
+[ext_resource type="Shader" uid="uid://befrul0j4yc02" path="res://resources/materials/game.gdshader" id="1_67hvi"]
+
+[resource]
+shader = ExtResource("1_67hvi")
+shader_parameter/GRID_COLOR = Color(0.54901963, 0.54901963, 0.54901963, 0.54509807)
+shader_parameter/screenPosition = Vector2(0, 0)
+shader_parameter/mousePosition = Vector2(0, 0)
+shader_parameter/tileSize = Vector2(32, 32)

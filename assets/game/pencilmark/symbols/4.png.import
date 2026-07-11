@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://b3j8ipjeftvgd"
-path="res://.godot/imported/sprMarkSymbol_2.png-ea065f5f1b59e9c09a7e87ec58280ca1.ctex"
+uid="uid://dydohsyc5a2at"
+path="res://.godot/imported/4.png-805180fb08dbd2e2d647704894924415.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/game/gameUI/pencilmark/sprMarkSymbol_2.png"
-dest_files=["res://.godot/imported/sprMarkSymbol_2.png-ea065f5f1b59e9c09a7e87ec58280ca1.ctex"]
+source_file="res://assets/game/pencilmark/symbols/4.png"
+dest_files=["res://.godot/imported/4.png-805180fb08dbd2e2d647704894924415.ctex"]
 
 [params]
 

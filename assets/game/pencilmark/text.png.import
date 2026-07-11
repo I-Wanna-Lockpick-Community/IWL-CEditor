@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://2hc8vdvgfj7c"
-path="res://.godot/imported/sprMarkUIButtons_0.png-92a1dba6cbf5ea7b789c1d556873f8d0.ctex"
+uid="uid://c0jhm6daog2fr"
+path="res://.godot/imported/text.png-730d59c0b72c4778a00a2cb20e8ca60b.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/game/gameUI/pencilmark/sprMarkUIButtons_0.png"
-dest_files=["res://.godot/imported/sprMarkUIButtons_0.png-92a1dba6cbf5ea7b789c1d556873f8d0.ctex"]
+source_file="res://assets/game/pencilmark/text.png"
+dest_files=["res://.godot/imported/text.png-730d59c0b72c4778a00a2cb20e8ca60b.ctex"]
 
 [params]
 

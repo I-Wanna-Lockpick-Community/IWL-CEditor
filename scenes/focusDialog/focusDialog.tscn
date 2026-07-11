@@ -56,6 +56,7 @@
 [ext_resource type="Texture2D" uid="uid://cv1qa4bwwetr5" path="res://assets/ui/focusDialog/numberEdit/parenthesis.png" id="38_lm5cw"]
 [ext_resource type="Script" uid="uid://vfxgywtu3kgg" path="res://scripts/singletons/focusDialog/playerDialog.gd" id="40_p7jkh"]
 [ext_resource type="Texture2D" uid="uid://bde4hvh2i41bh" path="res://assets/ui/focusDialog/key/type/curse/curse.png" id="41_ft2jg"]
+[ext_resource type="PackedScene" uid="uid://ckdtw7bdno4hp" path="res://scenes/game/pencilmarkDialog.tscn" id="57_4g8uu"]
 
 [sub_resource type="Resource" id="Resource_hdjws"]
 script = ExtResource("22_s5h3h")
@@ -189,6 +190,7 @@ script = ExtResource("2_k8bto")
 
 [node name="keyDialog" type="Control" parent="." unique_id=538684455 groups=["modUI"]]
 unique_name_in_owner = true
+visible = false
 anchors_preset = 0
 script = ExtResource("3_b5h7e")
 
@@ -308,6 +310,7 @@ script = ExtResource("14_sb8el")
 
 [node name="doorDialog" type="Control" parent="." unique_id=1206125138 groups=["modUI"]]
 unique_name_in_owner = true
+visible = false
 anchors_preset = 0
 script = ExtResource("11_drywk")
 
@@ -916,6 +919,10 @@ layout_mode = 2
 unique_name_in_owner = true
 layout_mode = 2
 script = ExtResource("26_1rcup")
+
+[node name="pencilmarkDialog" parent="." unique_id=1187350792 instance=ExtResource("57_4g8uu")]
+unique_name_in_owner = true
+layout_mode = 0
 
 [node name="speechBubbler" type="Node2D" parent="." unique_id=1211445522]
 unique_name_in_owner = true

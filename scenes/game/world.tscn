@@ -1,10 +1,10 @@
 [gd_scene format=3 uid="uid://2hd65vn44me7"]
 
-[ext_resource type="Texture2D" uid="uid://dsany13ywiwir" path="res://assets/game/tiles.png" id="1_2q6dc"]
-[ext_resource type="Script" uid="uid://dki6lcfsouybo" path="res://scripts/singletons/game/world.gd" id="1_k0juu"]
+[ext_resource type="Script" uid="uid://dki6lcfsouybo" path="res://scripts/singletons/game/world.gd" id="1_g5t8f"]
+[ext_resource type="Texture2D" uid="uid://dsany13ywiwir" path="res://assets/game/tiles.png" id="2_d8brc"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_rwgxs"]
-texture = ExtResource("1_2q6dc")
+texture = ExtResource("2_d8brc")
 texture_region_size = Vector2i(32, 32)
 0:0/0 = 0
 0:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-16, -16, 16, -16, 16, 16, -16, 16)
@@ -21,9 +21,12 @@ physics_layer_0/collision_layer = 3
 sources/1 = SubResource("TileSetAtlasSource_rwgxs")
 
 [node name="world" type="Node2D" unique_id=525076419]
-script = ExtResource("1_k0juu")
+script = ExtResource("1_g5t8f")
 
-[node name="tilesDropShadow" type="TileMapLayer" parent="." unique_id=1606404537]
+[node name="normalView" type="Node2D" parent="." unique_id=1956412700]
+unique_name_in_owner = true
+
+[node name="tilesDropShadow" type="TileMapLayer" parent="normalView" unique_id=1606404537]
 unique_name_in_owner = true
 modulate = Color(0, 0, 0, 0.34901962)
 z_index = -3
@@ -31,14 +34,20 @@ position = Vector2(3, 3)
 tile_set = SubResource("TileSet_w8frs")
 collision_enabled = false
 
-[node name="tiles" type="TileMapLayer" parent="." unique_id=1926583315]
+[node name="tiles" type="TileMapLayer" parent="normalView" unique_id=1926583315]
 unique_name_in_owner = true
 z_index = -3
 tile_set = SubResource("TileSet_w8frs")
 
-[node name="objectsParent" type="Node2D" parent="." unique_id=758476472]
+[node name="objectsParent" type="Node2D" parent="normalView" unique_id=758476472]
 unique_name_in_owner = true
 
-[node name="particlesParent" type="Node2D" parent="." unique_id=960573528]
+[node name="particlesParent" type="Node2D" parent="normalView" unique_id=960573528]
 unique_name_in_owner = true
 z_index = 3
+
+[node name="notesView" type="Node2D" parent="." unique_id=660984929]
+unique_name_in_owner = true
+
+[node name="notesParent" type="Node2D" parent="notesView" unique_id=217950783]
+unique_name_in_owner = true

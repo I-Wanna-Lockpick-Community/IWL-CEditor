@@ -62,30 +62,29 @@ static func loadFile(file:FileAccess, fileVersion:FileVersion) -> void:
 		# handle it at the end; not all referenced components will be ready
 		for array in typeDef.savedComponentArrays: objectBufferedArrays[object.id][array] = getVar(file, "objcomarray %s %s" % [type, array])
 	
-	for componentId in componentBufferedArrays.keys():
-		var component:GameComponent = Game.components[componentId]
-		var typeDef:ComponentTypeDef = fileVersion.typeDefs[component.get_script()]
-		for array in typeDef.savedComponentArrays:
-			var value:Array = componentBufferedArrays[componentId][array]
-			var arrayType = typeDef.savedComponentArrays[array]
-			component.get(array).assign(Saving.IDArraytoComponents(arrayType,value))
-
-	for objectId in objectBufferedArrays.keys():
-		var object:GameObject = Game.objects[objectId]
-		var typeDef:ComponentTypeDef = fileVersion.typeDefs[object.get_script()]
-		for array in typeDef.savedComponentArrays:
-			var value:Array = objectBufferedArrays[objectId][array]
-			var arrayType = typeDef.savedComponentArrays[array]
-			object.get(array).assign(Saving.IDArraytoComponents(arrayType,value))
-			if object is Door and array == &"locks":
-				for lock in object.locks:
-					lock.parent = object
-					object.add_child(lock)
-				object.reindexLocks()
-			elif object is KeyCounter and array == &"elements":
-				for element in object.elements:
-					element.parent = object
-					object.add_child(element)
+	var noteBufferedArrays:Dictionary[int,Dictionary] = {} # dictionary[note id, dictionary[property name, array]]
+	if fileVersion.version >= 3:
+		Game.noteIdIter = file.get_64()
+		var type:GDScript = fileVersion.componentTypes[file.get_16()]
+		var note = type.SCENE.instantiate()
+		if Game.editor: note.editor = Game.editor
+		var typeDef:ComponentTypeDef = fileVersion.typeDefs[type]
+		for property in typeDef.savedProperties:
+			var value = migrateProperty(getVar(file, "objprop %s %s" % [type, property], true), note, property, fileVersion)
+			if property == &"id":
+				Game.notes[value] = note
+				Game.notesParent.add_child(note)
+			if value is Array: note.get(property).assign(value)
+			else: note.set(property, value)
+			note.propertyChangedDo(property)
+		noteBufferedArrays[note.id] = {}
+		for array in typeDef.savedArrays: note.get(array).assign(getVar(file, "objarray %s %s" % [type, array]))
+		# handle it at the end; not all referenced components will be ready
+		for array in typeDef.savedComponentArrays: noteBufferedArrays[note.id][array] = getVar(file, "notcomarray %s %s" % [type, array])
+	
+	handleBufferedArrays(fileVersion, componentBufferedArrays, Game.components)
+	handleBufferedArrays(fileVersion, objectBufferedArrays, Game.objects)
+	handleBufferedArrays(fileVersion, noteBufferedArrays, Game.notes)
 
 	#if levelStart != -1:
 	#	Game.levelStart = Game.objects[levelStart]
@@ -96,12 +95,35 @@ static func loadFile(file:FileAccess, fileVersion:FileVersion) -> void:
 		Game.editor.settingsMenu.opened()
 	Game.get_tree().call_group("modUI", "changedMods")
 
+static func handleBufferedArrays(fileVersion:FileVersion, bufferedArrays:Dictionary[int,Dictionary], dictionary:Dictionary) -> void:
+	for componentId in bufferedArrays.keys():
+		var component:GameComponent = dictionary[componentId]
+		var typeDef:ComponentTypeDef = fileVersion.typeDefs[component.get_script()]
+		for array in typeDef.savedComponentArrays:
+			var value:Array = bufferedArrays[componentId][array]
+			var arrayType = typeDef.savedComponentArrays[array]
+			component.get(array).assign(Saving.IDArraytoComponents(arrayType,value))
+			if component is Door and array == &"locks":
+				for lock in component.locks:
+					lock.parent = component
+					component.add_child(lock)
+				component.reindexLocks()
+			elif component is KeyCounter and array == &"elements":
+				for element in component.elements:
+					element.parent = component
+					component.add_child(element)
+
 static func getVar(file:FileAccess, reason:String, allowObjects:bool=false):
 	var value = file.get_var(allowObjects)
 	if TEST_PRINTING: print(reason, value)
 	return value
 
 static func migrateProperty(value, component:GameComponent, property:StringName, fileVersion:FileVersion):
-	if fileVersion.version < 3 and component is PlayerSpawn and property == &"undoStack": return value.serialisedStack if value else []
+	if fileVersion.version < 3 and component is PlayerSpawn and property == &"undoStack": return migrateSerialisedUndoStack(value) if value else []
 	elif fileVersion.version < 3 and component is KeyBulk and property == &"boolType": return int(value)
 	else: return value
+
+static func migrateSerialisedUndoStack(stack:SerialisedUndoStack) -> Array[Array]:
+	for change in stack.serialisedStack:
+		if change[0] == GameChanges.PropertyChange: change[1] = Lock if change[1] else Door # lie because we arent doing anything with it anyway
+	return stack.serialisedStack

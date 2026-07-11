@@ -170,6 +170,7 @@ static func drawLevelDescription(drawer:RID, pos:Vector2=Vector2.ZERO) -> void:
 	TextDraw.outlinedCentered(Game.FROOMNUM,drawer,Game.level.shortNumber,Color("#8c50c8"),Color("#140064"),20,pos+Vector2(733,569))
 
 func _input(event:InputEvent) -> void:
+	if event is InputEventMouseMotion: Game.mouseMoveTimer = 0
 	if event is InputEventKey and event.is_pressed():
 		if !event.is_echo():
 			if event.keycode == KEY_F5: queue_redraw()

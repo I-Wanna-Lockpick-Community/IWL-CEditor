@@ -22,7 +22,6 @@ func draw() -> void:
 
 func drawOutline(component:GameComponent,color:Color) -> void:
 	var pos:Vector2 = component.getDrawPosition()
-	if component is PlayerPlaceholderObject: pos -= component.getOffset()
 	if component.get_script() in Game.RECTANGLE_COMPONENTS:
 		RenderingServer.canvas_item_add_rect(drawNormal,Rect2(pos,component.getDrawSize()),color)
 	else:

@@ -14,6 +14,7 @@ func _ready() -> void:
 
 func _searchFocused() -> void:
 	Game.editor.focusDialog.defocus()
+	Game.editor.modes.setView(Editor.VIEW.NORMAL)
 	await get_tree().process_frame
 	objectSearch.text = ""
 	_updateSearch()
@@ -48,7 +49,7 @@ func matchesSearch(object:GDScript, search:String) -> bool:
 func objectSelected(object:GDScript, quiet:bool=false) -> void:
 	%other.icon = object.SEARCH_ICON
 	selected = object
-	if !quiet: Game.editor.modes._setMode(Editor.MODE.OTHER)
+	if !quiet: Game.editor.modes.setMode(Editor.MODE.OTHER)
 
 func _searchSubmitted() -> void:
 	if firstResult: objectSelected(firstResult)

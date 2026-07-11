@@ -25,7 +25,7 @@ func _process(delta: float) -> void:
 		var opacity:float = (1 - abs(view + %modesVerticalContainer.position.y/VIEW_HEIGHT)) ** 4
 		for button in MODE_BUTTONS_BY_VIEW[view]: button.hotkeyOpacity = opacity
 
-func _setMode(mode:Editor.MODE) -> void:
+func setMode(mode:Editor.MODE) -> void:
 	Game.editor.multiselect.deselect()
 	Game.editor.mode = mode
 	Game.editor.placePreviewWorld.tiles.clear()
@@ -77,6 +77,7 @@ func _setMode(mode:Editor.MODE) -> void:
 								element.set(property, elementCopy.properties[property])
 		Editor.MODE.PENCILMARK:
 			%pencilmark.button_pressed = true
+			Game.editor.placePreviewWorld.objectsParent.add_child(Pencilmark.SCENE.instantiate())
 
 func previousView() -> void: setView(posmod(Game.editor.view-1,Editor.VIEWS))
 func nextView() -> void: setView(posmod(Game.editor.view+1,Editor.VIEWS))
@@ -89,8 +90,16 @@ func setView(view:Editor.VIEW) -> void:
 	Game.editor.view = view
 	var modeView:int = MODES_BY_VIEW.find_custom(func(a:Array)->bool:return a.has(Game.editor.mode))
 	if modeView != -1 and modeView != view:
-		_setMode(MODES_BY_VIEW[view][min(MODES_BY_VIEW[modeView].find(Game.editor.mode), len(MODES_BY_VIEW[view])-1)])
-
+		setMode(MODES_BY_VIEW[view][min(MODES_BY_VIEW[modeView].find(Game.editor.mode), len(MODES_BY_VIEW[view])-1)])
+	match view:
+		Editor.VIEW.NORMAL:
+			Game.world.normalView.modulate.v = 1
+			Game.world.notesView.modulate.a = 0.5
+			Game.GAME_MATERIAL.set_shader_parameter(&"GRID_COLOR", Color("#8c8c8c8b"))
+		Editor.VIEW.NOTES:
+			Game.world.normalView.modulate.v = 0.7
+			Game.world.notesView.modulate.a = 1
+			Game.GAME_MATERIAL.set_shader_parameter(&"GRID_COLOR", Color("#c8be548b"))
 func addLock(door:Door) -> Lock:
 	var lock = Lock.new()
 	lock.parent = door
@@ -113,4 +122,4 @@ class ViewDot extends TextureRect:
 		view = _view
 		stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 		texture = preload("res://assets/ui/modes/dot.png")
-		modulate.a = 1 if view == Editor.VIEW.NORMAL else 0.5
+		modulate.a = 1.0 if view == Editor.VIEW.NORMAL else 0.5

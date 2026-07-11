@@ -146,12 +146,11 @@ func _process(delta:float) -> void:
 		objectHovered = null
 		var hoverZIndex:int = 0
 		if !Input.is_action_pressed(&"heldKeepMode") and !settingsOpen:
-			for object in Game.objectsParent.get_children():
-				if mode == MODE.SELECT or Game.playState == Game.PLAY_STATE.PLAY or (mode == MODE.KEY and object is KeyBulk) or (mode == MODE.DOOR and object is Door) or (mode == MODE.OTHER and object.get_script() == modes.otherObjects.selected):
-					if hoverZIndex <= object.z_index and Rect2(object.getDrawPosition(), object.size).has_point(mouseWorldPosition) and (Game.playState != Game.PLAY_STATE.PLAY or object.active):
-						objectHovered = object
-						hoverZIndex = object.z_index
-						objectsHovered.append(object)
+			for object in objectsInView():
+				if objectSelectable(object) and hoverZIndex <= object.z_index and Rect2(object.getDrawPosition(), object.size).has_point(mouseWorldPosition):
+					objectHovered = object
+					hoverZIndex = object.z_index
+					objectsHovered.append(object)
 			if focusDialog.focused is Door:
 				for lock in focusDialog.focused.locks:
 					if Rect2(lock.getDrawPosition(), lock.size).has_point(mouseWorldPosition):
@@ -175,6 +174,30 @@ func _process(delta:float) -> void:
 	if Mods.bufferedModsChanged:
 		get_tree().call_group("modUI", "changedMods")
 		Mods.bufferedModsChanged = false
+
+func objectSelectable(object:GameObject) -> bool:
+	if Game.playState == Game.PLAY_STATE.PLAY: return object.active
+	match mode:
+		MODE.SELECT: return true
+		MODE.KEY: return object is KeyBulk
+		MODE.DOOR: return object is Door
+		MODE.OTHER: return object.get_script() == modes.otherObjects.selected
+		MODE.PENCILMARK: return object is Pencilmark
+		_: return false
+
+func objectsInView() -> Array:
+	match view:
+		VIEW.NORMAL: return Game.objects.values()
+		VIEW.NOTES: return Game.notes.values()
+	assert(false)
+	return []
+
+func tilesInView() -> bool:
+	match view:
+		VIEW.NORMAL: return true
+		VIEW.NOTES: return false
+	assert(false)
+	return true
 
 func _gui_input(event:InputEvent) -> void:
 	if !objectHovered: objectHovered = null
@@ -269,7 +292,7 @@ func _gui_input(event:InputEvent) -> void:
 							var key:KeyBulk = Changes.addChange(Changes.CreateComponentChange.new(KeyBulk,{&"position":mouseTilePosition})).result
 							focusDialog.defocus()
 							if !Input.is_action_pressed(&"heldKeepMode"):
-								modes._setMode(MODE.SELECT)
+								modes.setMode(MODE.SELECT)
 								startPositionDrag(key)
 					if Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT):
 						if objectHovered is KeyBulk:
@@ -288,7 +311,7 @@ func _gui_input(event:InputEvent) -> void:
 								startSizeDrag(door)
 								Changes.addChange(Changes.CreateComponentChange.new(Lock,{&"position":Vector2.ZERO,&"parentId":door.id}))
 								if !Input.is_action_pressed(&"heldKeepMode"):
-									modes._setMode(MODE.SELECT)
+									modes.setMode(MODE.SELECT)
 					if Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT):
 						if objectHovered is Door:
 							Changes.addChange(Changes.DeleteComponentChange.new(objectHovered))
@@ -306,7 +329,7 @@ func _gui_input(event:InputEvent) -> void:
 							if modes.otherObjects.selected == KeyCounter:
 								Changes.addChange(Changes.CreateComponentChange.new(KeyCounterElement,{&"position":Vector2(12,12),&"parentId":object.id}))
 							if !Input.is_action_pressed(&"heldKeepMode"):
-								modes._setMode(MODE.SELECT)
+								modes.setMode(MODE.SELECT)
 								startPositionDrag(object)
 					if Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT):
 						if objectHovered and objectHovered.get_script() == modes.otherObjects.selected:
@@ -316,7 +339,23 @@ func _gui_input(event:InputEvent) -> void:
 					if isLeftClick(event):
 						multiselect.paste()
 						if !Input.is_action_pressed(&"heldKeepMode"):
-							modes._setMode(MODE.SELECT)
+							modes.setMode(MODE.SELECT)
+				MODE.PENCILMARK:
+					if isLeftClick(event): # if youre hovering a key and you leftclick, focus it
+						if objectHovered is Pencilmark:
+							startPositionDrag(objectHovered)
+						else: focusDialog.defocus()
+					if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
+						if objectHovered is not Pencilmark and inBounds:
+							var pencilmark:Pencilmark = Changes.addChange(Changes.CreateComponentChange.new(Pencilmark,{&"position":mouseTilePosition})).result
+							focusDialog.defocus()
+							if !Input.is_action_pressed(&"heldKeepMode"):
+								modes.setMode(MODE.SELECT)
+								startPositionDrag(pencilmark)
+					if Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT):
+						if objectHovered is Pencilmark:
+							Changes.addChange(Changes.DeleteComponentChange.new(objectHovered))
+							Changes.bufferSave()
 
 func stopDrag() -> void:
 	if componentDragged == levelBoundsObject:
@@ -449,6 +488,8 @@ func dragComponent() -> void: # returns whether or not an object is being dragge
 				Changes.addChange(Changes.PropertyChange.new(componentDragged,&"size",toRect.size))
 
 func _input(event:InputEvent) -> void:
+	if event is InputEventMouseMotion: Game.mouseMoveTimer = 0
+
 	if quickSet.component: quickSet.receiveInput(event); return
 	if event is InputEventKey and event.is_pressed():
 		if settingsOpen:
@@ -476,13 +517,13 @@ func _input(event:InputEvent) -> void:
 			elif eventIs(event, &"editStopPlaytest") and Game.playState == Game.PLAY_STATE.PAUSED: Game.stopTest()
 			elif eventIs(event, &"editViewPrevious"): modes.previousView()
 			elif eventIs(event, &"editViewNext"): modes.nextView()
-			elif eventIs(event, &"editModeSelect"): modes._setMode(MODE.SELECT); focusDialog.defocus(); componentDragged = null; multiselect.deselect()
-			elif eventIs(event, &"editModeTile"): modes._setMode(MODE.TILE)
-			elif eventIs(event, &"editModeKey"): modes._setMode(MODE.KEY)
-			elif eventIs(event, &"editModeDoor"): modes._setMode(MODE.DOOR)
-			elif eventIs(event, &"editModeOther"): modes._setMode(MODE.OTHER)
+			elif eventIs(event, &"editModeSelect"): modes.setMode(MODE.SELECT); focusDialog.defocus(); componentDragged = null; multiselect.deselect()
+			elif eventIs(event, &"editModeTile"): modes.setMode(MODE.TILE)
+			elif eventIs(event, &"editModeKey"): modes.setMode(MODE.KEY)
+			elif eventIs(event, &"editModeDoor"): modes.setMode(MODE.DOOR)
+			elif eventIs(event, &"editModeOther"): modes.setMode(MODE.OTHER)
 			elif eventIs(event, &"editObjectSearch"): modes.otherObjects.objectSearch.grab_focus()
-			elif eventIs(event, &"editModePencilmark"): modes._setMode(MODE.PENCILMARK)
+			elif eventIs(event, &"editModePencilmark"): modes.setMode(MODE.PENCILMARK)
 			elif eventIs(event, &"editPipette"): pipette()
 			elif eventIs(event, &"editOpenSettings"): _toggleSettingsMenu(true)
 			elif eventIs(event, &"editNew"): fileMenu.optionPressed(0)
@@ -493,7 +534,7 @@ func _input(event:InputEvent) -> void:
 			elif eventIs(event, &"editHome"): home()
 			elif eventIs(event, &"editCopy"): multiselect.copySelection()
 			elif eventIs(event, &"editCut"): multiselect.copySelection(); multiselect.delete()
-			elif eventIs(event, &"editPaste") and multiselect.clipboard != []: modes._setMode(MODE.PASTE)
+			elif eventIs(event, &"editPaste") and multiselect.clipboard != []: modes.setMode(MODE.PASTE)
 			elif eventIs(event, &"editUndo"): multiselect.deselect(); Changes.undo()
 			elif eventIs(event, &"editRedo"): multiselect.deselect(); Changes.redo()
 			elif eventIs(event, &"editDrag"):
@@ -529,10 +570,10 @@ func pipette() -> void:
 		multiselect.selectRect.position = objectHovered.position
 		multiselect.clipboard.assign([multiselect.createObjectCopy(objectHovered)])
 		modes.paste.disabled = false
-		modes._setMode(MODE.PASTE)
+		modes.setMode(MODE.PASTE)
 		@warning_ignore("integer_division")
-	elif Game.tiles.get_cell_source_id(mouseTilePosition/32) != -1: modes._setMode(MODE.TILE)
-	else: modes._setMode(MODE.SELECT)
+	elif Game.tiles.get_cell_source_id(mouseTilePosition/32) != -1: modes.setMode(MODE.TILE)
+	else: modes.setMode(MODE.SELECT)
 
 func worldspaceToScreenspace(vector:Vector2) -> Vector2:
 	if Game.playState == Game.PLAY_STATE.PLAY: return (vector - playtestCamera.get_screen_center_position())*playtestCamera.zoom/Game.uiScale + gameCont.position + gameCont.size/2

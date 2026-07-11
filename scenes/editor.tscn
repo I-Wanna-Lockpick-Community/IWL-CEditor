@@ -8,11 +8,11 @@
 [ext_resource type="Script" uid="uid://bu13x48angurk" path="res://scripts/singletons/editor/fileMenu.gd" id="6_7msgv"]
 [ext_resource type="PackedScene" uid="uid://c1g0554rih35" path="res://scenes/modes.tscn" id="6_nhltt"]
 [ext_resource type="PackedScene" uid="uid://2hd65vn44me7" path="res://scenes/game/world.tscn" id="8_5tdu1"]
-[ext_resource type="Shader" uid="uid://befrul0j4yc02" path="res://resources/materials/game.gdshader" id="8_o435n"]
 [ext_resource type="FontFile" uid="uid://cjub6sxbu8elx" path="res://resources/fonts/RobotoMono-SemiBold.ttf" id="12_2w0at"]
 [ext_resource type="PackedScene" uid="uid://8bth374yqwpe" path="res://scenes/focusDialog/focusDialog.tscn" id="12_74j0u"]
 [ext_resource type="PackedScene" uid="uid://c1kt2qxw6ooqf" path="res://scenes/multiselect.tscn" id="12_q8l03"]
 [ext_resource type="Script" uid="uid://pssxp78klup" path="res://scripts/singletons/editor/multiselect.gd" id="13_0u1f5"]
+[ext_resource type="Material" uid="uid://bxbxt7pdnuouh" path="res://resources/materials/gameMaterial.tres" id="13_nhltt"]
 [ext_resource type="Texture2D" uid="uid://dn5r7rhgoxtrt" path="res://assets/ui/playControls/play.png" id="13_wyx26"]
 [ext_resource type="Script" uid="uid://y6lb6luqyxy2" path="res://scripts/singletons/editor/quickSet.gd" id="14_sdh1e"]
 [ext_resource type="Texture2D" uid="uid://lbuoq1o35ds2" path="res://assets/ui/playControls/pause.png" id="15_fce0a"]
@@ -54,12 +54,6 @@ script = ExtResource("17_bn54a")
 explanation = "[%s]Stop Playtest"
 hotkeys = Array[StringName]([&"editStopPlaytest"])
 metadata/_custom_type_script = "uid://lwocqakgt4qr"
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_3vi5u"]
-shader = ExtResource("8_o435n")
-shader_parameter/screenPosition = Vector2(0, 0)
-shader_parameter/mousePosition = Vector2(0, 0)
-shader_parameter/tileSize = Vector2(32, 32)
 
 [sub_resource type="ViewportTexture" id="ViewportTexture_e62bx"]
 viewport_path = NodePath("c/gameCont/gameViewportDisplay/gameViewport")
@@ -238,7 +232,7 @@ theme_override_constants/margin_bottom = 0
 
 [node name="gameViewportDisplay" type="TextureRect" parent="c/gameCont" unique_id=1661740365]
 unique_name_in_owner = true
-material = SubResource("ShaderMaterial_3vi5u")
+material = ExtResource("13_nhltt")
 layout_mode = 2
 mouse_filter = 2
 texture = SubResource("ViewportTexture_e62bx")
@@ -294,7 +288,6 @@ texture = SubResource("ViewportTexture_v24q3")
 [node name="outline" type="Node2D" parent="c/gameCont/outlineViewport2" unique_id=1982434259]
 unique_name_in_owner = true
 z_index = 8
-position = Vector2(0, -44)
 script = ExtResource("23_lo5f0")
 
 [node name="placePreview" type="TextureRect" parent="c/gameCont" unique_id=1637035575]

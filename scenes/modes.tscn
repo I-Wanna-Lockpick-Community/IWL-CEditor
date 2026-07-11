@@ -14,7 +14,7 @@
 [ext_resource type="Texture2D" uid="uid://b2ouh1fqa64em" path="res://assets/ui/modes/search.png" id="9_x4wi8"]
 [ext_resource type="Script" uid="uid://cgjhnhjwymb8g" path="res://scripts/resources/controlExplanation.gd" id="10_o0tdl"]
 [ext_resource type="Texture2D" uid="uid://b4tmgbs01eh7i" path="res://assets/ui/modes/paste.png" id="11_dmex2"]
-[ext_resource type="Texture2D" uid="uid://b5erxoymd7kbv" path="res://assets/game/gameUI/pencilmark/sprMarkUIButtons_3.png" id="13_yirx3"]
+[ext_resource type="Texture2D" uid="uid://b5erxoymd7kbv" path="res://assets/game/pencilmark/pencilmark.png" id="13_yirx3"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_74j0u"]
 content_margin_left = 2.0
@@ -238,16 +238,16 @@ pressedHotkey = &"heldKeepMode"
 hotkeyParent = NodePath("../../../..")
 metadata/_custom_type_script = "uid://buv3n70m06kje"
 
-[connection signal="pressed" from="select" to="." method="_setMode" binds= [0]]
-[connection signal="pressed" from="paste" to="." method="_setMode" binds= [5]]
+[connection signal="pressed" from="select" to="." method="setMode" binds= [0]]
+[connection signal="pressed" from="paste" to="." method="setMode" binds= [5]]
 [connection signal="pressed" from="c2/up" to="." method="previousView"]
 [connection signal="pressed" from="c2/down" to="." method="nextView"]
-[connection signal="pressed" from="clip/modesVerticalContainer/normal/tile" to="." method="_setMode" binds= [1]]
-[connection signal="pressed" from="clip/modesVerticalContainer/normal/key" to="." method="_setMode" binds= [2]]
-[connection signal="pressed" from="clip/modesVerticalContainer/normal/door" to="." method="_setMode" binds= [3]]
-[connection signal="pressed" from="clip/modesVerticalContainer/normal/otherObjects/other" to="." method="_setMode" binds= [4]]
+[connection signal="pressed" from="clip/modesVerticalContainer/normal/tile" to="." method="setMode" binds= [1]]
+[connection signal="pressed" from="clip/modesVerticalContainer/normal/key" to="." method="setMode" binds= [2]]
+[connection signal="pressed" from="clip/modesVerticalContainer/normal/door" to="." method="setMode" binds= [3]]
+[connection signal="pressed" from="clip/modesVerticalContainer/normal/otherObjects/other" to="." method="setMode" binds= [4]]
 [connection signal="focus_entered" from="clip/modesVerticalContainer/normal/otherObjects/objectSearch" to="clip/modesVerticalContainer/normal/otherObjects" method="_searchFocused"]
 [connection signal="focus_exited" from="clip/modesVerticalContainer/normal/otherObjects/objectSearch" to="clip/modesVerticalContainer/normal/otherObjects" method="_searchDefocused"]
 [connection signal="text_changed" from="clip/modesVerticalContainer/normal/otherObjects/objectSearch" to="clip/modesVerticalContainer/normal/otherObjects" method="_updateSearch" unbinds=1]
 [connection signal="text_submitted" from="clip/modesVerticalContainer/normal/otherObjects/objectSearch" to="clip/modesVerticalContainer/normal/otherObjects" method="_searchSubmitted" unbinds=1]
-[connection signal="pressed" from="clip/modesVerticalContainer/notes/pencilmark" to="." method="_setMode" binds= [6]]
+[connection signal="pressed" from="clip/modesVerticalContainer/notes/pencilmark" to="." method="setMode" binds= [6]]

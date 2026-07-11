@@ -73,11 +73,11 @@ func updateText() -> void:
 						Multiselect.STATE.SELECTING: string += LMB+"Multiselect"
 						Multiselect.STATE.DRAGGING: string += LMB+"Move selection"
 				Editor.MODE.TILE: string += LMB+"Place tile "+RMB+"Delete tile"
-				Editor.MODE.KEY: string += LMB+"Place key"
-				Editor.MODE.DOOR: string += LMB+"Place door"
-				Editor.MODE.OTHER: string += LMB+"Place object"
+				Editor.MODE.KEY: string += LMB+"Place/select key"
+				Editor.MODE.DOOR: string += LMB+"Place/select door"
+				Editor.MODE.OTHER: string += LMB+"Place/select object"
 				Editor.MODE.PASTE: string += LMB+"Paste"
-				Editor.MODE.PENCILMARK: string += LMB+"Place pencilmark"
+				Editor.MODE.PENCILMARK: string += LMB+"Place/select pencilmark"
 			string += " "+MMB+ARROWS+"Move/zoom camera [%s]Home camera [%s]Pipette" % [hotkeyMap(&"editHome"), hotkeyMap(&"editPipette")]
 	editor.explainText.text = string
 

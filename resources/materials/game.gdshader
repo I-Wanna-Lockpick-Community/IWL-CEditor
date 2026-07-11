@@ -1,6 +1,6 @@
 shader_type canvas_item;
 
-const vec4 GRID_COLOR = vec4(0.54901963, 0.54901963, 0.54901963, 0.54509807);
+uniform vec4 GRID_COLOR : source_color = vec4(0.54901963, 0.54901963, 0.54901963, 0.54509807);
 const vec3 OUTOFBOUNDS_COLOR = vec3(0.20990813, 0.20990813, 0.2099081);
 
 global uniform vec2 LEVEL_POS;

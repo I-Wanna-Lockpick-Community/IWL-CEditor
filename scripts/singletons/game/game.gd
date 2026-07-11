@@ -1,8 +1,9 @@
 @tool
 extends Node
 
-static var COMPONENTS:Array[GDScript] = [Lock, KeyCounterElement, KeyBulk, Door, Goal, KeyCounter, PlayerSpawn, FloatingTile, RemoteLock, PlaceholderObject, PlayerPlaceholderObject]
+static var COMPONENTS:Array[GDScript] = [Lock, KeyCounterElement, KeyBulk, Door, Goal, KeyCounter, PlayerSpawn, FloatingTile, RemoteLock, PlaceholderObject, PlayerPlaceholderObject, Pencilmark]
 static var NON_OBJECT_COMPONENTS:Array[GDScript] = [Lock, KeyCounterElement]
+static var NOTE_COMPONENTS:Array[GDScript] = [Pencilmark]
 # for outline draw; if not in this then provide an outlineTex() function
 static var RECTANGLE_COMPONENTS:Array[GDScript] = [Door, Lock, KeyCounter, RemoteLock, PlaceholderObject, FloatingTile]
 static var RESIZABLE_COMPONENTS:Array[GDScript] = [Door, Lock, KeyCounter, RemoteLock, PlaceholderObject, FloatingTile]
@@ -22,6 +23,7 @@ var world:World
 var tiles:TileMapLayer
 var tilesDropShadow:TileMapLayer
 var objectsParent:Node2D
+var notesParent:Node2D
 var particlesParent:Node2D
 
 var level:Level = Level.new()
@@ -32,12 +34,14 @@ var anyChanges:bool = false:
 
 var objectIdIter:int = 0 # for creating objects
 var componentIdIter:int = 0 # for creating components
-var goldIndex:int = 0 # youve seen this before
+var noteIdIter:int = 0 # for creating notes
+var goldIndex:int = 0 # tracks color animations
 var goldIndexFloat:float = 0
 signal goldIndexChanged
 
 var objects:Dictionary[int,GameObject] = {}
 var components:Dictionary[int,GameComponent] = {}
+var notes:Dictionary[int,GameNote] = {}
 
 var levelBounds:Rect2i = Rect2i(0,0,800,608):
 	set(value):
@@ -61,6 +65,8 @@ const ADDITIVE_FLAT_COLOR_MATERIAL:ShaderMaterial = preload("res://resources/mat
 const SUBTRACTIVE_MATERIAL:CanvasItemMaterial = preload("res://resources/materials/subtractiveMaterial.tres")
 const NEGATIVE_MATERIAL:ShaderMaterial = preload("res://resources/materials/negativeMaterial.tres")
 const TEXT_GRADIENT_MATERIAL:ShaderMaterial = preload("res://resources/materials/textGradientMaterial.tres")
+
+const GAME_MATERIAL:ShaderMaterial = preload("res://resources/materials/gameMaterial.tres")
 
 const ROBOTO_MONO:Font = preload("res://resources/fonts/RobotoMono-SemiBold.ttf")
 const FKEYX:Font = preload("res://resources/fonts/fKeyX.fnt")
@@ -98,6 +104,7 @@ var fastAnimSpeed:float = 0 # 0: slowest, 1: fastest
 var fastAnimTimer:float = 0 # speed resets when this counts down to 0
 var bufferedGateCheck:bool = false
 var complexViewHue:float = 0
+var mouseMoveTimer:float = 0 # time since last mouse movement
 
 var editorWindowSize:Vector2
 var editorWindowMode:Window.Mode
@@ -139,6 +146,7 @@ func setWorld(_world:World) -> void:
 	tiles = world.tiles
 	tilesDropShadow = world.tilesDropShadow
 	objectsParent = world.objectsParent
+	notesParent = world.notesParent
 	particlesParent = world.particlesParent
 	level.activate()
 	updateWindowName()
@@ -164,6 +172,7 @@ func _process(delta:float) -> void:
 	complexViewHue += delta*0.1764705882 # 0.75/255 per frame, 60fps
 	if complexViewHue >= 1: complexViewHue -= 1
 	if playGame and !hideTimer: updateWindowName()
+	mouseMoveTimer += delta
 
 func bufferGateCheck() -> void: bufferedGateCheck = true
 

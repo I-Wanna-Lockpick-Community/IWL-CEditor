@@ -36,7 +36,7 @@ func doChange(change:Array) -> void:
 		TYPE.StarChange: Game.player.star[change[1]] = copy(change[3])
 		TYPE.CurseChange: Game.player.curse[change[1]] = copy(change[3])
 		TYPE.GlistenChange: Game.player.glisten[change[1]] = copy(change[3])
-		# nonObject, id, property, before, after
+		# componenttype, id, property, before, after
 		TYPE.PropertyChange: propertyChange_(change[1], change[2], change[3], change[5])
 		_: assert(false)
 
@@ -48,7 +48,7 @@ func undoChange(change:Array) -> void:
 		TYPE.StarChange: Game.player.star[change[1]] = copy(change[2])
 		TYPE.CurseChange: Game.player.curse[change[1]] = copy(change[2])
 		TYPE.GlistenChange: Game.player.glisten[change[1]] = copy(change[2])
-		# nonObject, id, property, before, after
+		# componenttype, id, property, before, after
 		TYPE.PropertyChange: propertyChange_(change[1], change[2], change[3], change[4])
 		_: assert(false)
 
@@ -64,12 +64,13 @@ func newColorChange(type:TYPE, color:C.olors, after:Variant) -> Array:
 	return [type, color, copy(before), copy(after)]
 
 func newPropertyChange(component:GameComponent, property:StringName, after:Variant) -> Array:
-	return [TYPE.PropertyChange, component.get_script() in Game.NON_OBJECT_COMPONENTS,
+	return [TYPE.PropertyChange, Game.COMPONENTS.find(component.get_script()),
 		component.id, property, copy(component.get(property)), copy(after)]
 
-func propertyChange_(nonObject:bool, id:int, property:StringName, to:Variant) -> void:
+func propertyChange_(componentType:int, id:int, property:StringName, to:Variant) -> void:
 	var component:GameComponent
-	if nonObject: component = Game.components.get(id)
+	if Game.COMPONENTS[componentType] in Game.NON_OBJECT_COMPONENTS: component = Game.components.get(id)
+	elif Game.COMPONENTS[componentType] in Game.NOTE_COMPONENTS: component = Game.notes.get(id)
 	else: component = Game.objects.get(id)
 	if !component: return
 	component.set(property, copy(to))

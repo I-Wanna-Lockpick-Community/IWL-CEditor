@@ -102,6 +102,11 @@ static var HotkeyTree:Array = [
 			Hotkey.new("Toggle Curse",						&"focusPlayerCurse",				[eventKey("U")], &"CurseKeys"),
 			Hotkey.new("Leave Savestate",					&"focusPlayerSavestate",			[eventKey("Shift+S")]),
 		]),
+		SubTree.new("Pencilmark Focused", [
+			Hotkey.new("Set Symbol Type",					&"focusPencilmarkSymbol",			[eventKey("S")]),
+			Hotkey.new("Set Number Type",					&"focusPencilmarkNumber",			[eventKey("N")]),
+			Hotkey.new("Set Text Type",						&"focusPencilmarkText",				[eventKey("T")]),
+		]),
 	]),
 ]
 const HOTKEY_SETTING:PackedScene = preload("res://scenes/settings/hotkeySetting.tscn")
