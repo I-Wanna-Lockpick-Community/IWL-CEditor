@@ -90,12 +90,14 @@ func deinteract() -> void:
 	interacted.deinteract()
 	interacted = null
 
+func deleteFocused() -> void:
+	Changes.addChange(Changes.DeleteComponentChange.new(focused))
+	Changes.bufferSave()
+
 func receiveKey(event:InputEventKey) -> bool:
 	if activeDialog and activeDialog.receiveKey(event): return true
 	else:
-		if Editor.eventIs(event, &"editDelete"):
-			Changes.addChange(Changes.DeleteComponentChange.new(focused))
-			Changes.bufferSave()
+		if Editor.eventIs(event, &"editDelete"): deleteFocused()
 		elif event.keycode == KEY_TAB:
 			Game.editor.grab_focus()
 			if interacted: 

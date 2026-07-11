@@ -199,6 +199,7 @@ func fasterAnims() -> void:
 func playTest(spawn:PlayerSpawn) -> void:
 	var starting:bool = false
 
+	editor.modes.setView(Editor.VIEW.PLAYTEST)
 	editor.pda.reset()
 	editor.multiselect.deselect()
 	editor.focusDialog.defocusComponent()
@@ -235,6 +236,8 @@ func playTest(spawn:PlayerSpawn) -> void:
 	editor.playtestCamera.reset_smoothing()
 
 func pauseTest() -> void:
+	# TODO: pause stuff, later
+	editor.modes.setView(Editor.VIEW.NORMAL)
 	playState = PLAY_STATE.PAUSED
 	for object in objects.values(): object.queue_redraw()
 	for component in components.values(): component.queue_redraw()
@@ -244,6 +247,7 @@ func pauseTest() -> void:
 	editor.playerObject.position = player.position - Vector2(6, 12)
 
 func stopTest() -> void:
+	editor.modes.setView(Editor.VIEW.NORMAL)
 	playState = PLAY_STATE.EDIT
 	GameChanges.saveBuffered = false
 	GameChanges.previousSaveBuffered = false

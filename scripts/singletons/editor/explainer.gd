@@ -61,7 +61,7 @@ func updateText() -> void:
 					RemoteLock: string += "Remote Lock / [%s]Add Connection " % hotkeyMap(&"focusRemoteLockAddConnection") + control
 					PlayerPlaceholderObject: string += "Player / " + control
 					Pencilmark: string += "Pencilmark / " + control
-			string += "[M]Move [Del]Delete"
+			string += "[%s]Move [%s]Delete" % [hotkeyMap(&"editDrag"), hotkeyMap(&"editDelete")]
 		elif editor.modes.otherObjects.objectSearch.has_focus():
 			string += "Object Search / "+control+"[Enter][Tab]Select object [Esc]Cancel"
 		elif Game.playState == Game.PLAY_STATE.PLAY:

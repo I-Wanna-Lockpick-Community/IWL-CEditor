@@ -42,17 +42,17 @@ theme_override_constants/separation = 4
 layout_mode = 2
 theme_override_constants/separation = 4
 
-[node name="save" type="Button" parent="c/c/c/weirdButtons/c" unique_id=479695496]
+[node name="done" type="Button" parent="c/c/c/weirdButtons/c" unique_id=479695496]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_type_variation = &"RadioButtonText"
 text = "Done"
 
-[node name="delete" type="Button" parent="c/c/c/weirdButtons/c" unique_id=2027178885]
+[node name="erase" type="Button" parent="c/c/c/weirdButtons/c" unique_id=2027178885]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_type_variation = &"RadioButtonText"
-text = "Delete"
+text = "Erase"
 
 [node name="c2" type="Control" parent="c/c/c/weirdButtons" unique_id=80759924]
 custom_minimum_size = Vector2(0, 4)
@@ -92,6 +92,8 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 24)
 layout_mode = 2
 
+[connection signal="pressed" from="c/c/c/weirdButtons/c/done" to="." method="_done"]
+[connection signal="pressed" from="c/c/c/weirdButtons/c/erase" to="." method="_erase"]
 [connection signal="select" from="c/c/c/pencilmarkColorSelector" to="." method="_pencilmarkColorSelected"]
 [connection signal="select" from="c/c/c/pencilmarkTypeSelector" to="." method="_pencilmarkTypeSelected"]
 [connection signal="select" from="c/c/c/pencilmarkSymbolSelector" to="." method="_pencilmarkSymbolSelected"]

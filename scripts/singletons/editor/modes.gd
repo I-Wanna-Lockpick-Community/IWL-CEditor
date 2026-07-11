@@ -8,11 +8,13 @@ const VIEW_HEIGHT:float = 40
 
 const MODES_BY_VIEW:Array[Array] = [
 	[Editor.MODE.TILE, Editor.MODE.KEY, Editor.MODE.DOOR, Editor.MODE.OTHER],
-	[Editor.MODE.PENCILMARK]
+	[Editor.MODE.PENCILMARK],
+	[]
 ]
 @onready var MODE_BUTTONS_BY_VIEW:Array[Array] = [
 	[%tile, %key, %door, %other],
-	[%pencilmark]
+	[%pencilmark],
+	[]
 ]
 
 func _ready() -> void:
@@ -79,18 +81,25 @@ func setMode(mode:Editor.MODE) -> void:
 			%pencilmark.button_pressed = true
 			Game.editor.placePreviewWorld.objectsParent.add_child(Pencilmark.SCENE.instantiate())
 
-func previousView() -> void: setView(posmod(Game.editor.view-1,Editor.VIEWS))
-func nextView() -> void: setView(posmod(Game.editor.view+1,Editor.VIEWS))
+func previousView() -> void:
+	if Game.editor.view == 0: setView(Editor.VIEWS-len(Game.editor.inaccessibleViews())-1 as Editor.VIEW)
+	else: setView(Game.editor.view-1)
+func nextView() -> void:
+	if Game.editor.view >= Editor.VIEWS-len(Game.editor.inaccessibleViews())-1: setView(0 as Editor.VIEW)
+	else: setView(Game.editor.view + 1)
 
 func setView(view:Editor.VIEW) -> void:
 	if view == -1: return
 	if view == Game.editor.view: return
 	%viewDots.get_child(view).modulate.a = 1
 	%viewDots.get_child(Game.editor.view).modulate.a = 0.5
+	for thisView in Editor.VIEWS: %viewDots.get_child(thisView).visible = true
+	for thisView in Game.editor.inaccessibleViews(): %viewDots.get_child(thisView).visible = false
 	Game.editor.view = view
 	var modeView:int = MODES_BY_VIEW.find_custom(func(a:Array)->bool:return a.has(Game.editor.mode))
 	if modeView != -1 and modeView != view:
-		setMode(MODES_BY_VIEW[view][min(MODES_BY_VIEW[modeView].find(Game.editor.mode), len(MODES_BY_VIEW[view])-1)])
+		if len(MODES_BY_VIEW[view]) == 0: setMode(Editor.MODE.SELECT)
+		else: setMode(MODES_BY_VIEW[view][min(MODES_BY_VIEW[modeView].find(Game.editor.mode), len(MODES_BY_VIEW[view])-1)])
 	match view:
 		Editor.VIEW.NORMAL:
 			Game.world.normalView.modulate.v = 1
@@ -100,6 +109,10 @@ func setView(view:Editor.VIEW) -> void:
 			Game.world.normalView.modulate.v = 0.7
 			Game.world.notesView.modulate.a = 1
 			Game.GAME_MATERIAL.set_shader_parameter(&"GRID_COLOR", Color("#c8be548b"))
+		Editor.VIEW.PLAYTEST:
+			Game.world.normalView.modulate.v = 1
+			Game.world.notesView.modulate.a = 1
+			Game.GAME_MATERIAL.set_shader_parameter(&"GRID_COLOR", Color("#6992e08b"))
 	if !Game.editor.objectInView(Game.editor.focusDialog.focused): Game.editor.focusDialog.defocus()
 
 func addLock(door:Door) -> Lock:
@@ -122,6 +135,8 @@ class ViewDot extends TextureRect:
 
 	func _init(_view:Editor.VIEW) -> void:
 		view = _view
-		stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		stretch_mode = TextureRect.STRETCH_KEEP_CENTERED
 		texture = preload("res://assets/ui/modes/dot.png")
 		modulate.a = 1.0 if view == Editor.VIEW.NORMAL else 0.5
+		size_flags_vertical = Control.SIZE_EXPAND_FILL
+		if view in Game.editor.inaccessibleViews(): visible = false

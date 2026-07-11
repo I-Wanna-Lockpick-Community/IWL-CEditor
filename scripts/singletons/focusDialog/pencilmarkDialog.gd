@@ -1,8 +1,8 @@
 class_name PencilmarkDialog
 extends SubDialog
 
-func _ready() -> void:
-	%weirdButtons.visible = !Game.editor
+func _process(_delta) -> void:
+	%weirdButtons.visible = Game.playState == Game.PLAY_STATE.PLAY
 
 func focus(focused:Pencilmark, _new:bool, _dontRedirect:bool, skipInput:Control) -> void:
 	%pencilmarkColorSelector.setSelect(focused.color)
@@ -55,3 +55,12 @@ func _pencilmarkTextSet(value:String) -> void:
 	if main.focused is not Pencilmark: return
 	Changes.addChange(Changes.PropertyChange.new(main.focused,&"text",value,%pencilmarkTextEdit))
 	Changes.bufferSave()
+
+func _done() -> void:
+	AudioManager.play(preload("res://resources/sounds/sndSelectMade.wav"), 0.75, 1.2)
+	AudioManager.play(preload("res://resources/sounds/sndConfirmMark.wav"), 0.75, 1)
+	main.defocus()
+
+func _erase() -> void:
+	AudioManager.play(preload("res://resources/sounds/sndSelectMade.wav"), 0.75, 1.2)
+	main.deleteFocused()

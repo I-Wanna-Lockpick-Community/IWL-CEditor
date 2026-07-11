@@ -249,6 +249,7 @@ func _process(delta:float) -> void:
 	drawCurse.color = curseColor
 	drawCurse.queue_redraw()
 
+	if Game.editor.focusDialog.focused is Pencilmark if Game.editor else false: return
 	if Input.is_action_pressed(&"gamePDA") and !paused(): Game.pda.open()
 	else: Game.pda.close()
 
@@ -258,6 +259,7 @@ func convertNumbers(from:M.SYSTEM) -> void:
 
 func receiveKey(event:InputEventKey):
 	if paused(): return
+	if Game.editor.focusDialog.focused is Pencilmark if Game.editor else false: return
 	if Editor.eventIs(event, &"editPausePlaytest") and Game.editor: Game.pauseTest()
 	elif Editor.eventIs(event, &"editStopPlaytest") and Game.editor: Game.stopTest()
 	elif Editor.eventIs(event, &"editSavestate") and Game.editor: Game.savestate()

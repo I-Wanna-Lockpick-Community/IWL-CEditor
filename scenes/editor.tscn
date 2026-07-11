@@ -41,7 +41,6 @@ metadata/_custom_type_script = "uid://lwocqakgt4qr"
 script = ExtResource("17_bn54a")
 explanation = "[%s]Start Playtest"
 hotkeys = Array[StringName]([&"editStartPlaytest"])
-metadata/_custom_type_script = "uid://lwocqakgt4qr"
 
 [sub_resource type="Resource" id="Resource_bn54a"]
 script = ExtResource("17_bn54a")
@@ -178,6 +177,7 @@ tab_2/title = "Game"
 
 [node name="playControls" type="HBoxContainer" parent="c/c/c/topBar/c" unique_id=1554422682]
 layout_mode = 2
+size_flags_horizontal = 3
 alignment = 2
 
 [node name="savestate" type="Button" parent="c/c/c/topBar/c/playControls" unique_id=743053793 groups=["explained"]]
