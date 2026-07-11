@@ -23,8 +23,6 @@ func changedMods() -> void:
 	columns = len(widths)
 
 class KeyCounterWidthSelectorButton extends SelectorButton:
-	var drawMain:RID
-
 	func _init(_value:KeyCounter.WIDTH, _selector:KeyCounterWidthSelector):
 		custom_minimum_size = Vector2(16,16)
 		z_index = 1

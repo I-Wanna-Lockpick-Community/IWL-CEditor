@@ -22,9 +22,7 @@ func _ready() -> void:
 		Explainer.addControl(button,explanation)
 
 class PencilmarkTypeSelectorButton extends SelectorButton:
-	var drawMain:RID
-
-	func _init(_value:KeyBulk.TYPE, _selector:PencilmarkTypeSelector):
+	func _init(_value:Pencilmark.TYPE, _selector:PencilmarkTypeSelector):
 		custom_minimum_size = Vector2(24,24)
 		z_index = 1
 		super(_value, _selector)

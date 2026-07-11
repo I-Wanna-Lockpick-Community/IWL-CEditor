@@ -36,8 +36,6 @@ func changedMods() -> void:
 	columns = len(lockTypes)
 
 class LockTypeSelectorButton extends SelectorButton:
-	var drawMain:RID
-
 	func _init(_value:Lock.TYPE, _selector:LockTypeSelector):
 		custom_minimum_size = Vector2(16,16)
 		z_index = 1

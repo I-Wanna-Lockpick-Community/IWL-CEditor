@@ -14,9 +14,23 @@ func focus(focused:Pencilmark, new:bool, _dontRedirect:bool) -> void:
 	if new:
 		%pencilmarkNumberEdit.setValue(focused.number)
 		%pencilmarkTextEdit.text = focused.text
+	if main.interacted and !main.interacted.is_visible_in_tree(): main.deinteract()
 
-func receiveKey(_event:InputEventKey) -> bool:
-	return false
+func receiveKey(event:InputEventKey) -> bool:
+	if Editor.eventIs(event, &"quicksetPencilmarkColor"): Game.editor.quickSet.startQuick(&"quicksetPencilmarkColor", main.focused)
+	elif Editor.eventIs(event, &"focusPencilmarkSymbol"): _pencilmarkTypeSelected(Pencilmark.TYPE.SYMBOL)
+	elif Editor.eventIs(event, &"focusPencilmarkNumber"): _pencilmarkTypeSelected(Pencilmark.TYPE.NUMBER)
+	elif Editor.eventIs(event, &"focusPencilmarkText"): _pencilmarkTypeSelected(Pencilmark.TYPE.TEXT)
+	elif main.focused.type == Pencilmark.TYPE.SYMBOL:
+		if Editor.eventIs(event, &"focusPencilmarkSymbolCheck"): _pencilmarkSymbolSelected(Pencilmark.SYMBOL.CHECK)
+		elif Editor.eventIs(event, &"focusPencilmarkSymbolCross"): _pencilmarkSymbolSelected(Pencilmark.SYMBOL.CROSS)
+		elif Editor.eventIs(event, &"focusPencilmarkSymbolCircle"): _pencilmarkSymbolSelected(Pencilmark.SYMBOL.CIRCLE)
+		elif Editor.eventIs(event, &"focusPencilmarkSymbolSquare"): _pencilmarkSymbolSelected(Pencilmark.SYMBOL.SQUARE)
+		elif Editor.eventIs(event, &"focusPencilmarkSymbolBang"): _pencilmarkSymbolSelected(Pencilmark.SYMBOL.BANG)
+		elif Editor.eventIs(event, &"focusPencilmarkSymbolInterro"): _pencilmarkSymbolSelected(Pencilmark.SYMBOL.INTERRO)
+		else: return false
+	else: return false
+	return true
 
 func _pencilmarkColorSelected(color:C.olors) -> void:
 	if main.focused is not Pencilmark: return
@@ -28,7 +42,7 @@ func _pencilmarkTypeSelected(type:Pencilmark.TYPE) -> void:
 	Changes.addChange(Changes.PropertyChange.new(main.focused,&"type",type))
 	Changes.bufferSave()
 
-func _pencilmarkSymbolSet(symbol:Pencilmark.SYMBOL) -> void:
+func _pencilmarkSymbolSelected(symbol:Pencilmark.SYMBOL) -> void:
 	if main.focused is not Pencilmark: return
 	Changes.addChange(Changes.PropertyChange.new(main.focused,&"symbol",symbol))
 	Changes.bufferSave()

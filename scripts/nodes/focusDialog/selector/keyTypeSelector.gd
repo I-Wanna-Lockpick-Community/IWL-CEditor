@@ -34,8 +34,6 @@ func changedMods() -> void:
 	columns = len(keyTypes)
 
 class KeyTypeSelectorButton extends SelectorButton:
-	var drawMain:RID
-
 	func _init(_value:KeyBulk.TYPE, _selector:KeyTypeSelector):
 		custom_minimum_size = Vector2(16,16)
 		z_index = 1

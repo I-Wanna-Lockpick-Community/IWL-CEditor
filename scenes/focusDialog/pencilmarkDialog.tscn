@@ -2,7 +2,7 @@
 
 [ext_resource type="Theme" uid="uid://bvfthh0vm4fbp" path="res://resources/uiTheme.tres" id="1_lp3mi"]
 [ext_resource type="Script" uid="uid://klvehssscs55" path="res://scripts/singletons/focusDialog/pencilmarkDialog.gd" id="2_m3a58"]
-[ext_resource type="Script" uid="uid://c70juj2p5s6yd" path="res://scripts/nodes/focusDialog/selector/colorSelector.gd" id="3_6wmsn"]
+[ext_resource type="Script" uid="uid://djufxu1bcwl7w" path="res://scripts/nodes/focusDialog/selector/pencilmarkColorSelector.gd" id="3_m3a58"]
 [ext_resource type="Script" uid="uid://c8i3xewhf1hvm" path="res://scripts/nodes/focusDialog/selector/pencilmarkTypeSelector.gd" id="4_3v3iv"]
 [ext_resource type="Script" uid="uid://dvxmyqknv1g38" path="res://scripts/nodes/focusDialog/selector/pencilmarkSymbolSelector.gd" id="5_ss1bx"]
 [ext_resource type="PackedScene" uid="uid://bkywonfg0bt0y" path="res://scenes/focusDialog/numberEdit.tscn" id="6_m3a58"]
@@ -58,12 +58,12 @@ text = "Delete"
 custom_minimum_size = Vector2(0, 4)
 layout_mode = 2
 
-[node name="pencilmarkColorSelector" type="GridContainer" parent="c/c/c" unique_id=666342927 groups=["modUI"]]
+[node name="pencilmarkColorSelector" type="GridContainer" parent="c/c/c" unique_id=54598737 groups=["modUI"]]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 4
-script = ExtResource("3_6wmsn")
-metadata/_custom_type_script = "uid://c70juj2p5s6yd"
+script = ExtResource("3_m3a58")
+metadata/_custom_type_script = "uid://djufxu1bcwl7w"
 
 [node name="pencilmarkTypeSelector" type="GridContainer" parent="c/c/c" unique_id=1240865685]
 unique_name_in_owner = true
@@ -72,9 +72,14 @@ size_flags_horizontal = 4
 script = ExtResource("4_3v3iv")
 metadata/_custom_type_script = "uid://c8i3xewhf1hvm"
 
+[node name="c" type="Control" parent="c/c/c" unique_id=1621043493]
+custom_minimum_size = Vector2(0, 4)
+layout_mode = 2
+
 [node name="pencilmarkSymbolSelector" type="GridContainer" parent="c/c/c" unique_id=1804293792]
 unique_name_in_owner = true
 layout_mode = 2
+size_flags_horizontal = 4
 script = ExtResource("5_ss1bx")
 metadata/_custom_type_script = "uid://dvxmyqknv1g38"
 
@@ -89,6 +94,6 @@ layout_mode = 2
 
 [connection signal="select" from="c/c/c/pencilmarkColorSelector" to="." method="_pencilmarkColorSelected"]
 [connection signal="select" from="c/c/c/pencilmarkTypeSelector" to="." method="_pencilmarkTypeSelected"]
-[connection signal="select" from="c/c/c/pencilmarkSymbolSelector" to="." method="_pencilmarkSymbolSet"]
+[connection signal="select" from="c/c/c/pencilmarkSymbolSelector" to="." method="_pencilmarkSymbolSelected"]
 [connection signal="valueSet" from="c/c/c/pencilmarkNumberEdit" to="." method="_pencilmarkNumberSet"]
 [connection signal="text_changed" from="c/c/c/pencilmarkTextEdit" to="." method="_pencilmarkTextSet"]

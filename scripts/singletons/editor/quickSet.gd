@@ -25,6 +25,7 @@ func updateText() -> void:
 	match quickType:
 		&"quicksetColor": text += "Color: "
 		&"quicksetLockSize": text += "Lock Size: "
+		&"quicksetPencilmarkColor": text += "Color: "
 	text += input
 
 func applyOrCancel() -> void:
@@ -40,6 +41,9 @@ func applyOrCancel() -> void:
 		&"quicksetLockSize":
 			var found:int = findInputIn(LockSizeQuicksetSetting.matches)
 			if found != -1: Game.editor.focusDialog.doorDialog._lockConfigurationSelected(found)
+		&"quicksetPencilmarkColor":
+			var found:int = findInputIn(PencilmarkColorQuicksetSetting.matches)
+			if found != -1: Game.editor.focusDialog.pencilmarkDialog._pencilmarkColorSelected(found)
 	visible = false
 	%explainText.visible = true
 	quickType = &""

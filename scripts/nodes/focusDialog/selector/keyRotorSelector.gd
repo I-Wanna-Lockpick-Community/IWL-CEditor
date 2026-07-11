@@ -30,8 +30,6 @@ func setValue(count:PackedInt64Array) -> void:
 	elif M.eq(count, M.nI()): setSelect(VALUE.NEGROTOR)
 
 class KeyRotorSelectorButton extends SelectorButton:
-	var drawMain:RID
-
 	func _init(_value:VALUE, _selector:KeyRotorSelector):
 		custom_minimum_size = Vector2(16,16)
 		z_index = 1

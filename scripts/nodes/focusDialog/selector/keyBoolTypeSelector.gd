@@ -31,8 +31,6 @@ func setSelect(value:Variant) -> void:
 	selected = value
 
 class KeyBoolTypeSelectorButton extends SelectorButton:
-	var drawMain:RID
-
 	func _init(_value:KeyBulk.BOOL_TYPE, _selector:KeyBoolTypeSelector):
 		custom_minimum_size = Vector2(16,16)
 		z_index = 1

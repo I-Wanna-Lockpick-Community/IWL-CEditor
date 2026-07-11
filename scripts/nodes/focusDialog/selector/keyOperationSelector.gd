@@ -34,8 +34,6 @@ func setSelect(value:Variant) -> void:
 	selected = value
 
 class keyOperationSelectorButton extends SelectorButton:
-	var drawMain:RID
-
 	func _init(_value:KeyBulk.OPERATION, _selector:keyOperationSelector):
 		custom_minimum_size = Vector2(16,16)
 		z_index = 1

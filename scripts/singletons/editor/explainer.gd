@@ -21,7 +21,8 @@ func _process(_delta:float) -> void: updateText()
 
 func _explain(control:Control) -> void:
 	explainedControls.append(control)
-	controlExplanations.append(control.get_meta(&"explanation"))
+	if !control.has_meta(&"explanation"): print("Explained node %s has no explanation" % control)
+	else: controlExplanations.append(control.get_meta(&"explanation"))
 
 func _deexplain(control:Control) -> void:
 	var found:int = explainedControls.find(control)
@@ -59,6 +60,7 @@ func updateText() -> void:
 					FloatingTile: string += "Floating Tile / " + control
 					RemoteLock: string += "Remote Lock / [%s]Add Connection " % hotkeyMap(&"focusRemoteLockAddConnection") + control
 					PlayerPlaceholderObject: string += "Player / " + control
+					Pencilmark: string += "Pencilmark / " + control
 			string += "[M]Move [Del]Delete"
 		elif editor.modes.otherObjects.objectSearch.has_focus():
 			string += "Object Search / "+control+"[Enter][Tab]Select object [Esc]Cancel"

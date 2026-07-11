@@ -30,8 +30,6 @@ func setSelect(value:Variant) -> void:
 	selected = value
 
 class LockSpendTypeSelectorButton extends SelectorButton:
-	var drawMain:RID
-
 	func _init(_value:Lock.SPEND_TYPE, _selector:LockSpendTypeSelector):
 		custom_minimum_size = Vector2(16,16)
 		z_index = 1

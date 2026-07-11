@@ -15,8 +15,6 @@ func _ready() -> void:
 	super()
 
 class GoalTypeSelectorButton extends SelectorButton:
-	var drawMain:RID
-
 	func _init(_value:KeyBulk.TYPE, _selector:GoalTypeSelector):
 		custom_minimum_size = Vector2(16,16)
 		z_index = 1

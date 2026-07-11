@@ -32,8 +32,6 @@ func setSelect(value:Variant) -> void:
 
 
 class KeyCollectTypeSelectorButton extends SelectorButton:
-	var drawMain:RID
-
 	func _init(_value:Player.KEYCHANGE_TYPE, _selector:KeyCollectTypeSelector):
 		custom_minimum_size = Vector2(16,16)
 		z_index = 1
