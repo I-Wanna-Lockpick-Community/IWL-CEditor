@@ -13,6 +13,7 @@ class_name FocusDialog
 var focused:GameObject # the object that is currently focused
 var componentFocused:GameComponent # you can focus both a door and a lock at the same time so
 var activeDialog:SubDialog
+var bufferSkipInput:Control = null
 var bufferFocusObject:bool = false
 var bufferFocusComponent:bool = false
 
@@ -26,7 +27,7 @@ var above:bool = false # display above the object instead
 func _ready() -> void:
 	get_tree().call_group("modUI", "changedMods")
 
-func focus(object:GameObject, dontRedirect:bool=false) -> void:
+func focus(object:GameObject, dontRedirect:bool=false, skipInput:Control = null) -> void:
 	var new:bool = object != focused
 	if new: focusOffsetAmount = -8
 	focused = object
@@ -34,7 +35,7 @@ func focus(object:GameObject, dontRedirect:bool=false) -> void:
 	else: Game.objectsParent.move_child(focused, -1)
 	showCorrectDialog()
 	if new: deinteract()
-	if activeDialog: activeDialog.focus(focused, new, dontRedirect)
+	if activeDialog: activeDialog.focus(focused, new, dontRedirect, skipInput)
 
 func showCorrectDialog() -> void:
 	above = false
@@ -62,15 +63,15 @@ func defocus() -> void:
 	bufferFocusObject = false
 	bufferFocusComponent = false
 
-func focusComponent(component:GameComponent) -> void:
+func focusComponent(component:GameComponent, skipInput:Control = null) -> void:
 	if !component:
 		assert(false)
 		return
 	var new:bool = component != componentFocused
 	componentFocused = component
-	if focused != component.parent: focus(component.parent)
-	if component is Lock: doorDialog.focusComponent(component, new)
-	elif component is KeyCounterElement: keyCounterDialog.focusComponent(component, new)
+	if focused != component.parent: focus(component.parent, false, skipInput)
+	if component is Lock: doorDialog.focusComponent(component, new, skipInput)
+	elif component is KeyCounterElement: keyCounterDialog.focusComponent(component, new, skipInput)
 
 func defocusComponent() -> void:
 	if !componentFocused: return
@@ -101,16 +102,17 @@ func receiveKey(event:InputEventKey) -> bool:
 				var index:int = numberEdits.find(interacted)
 				if Input.is_key_pressed(KEY_SHIFT):
 					index -= 1
+					if index == -1: previousMenu()
 					while !numberEdits[index].is_visible_in_tree():
-						if index == -1: previousMenu()
 						index -= 1
+						if index == -1: previousMenu()
 					interact(numberEdits[index], true)
 				else:
 					index += 1
+					if index == len(numberEdits): nextMenu(); index = 0
 					while !numberEdits[index].is_visible_in_tree():
-						if index == len(numberEdits)-1:
-							nextMenu(); index = 0
-						else: index += 1
+						index += 1
+						if index == len(numberEdits): nextMenu(); index = 0
 					interact(numberEdits[index])
 			else:
 				bufferFocusComponent = true
@@ -144,11 +146,13 @@ const SPEECH_BUBBLER_MARGIN:float = 10 # between speech bubbler and edge of dial
 
 func _process(delta:float) -> void:
 	if bufferFocusComponent and componentFocused:
-		focusComponent(componentFocused)
+		focusComponent(componentFocused, bufferSkipInput)
 		bufferFocusComponent = false
+		bufferSkipInput = null
 	if bufferFocusObject and focused:
-		focus(focused)
+		focus(focused, false, bufferSkipInput)
 		bufferFocusObject = false
+		bufferSkipInput = null
 	if focused and activeDialog:
 		focusOffsetAmount += (-focusOffsetAmount)*min(1, delta*25)
 		visible = true

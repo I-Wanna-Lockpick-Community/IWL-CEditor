@@ -4,16 +4,15 @@ extends SubDialog
 func _ready() -> void:
 	%weirdButtons.visible = !Game.editor
 
-func focus(focused:Pencilmark, new:bool, _dontRedirect:bool) -> void:
+func focus(focused:Pencilmark, _new:bool, _dontRedirect:bool, skipInput:Control) -> void:
 	%pencilmarkColorSelector.setSelect(focused.color)
 	%pencilmarkTypeSelector.setSelect(focused.type)
 	%pencilmarkSymbolSelector.setSelect(focused.symbol)
 	%pencilmarkSymbolSelector.visible = focused.type == Pencilmark.TYPE.SYMBOL
 	%pencilmarkNumberEdit.visible = focused.type == Pencilmark.TYPE.NUMBER
 	%pencilmarkTextEdit.visible = focused.type == Pencilmark.TYPE.TEXT
-	if new:
-		%pencilmarkNumberEdit.setValue(focused.number)
-		%pencilmarkTextEdit.text = focused.text
+	if skipInput != %pencilmarkNumberEdit: %pencilmarkNumberEdit.setValue(focused.number)
+	if skipInput != %pencilmarkTextEdit: %pencilmarkTextEdit.text = focused.text
 	if main.interacted and !main.interacted.is_visible_in_tree(): main.deinteract()
 
 func receiveKey(event:InputEventKey) -> bool:
@@ -49,10 +48,10 @@ func _pencilmarkSymbolSelected(symbol:Pencilmark.SYMBOL) -> void:
 
 func _pencilmarkNumberSet(value:PackedInt64Array) -> void:
 	if main.focused is not Pencilmark: return
-	Changes.addChange(Changes.PropertyChange.new(main.focused,&"number",value))
+	Changes.addChange(Changes.PropertyChange.new(main.focused,&"number",value,%pencilmarkNumberEdit))
 	Changes.bufferSave()
 
 func _pencilmarkTextSet(value:String) -> void:
 	if main.focused is not Pencilmark: return
-	Changes.addChange(Changes.PropertyChange.new(main.focused,&"text",value))
+	Changes.addChange(Changes.PropertyChange.new(main.focused,&"text",value,%pencilmarkTextEdit))
 	Changes.bufferSave()

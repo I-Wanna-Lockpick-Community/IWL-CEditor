@@ -100,6 +100,8 @@ func setView(view:Editor.VIEW) -> void:
 			Game.world.normalView.modulate.v = 0.7
 			Game.world.notesView.modulate.a = 1
 			Game.GAME_MATERIAL.set_shader_parameter(&"GRID_COLOR", Color("#c8be548b"))
+	if !Game.editor.objectInView(Game.editor.focusDialog.focused): Game.editor.focusDialog.defocus()
+
 func addLock(door:Door) -> Lock:
 	var lock = Lock.new()
 	lock.parent = door

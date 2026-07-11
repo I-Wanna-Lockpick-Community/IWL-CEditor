@@ -192,6 +192,13 @@ func objectsInView() -> Array:
 	assert(false)
 	return []
 
+func objectInView(object:GameObject) -> bool:
+	match view:
+		VIEW.NORMAL: return object is not GameNote
+		VIEW.NOTES: return object is GameNote
+	assert(false)
+	return true
+
 func tilesInView() -> bool:
 	match view:
 		VIEW.NORMAL: return true
@@ -360,6 +367,7 @@ func _gui_input(event:InputEvent) -> void:
 func stopDrag() -> void:
 	if componentDragged == levelBoundsObject:
 		componentDragged = null
+		clampLevelBounds()
 		return
 	if sizeDragging():
 		if !Mods.active(&"MoreLockSizes") and componentDragged is Lock and componentDragged.parent.type != Door.TYPE.SIMPLE:
@@ -374,6 +382,12 @@ func stopDrag() -> void:
 			if componentDragged.get_script() in Game.NON_OBJECT_COMPONENTS: focusDialog.focusComponent(componentDragged)
 			else: focusDialog.focus(componentDragged)
 	componentDragged = null
+
+func clampLevelBounds() -> void:
+	for tile in Game.world.tiles.get_used_cells():
+		if !Game.levelBounds.intersects(Rect2(Vector2(tile) * Vector2(32,32), Vector2(32,32))): Changes.addChange(Changes.TileChange.new(tile,false))
+	for object in Game.objects.values():
+		if !Game.levelBounds.intersects(Rect2(object.position, object.size)): Changes.addChange(Changes.DeleteComponentChange.new(object))
 
 static func convertLock(lock:Lock) -> RemoteLock:
 	var remoteLock = Changes.addChange(Changes.CreateComponentChange.new(RemoteLock,{&"position":lock.position+lock.parent.position})).result
@@ -437,7 +451,7 @@ func dragComponent() -> void: # returns whether or not an object is being dragge
 			else:
 				var goingTo:Rect2 = Rect2(componentDragged.position + dragOffset, componentDragged.size)
 				if !bounds.intersects(goingTo):
-					if !allowOutOfBounds:
+					if !allowOutOfBounds and componentDragged.get_script() not in Game.NOTE_COMPONENTS:
 						dragOffset += snappedAway(Vector2.ZERO.max(innerBounds.position - goingTo.end) - Vector2.ZERO.max(goingTo.position - innerBounds.end), Vector2(tileSize))
 					elif componentDragged is Lock and Mods.active(&"RemoteLocks") and !Mods.active(&"DisconnectedLocks"): lockBufferConvert = true
 				previousDragPosition += dragOffset

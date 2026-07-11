@@ -215,6 +215,9 @@ func start() -> void:
 	for component in Game.components.values():
 		component.start()
 		component.queue_redraw()
+	for note in Game.notes.values():
+		note.start()
+		note.queue_redraw()
 	Game.camera.position = Game.player.position
 	Game.camera.reset_smoothing()
 
@@ -233,6 +236,9 @@ func restart() -> void:
 	for component in Game.components.values():
 		component.stop()
 		component.queue_redraw()
+	for note in Game.notes.values():
+		note.stop()
+		note.queue_redraw()
 	for particle in Game.particlesParent.get_children(): particle.queue_free()
 	await get_tree().process_frame
 	start()

@@ -1,7 +1,7 @@
 extends SubDialog
 class_name KeyCounterDialog
 
-func focus(focused:KeyCounter, new:bool, dontRedirect:bool) -> void:
+func focus(focused:KeyCounter, new:bool, dontRedirect:bool, _skipInput:Control) -> void:
 	%keyCounterWidthSelector.setSelect(KeyCounter.WIDTH_AMOUNT.find(focused.size.x))
 	if !main.componentFocused:
 		%keyCounterColorSelector.visible = false
@@ -10,7 +10,7 @@ func focus(focused:KeyCounter, new:bool, dontRedirect:bool) -> void:
 		%keyCounterHandler.setup(focused)
 		if !dontRedirect: main.focusComponent(focused.elements[-1])
 
-func focusComponent(component:KeyCounterElement, _new:bool) -> void:
+func focusComponent(component:KeyCounterElement, _new:bool, _skipInput:Control) -> void:
 	%keyCounterHandler.setSelect(component.index)
 	%keyCounterHandler.redrawButton(component.index)
 	%keyCounterColorSelector.visible = true

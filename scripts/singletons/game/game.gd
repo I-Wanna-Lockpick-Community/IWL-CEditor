@@ -56,7 +56,7 @@ var levelBounds:Rect2i = Rect2i(0,0,800,608):
 		if editor:
 			editor.levelBoundsObject.position = levelBounds.position
 			editor.levelBoundsObject.size = levelBounds.size
-			if editor.settingsOpen: editor.settingsMenu.updateLevelSettingsPosition()
+			if editor.settingsOpen: editor.settingsMenu.levelSettings.updatePosition()
 
 const NO_MATERIAL:CanvasItemMaterial = preload("res://resources/materials/noMaterial.tres")
 const GLITCH_MATERIAL:ShaderMaterial = preload("res://resources/materials/glitchDrawMaterial.tres")
@@ -105,6 +105,7 @@ var fastAnimTimer:float = 0 # speed resets when this counts down to 0
 var bufferedGateCheck:bool = false
 var complexViewHue:float = 0
 var mouseMoveTimer:float = 0 # time since last mouse movement
+var pencilmarkStarAngle:float = 0
 
 var editorWindowSize:Vector2
 var editorWindowMode:Window.Mode
@@ -173,6 +174,8 @@ func _process(delta:float) -> void:
 	if complexViewHue >= 1: complexViewHue -= 1
 	if playGame and !hideTimer: updateWindowName()
 	mouseMoveTimer += delta
+	pencilmarkStarAngle += delta*1.04719755 # 1deg per frame, 60fps
+	pencilmarkStarAngle = fmod(pencilmarkStarAngle, TAU)
 
 func bufferGateCheck() -> void: bufferedGateCheck = true
 

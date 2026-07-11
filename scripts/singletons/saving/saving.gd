@@ -137,6 +137,8 @@ func clear() -> void:
 	Game.objects.clear()
 	for component in Game.components.values(): component.queue_free()
 	Game.components.clear()
+	for note in Game.notes.values(): note.queue_free()
+	Game.notes.clear()
 	Game.level = Level.new()
 	Game.anyChanges = false
 	Game.tiles.clear()

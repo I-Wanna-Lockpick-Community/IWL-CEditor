@@ -42,6 +42,9 @@ func setup() -> void:
 	for component in Game.components.values():
 		component.problems.clear()
 		findProblems(component)
+	for note in Game.notes.values():
+		note.problems.clear()
+		findProblems(note)
 	for mod in Mods.mods.keys():
 		if mod in modsWindow.modsAdded: %modsAdded.add_child(ModSelectButton.new(self,mod))
 		elif mod in modsWindow.modsRemoved: %modsRemoved.add_child(ModSelectButton.new(self,mod))

@@ -12,5 +12,5 @@ var numberEdits:Array[NumberEdit]:
 
 func interact(edit:NumberEdit, last:bool=false) -> void: main.interact(edit, last)
 
-@abstract func focus(focused, new:bool, dontRedirect:bool) -> void
+@abstract func focus(focused, new:bool, dontRedirect:bool, skipInput:Control) -> void
 @abstract func receiveKey(event:InputEventKey) -> bool

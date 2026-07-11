@@ -4,9 +4,6 @@ class_name DoorDialog
 @onready var lockHandler:LockHandler = %lockHandler
 @onready var doorsHandler:DoorsHandler = %doorsHandler
 
-var updateDoorCopiesEdit:bool = false
-var updatePartialBlastNumeratorEdit:bool = false
-
 func _ready() -> void:
 	%doorCopiesEdit.transformation = doorCopiesTransformation
 
@@ -14,7 +11,7 @@ func doorCopiesTransformation(value:PackedInt64Array) -> PackedInt64Array:
 	if main.focused is Door: value = M.without(value, main.focused.infCopies)
 	return value
 
-func focus(focused:GameObject, new:bool, dontRedirect:bool) -> void: # Door or RemoteLock
+func focus(focused:GameObject, new:bool, dontRedirect:bool, skipInput:Control) -> void: # Door or RemoteLock
 	%spendArmament.visible = Mods.active(&"Armaments") and main.focused is Door
 	%oscillate.visible = Mods.active(&"Fractions") and main.focused is Door
 	%frozen.button_pressed = focused.frozen
@@ -51,21 +48,19 @@ func focus(focused:GameObject, new:bool, dontRedirect:bool) -> void: # Door or R
 		elif %lockCountEdit.visible:
 			if !main.interacted: main.interact(%lockCountEdit)
 		else: main.deinteract()
-		if new or updateDoorCopiesEdit:
-			%doorCopiesEdit.setValue(M.without(focused.copies, focused.infCopies))
-			updateDoorCopiesEdit = false
+		if skipInput != %doorCopiesEdit: %doorCopiesEdit.setValue(M.without(focused.copies, focused.infCopies))
 		if new:
 			%lockHandler.setup(focused)
-			if focused.type == Door.TYPE.SIMPLE and !dontRedirect: main.focusComponent(focused.locks[0])
+			if focused.type == Door.TYPE.SIMPLE and !dontRedirect: main.focusComponent(focused.locks[0], skipInput)
 	elif focused is RemoteLock:
 		%door.visible = false
 		%remoteLock.visible = true
 		%doorBooleans.visible = !focused.armament
 		%lockConfigurationSelector.visible = false
 		%doorsHandler.setup(focused)
-		focusComponent(focused, new)
+		focusComponent(focused, new, skipInput)
 
-func focusComponent(component:GameComponent, new:bool) -> void: # Lock or RemoteLock
+func focusComponent(component:GameComponent, _new:bool, skipInput:Control = null) -> void: # Lock or RemoteLock
 	%doorColorSelector.visible = true
 	%doorColorSelector.setSelect(component.color)
 	if component is Lock: %lockHandler.setSelect(component.index)
@@ -84,7 +79,7 @@ func focusComponent(component:GameComponent, new:bool) -> void: # Lock or Remote
 		or (Mods.active(&"PartialBlastLocks") and component.type in [Lock.TYPE.BLAST, Lock.TYPE.ALL]) \
 		or component.type == Lock.TYPE.EXACT
 	%lockCountEdit.allowZeroI = component.type == Lock.TYPE.EXACT
-	if new: %lockCountEdit.setValue(component.count)
+	if skipInput != %lockCountEdit: %lockCountEdit.setValue(component.count)
 	if component.zeroI: %lockCountEdit.setZeroI()
 
 	%doorCopySettings.visible = false
@@ -102,10 +97,8 @@ func focusComponent(component:GameComponent, new:bool) -> void: # Lock or Remote
 	%partialBlastConfiguration.visible = component.isPartial
 	%partialBlastConfigurationV.button_pressed = !component.partialBlastHorizontal
 	%partialBlastConfigurationH.button_pressed = component.partialBlastHorizontal
-	if new or updatePartialBlastNumeratorEdit:
-		%partialBlastNumeratorEdit.setValue(component.count)
-		updatePartialBlastNumeratorEdit = false
-	if new: %partialBlastDenominatorEdit.setValue(component.denominator)
+	if skipInput != %partialBlastNumeratorEdit: %partialBlastNumeratorEdit.setValue(component.count)
+	if skipInput != %partialBlastDenominatorEdit: %partialBlastDenominatorEdit.setValue(component.denominator)
 
 	if component is Lock: %lockHandler.redrawButton(component.index)
 	%lockNegated.button_pressed = component.negated
@@ -194,13 +187,13 @@ func _doorColorSelected(color:C.olors) -> void:
 
 func _doorCopiesSet(value:PackedInt64Array) -> void:
 	if main.focused is not Door: return
-	Changes.addChange(Changes.PropertyChange.new(main.focused,&"copies",M.orelse(main.focused.infCopies, value)))
+	Changes.addChange(Changes.PropertyChange.new(main.focused,&"copies",M.orelse(main.focused.infCopies, value),%doorCopiesEdit))
 	Changes.bufferSave()
 
 func _lockCountSet(value:PackedInt64Array) -> void:
 	if main.componentFocused is not Lock and main.focused is not RemoteLock: return
 	var lock:GameComponent = main.componentFocused if main.componentFocused is Lock else main.focused
-	Changes.addChange(Changes.PropertyChange.new(lock,&"count",value))
+	Changes.addChange(Changes.PropertyChange.new(lock,&"count",value,%lockCountEdit))
 	Changes.addChange(Changes.PropertyChange.new(lock,&"zeroI",%lockCountEdit.isZeroI))
 	Changes.bufferSave()
 
@@ -278,13 +271,13 @@ func _lockSpendTypeSet(value:Lock.SPEND_TYPE):
 func _partialBlastNumeratorSet(value:PackedInt64Array) -> void:
 	if main.componentFocused is not Lock and main.focused is not RemoteLock: return
 	var lock:GameComponent = main.componentFocused if main.componentFocused is Lock else main.focused
-	Changes.addChange(Changes.PropertyChange.new(lock,&"count",value))
+	Changes.addChange(Changes.PropertyChange.new(lock,&"count",value,%partialBlastNumeratorEdit))
 	Changes.bufferSave()
 
 func _partialBlastDenominatorSet(value:PackedInt64Array) -> void:
 	if main.componentFocused is not Lock and main.focused is not RemoteLock: return
 	var lock:GameComponent = main.componentFocused if main.componentFocused is Lock else main.focused
-	Changes.addChange(Changes.PropertyChange.new(lock,&"denominator",value))
+	Changes.addChange(Changes.PropertyChange.new(lock,&"denominator",value,%partialBlastDenominatorEdit))
 	Changes.bufferSave()
 
 func _isPartialSet(value:bool) -> void:
@@ -297,7 +290,6 @@ func _blastLockSignSet(value:bool) -> void:
 	if main.componentFocused is not Lock and main.focused is not RemoteLock: return
 	var lock:GameComponent = main.componentFocused if main.componentFocused is Lock else main.focused
 	if M.negative(M.sign(lock.denominator)) == value: return
-	updatePartialBlastNumeratorEdit = true
 	Changes.addChange(Changes.PropertyChange.new(lock,&"count",M.negate(lock.count)))
 	Changes.addChange(Changes.PropertyChange.new(lock,&"denominator",M.negate(lock.denominator)))
 	Changes.bufferSave()
@@ -306,7 +298,6 @@ func _blastLockAxisSet(value:bool) -> void:
 	if main.componentFocused is not Lock and main.focused is not RemoteLock: return
 	var lock:GameComponent = main.componentFocused if main.componentFocused is Lock else main.focused
 	if M.isNonzeroImag(lock.denominator) == value: return
-	updatePartialBlastNumeratorEdit = true
 	Changes.addChange(Changes.PropertyChange.new(lock,&"count",M.times(lock.count, M.I() if value else M.nI())))
 	Changes.addChange(Changes.PropertyChange.new(lock,&"denominator",M.times(lock.denominator, M.I() if value else M.nI())))
 	Changes.bufferSave()

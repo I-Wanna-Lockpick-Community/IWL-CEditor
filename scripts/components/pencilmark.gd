@@ -6,6 +6,7 @@ const ORIGIN:Texture2D = preload("res://assets/game/pencilmark/origin.png")
 const ORIGIN_FOCUSED:Texture2D = preload("res://assets/game/pencilmark/originFocused.png")
 static var SYMBOL_TEXTURE:IndexTextureLoader = IndexTextureLoader.new("res://assets/game/pencilmark/symbols/.png", SYMBOLS)
 const SYMBOL_SIZE:Vector2 = Vector2(24,24)
+const STAR:Texture2D = preload("res://assets/game/keyCounter/star.png")
 
 func outlineTex() -> Texture2D:
 	return Game.EMPTY if isHovered() or isFocused() else preload("res://assets/game/pencilmark/outlineMask.png")
@@ -33,23 +34,27 @@ const COLORS:int = 18
 
 var originOpacity:float = 0.75
 
+var drawStar:RID
 var drawMain:RID
 var textDrawer:TextDrawer
 
 func _init() -> void: size = Vector2(18,18)
 
 func _ready() -> void:
+	drawStar = RenderingServer.canvas_item_create()
 	drawMain = RenderingServer.canvas_item_create()
+	RenderingServer.canvas_item_set_parent(drawStar,get_canvas_item())
 	RenderingServer.canvas_item_set_parent(drawMain,get_canvas_item())
 	textDrawer = TextDrawer.new(self, TextDrawer.SETTING.FMINIID)
 	textDrawer.position = size/2-getOffset()
 
 func _process(delta:float) -> void:
-	if Game.mouseMoveTimer < 2.0/3: originOpacity = min(originOpacity + delta*1.8, 0.75)
+	if Game.mouseMoveTimer < 2.0/3: originOpacity = min(originOpacity + delta*1.8, 0.75) # 1/25*3/4 per frame, 60fps
 	else: originOpacity = max(originOpacity - delta*1.8, 0)
 	queue_redraw()
 
 func _freed() -> void:
+	RenderingServer.free_rid(drawStar)
 	RenderingServer.free_rid(drawMain)
 
 func convertNumbers(from:M.SYSTEM) -> void:
@@ -59,10 +64,14 @@ func isHovered() -> bool: return Game.editor.objectHovered == self if Game.edito
 func isFocused() -> bool: return Game.editor.focusDialog.focused == self if Game.editor else false
 
 func _draw() -> void:
+	RenderingServer.canvas_item_clear(drawStar)
 	RenderingServer.canvas_item_clear(drawMain)
 	var rect:Rect2 = Rect2(-getOffset(), size)
 	var center:Vector2 = size/2-getOffset()
 	var drawColor:Color = getColor(color)
+	RenderingServer.canvas_item_set_transform(drawStar,Transform2D(Game.pencilmarkStarAngle,center))
+	if type != TYPE.TEXT:
+		RenderingServer.canvas_item_add_texture_rect(drawStar,Rect2(Vector2(-25.6,-25.6),Vector2(51.2,51.2)),STAR,false,Color(drawColor,0.75))
 	RenderingServer.canvas_item_add_texture_rect(drawMain, rect, ORIGIN_FOCUSED if isHovered() or isFocused() else ORIGIN, false, Color(Color.WHITE, 0.75 if isFocused() else originOpacity))
 	textDrawer.setOutlineType(TextDrawer.OUTLINE_TYPE.THIN)
 	textDrawer.addVerticalContext(Vector2(0,1), TextDrawer.VERTICAL_ALIGN.CENTER)

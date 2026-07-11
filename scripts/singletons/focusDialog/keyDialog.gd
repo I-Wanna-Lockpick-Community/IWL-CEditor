@@ -4,17 +4,17 @@ class_name KeyDialog
 const STAR_UN_ICONS:Array[Texture2D] = [ preload("res://assets/ui/focusDialog/key/type/star/star.png"), preload("res://assets/ui/focusDialog/key/type/star/unstar.png") ]
 const CURSE_UN_ICONS:Array[Texture2D] = [ preload("res://assets/ui/focusDialog/key/type/curse/curse.png"), preload("res://assets/ui/focusDialog/key/type/curse/uncurse.png") ]
 
-func focus(focused:KeyBulk, new:bool, _dontRedirect:bool) -> void:
+func focus(focused:KeyBulk, _new:bool, _dontRedirect:bool, skipInput:Control) -> void:
 	%keyColorSelector.setSelect(focused.color)
 	%keyAltColorSelector.setSelect(focused.altColor)
 	%keyAltColorSelector.visible = focused.type == KeyBulk.TYPE.OPERATOR
 	%keyTypeSelector.setSelect(focused.type)
 	%keyCountEdit.visible = focused.type in [KeyBulk.TYPE.NORMAL,KeyBulk.TYPE.EXACT]
-	if new: %keyCountEdit.setValue(focused.count)
+	if skipInput != %keyCountEdit: %keyCountEdit.setValue(focused.count)
 	%keyInfiniteToggle.button_pressed = focused.infinite
 	%keyGlisteningToggle.button_pressed = focused.glistening
 	%keyPartialInfinite.visible = Mods.active(&"PartialInfKeys") and focused.infinite
-	if new: %keyPartialInfiniteEdit.setValue(M.N(focused.infinite))
+	if skipInput != %keyPartialInfiniteEdit: %keyPartialInfiniteEdit.setValue(M.N(focused.infinite))
 	%keyOperationSelector.visible = focused.type == KeyBulk.TYPE.OPERATOR
 	%keyOperationSelector.setSelect(focused.operation)
 	%keyRotorSelector.visible = focused.type == KeyBulk.TYPE.ROTOR
@@ -94,7 +94,7 @@ func _keyOperationSelected(operation:KeyBulk.OPERATION) -> void:
 
 func _keyCountSet(value:PackedInt64Array) -> void:
 	if main.focused is not KeyBulk: return
-	Changes.addChange(Changes.PropertyChange.new(main.focused,&"count",value))
+	Changes.addChange(Changes.PropertyChange.new(main.focused,&"count",value,%keyCountEdit))
 	Changes.bufferSave()
 
 func _keyInfiniteToggled(value:bool) -> void:
@@ -131,7 +131,7 @@ func _keyCollectTypeSelected(value:Player.KEYCHANGE_TYPE) -> void:
 
 func _keyPartialInfiniteSet(value:PackedInt64Array) -> void:
 	if main.focused is not KeyBulk: return
-	Changes.addChange(Changes.PropertyChange.new(main.focused,&"infinite",M.toInt(value)))
+	Changes.addChange(Changes.PropertyChange.new(main.focused,&"infinite",M.toInt(value),%keyPartialInfiniteEdit))
 	Changes.bufferSave()
 
 func _keyReciprocalToggled(value:bool) -> void:

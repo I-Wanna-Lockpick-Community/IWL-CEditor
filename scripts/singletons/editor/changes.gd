@@ -304,7 +304,7 @@ class PropertyChange extends Change:
 	var after:Variant
 	var type:GDScript
 	
-	func _init(component:GameComponent,_property:StringName,_after:Variant) -> void:
+	func _init(component:GameComponent,_property:StringName,_after:Variant,fromInput:Control=null) -> void:
 		if component is PlayerPlaceholderObject:
 			component.set(_property, _after)
 			component.propertyChangedDo(_property)
@@ -318,6 +318,7 @@ class PropertyChange extends Change:
 		if before == after:
 			cancelled = true
 			return
+		if fromInput: Game.editor.focusDialog.bufferSkipInput = fromInput
 		do()
 		component.propertyChangedInit(property)
 
@@ -436,7 +437,7 @@ class ArrayElementChange extends Change:
 	var after:Variant
 	var dictionary:Dictionary
 
-	func _init(component:GameComponent,_array:StringName,_index:int,_after:Variant) -> void:
+	func _init(component:GameComponent,_array:StringName,_index:int,_after:Variant,fromInput:Control=null) -> void:
 		id = component.id
 		index = _index
 		array = _array
@@ -448,6 +449,7 @@ class ArrayElementChange extends Change:
 		if component.get_script() in Game.NON_OBJECT_COMPONENTS: dictionary = Game.components
 		elif component.get_script() in Game.NOTE_COMPONENTS: dictionary = Game.notes
 		else: dictionary = Game.objects
+		if fromInput: Game.editor.focusDialog.bufferSkipInput = fromInput
 		do()
 
 	func do() -> void: changeValue(after)

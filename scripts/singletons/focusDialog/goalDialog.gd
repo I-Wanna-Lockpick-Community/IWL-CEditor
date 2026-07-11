@@ -1,7 +1,7 @@
 extends SubDialog
 class_name GoalDialog
 
-func focus(focused:Goal, _new:bool, _dontRedirect:bool) -> void:
+func focus(focused:Goal, _new:bool, _dontRedirect:bool, _skipInput:Control) -> void:
 	%goalTypeSelector.setSelect(focused.type)
 
 func _goalTypeSelected(type:Goal.TYPE) -> void:

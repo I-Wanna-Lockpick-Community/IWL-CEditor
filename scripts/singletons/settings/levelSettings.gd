@@ -32,7 +32,7 @@ func receiveMouseInput(event:InputEvent) -> void:
 		Game.editor.startSizeDrag(Game.editor.levelBoundsObject, diffSign)
 
 func opened(configFile:ConfigFile) -> void:
-	updateLevelSettingsPosition()
+	updatePosition()
 	%levelNumber.text = Game.level.number
 	%levelName.text = Game.level.name
 	%levelAuthor.text = Game.level.author
@@ -48,7 +48,7 @@ func closed(configFile:ConfigFile) -> void:
 	configFile.set_value("editor", "thumbnailEntireLevel", %thumbnailEntireLevel.button_pressed)
 	configFile.set_value("editor", "thumbnailWithText", %thumbnailWithText.button_pressed)
 
-func updateLevelSettingsPosition() -> void:
+func updatePosition() -> void:
 	%followWorld.worldOffset = Game.editor.levelStartCameraCenter()
 
 func _levelNumberSet(string:String) -> void:
