@@ -117,7 +117,7 @@ func clear() -> void:
 		if editor.modsWindow: editor.modsWindow._close()
 		editor.quickSet.applyOrCancel()
 		editor.modes._setMode(Editor.MODE.SELECT)
-		editor.otherObjects.objectSelected(PlayerSpawn, true)
+		editor.modes.otherObjects.objectSelected(PlayerSpawn, true)
 		editor.multiselect.deselect()
 		editor.multiselect.clipboard.clear()
 		editor.paste.disabled = true

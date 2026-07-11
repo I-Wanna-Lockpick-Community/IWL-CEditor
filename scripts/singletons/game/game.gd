@@ -197,7 +197,7 @@ func playTest(spawn:PlayerSpawn) -> void:
 	if playState == PLAY_STATE.EDIT:
 		camera.zoom = Vector2.ONE*uiScale
 		starting = true
-		player = preload("res://scenes/player.tscn").instantiate()
+		player = preload("res://scenes/game/player.tscn").instantiate()
 		world.add_child(player)
 		player.position = spawn.position + Vector2(17, 23)
 		if spawn != levelStart:
@@ -283,7 +283,7 @@ func playSaved(fromOpenWindow:OpenWindow=null) -> void:
 	editorWindowMode = get_window().mode
 	editorWindowSize = get_window().size
 	if fromOpenWindow: editor.remove_child(fromOpenWindow) # otherwise it gets killed by the scene change
-	playGame = preload("res://scenes/playGame.tscn").instantiate()
+	playGame = preload("res://scenes/game/playGame.tscn").instantiate()
 	get_tree().change_scene_to_node(playGame)
 	get_window().mode = Window.MODE_WINDOWED
 	if !OS.has_feature("web"): get_window().size = Vector2(800,608) * uiScale

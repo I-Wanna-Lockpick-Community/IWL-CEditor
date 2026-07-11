@@ -202,7 +202,7 @@ func startLevel() -> void:
 	textOffsetAngle = 0
 
 func start() -> void:
-	Game.player = preload("res://scenes/player.tscn").instantiate()
+	Game.player = preload("res://scenes/game/player.tscn").instantiate()
 	world.add_child(Game.player)
 	assert(Game.levelStart)
 	Game.player.position = Game.levelStart.position + Vector2(16, 23)

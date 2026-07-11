@@ -1,0 +1,47 @@
+[gd_scene format=3 uid="uid://ckdtw7bdno4hp"]
+
+[ext_resource type="Theme" uid="uid://bvfthh0vm4fbp" path="res://resources/uiTheme.tres" id="1_5718d"]
+[ext_resource type="Script" uid="uid://klvehssscs55" path="res://scripts/singletons/game/pencilmarkDialog.gd" id="2_pu3vv"]
+
+[node name="pencilmarkDialog" type="Control" unique_id=1187350792]
+custom_minimum_size = Vector2(256, 192)
+layout_mode = 3
+anchors_preset = 0
+offset_right = 256.0
+offset_bottom = 192.0
+theme = ExtResource("1_5718d")
+theme_type_variation = &"DialogPanelContainer"
+script = ExtResource("2_pu3vv")
+metadata/_custom_type_script = "uid://klvehssscs55"
+
+[node name="c" type="MarginContainer" parent="." unique_id=702145301]
+layout_mode = 0
+offset_left = 2.0
+offset_top = 2.0
+offset_right = 254.0
+offset_bottom = 190.0
+
+[node name="c" type="VBoxContainer" parent="c" unique_id=1645486770]
+layout_mode = 2
+
+[node name="c" type="HBoxContainer" parent="c/c" unique_id=1498000665]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="save" type="Button" parent="c/c/c" unique_id=479695496]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"RadioButtonText"
+text = "Save"
+
+[node name="cancel" type="Button" parent="c/c/c" unique_id=2090708292]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"RadioButtonText"
+text = "Cancel"
+
+[node name="delete" type="Button" parent="c/c/c" unique_id=2027178885]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"RadioButtonText"
+text = "Delete"

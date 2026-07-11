@@ -23,7 +23,7 @@
 [ext_resource type="Script" uid="uid://clsxh0xnfy3c6" path="res://scripts/nodes/focusDialog/selector/keyBoolTypeSelector.gd" id="15_sb8el"]
 [ext_resource type="Script" uid="uid://cxlnmn0e36ba" path="res://scripts/nodes/focusDialog/selector/lockTypeSelector.gd" id="15_vfuuy"]
 [ext_resource type="Texture2D" uid="uid://blvji7kl64sbd" path="res://assets/ui/focusDialog/door/lockHandler/colorLink.png" id="17_5vlab"]
-[ext_resource type="Script" uid="uid://c71qe58ht0isn" path="res://scripts/nodes/focusDialog/configurationSelector.gd" id="17_cu8b0"]
+[ext_resource type="Script" uid="uid://c71qe58ht0isn" path="res://scripts/nodes/focusDialog/selector/configurationSelector.gd" id="17_cu8b0"]
 [ext_resource type="PackedScene" uid="uid://bkywonfg0bt0y" path="res://scenes/focusDialog/numberEdit.tscn" id="20_gx4cd"]
 [ext_resource type="Texture2D" uid="uid://bar7rrr1p3a1h" path="res://assets/ui/focusDialog/door/lockBooleans/negated.png" id="21_bfxh1"]
 [ext_resource type="Texture2D" uid="uid://brhnpnqvdifb8" path="res://assets/ui/focusDialog/door/lockBooleans/armament.png" id="22_4u2vc"]
@@ -217,7 +217,6 @@ layout_mode = 2
 size_flags_horizontal = 4
 theme = ExtResource("1_eqegh")
 script = ExtResource("3_wmate")
-metadata/_custom_type_script = "uid://c70juj2p5s6yd"
 
 [node name="c" type="HBoxContainer" parent="keyDialog/c/c/c" unique_id=457898854]
 layout_mode = 2
@@ -228,7 +227,6 @@ unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 4
 script = ExtResource("4_cb7cu")
-metadata/_custom_type_script = "uid://dgllodap6540"
 
 [node name="sep" type="VSeparator" parent="keyDialog/c/c/c/c" unique_id=732163152]
 layout_mode = 2
@@ -256,7 +254,6 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(40, 18)
 layout_mode = 2
 type = 2
-allowZeroI = null
 allowZero = false
 
 [node name="keyGlisteningToggle" type="Button" parent="keyDialog/c/c/c/c" unique_id=1657225081 groups=["explained"]]
@@ -270,9 +267,6 @@ metadata/explanation = SubResource("Resource_hdjws")
 [node name="keyCountEdit" parent="keyDialog/c/c/c" unique_id=1393964115 instance=ExtResource("20_gx4cd")]
 unique_name_in_owner = true
 layout_mode = 2
-type = null
-allowZeroI = null
-allowZero = null
 
 [node name="keyOperationSelector" type="GridContainer" parent="keyDialog/c/c/c" unique_id=2013174328]
 unique_name_in_owner = true
@@ -299,21 +293,18 @@ layout_mode = 2
 size_flags_horizontal = 4
 theme = ExtResource("1_eqegh")
 script = ExtResource("3_wmate")
-metadata/_custom_type_script = "uid://c70juj2p5s6yd"
 
 [node name="keyBoolTypeSelector" type="GridContainer" parent="keyDialog/c/c/c" unique_id=294409248]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 4
 script = ExtResource("15_sb8el")
-metadata/_custom_type_script = "uid://clsxh0xnfy3c6"
 
 [node name="keyCollectTypeSelector" type="GridContainer" parent="keyDialog/c/c/c" unique_id=481828576]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 4
 script = ExtResource("14_sb8el")
-metadata/_custom_type_script = "uid://d385kmsarn7r"
 
 [node name="doorDialog" type="Control" parent="." unique_id=1206125138 groups=["modUI"]]
 unique_name_in_owner = true
@@ -426,14 +417,12 @@ unique_name_in_owner = true
 layout_mode = 2
 alignment = 1
 script = ExtResource("17_cu8b0")
-metadata/_custom_type_script = "uid://c71qe58ht0isn"
 
 [node name="doorColorSelector" type="GridContainer" parent="doorDialog/c/lock/c/c" unique_id=612300549 groups=["modUI"]]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 4
 script = ExtResource("3_wmate")
-metadata/_custom_type_script = "uid://c70juj2p5s6yd"
 
 [node name="lockSettings" type="VBoxContainer" parent="doorDialog/c/lock/c/c" unique_id=482987491]
 unique_name_in_owner = true
@@ -448,7 +437,6 @@ alignment = 1
 unique_name_in_owner = true
 layout_mode = 2
 script = ExtResource("15_vfuuy")
-metadata/_custom_type_script = "uid://cxlnmn0e36ba"
 
 [node name="lockSettingsSep" type="VSeparator" parent="doorDialog/c/lock/c/c/lockSettings/c" unique_id=427259883]
 unique_name_in_owner = true
@@ -480,7 +468,6 @@ unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 4
 script = ExtResource("33_buutc")
-metadata/_custom_type_script = "uid://d0q61cn7u7wc1"
 
 [node name="doorBooleans" type="HBoxContainer" parent="doorDialog/c/lock/c/c" unique_id=16192028]
 unique_name_in_owner = true
@@ -547,9 +534,6 @@ stretch_mode = 3
 [node name="doorCopiesEdit" parent="doorDialog/c/lock/c/c/doorCopySettings/c" unique_id=1561873349 instance=ExtResource("20_gx4cd")]
 unique_name_in_owner = true
 layout_mode = 2
-type = null
-allowZeroI = null
-allowZero = null
 
 [node name="doorInfCopiesSettings" type="HBoxContainer" parent="doorDialog/c/lock/c/c/doorCopySettings" unique_id=1648330172]
 unique_name_in_owner = true
@@ -605,8 +589,6 @@ layout_mode = 2
 unique_name_in_owner = true
 layout_mode = 2
 type = 1
-allowZeroI = null
-allowZero = null
 
 [node name="blastLockSettings" type="VBoxContainer" parent="doorDialog/c/lock/c/c" unique_id=2055272722]
 unique_name_in_owner = true
@@ -621,9 +603,6 @@ layout_mode = 2
 [node name="partialBlastNumeratorEdit" parent="doorDialog/c/lock/c/c/blastLockSettings/partialBlastSettings" unique_id=2038813885 instance=ExtResource("20_gx4cd")]
 unique_name_in_owner = true
 layout_mode = 2
-type = null
-allowZeroI = null
-allowZero = null
 
 [node name="partialBlastSep" type="HSeparator" parent="doorDialog/c/lock/c/c/blastLockSettings/partialBlastSettings" unique_id=1939953753]
 unique_name_in_owner = true
@@ -666,8 +645,6 @@ metadata/explanation = SubResource("Resource_rmnx8")
 [node name="partialBlastDenominatorEdit" parent="doorDialog/c/lock/c/c/blastLockSettings/c" unique_id=1928037066 instance=ExtResource("20_gx4cd")]
 unique_name_in_owner = true
 layout_mode = 2
-type = null
-allowZeroI = null
 allowZero = false
 
 [node name="partialBlastConfiguration" type="VBoxContainer" parent="doorDialog/c/lock/c/c/blastLockSettings" unique_id=1425348192]
@@ -716,7 +693,6 @@ layout_mode = 2
 size_flags_horizontal = 3
 script = ExtResource("31_xwnfa")
 buttonGroup = SubResource("ButtonGroup_xwnfa")
-metadata/_custom_type_script = "uid://2iqmgcrc5wpq"
 
 [node name="playerDialog" type="Control" parent="." unique_id=1028920322 groups=["modUI"]]
 unique_name_in_owner = true
@@ -809,7 +785,6 @@ unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 4
 script = ExtResource("3_wmate")
-metadata/_custom_type_script = "uid://c70juj2p5s6yd"
 
 [node name="playerStateColorSettings" type="PanelContainer" parent="playerDialog/c" unique_id=4846107]
 unique_name_in_owner = true
@@ -825,9 +800,6 @@ layout_mode = 2
 [node name="playerKeyCountEdit" parent="playerDialog/c/playerStateColorSettings/c/c" unique_id=1310694864 instance=ExtResource("20_gx4cd")]
 unique_name_in_owner = true
 layout_mode = 2
-type = null
-allowZeroI = null
-allowZero = null
 
 [node name="playerKeyGlistenCont" type="HBoxContainer" parent="playerDialog/c/playerStateColorSettings/c/c" unique_id=865961514]
 unique_name_in_owner = true
@@ -840,9 +812,6 @@ texture = ExtResource("38_lm5cw")
 [node name="playerKeyGlistenEdit" parent="playerDialog/c/playerStateColorSettings/c/c/playerKeyGlistenCont" unique_id=209548756 instance=ExtResource("20_gx4cd")]
 unique_name_in_owner = true
 layout_mode = 2
-type = null
-allowZeroI = null
-allowZero = null
 
 [node name="p2" type="TextureRect" parent="playerDialog/c/playerStateColorSettings/c/c/playerKeyGlistenCont" unique_id=1003227765]
 layout_mode = 2
@@ -913,14 +882,12 @@ custom_minimum_size = Vector2(160, 0)
 layout_mode = 2
 script = ExtResource("25_1rcup")
 buttonGroup = SubResource("ButtonGroup_7tfe2")
-metadata/_custom_type_script = "uid://lbaubg2qq1s1"
 
 [node name="keyCounterColorSelector" type="GridContainer" parent="keyCounterDialog/c/c/c" unique_id=1469942818 groups=["modUI"]]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 4
 script = ExtResource("3_wmate")
-metadata/_custom_type_script = "uid://c70juj2p5s6yd"
 
 [node name="goalDialog" type="Control" parent="." unique_id=1207556588]
 unique_name_in_owner = true
@@ -949,7 +916,6 @@ layout_mode = 2
 unique_name_in_owner = true
 layout_mode = 2
 script = ExtResource("26_1rcup")
-metadata/_custom_type_script = "uid://bg8oswa2bhdsv"
 
 [node name="speechBubbler" type="Node2D" parent="." unique_id=1211445522]
 unique_name_in_owner = true

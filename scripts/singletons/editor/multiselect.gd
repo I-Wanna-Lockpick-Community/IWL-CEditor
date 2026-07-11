@@ -120,7 +120,7 @@ func copySelection() -> void:
 		if select is TileSelect: clipboard.append(TileCopy.new(select))
 		elif select is ObjectSelect and select.object is not PlayerPlaceholderObject: clipboard.append(createObjectCopy(select.object))
 	# itll only be disabled at the start
-	if clipboard: Game.editor.paste.disabled = false
+	if clipboard: Game.editor.modes.paste.disabled = false
 
 func createObjectCopy(object:GameObject) -> ObjectCopy:
 	# KeyBulk, Door, Goal, KeyCounter, PlayerSpawn, FloatingTile, RemoteLock

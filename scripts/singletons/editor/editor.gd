@@ -7,8 +7,6 @@ class_name Editor
 @onready var focusDialog:FocusDialog = %focusDialog
 @onready var quickSet:QuickSet = %quickSet
 @onready var multiselect:Multiselect = %multiselect
-@onready var paste:Button = %paste
-@onready var otherObjects:OtherObjects = %otherObjects
 @onready var topBar:TopBar = %topBar
 @onready var settingsMenu:SettingsMenu = %settingsMenu
 @onready var outline:Outline = %outline
@@ -36,7 +34,10 @@ var findProblems:FindProblems
 
 var previewComponents:Array[GameComponent] = []
 
-enum MODE {SELECT, TILE, KEY, DOOR, OTHER, PASTE}
+enum VIEW {NORMAL, NOTES}
+const VIEWS:int = 2
+var view:VIEW = VIEW.NORMAL
+enum MODE {SELECT, TILE, KEY, DOOR, OTHER, PASTE, PENCILMARK}
 var mode:MODE = MODE.SELECT
 
 var mouseWorldPosition:Vector2
@@ -146,7 +147,7 @@ func _process(delta:float) -> void:
 		var hoverZIndex:int = 0
 		if !Input.is_action_pressed(&"heldKeepMode") and !settingsOpen:
 			for object in Game.objectsParent.get_children():
-				if mode == MODE.SELECT or Game.playState == Game.PLAY_STATE.PLAY or (mode == MODE.KEY and object is KeyBulk) or (mode == MODE.DOOR and object is Door) or (mode == MODE.OTHER and object.get_script() == otherObjects.selected):
+				if mode == MODE.SELECT or Game.playState == Game.PLAY_STATE.PLAY or (mode == MODE.KEY and object is KeyBulk) or (mode == MODE.DOOR and object is Door) or (mode == MODE.OTHER and object.get_script() == modes.otherObjects.selected):
 					if hoverZIndex <= object.z_index and Rect2(object.getDrawPosition(), object.size).has_point(mouseWorldPosition) and (Game.playState != Game.PLAY_STATE.PLAY or object.active):
 						objectHovered = object
 						hoverZIndex = object.z_index
@@ -294,21 +295,21 @@ func _gui_input(event:InputEvent) -> void:
 							Changes.bufferSave()
 				MODE.OTHER:
 					if isLeftClick(event):
-						if componentHovered is KeyCounterElement and otherObjects.selected == KeyCounter: startPositionDrag(componentHovered)
-						elif objectHovered and objectHovered.get_script() == otherObjects.selected:
+						if componentHovered is KeyCounterElement and modes.otherObjects.selected == KeyCounter: startPositionDrag(componentHovered)
+						elif objectHovered and objectHovered.get_script() == modes.otherObjects.selected:
 							startPositionDrag(objectHovered)
 						else: focusDialog.defocus()
 					if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
-						if (!objectHovered or objectHovered.get_script() != otherObjects.selected) and inBounds:
-							var object:GameObject = Changes.addChange(Changes.CreateComponentChange.new(otherObjects.selected,{&"position":mouseTilePosition})).result
+						if (!objectHovered or objectHovered.get_script() != modes.otherObjects.selected) and inBounds:
+							var object:GameObject = Changes.addChange(Changes.CreateComponentChange.new(modes.otherObjects.selected,{&"position":mouseTilePosition})).result
 							focusDialog.defocus()
-							if otherObjects.selected == KeyCounter:
+							if modes.otherObjects.selected == KeyCounter:
 								Changes.addChange(Changes.CreateComponentChange.new(KeyCounterElement,{&"position":Vector2(12,12),&"parentId":object.id}))
 							if !Input.is_action_pressed(&"heldKeepMode"):
 								modes._setMode(MODE.SELECT)
 								startPositionDrag(object)
 					if Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT):
-						if objectHovered and objectHovered.get_script() == otherObjects.selected:
+						if objectHovered and objectHovered.get_script() == modes.otherObjects.selected:
 							Changes.addChange(Changes.DeleteComponentChange.new(objectHovered))
 							Changes.bufferSave()
 				MODE.PASTE:
@@ -462,10 +463,10 @@ func _input(event:InputEvent) -> void:
 				_: Game.player.receiveKey(event)
 		else:
 			# IN EDIT
-			if otherObjects.objectSearch.has_focus():
+			if modes.otherObjects.objectSearch.has_focus():
 				match event.keycode:
 					KEY_ESCAPE: grab_focus()
-					KEY_TAB: otherObjects._searchSubmitted()
+					KEY_TAB: modes.otherObjects._searchSubmitted()
 				return
 			if focusDialog.interacted and focusDialog.interacted.receiveKey(event): return
 			elif focusDialog.focused and focusDialog.receiveKey(event): return
@@ -473,12 +474,15 @@ func _input(event:InputEvent) -> void:
 			elif eventIs(event, &"editStartPlaytest") and !topBar.play.disabled: await get_tree().process_frame; Game.playTest(Game.levelStart)
 			elif eventIs(event, &"editStartPlaytestFromState") and !topBar.play.disabled: await get_tree().process_frame; Game.playTest(Game.latestSpawn)
 			elif eventIs(event, &"editStopPlaytest") and Game.playState == Game.PLAY_STATE.PAUSED: Game.stopTest()
+			elif eventIs(event, &"editViewPrevious"): modes.previousView()
+			elif eventIs(event, &"editViewNext"): modes.nextView()
 			elif eventIs(event, &"editModeSelect"): modes._setMode(MODE.SELECT); focusDialog.defocus(); componentDragged = null; multiselect.deselect()
 			elif eventIs(event, &"editModeTile"): modes._setMode(MODE.TILE)
 			elif eventIs(event, &"editModeKey"): modes._setMode(MODE.KEY)
 			elif eventIs(event, &"editModeDoor"): modes._setMode(MODE.DOOR)
 			elif eventIs(event, &"editModeOther"): modes._setMode(MODE.OTHER)
-			elif eventIs(event, &"editObjectSearch"): otherObjects.objectSearch.grab_focus()
+			elif eventIs(event, &"editObjectSearch"): modes.otherObjects.objectSearch.grab_focus()
+			elif eventIs(event, &"editModePencilmark"): modes._setMode(MODE.PENCILMARK)
 			elif eventIs(event, &"editPipette"): pipette()
 			elif eventIs(event, &"editOpenSettings"): _toggleSettingsMenu(true)
 			elif eventIs(event, &"editNew"): fileMenu.optionPressed(0)
@@ -524,7 +528,7 @@ func pipette() -> void:
 	if objectHovered:
 		multiselect.selectRect.position = objectHovered.position
 		multiselect.clipboard.assign([multiselect.createObjectCopy(objectHovered)])
-		paste.disabled = false
+		modes.paste.disabled = false
 		modes._setMode(MODE.PASTE)
 		@warning_ignore("integer_division")
 	elif Game.tiles.get_cell_source_id(mouseTilePosition/32) != -1: modes._setMode(MODE.TILE)

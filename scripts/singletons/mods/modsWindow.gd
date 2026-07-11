@@ -50,7 +50,7 @@ func _saveChanges():
 	for mod in modsAdded: addMod(mod)
 	for mod in modsRemoved: removeMod(mod)
 
-	if !Mods.objectAvailable(Game.editor.otherObjects.selected): Game.editor.otherObjects.objectSelected(PlayerSpawn, true)
+	if !Mods.objectAvailable(Game.editor.modes.otherObjects.selected): Game.editor.modes.otherObjects.objectSelected(PlayerSpawn, true)
 	
 	var availableColors:Array[C.olors] = Mods.colors()
 	for playerSpawn in Game.objects.values().filter(func(object): return object is PlayerSpawn):

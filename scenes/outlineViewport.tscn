@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://r7q8sdncd4jo"]
 
-[ext_resource type="Script" uid="uid://cpemf1vafuxiu" path="res://scripts/nodes/outlineViewport.gd" id="1_2e7pv"]
+[ext_resource type="Script" uid="uid://cpemf1vafuxiu" path="res://scripts/nodes/editor/outlineViewport.gd" id="1_2e7pv"]
 [ext_resource type="Shader" uid="uid://b7ek3evjsfuc5" path="res://resources/materials/outline.gdshader" id="1_65mc8"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_y30jp"]

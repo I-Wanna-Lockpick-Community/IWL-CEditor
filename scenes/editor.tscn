@@ -3,20 +3,12 @@
 [ext_resource type="Theme" uid="uid://bvfthh0vm4fbp" path="res://resources/uiTheme.tres" id="1_j8y2p"]
 [ext_resource type="Script" uid="uid://2wjcj6frwpjo" path="res://scripts/singletons/editor/editor.gd" id="2_o435n"]
 [ext_resource type="Script" uid="uid://bt2qk0jhpuc53" path="res://scripts/singletons/editor/topBar.gd" id="3_3vi5u"]
-[ext_resource type="Script" uid="uid://ced7aml4sfanx" path="res://scripts/singletons/editor/modes.gd" id="4_4jiep"]
-[ext_resource type="Texture2D" uid="uid://brlbjt36syjq8" path="res://assets/ui/modes/select.png" id="4_78fwb"]
-[ext_resource type="Script" uid="uid://buv3n70m06kje" path="res://scripts/nodes/hotkeyButton.gd" id="5_3vi5u"]
-[ext_resource type="Texture2D" uid="uid://tcsqjcnuio0j" path="res://assets/ui/modes/tile.png" id="5_74j0u"]
+[ext_resource type="Script" uid="uid://buv3n70m06kje" path="res://scripts/nodes/settings/hotkeyButton.gd" id="5_3vi5u"]
 [ext_resource type="Texture2D" uid="uid://5nn25q4md27b" path="res://assets/ui/modes/file.png" id="5_m12ww"]
 [ext_resource type="Script" uid="uid://bu13x48angurk" path="res://scripts/singletons/editor/fileMenu.gd" id="6_7msgv"]
-[ext_resource type="Texture2D" uid="uid://cx3mntdf11c1g" path="res://assets/ui/modes/key.png" id="6_sdh1e"]
-[ext_resource type="Texture2D" uid="uid://ckk7i2y24ysor" path="res://assets/ui/modes/door.png" id="7_2w0at"]
-[ext_resource type="PackedScene" uid="uid://2hd65vn44me7" path="res://scenes/world.tscn" id="8_5tdu1"]
+[ext_resource type="PackedScene" uid="uid://c1g0554rih35" path="res://scenes/modes.tscn" id="6_nhltt"]
+[ext_resource type="PackedScene" uid="uid://2hd65vn44me7" path="res://scenes/game/world.tscn" id="8_5tdu1"]
 [ext_resource type="Shader" uid="uid://befrul0j4yc02" path="res://resources/materials/game.gdshader" id="8_o435n"]
-[ext_resource type="Texture2D" uid="uid://b4tmgbs01eh7i" path="res://assets/ui/modes/paste.png" id="9_0u1f5"]
-[ext_resource type="Script" uid="uid://brsj7c2dial40" path="res://scripts/singletons/editor/otherObjects.gd" id="9_k1sck"]
-[ext_resource type="Texture2D" uid="uid://b2ouh1fqa64em" path="res://assets/ui/modes/search.png" id="10_8g6du"]
-[ext_resource type="Texture2D" uid="uid://di4cbwrveccbg" path="res://assets/game/playerSpawn/levelStart.png" id="10_aa8l6"]
 [ext_resource type="FontFile" uid="uid://cjub6sxbu8elx" path="res://resources/fonts/RobotoMono-SemiBold.ttf" id="12_2w0at"]
 [ext_resource type="PackedScene" uid="uid://8bth374yqwpe" path="res://scenes/focusDialog/focusDialog.tscn" id="12_74j0u"]
 [ext_resource type="PackedScene" uid="uid://c1kt2qxw6ooqf" path="res://scenes/multiselect.tscn" id="12_q8l03"]
@@ -33,49 +25,11 @@
 [ext_resource type="PackedScene" uid="uid://r7q8sdncd4jo" path="res://scenes/outlineViewport.tscn" id="28_e62bx"]
 [ext_resource type="Shader" uid="uid://y4p3snw4y2xy" path="res://resources/materials/placePreview.gdshader" id="28_ndxgo"]
 [ext_resource type="Shader" uid="uid://b7ek3evjsfuc5" path="res://resources/materials/outline.gdshader" id="29_65evm"]
-[ext_resource type="PackedScene" uid="uid://bjwgb1n83p512" path="res://scenes/pda.tscn" id="30_65evm"]
+[ext_resource type="PackedScene" uid="uid://bjwgb1n83p512" path="res://scenes/game/pda.tscn" id="30_65evm"]
 [ext_resource type="Script" uid="uid://bsmyhhhm08v2u" path="res://scripts/singletons/game/mouseover.gd" id="30_e62bx"]
 [ext_resource type="Script" uid="uid://bu3gpjupflfc2" path="res://scripts/singletons/game/quickSwitcher.gd" id="32_pgu5w"]
 [ext_resource type="Texture2D" uid="uid://d10g6pdt4sjs2" path="res://assets/ui/mods/iconSmall/Refactored.png" id="33_mxdmd"]
 [ext_resource type="PackedScene" uid="uid://dhp8ohn6mj5pr" path="res://scenes/resizeHandles.tscn" id="35_e62bx"]
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_74j0u"]
-content_margin_left = 2.0
-content_margin_top = 2.0
-content_margin_right = 2.0
-content_margin_bottom = 2.0
-bg_color = Color(0.1, 0.1, 0.1, 0.6)
-corner_radius_top_left = 6
-corner_detail = 5
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_sdh1e"]
-bg_color = Color(1, 1, 1, 1)
-draw_center = false
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(1, 1, 1, 1)
-corner_radius_top_left = 6
-corner_detail = 5
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_2w0at"]
-content_margin_left = 2.0
-content_margin_top = 2.0
-content_margin_right = 2.0
-content_margin_bottom = 2.0
-bg_color = Color(0.585062, 0.585062, 0.5850621, 0.6)
-corner_radius_top_left = 6
-corner_detail = 5
-
-[sub_resource type="ButtonGroup" id="ButtonGroup_wm3ai"]
-resource_name = "modes"
-
-[sub_resource type="Resource" id="Resource_lo5f0"]
-script = ExtResource("17_bn54a")
-explanation = "[%s]Search objects"
-hotkeys = Array[StringName]([&"editObjectSearch"])
-metadata/_custom_type_script = "uid://cgjhnhjwymb8g"
 
 [sub_resource type="Resource" id="Resource_mxdmd"]
 script = ExtResource("17_bn54a")
@@ -117,7 +71,7 @@ shader_parameter/rChannel = Color(1, 1, 1, 1)
 shader_parameter/gChannel = Color(0, 0, 0, 1)
 shader_parameter/bChannel = Color(0, 0, 0, 1)
 
-[sub_resource type="ViewportTexture" id="ViewportTexture_pgu5w"]
+[sub_resource type="ViewportTexture" id="ViewportTexture_nhltt"]
 viewport_path = NodePath("viewport")
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ndxgo"]
@@ -127,7 +81,7 @@ shader_parameter/rChannel = Color(0, 0.63529414, 1, 1)
 shader_parameter/gChannel = Color(1, 1, 1, 1)
 shader_parameter/bChannel = Color(0, 0, 0, 1)
 
-[sub_resource type="ViewportTexture" id="ViewportTexture_qqt88"]
+[sub_resource type="ViewportTexture" id="ViewportTexture_v24q3"]
 viewport_path = NodePath("viewport")
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_e62bx"]
@@ -185,13 +139,7 @@ script = ExtResource("3_3vi5u")
 [node name="c" type="HBoxContainer" parent="c/c/c/topBar" unique_id=1495268317]
 layout_mode = 2
 
-[node name="modes" type="HBoxContainer" parent="c/c/c/topBar/c" unique_id=1246660106]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_horizontal = 3
-script = ExtResource("4_4jiep")
-
-[node name="fileMenu" type="MenuButton" parent="c/c/c/topBar/c/modes" unique_id=974745893 node_paths=PackedStringArray("shortcut_context")]
+[node name="fileMenu" type="MenuButton" parent="c/c/c/topBar/c" unique_id=974745893 node_paths=PackedStringArray("shortcut_context")]
 unique_name_in_owner = true
 layout_mode = 2
 shortcut_context = NodePath(".")
@@ -218,114 +166,9 @@ popup/item_8/text = "Play Current"
 popup/item_8/id = 8
 script = ExtResource("6_7msgv")
 
-[node name="spacer" type="Control" parent="c/c/c/topBar/c/modes" unique_id=651664193]
-custom_minimum_size = Vector2(16, 0)
-layout_mode = 2
-
-[node name="select" type="Button" parent="c/c/c/topBar/c/modes" unique_id=1040172252]
-layout_mode = 2
-theme_override_styles/normal = SubResource("StyleBoxFlat_74j0u")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_sdh1e")
-theme_override_styles/hover = SubResource("StyleBoxFlat_2w0at")
-toggle_mode = true
-button_pressed = true
-button_group = SubResource("ButtonGroup_wm3ai")
-icon = ExtResource("4_78fwb")
-script = ExtResource("5_3vi5u")
-defaultHotkey = &"editModeSelect"
-metadata/_custom_type_script = "uid://buv3n70m06kje"
-
-[node name="tile" type="Button" parent="c/c/c/topBar/c/modes" unique_id=259110560]
-layout_mode = 2
-toggle_mode = true
-button_group = SubResource("ButtonGroup_wm3ai")
-icon = ExtResource("5_74j0u")
-script = ExtResource("5_3vi5u")
-defaultHotkey = &"editModeTile"
-pressedHotkey = &"heldKeepMode"
-metadata/_custom_type_script = "uid://buv3n70m06kje"
-
-[node name="key" type="Button" parent="c/c/c/topBar/c/modes" unique_id=178010759]
-layout_mode = 2
-toggle_mode = true
-button_group = SubResource("ButtonGroup_wm3ai")
-icon = ExtResource("6_sdh1e")
-script = ExtResource("5_3vi5u")
-defaultHotkey = &"editModeKey"
-pressedHotkey = &"heldKeepMode"
-metadata/_custom_type_script = "uid://buv3n70m06kje"
-
-[node name="door" type="Button" parent="c/c/c/topBar/c/modes" unique_id=733621631]
-layout_mode = 2
-toggle_mode = true
-button_group = SubResource("ButtonGroup_wm3ai")
-icon = ExtResource("7_2w0at")
-script = ExtResource("5_3vi5u")
-defaultHotkey = &"editModeDoor"
-pressedHotkey = &"heldKeepMode"
-metadata/_custom_type_script = "uid://buv3n70m06kje"
-
-[node name="otherObjects" type="HBoxContainer" parent="c/c/c/topBar/c/modes" unique_id=2033916709]
+[node name="modes" parent="c/c/c/topBar/c" unique_id=261000550 instance=ExtResource("6_nhltt")]
 unique_name_in_owner = true
 layout_mode = 2
-script = ExtResource("9_k1sck")
-
-[node name="spacer" type="Control" parent="c/c/c/topBar/c/modes/otherObjects" unique_id=2082041988]
-custom_minimum_size = Vector2(8, 0)
-layout_mode = 2
-
-[node name="c" type="VBoxContainer" parent="c/c/c/topBar/c/modes/otherObjects" unique_id=1918404647]
-layout_mode = 2
-
-[node name="c" type="HBoxContainer" parent="c/c/c/topBar/c/modes/otherObjects/c" unique_id=290127145]
-layout_mode = 2
-
-[node name="other" type="Button" parent="c/c/c/topBar/c/modes/otherObjects/c/c" unique_id=1950434432]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(36, 0)
-layout_mode = 2
-toggle_mode = true
-button_group = SubResource("ButtonGroup_wm3ai")
-icon = ExtResource("10_aa8l6")
-script = ExtResource("5_3vi5u")
-defaultHotkey = &"editModeOther"
-pressedHotkey = &"heldKeepMode"
-metadata/_custom_type_script = "uid://buv3n70m06kje"
-
-[node name="objectSearch" type="LineEdit" parent="c/c/c/topBar/c/modes/otherObjects/c/c" unique_id=1704964870 groups=["explained"]]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(220, 0)
-layout_mode = 2
-placeholder_text = "Search objects"
-caret_blink = true
-right_icon = ExtResource("10_8g6du")
-metadata/explanation = SubResource("Resource_lo5f0")
-
-[node name="c2" type="Control" parent="c/c/c/topBar/c/modes/otherObjects/c" unique_id=1103501859]
-layout_mode = 2
-
-[node name="results" type="VBoxContainer" parent="c/c/c/topBar/c/modes/otherObjects/c/c2" unique_id=20611037]
-unique_name_in_owner = true
-layout_mode = 1
-anchors_preset = 10
-anchor_right = 1.0
-grow_horizontal = 2
-
-[node name="spacer2" type="Control" parent="c/c/c/topBar/c/modes/otherObjects" unique_id=186343368]
-custom_minimum_size = Vector2(8, 0)
-layout_mode = 2
-
-[node name="paste" type="Button" parent="c/c/c/topBar/c/modes" unique_id=845118188]
-unique_name_in_owner = true
-layout_mode = 2
-disabled = true
-toggle_mode = true
-button_group = SubResource("ButtonGroup_wm3ai")
-icon = ExtResource("9_0u1f5")
-script = ExtResource("5_3vi5u")
-defaultHotkey = &"editPaste"
-pressedHotkey = &"heldKeepMode"
-metadata/_custom_type_script = "uid://buv3n70m06kje"
 
 [node name="settingTabs" type="TabBar" parent="c/c/c/topBar/c" unique_id=1704706072]
 unique_name_in_owner = true
@@ -341,7 +184,6 @@ tab_2/title = "Game"
 
 [node name="playControls" type="HBoxContainer" parent="c/c/c/topBar/c" unique_id=1554422682]
 layout_mode = 2
-size_flags_horizontal = 3
 alignment = 2
 
 [node name="savestate" type="Button" parent="c/c/c/topBar/c/playControls" unique_id=743053793 groups=["explained"]]
@@ -441,13 +283,13 @@ script = ExtResource("13_0u1f5")
 unique_name_in_owner = true
 material = SubResource("ShaderMaterial_pgu5w")
 layout_mode = 2
-texture = SubResource("ViewportTexture_pgu5w")
+texture = SubResource("ViewportTexture_nhltt")
 
 [node name="outlineViewport2" parent="c/gameCont" unique_id=2071303993 instance=ExtResource("28_e62bx")]
 unique_name_in_owner = true
 material = SubResource("ShaderMaterial_ndxgo")
 layout_mode = 2
-texture = SubResource("ViewportTexture_qqt88")
+texture = SubResource("ViewportTexture_v24q3")
 
 [node name="outline" type="Node2D" parent="c/gameCont/outlineViewport2" unique_id=1982434259]
 unique_name_in_owner = true
@@ -694,16 +536,6 @@ size = Vector2i(200, 90)
 unresizable = true
 theme = ExtResource("1_j8y2p")
 
-[connection signal="pressed" from="c/c/c/topBar/c/modes/select" to="c/c/c/topBar/c/modes" method="_setMode" binds= [0]]
-[connection signal="pressed" from="c/c/c/topBar/c/modes/tile" to="c/c/c/topBar/c/modes" method="_setMode" binds= [1]]
-[connection signal="pressed" from="c/c/c/topBar/c/modes/key" to="c/c/c/topBar/c/modes" method="_setMode" binds= [2]]
-[connection signal="pressed" from="c/c/c/topBar/c/modes/door" to="c/c/c/topBar/c/modes" method="_setMode" binds= [3]]
-[connection signal="pressed" from="c/c/c/topBar/c/modes/otherObjects/c/c/other" to="c/c/c/topBar/c/modes" method="_setMode" binds= [4]]
-[connection signal="focus_entered" from="c/c/c/topBar/c/modes/otherObjects/c/c/objectSearch" to="c/c/c/topBar/c/modes/otherObjects" method="_searchFocused"]
-[connection signal="focus_exited" from="c/c/c/topBar/c/modes/otherObjects/c/c/objectSearch" to="c/c/c/topBar/c/modes/otherObjects" method="_searchDefocused"]
-[connection signal="text_changed" from="c/c/c/topBar/c/modes/otherObjects/c/c/objectSearch" to="c/c/c/topBar/c/modes/otherObjects" method="_updateSearch" unbinds=1]
-[connection signal="text_submitted" from="c/c/c/topBar/c/modes/otherObjects/c/c/objectSearch" to="c/c/c/topBar/c/modes/otherObjects" method="_searchSubmitted" unbinds=1]
-[connection signal="pressed" from="c/c/c/topBar/c/modes/paste" to="c/c/c/topBar/c/modes" method="_setMode" binds= [5]]
 [connection signal="tab_changed" from="c/c/c/topBar/c/settingTabs" to="c/gameCont/c/settingsMenu" method="_tabSelected"]
 [connection signal="pressed" from="c/c/c/topBar/c/playControls/savestate" to="c/c/c/topBar" method="_savestate"]
 [connection signal="pressed" from="c/c/c/topBar/c/playControls/play" to="c/c/c/topBar" method="_play"]

@@ -4,6 +4,7 @@ class_name TopBar
 @onready var play:Button = %play
 
 func _updateButtons() -> void:
+	%fileMenu.visible = Game.playState != Game.PLAY_STATE.PLAY and !Game.editor.settingsOpen
 	%modes.visible = Game.playState != Game.PLAY_STATE.PLAY and !Game.editor.settingsOpen
 
 	%savestate.visible = Game.playState != Game.PLAY_STATE.EDIT and !Game.editor.settingsOpen

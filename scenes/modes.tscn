@@ -1,0 +1,253 @@
+[gd_scene format=3 uid="uid://c1g0554rih35"]
+
+[ext_resource type="Theme" uid="uid://bvfthh0vm4fbp" path="res://resources/uiTheme.tres" id="1_0lmsr"]
+[ext_resource type="Script" uid="uid://ced7aml4sfanx" path="res://scripts/singletons/editor/modes.gd" id="1_8danh"]
+[ext_resource type="Texture2D" uid="uid://brlbjt36syjq8" path="res://assets/ui/modes/select.png" id="2_0lmsr"]
+[ext_resource type="Script" uid="uid://buv3n70m06kje" path="res://scripts/nodes/settings/hotkeyButton.gd" id="3_yirx3"]
+[ext_resource type="Texture2D" uid="uid://tcsqjcnuio0j" path="res://assets/ui/modes/tile.png" id="4_mtv61"]
+[ext_resource type="Texture2D" uid="uid://cx3mntdf11c1g" path="res://assets/ui/modes/key.png" id="5_tnbdj"]
+[ext_resource type="Texture2D" uid="uid://ckk7i2y24ysor" path="res://assets/ui/modes/door.png" id="6_slpjg"]
+[ext_resource type="Texture2D" uid="uid://d1qjxicnli8e8" path="res://assets/ui/modes/up.png" id="6_tnbdj"]
+[ext_resource type="Texture2D" uid="uid://c5xjmws2bfu7d" path="res://assets/ui/modes/down.png" id="7_slpjg"]
+[ext_resource type="Script" uid="uid://brsj7c2dial40" path="res://scripts/singletons/editor/otherObjects.gd" id="7_x4rll"]
+[ext_resource type="Texture2D" uid="uid://di4cbwrveccbg" path="res://assets/game/playerSpawn/levelStart.png" id="8_uw75d"]
+[ext_resource type="Texture2D" uid="uid://b2ouh1fqa64em" path="res://assets/ui/modes/search.png" id="9_x4wi8"]
+[ext_resource type="Script" uid="uid://cgjhnhjwymb8g" path="res://scripts/resources/controlExplanation.gd" id="10_o0tdl"]
+[ext_resource type="Texture2D" uid="uid://b4tmgbs01eh7i" path="res://assets/ui/modes/paste.png" id="11_dmex2"]
+[ext_resource type="Texture2D" uid="uid://b5erxoymd7kbv" path="res://assets/game/gameUI/pencilmark/sprMarkUIButtons_3.png" id="13_yirx3"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_74j0u"]
+content_margin_left = 2.0
+content_margin_top = 2.0
+content_margin_right = 2.0
+content_margin_bottom = 2.0
+bg_color = Color(0.1, 0.1, 0.1, 0.6)
+corner_radius_top_left = 6
+corner_detail = 5
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_sdh1e"]
+bg_color = Color(1, 1, 1, 1)
+draw_center = false
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 6
+corner_detail = 5
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_2w0at"]
+content_margin_left = 2.0
+content_margin_top = 2.0
+content_margin_right = 2.0
+content_margin_bottom = 2.0
+bg_color = Color(0.585062, 0.585062, 0.5850621, 0.6)
+corner_radius_top_left = 6
+corner_detail = 5
+
+[sub_resource type="ButtonGroup" id="ButtonGroup_wm3ai"]
+resource_name = "modes"
+
+[sub_resource type="Resource" id="Resource_tnbdj"]
+script = ExtResource("10_o0tdl")
+explanation = "[%s] Previous View"
+hotkeys = Array[StringName]([&"editViewPrevious"])
+metadata/_custom_type_script = "uid://cgjhnhjwymb8g"
+
+[sub_resource type="Resource" id="Resource_mtv61"]
+script = ExtResource("10_o0tdl")
+explanation = "[%s] Next View"
+hotkeys = Array[StringName]([&"editViewNext"])
+metadata/_custom_type_script = "uid://cgjhnhjwymb8g"
+
+[sub_resource type="Resource" id="Resource_lo5f0"]
+script = ExtResource("10_o0tdl")
+explanation = "[%s]Search objects"
+hotkeys = Array[StringName]([&"editObjectSearch"])
+metadata/_custom_type_script = "uid://cgjhnhjwymb8g"
+
+[node name="modes" type="HBoxContainer" unique_id=596064594]
+offset_right = 468.0
+offset_bottom = 36.0
+size_flags_horizontal = 3
+mouse_filter = 0
+theme = ExtResource("1_0lmsr")
+script = ExtResource("1_8danh")
+metadata/_custom_type_script = "uid://ced7aml4sfanx"
+
+[node name="c" type="Control" parent="." unique_id=245915734]
+layout_mode = 2
+
+[node name="results" type="VBoxContainer" parent="c" unique_id=1913134199]
+unique_name_in_owner = true
+layout_mode = 0
+
+[node name="select" type="Button" parent="." unique_id=1234727429]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_74j0u")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_sdh1e")
+theme_override_styles/hover = SubResource("StyleBoxFlat_2w0at")
+toggle_mode = true
+button_pressed = true
+button_group = SubResource("ButtonGroup_wm3ai")
+icon = ExtResource("2_0lmsr")
+script = ExtResource("3_yirx3")
+defaultHotkey = &"editModeSelect"
+metadata/_custom_type_script = "uid://buv3n70m06kje"
+
+[node name="paste" type="Button" parent="." unique_id=1854023720]
+unique_name_in_owner = true
+layout_mode = 2
+disabled = true
+toggle_mode = true
+button_group = SubResource("ButtonGroup_wm3ai")
+icon = ExtResource("11_dmex2")
+script = ExtResource("3_yirx3")
+defaultHotkey = &"editPaste"
+pressedHotkey = &"heldKeepMode"
+metadata/_custom_type_script = "uid://buv3n70m06kje"
+
+[node name="c2" type="VBoxContainer" parent="." unique_id=857892225]
+layout_mode = 2
+
+[node name="up" type="Button" parent="c2" unique_id=709213088 groups=["explained"]]
+layout_mode = 2
+icon = ExtResource("6_tnbdj")
+metadata/explanation = SubResource("Resource_tnbdj")
+
+[node name="viewDots" type="VBoxContainer" parent="c2" unique_id=2045137585]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 3
+alignment = 1
+
+[node name="down" type="Button" parent="c2" unique_id=1221592079 groups=["explained"]]
+layout_mode = 2
+icon = ExtResource("7_slpjg")
+metadata/explanation = SubResource("Resource_mtv61")
+
+[node name="c3" type="Control" parent="." unique_id=1529318008]
+custom_minimum_size = Vector2(8, 0)
+layout_mode = 2
+
+[node name="clip" type="Control" parent="." unique_id=1668313244]
+unique_name_in_owner = true
+clip_contents = true
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="modesVerticalContainer" type="VBoxContainer" parent="clip" unique_id=1285207178]
+unique_name_in_owner = true
+layout_mode = 1
+offset_right = 416.0
+offset_bottom = 36.0
+theme_override_constants/separation = 4
+
+[node name="normal" type="HBoxContainer" parent="clip/modesVerticalContainer" unique_id=605298283]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="tile" type="Button" parent="clip/modesVerticalContainer/normal" unique_id=1500963178 node_paths=PackedStringArray("hotkeyParent")]
+unique_name_in_owner = true
+layout_mode = 2
+toggle_mode = true
+button_group = SubResource("ButtonGroup_wm3ai")
+icon = ExtResource("4_mtv61")
+script = ExtResource("3_yirx3")
+defaultHotkey = &"editModeTile"
+pressedHotkey = &"heldKeepMode"
+hotkeyParent = NodePath("../../../..")
+metadata/_custom_type_script = "uid://buv3n70m06kje"
+
+[node name="key" type="Button" parent="clip/modesVerticalContainer/normal" unique_id=2036692458 node_paths=PackedStringArray("hotkeyParent")]
+unique_name_in_owner = true
+layout_mode = 2
+toggle_mode = true
+button_group = SubResource("ButtonGroup_wm3ai")
+icon = ExtResource("5_tnbdj")
+script = ExtResource("3_yirx3")
+defaultHotkey = &"editModeKey"
+pressedHotkey = &"heldKeepMode"
+hotkeyParent = NodePath("../../../..")
+metadata/_custom_type_script = "uid://buv3n70m06kje"
+
+[node name="door" type="Button" parent="clip/modesVerticalContainer/normal" unique_id=1126245465 node_paths=PackedStringArray("hotkeyParent")]
+unique_name_in_owner = true
+layout_mode = 2
+toggle_mode = true
+button_group = SubResource("ButtonGroup_wm3ai")
+icon = ExtResource("6_slpjg")
+script = ExtResource("3_yirx3")
+defaultHotkey = &"editModeDoor"
+pressedHotkey = &"heldKeepMode"
+hotkeyParent = NodePath("../../../..")
+metadata/_custom_type_script = "uid://buv3n70m06kje"
+
+[node name="spacer" type="Control" parent="clip/modesVerticalContainer/normal" unique_id=546786538]
+custom_minimum_size = Vector2(8, 0)
+layout_mode = 2
+
+[node name="otherObjects" type="HBoxContainer" parent="clip/modesVerticalContainer/normal" unique_id=1792460428]
+unique_name_in_owner = true
+layout_mode = 2
+script = ExtResource("7_x4rll")
+
+[node name="other" type="Button" parent="clip/modesVerticalContainer/normal/otherObjects" unique_id=1698342103 node_paths=PackedStringArray("hotkeyParent")]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(36, 0)
+layout_mode = 2
+toggle_mode = true
+button_group = SubResource("ButtonGroup_wm3ai")
+icon = ExtResource("8_uw75d")
+script = ExtResource("3_yirx3")
+defaultHotkey = &"editModeOther"
+pressedHotkey = &"heldKeepMode"
+hotkeyParent = NodePath("../../../../..")
+metadata/_custom_type_script = "uid://buv3n70m06kje"
+
+[node name="objectSearch" type="LineEdit" parent="clip/modesVerticalContainer/normal/otherObjects" unique_id=35662018 groups=["explained"]]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(220, 0)
+layout_mode = 2
+placeholder_text = "Search objects"
+caret_blink = true
+right_icon = ExtResource("9_x4wi8")
+metadata/explanation = SubResource("Resource_lo5f0")
+
+[node name="spacer2" type="Control" parent="clip/modesVerticalContainer/normal" unique_id=490245930]
+custom_minimum_size = Vector2(8, 0)
+layout_mode = 2
+
+[node name="notes" type="HBoxContainer" parent="clip/modesVerticalContainer" unique_id=2079902387]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="pencilmark" type="Button" parent="clip/modesVerticalContainer/notes" unique_id=594258228 node_paths=PackedStringArray("hotkeyParent")]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(36, 36)
+layout_mode = 2
+toggle_mode = true
+button_group = SubResource("ButtonGroup_wm3ai")
+icon = ExtResource("13_yirx3")
+icon_alignment = 1
+script = ExtResource("3_yirx3")
+defaultHotkey = &"editModePencilmark"
+pressedHotkey = &"heldKeepMode"
+hotkeyParent = NodePath("../../../..")
+metadata/_custom_type_script = "uid://buv3n70m06kje"
+
+[connection signal="pressed" from="select" to="." method="_setMode" binds= [0]]
+[connection signal="pressed" from="paste" to="." method="_setMode" binds= [5]]
+[connection signal="pressed" from="c2/up" to="." method="previousView"]
+[connection signal="pressed" from="c2/down" to="." method="nextView"]
+[connection signal="pressed" from="clip/modesVerticalContainer/normal/tile" to="." method="_setMode" binds= [1]]
+[connection signal="pressed" from="clip/modesVerticalContainer/normal/key" to="." method="_setMode" binds= [2]]
+[connection signal="pressed" from="clip/modesVerticalContainer/normal/door" to="." method="_setMode" binds= [3]]
+[connection signal="pressed" from="clip/modesVerticalContainer/normal/otherObjects/other" to="." method="_setMode" binds= [4]]
+[connection signal="focus_entered" from="clip/modesVerticalContainer/normal/otherObjects/objectSearch" to="clip/modesVerticalContainer/normal/otherObjects" method="_searchFocused"]
+[connection signal="focus_exited" from="clip/modesVerticalContainer/normal/otherObjects/objectSearch" to="clip/modesVerticalContainer/normal/otherObjects" method="_searchDefocused"]
+[connection signal="text_changed" from="clip/modesVerticalContainer/normal/otherObjects/objectSearch" to="clip/modesVerticalContainer/normal/otherObjects" method="_updateSearch" unbinds=1]
+[connection signal="text_submitted" from="clip/modesVerticalContainer/normal/otherObjects/objectSearch" to="clip/modesVerticalContainer/normal/otherObjects" method="_searchSubmitted" unbinds=1]
+[connection signal="pressed" from="clip/modesVerticalContainer/notes/pencilmark" to="." method="_setMode" binds= [6]]

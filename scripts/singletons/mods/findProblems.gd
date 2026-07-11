@@ -34,7 +34,7 @@ func setup() -> void:
 	for mod in Mods.mods.keys():
 		problemDisplays[mod] = {}
 		for problemType in Mods.mods[mod].problems.keys():
-			problemDisplays[mod][problemType] = preload("res://scenes/problemDisplay.tscn").instantiate().setup(mod,problemType,self)
+			problemDisplays[mod][problemType] = preload("res://scenes/mods/problemDisplay.tscn").instantiate().setup(mod,problemType,self)
 	
 	for object in Game.objects.values():
 		object.problems.clear()

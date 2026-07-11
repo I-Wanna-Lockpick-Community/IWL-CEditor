@@ -40,40 +40,45 @@ func updateText() -> void:
 	if !editor: return
 	if editor.exportWindow:
 		string += "In Export Menu " + control
-	elif editor.focusDialog.focused:
-		if editor.focusDialog.componentFocused:
-				match editor.focusDialog.componentFocused.get_script():
-					Lock: string += "Lock / [%s]Duplicate " % hotkeyMap(&"focusLockDuplicate") + control
-					KeyCounterElement: string += "Key Counter Element / " + control
-		else:
-			match editor.focusDialog.focused.get_script():
-				KeyBulk: string += "Key / " + control
-				Door: string += "Door / [%s]Add Lock " % hotkeyMap(&"focusDoorAddLock") + control
-				PlayerSpawn: string += "Player Spawn / "+control
-				Goal: string += "Goal / "+control
-				KeyCounter: string += "Key Counter / [%s]Add Element " % hotkeyMap(&"focusKeyCounterAddElement") + control
-				FloatingTile: string += "Floating Tile / " + control
-				RemoteLock: string += "Remote Lock / [%s]Add Connection " % hotkeyMap(&"focusRemoteLockAddConnection") + control
-				PlayerPlaceholderObject: string += "Player / " + control
-		string += "[M]Move [Del]Delete"
-	elif editor.otherObjects.objectSearch.has_focus():
-		string += "Object Search / "+control+"[Enter][Tab]Select object [Esc]Cancel"
-	elif Game.playState == Game.PLAY_STATE.PLAY:
-		string += control# + ARROWS_LR+"Move [Space]Jump [Shift]Walk [X]Hold action [S]Switch axis [Z]Undo [R]Restart"
 	else:
-		string += control
-		match editor.mode:
-			Editor.MODE.SELECT:
-				match editor.multiselect.state:
-					Multiselect.STATE.HOLDING: string += LMB+"Select"
-					Multiselect.STATE.SELECTING: string += LMB+"Multiselect"
-					Multiselect.STATE.DRAGGING: string += LMB+"Move selection"
-			Editor.MODE.TILE: string += LMB+"Place tile "+RMB+"Delete tile"
-			Editor.MODE.KEY: string += LMB+"Place key"
-			Editor.MODE.DOOR: string += LMB+"Place door"
-			Editor.MODE.OTHER: string += LMB+"Place object"
-			Editor.MODE.PASTE: string += LMB+"Paste"
-		string += " "+MMB+ARROWS+"Move/zoom camera [%s]Home camera [%s]Pipette" % [hotkeyMap(&"editHome"), hotkeyMap(&"editPipette")]
+		match editor.view:
+			Editor.VIEW.NORMAL: string += "<NRML> "
+			Editor.VIEW.NOTES: string += "<NOTE> "
+		if editor.focusDialog.focused:
+			if editor.focusDialog.componentFocused:
+					match editor.focusDialog.componentFocused.get_script():
+						Lock: string += "Lock / [%s]Duplicate " % hotkeyMap(&"focusLockDuplicate") + control
+						KeyCounterElement: string += "Key Counter Element / " + control
+			else:
+				match editor.focusDialog.focused.get_script():
+					KeyBulk: string += "Key / " + control
+					Door: string += "Door / [%s]Add Lock " % hotkeyMap(&"focusDoorAddLock") + control
+					PlayerSpawn: string += "Player Spawn / "+control
+					Goal: string += "Goal / "+control
+					KeyCounter: string += "Key Counter / [%s]Add Element " % hotkeyMap(&"focusKeyCounterAddElement") + control
+					FloatingTile: string += "Floating Tile / " + control
+					RemoteLock: string += "Remote Lock / [%s]Add Connection " % hotkeyMap(&"focusRemoteLockAddConnection") + control
+					PlayerPlaceholderObject: string += "Player / " + control
+			string += "[M]Move [Del]Delete"
+		elif editor.modes.otherObjects.objectSearch.has_focus():
+			string += "Object Search / "+control+"[Enter][Tab]Select object [Esc]Cancel"
+		elif Game.playState == Game.PLAY_STATE.PLAY:
+			string += control# + ARROWS_LR+"Move [Space]Jump [Shift]Walk [X]Hold action [S]Switch axis [Z]Undo [R]Restart"
+		else:
+			string += control
+			match editor.mode:
+				Editor.MODE.SELECT:
+					match editor.multiselect.state:
+						Multiselect.STATE.HOLDING: string += LMB+"Select"
+						Multiselect.STATE.SELECTING: string += LMB+"Multiselect"
+						Multiselect.STATE.DRAGGING: string += LMB+"Move selection"
+				Editor.MODE.TILE: string += LMB+"Place tile "+RMB+"Delete tile"
+				Editor.MODE.KEY: string += LMB+"Place key"
+				Editor.MODE.DOOR: string += LMB+"Place door"
+				Editor.MODE.OTHER: string += LMB+"Place object"
+				Editor.MODE.PASTE: string += LMB+"Paste"
+				Editor.MODE.PENCILMARK: string += LMB+"Place pencilmark"
+			string += " "+MMB+ARROWS+"Move/zoom camera [%s]Home camera [%s]Pipette" % [hotkeyMap(&"editHome"), hotkeyMap(&"editPipette")]
 	editor.explainText.text = string
 
 func hotkeyMap(hotkey:StringName, default:String="Unset") -> String:
