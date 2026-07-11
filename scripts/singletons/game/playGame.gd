@@ -10,8 +10,10 @@ const TEXT_BREAK_FLAGS:int = TextServer.LineBreakFlag.BREAK_MANDATORY|TextServer
 
 @onready var world:World = %world
 @onready var gameViewport:SubViewport = %gameViewport
+@onready var worldViewportCont:SubViewportContainer = %worldViewportCont
 @onready var playCamera:Camera2D = %playCamera
 @onready var pda:PDA = %PDA
+@onready var playGameDialog:PlayGameDialog = %playGameDialog
 
 var configFile:ConfigFile = ConfigFile.new()
 
@@ -32,6 +34,12 @@ var pauseAnimTimer:float = 0
 
 var hideDescription:bool = false
 var descriptionOffset:float = 0
+
+var mouseWorldPosition:Vector2
+var hoveredNote:GameNote
+var draggedNote:GameNote
+
+var numberEdits:Array[NumberEdit] = []
 
 func _ready() -> void:
 	drawDescription = RenderingServer.canvas_item_create()
@@ -119,10 +127,15 @@ func _process(delta:float) -> void:
 		queue_redraw()
 	if !paused: Game.playTime += delta
 	var objectsHovered:Array[GameObject] = []
-	var mouseWorldPosition = %world.get_local_mouse_position()
+	if draggedNote: continuePositionDrag()
+	mouseWorldPosition = %world.get_local_mouse_position()
 	for object in Game.objects.values():
 		if object.active and Rect2(object.getDrawPosition(),object.size).has_point(mouseWorldPosition): objectsHovered.append(object)
-	%mouseover.describe(objectsHovered, %gameViewportCont.get_local_mouse_position()*Vector2(800,608)/%gameViewportCont.size,Vector2(800,608))
+	hoveredNote = null
+	for note in Game.notes.values():
+		if note.active and Rect2(note.getDrawPosition(),note.size).has_point(mouseWorldPosition): hoveredNote = note
+	if playGameDialog.focused: %mouseover.visible = false
+	else: %mouseover.describe(objectsHovered, %gameViewportCont.get_local_mouse_position()*Vector2(800,608)/%gameViewportCont.size,Vector2(800,608))
 
 func _draw() -> void:
 	RenderingServer.canvas_item_clear(drawDescription)
@@ -169,8 +182,28 @@ static func drawLevelDescription(drawer:RID, pos:Vector2=Vector2.ZERO) -> void:
 	TextDraw.outlinedCentered(Game.FROOMNUM,drawer,"PUZZLE",Color("#d6cfc9"),Color("#3e2d1c"),20,pos+Vector2(732,539))
 	TextDraw.outlinedCentered(Game.FROOMNUM,drawer,Game.level.shortNumber,Color("#8c50c8"),Color("#140064"),20,pos+Vector2(733,569))
 
+func _gui_input(event:InputEvent) -> void:
+	if !paused and !inAnimation():
+		if Editor.isLeftClick(event):
+			if hoveredNote:
+				playGameDialog.focus(hoveredNote)
+				startPositionDrag(hoveredNote)
+			elif playGameDialog.focused: playGameDialog.defocus()
+			else:
+				var pencilmark:Pencilmark = createNote(Pencilmark, mouseWorldPosition-Vector2(16,16))
+				AudioManager.play(preload("res://resources/sounds/sndAddMark.wav"), 0.7, 1)
+				playGameDialog.focus(pencilmark)
+				startPositionDrag(pencilmark)
+		elif Editor.isLeftUnclick(event):
+			if draggedNote:
+				stopPositionDrag()
+		elif event is InputEventMouse and Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT):
+			if hoveredNote:
+				AudioManager.play(preload("res://resources/sounds/player/camera.wav"),0.55,1.5)
+				deleteNote(hoveredNote)
+
 func _input(event:InputEvent) -> void:
-	if event is InputEventMouseMotion: Game.mouseMoveTimer = 0
+	if event is InputEventMouseMotion and !paused: Game.mouseMoveTimer = 0
 	if event is InputEventKey and event.is_pressed():
 		if !event.is_echo():
 			if event.keycode == KEY_F5: queue_redraw()
@@ -189,11 +222,44 @@ func _input(event:InputEvent) -> void:
 					roomTransitionTimer = 0
 			if !inAnimation():
 				if event.keycode == KEY_ESCAPE: pause()
-		if !paused and !inAnimation():
+		if Editor.isTextInput(%gameViewport.gui_get_focus_owner()):
+			match event.keycode:
+				KEY_ESCAPE: grab_focus()
+		elif !paused and !inAnimation():
 			if !Game.player.cameraMode:
 				if event.is_action_pressed(&"gameAutoRun"): %quickSwitcher.toggleAutoRun()
 				elif event.is_action_pressed(&"gameMixedFractionsSwitch") and Mods.active(&"Fractions"): %quickSwitcher.toggleMixedFractions()
-			Game.player.receiveKey(event)
+			if playGameDialog.interacted and playGameDialog.interacted.receiveKey(event): return
+			elif playGameDialog.interacted and playGameDialog.interacted.receiveUnhandledKey(event): return
+			else: Game.player.receiveKey(event)
+
+func startPositionDrag(note:GameNote) -> void:
+	draggedNote = note
+
+func continuePositionDrag() -> void:
+	var difference:Vector2 = %world.get_local_mouse_position() - mouseWorldPosition
+	draggedNote.position += difference
+
+func stopPositionDrag() -> void:
+	draggedNote = null
+
+func createNote(type:GDScript, pos:Vector2) -> GameNote:
+	var note:GameNote = type.SCENE.instantiate()
+	note.fromEditor = false
+	note.id = Game.noteIdIter
+	Game.noteIdIter += 1
+	Game.notes[note.id] = note
+	Game.notesParent.add_child(note)
+	note.position = pos
+	return note
+
+func deleteNote(note:GameNote) -> void:
+	print(note)
+	if note == playGameDialog.focused: playGameDialog.defocus()
+	Game.notes.erase(note.id)
+	if note == hoveredNote: hoveredNote = null
+	if note == draggedNote: draggedNote = null
+	note.queue_free()
 
 func startLevel() -> void:
 	start()
@@ -203,7 +269,7 @@ func startLevel() -> void:
 	textOffsetAngle = 0
 
 func start() -> void:
-	Game.player = preload("res://scenes/game/player.tscn").instantiate()
+	Game.player = Game.PLAYER.instantiate()
 	world.add_child(Game.player)
 	assert(Game.levelStart)
 	Game.player.position = Game.levelStart.position + Vector2(16, 23)
@@ -251,6 +317,7 @@ func inAnimation() -> bool:
 
 func pause() -> void:
 	if inAnimation(): return
+	playGameDialog.defocus()
 	pauseAnimPhase = 0
 	pauseAnimTimer = 0
 	%gameViewportCont.get_material().set_shader_parameter(&"darken", !paused)
@@ -293,3 +360,6 @@ func crash() -> void:
 func toggleDescription() -> void:
 	hideDescription = !hideDescription
 	AudioManager.play(preload("res://resources/sounds/sndDrop.wav"))
+
+func worldspaceToScreenspace(vector:Vector2) -> Vector2:
+	return (vector - playCamera.get_screen_center_position()+Vector2(400,304))*playCamera.zoom

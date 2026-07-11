@@ -34,27 +34,32 @@ func receiveKey(event:InputEventKey) -> bool:
 
 func _pencilmarkColorSelected(color:C.olors) -> void:
 	if main.focused is not Pencilmark: return
-	Changes.addChange(Changes.PropertyChange.new(main.focused,&"color",color))
+	if Game.editor: Changes.addChange(Changes.PropertyChange.new(main.focused,&"color",color))
+	else: main.focused.color = color; updateFocused()
 	Changes.bufferSave()
 
 func _pencilmarkTypeSelected(type:Pencilmark.TYPE) -> void:
 	if main.focused is not Pencilmark: return
-	Changes.addChange(Changes.PropertyChange.new(main.focused,&"type",type))
+	if Game.editor: Changes.addChange(Changes.PropertyChange.new(main.focused,&"type",type))
+	else: main.focused.type = type; updateFocused(); coerceProperties()
 	Changes.bufferSave()
 
 func _pencilmarkSymbolSelected(symbol:Pencilmark.SYMBOL) -> void:
 	if main.focused is not Pencilmark: return
-	Changes.addChange(Changes.PropertyChange.new(main.focused,&"symbol",symbol))
+	if Game.editor: Changes.addChange(Changes.PropertyChange.new(main.focused,&"symbol",symbol))
+	else: main.focused.symbol = symbol; updateFocused()
 	Changes.bufferSave()
 
 func _pencilmarkNumberSet(value:PackedInt64Array) -> void:
 	if main.focused is not Pencilmark: return
-	Changes.addChange(Changes.PropertyChange.new(main.focused,&"number",value,%pencilmarkNumberEdit))
+	if Game.editor: Changes.addChange(Changes.PropertyChange.new(main.focused,&"number",value,%pencilmarkNumberEdit))
+	else: main.focused.number = value; updateFocused(%pencilmarkNumberEdit)
 	Changes.bufferSave()
 
 func _pencilmarkTextSet() -> void:
 	if main.focused is not Pencilmark: return
-	Changes.addChange(Changes.PropertyChange.new(main.focused,&"text",%pencilmarkTextEdit.text,%pencilmarkTextEdit))
+	if Game.editor: Changes.addChange(Changes.PropertyChange.new(main.focused,&"text",%pencilmarkTextEdit.text,%pencilmarkTextEdit))
+	else: main.focused.text = %pencilmarkTextEdit.text; updateFocused(%pencilmarkTextEdit)
 	Changes.bufferSave()
 
 func _done() -> void:
@@ -65,3 +70,13 @@ func _done() -> void:
 func _erase() -> void:
 	AudioManager.play(preload("res://resources/sounds/sndSelectMade.wav"), 0.75, 1.2)
 	main.deleteFocused()
+
+func coerceProperties() -> void:
+	if main.focused.type != Pencilmark.TYPE.SYMBOL: main.focused.symbol = Pencilmark.SYMBOL.CHECK
+	if main.focused.type != Pencilmark.TYPE.NUMBER: main.focused.number = M.ZERO()
+	if main.focused.type != Pencilmark.TYPE.TEXT: main.focused.text = ""
+
+func updateFocused(fromInput:Control=null) -> void:
+	if fromInput: main.bufferSkipInput = fromInput
+	main.bufferFocusObject = true
+	main.focused.queue_redraw()

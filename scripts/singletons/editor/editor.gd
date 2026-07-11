@@ -159,7 +159,7 @@ func _process(delta:float) -> void:
 				for element in focusDialog.focused.elements:
 					if Rect2(element.getDrawPosition(), element.getHoverSize()).has_point(mouseWorldPosition):
 						componentHovered = element
-	if Game.playState == Game.PLAY_STATE.PLAY:
+	if Game.playState == Game.PLAY_STATE.PLAY and !focusDialog.focused:
 		%mouseover.describe(objectsHovered, %gameViewportDisplay.get_local_mouse_position(), %gameViewportDisplay.size)
 	else: %mouseover.visible = false
 	Game.tiles.z_index = 3 if mode == MODE.TILE and Game.playState != Game.PLAY_STATE.PLAY else -3
@@ -375,7 +375,7 @@ func pencilmarkMouseActions(event:InputEventMouse) -> void:
 	if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
 		if objectHovered is not Pencilmark:
 			if playing and (justDefocused or !isLeftClick(event)): return
-			var pencilmark:Pencilmark = Changes.addChange(Changes.CreateComponentChange.new(Pencilmark,{&"position":mouseTilePosition})).result
+			var pencilmark:Pencilmark = Changes.addChange(Changes.CreateComponentChange.new(Pencilmark,{&"position":mouseWorldPosition-Vector2(16,16)})).result
 			if playing: AudioManager.play(preload("res://resources/sounds/sndAddMark.wav"), 0.7, 1)
 			focusDialog.defocus()
 			if !Input.is_action_pressed(&"heldKeepMode") or playing:
@@ -428,7 +428,8 @@ func startPositionDrag(component:GameComponent) -> void:
 	else: focusDialog.focusComponent(component)
 	componentDragged = component
 	dragMode = DRAG_MODE.POSITION
-	previousDragPosition = mouseTilePosition
+	if componentDragged is Pencilmark: previousDragPosition = mouseWorldPosition
+	else: previousDragPosition = mouseTilePosition
 
 func startSizeDrag(component:GameComponent, handle:Vector2=Vector2(1,1)) -> void:
 	focusDialog.defocus()
@@ -451,10 +452,13 @@ func startSizeDrag(component:GameComponent, handle:Vector2=Vector2(1,1)) -> void
 	previousDragPosition = snappedMousePosition
 	dragHandle = handle
 
-func dragComponent() -> void: # returns whether or not an object is being dragged, for laziness
+func dragComponent() -> void:
 	var snappedMousePosition:Vector2 = mouseWorldPosition.snapped(tileSize)
+	if componentDragged is Pencilmark: snappedMousePosition = mouseWorldPosition
 	var dragOffset:Vector2
-	if dragMode == DRAG_MODE.POSITION: dragOffset = Vector2(mouseTilePosition) - previousDragPosition
+	if dragMode == DRAG_MODE.POSITION:
+		dragOffset = Vector2(mouseTilePosition) - previousDragPosition
+		if componentDragged is Pencilmark: dragOffset = mouseWorldPosition - previousDragPosition
 	else: dragOffset = snappedMousePosition - previousDragPosition
 	lockBufferConvert = false # whether or not to buffer a conversion to remotelock
 	var bounds:Rect2
@@ -536,7 +540,7 @@ func _input(event:InputEvent) -> void:
 		elif isTextInput(get_viewport().gui_get_focus_owner()):
 			match event.keycode:
 				KEY_ESCAPE: grab_focus()
-				KEY_TAB: modes.otherObjects._searchSubmitted()
+				KEY_TAB: if get_viewport().gui_get_focus_owner() == modes.otherObjects.objectSearch: modes.otherObjects._searchSubmitted()
 		elif Game.playState == Game.PLAY_STATE.PLAY:
 			# IN PLAY
 			if focusDialog.interacted and focusDialog.interacted.receiveKey(event): return

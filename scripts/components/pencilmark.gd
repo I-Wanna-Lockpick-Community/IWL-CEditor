@@ -40,15 +40,18 @@ var textDrawer:TextDrawer
 
 func _init() -> void:
 	size = Vector2(18,18)
-	active = false
 
 func _ready() -> void:
+	active = Game.editor or !fromEditor
 	drawStar = RenderingServer.canvas_item_create()
 	drawMain = RenderingServer.canvas_item_create()
 	RenderingServer.canvas_item_set_parent(drawStar,get_canvas_item())
 	RenderingServer.canvas_item_set_parent(drawMain,get_canvas_item())
 	textDrawer = TextDrawer.new(self, TextDrawer.SETTING.FMINIID)
 	textDrawer.position = size/2-getOffset()
+
+func start() -> void:
+	active = Game.editor or !fromEditor
 
 func _process(delta:float) -> void:
 	if Game.mouseMoveTimer < 2.0/3: originOpacity = min(originOpacity + delta*1.8, 0.75) # 1/25*3/4 per frame, 60fps
@@ -62,8 +65,8 @@ func _freed() -> void:
 func convertNumbers(from:M.SYSTEM) -> void:
 	Changes.addChange(Changes.ComponentConvertNumberChange.new(self, from, &"number"))
 
-func isHovered() -> bool: return Game.editor.objectHovered == self if Game.editor else false
-func isFocused() -> bool: return Game.editor.focusDialog.focused == self if Game.editor else false
+func isHovered() -> bool: return (Game.editor.objectHovered if Game.editor else Game.playGame.hoveredNote) == self
+func isFocused() -> bool: return (Game.editor.focusDialog.focused if Game.editor else Game.playGame.playGameDialog.focused) == self
 
 func _draw() -> void:
 	RenderingServer.canvas_item_clear(drawStar)

@@ -383,7 +383,7 @@ func buildText() -> void:
 	placeCursor_()
 
 func receiveKey(key:InputEventKey) -> bool:
-	Game.editor.grab_focus()
+	if Game.editor: Game.editor.grab_focus()
 	if Editor.eventIs(key, &"numberEvaluate"): setValue(result)
 	else:
 		match key.keycode:

@@ -1,0 +1,28 @@
+[gd_scene format=3 uid="uid://df0yxou1xsfyn"]
+
+[ext_resource type="Script" uid="uid://04ol5fqrknyd" path="res://scripts/singletons/focusDialog/playGameDialog.gd" id="1_dbkc3"]
+[ext_resource type="PackedScene" uid="uid://ckdtw7bdno4hp" path="res://scenes/focusDialog/pencilmarkDialog.tscn" id="2_pkm78"]
+
+[node name="playGameDialog" type="Control" unique_id=1973205261]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("1_dbkc3")
+
+[node name="pencilmarkDialog" parent="." unique_id=1187350792 instance=ExtResource("2_pkm78")]
+unique_name_in_owner = true
+layout_mode = 0
+
+[node name="speechBubbler" type="Node2D" parent="." unique_id=1394895320]
+unique_name_in_owner = true
+visible = false
+
+[node name="Polygon2D" type="Polygon2D" parent="speechBubbler" unique_id=539136817]
+color = Color(0.25490198, 0.25490198, 0.25490198, 1)
+polygon = PackedVector2Array(0, 5, 8, -3, -8, -3)
+
+[node name="Line2D" type="Line2D" parent="speechBubbler" unique_id=1939439812]
+points = PackedVector2Array(-8, -1, -6, -1, 0, 5, 6, -1, 8, -1)
+width = 2.0
+default_color = Color(0.8352941, 0.8352941, 0.8352941, 1)

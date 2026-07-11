@@ -3,5 +3,6 @@
 [ext_resource type="Script" uid="uid://sogokgoajlaf" path="res://scripts/components/pencilmark.gd" id="1_cqwys"]
 
 [node name="pencilmark" type="Node2D" unique_id=544319541 groups=["hasNumbers"]]
+z_index = 6
 script = ExtResource("1_cqwys")
 metadata/_custom_type_script = "uid://sogokgoajlaf"

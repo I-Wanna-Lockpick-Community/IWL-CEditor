@@ -12,6 +12,9 @@ enum COLOR_STEP {Initial, CURSE, ERROR, DrawBase, GLITCH, AURA_BREAKER, Calculat
 
 const DROP_SHADOW_COLOR:Color = Color(Color.BLACK, 0.35)
 
+# cyclic dependency..? i dont know what causes it
+static var PLAYER:PackedScene = load("res://scenes/game/player.tscn")
+
 static var COLOR_TEXTURES:ColorsTextureLoader = ColorsTextureLoader.new("res://assets/game/colorTexture/$c.png")
 
 const EMPTY:Texture2D = preload("res://assets/empty.png")
@@ -210,7 +213,7 @@ func playTest(spawn:PlayerSpawn) -> void:
 	if playState == PLAY_STATE.EDIT:
 		camera.zoom = Vector2.ONE*uiScale
 		starting = true
-		player = preload("res://scenes/game/player.tscn").instantiate()
+		player = PLAYER.instantiate()
 		world.add_child(player)
 		player.position = spawn.position + Vector2(17, 23)
 		if spawn != levelStart:
@@ -232,6 +235,9 @@ func playTest(spawn:PlayerSpawn) -> void:
 	for component in components.values():
 		if starting: component.start()
 		component.queue_redraw()
+	for note in notes.values():
+		if starting: note.start()
+		note.queue_redraw()
 	await get_tree().process_frame
 	editor.playtestCamera.reset_smoothing()
 
@@ -263,6 +269,9 @@ func stopTest() -> void:
 	for component in components.values():
 		component.stop()
 		component.queue_redraw()
+	for note in notes.values():
+		note.stop()
+		note.queue_redraw()
 	if objects.get(-1):
 		editor.playerObject.deleted(true)
 

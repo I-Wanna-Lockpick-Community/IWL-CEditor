@@ -2,7 +2,7 @@
 extends Control
 class_name SubDialog
 
-@onready var main:FocusDialog = get_parent()
+@onready var main:MainDialog = get_parent()
 
 var interacted:NumberEdit:
 	get(): return get_parent().interacted
