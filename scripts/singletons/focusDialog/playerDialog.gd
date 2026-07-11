@@ -1,7 +1,5 @@
-extends Control
+extends SubDialog
 class_name PlayerDialog
-
-@onready var main:FocusDialog = get_parent()
 
 var color:C.olors
 

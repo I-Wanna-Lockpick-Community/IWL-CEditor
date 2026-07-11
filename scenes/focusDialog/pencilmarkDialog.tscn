@@ -1,16 +1,18 @@
 [gd_scene format=3 uid="uid://ckdtw7bdno4hp"]
 
-[ext_resource type="Theme" uid="uid://bvfthh0vm4fbp" path="res://resources/uiTheme.tres" id="1_5718d"]
-[ext_resource type="Script" uid="uid://klvehssscs55" path="res://scripts/singletons/game/pencilmarkDialog.gd" id="2_pu3vv"]
-[ext_resource type="Script" uid="uid://c8i3xewhf1hvm" path="res://scripts/nodes/game/pencilmarkTypeSelector.gd" id="3_pu3vv"]
-[ext_resource type="Script" uid="uid://c70juj2p5s6yd" path="res://scripts/nodes/focusDialog/selector/colorSelector.gd" id="4_cmdew"]
+[ext_resource type="Theme" uid="uid://bvfthh0vm4fbp" path="res://resources/uiTheme.tres" id="1_lp3mi"]
+[ext_resource type="Script" uid="uid://klvehssscs55" path="res://scripts/singletons/focusDialog/pencilmarkDialog.gd" id="2_m3a58"]
+[ext_resource type="Script" uid="uid://c70juj2p5s6yd" path="res://scripts/nodes/focusDialog/selector/colorSelector.gd" id="3_6wmsn"]
+[ext_resource type="Script" uid="uid://c8i3xewhf1hvm" path="res://scripts/nodes/focusDialog/selector/pencilmarkTypeSelector.gd" id="4_3v3iv"]
+[ext_resource type="Script" uid="uid://dvxmyqknv1g38" path="res://scripts/nodes/focusDialog/selector/pencilmarkSymbolSelector.gd" id="5_ss1bx"]
+[ext_resource type="PackedScene" uid="uid://bkywonfg0bt0y" path="res://scenes/focusDialog/numberEdit.tscn" id="6_m3a58"]
 
 [node name="pencilmarkDialog" type="Control" unique_id=1187350792]
 layout_mode = 3
 anchors_preset = 0
-theme = ExtResource("1_5718d")
+theme = ExtResource("1_lp3mi")
 theme_type_variation = &"DialogPanelContainer"
-script = ExtResource("2_pu3vv")
+script = ExtResource("2_m3a58")
 metadata/_custom_type_script = "uid://klvehssscs55"
 
 [node name="c" type="PanelContainer" parent="." unique_id=795915553]
@@ -60,15 +62,33 @@ layout_mode = 2
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 4
-script = ExtResource("4_cmdew")
+script = ExtResource("3_6wmsn")
 metadata/_custom_type_script = "uid://c70juj2p5s6yd"
 
 [node name="pencilmarkTypeSelector" type="GridContainer" parent="c/c/c" unique_id=1240865685]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 4
-script = ExtResource("3_pu3vv")
+script = ExtResource("4_3v3iv")
 metadata/_custom_type_script = "uid://c8i3xewhf1hvm"
+
+[node name="pencilmarkSymbolSelector" type="GridContainer" parent="c/c/c" unique_id=1804293792]
+unique_name_in_owner = true
+layout_mode = 2
+script = ExtResource("5_ss1bx")
+metadata/_custom_type_script = "uid://dvxmyqknv1g38"
+
+[node name="pencilmarkNumberEdit" parent="c/c/c" unique_id=231119399 instance=ExtResource("6_m3a58")]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="pencilmarkTextEdit" type="LineEdit" parent="c/c/c" unique_id=2044559388]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 24)
+layout_mode = 2
 
 [connection signal="select" from="c/c/c/pencilmarkColorSelector" to="." method="_pencilmarkColorSelected"]
 [connection signal="select" from="c/c/c/pencilmarkTypeSelector" to="." method="_pencilmarkTypeSelected"]
+[connection signal="select" from="c/c/c/pencilmarkSymbolSelector" to="." method="_pencilmarkSymbolSet"]
+[connection signal="valueSet" from="c/c/c/pencilmarkNumberEdit" to="." method="_pencilmarkNumberSet"]
+[connection signal="text_changed" from="c/c/c/pencilmarkTextEdit" to="." method="_pencilmarkTextSet"]

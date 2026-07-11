@@ -504,7 +504,7 @@ func _input(event:InputEvent) -> void:
 				_: Game.player.receiveKey(event)
 		else:
 			# IN EDIT
-			if modes.otherObjects.objectSearch.has_focus():
+			if get_viewport().gui_get_focus_owner() is LineEdit:
 				match event.keycode:
 					KEY_ESCAPE: grab_focus()
 					KEY_TAB: modes.otherObjects._searchSubmitted()

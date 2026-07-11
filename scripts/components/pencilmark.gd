@@ -31,12 +31,15 @@ const SYMBOLS:int = 6
 var originOpacity:float = 0.75
 
 var drawMain:RID
+var textDrawer:TextDrawer
 
 func _init() -> void: size = Vector2(18,18)
 
 func _ready() -> void:
 	drawMain = RenderingServer.canvas_item_create()
 	RenderingServer.canvas_item_set_parent(drawMain,get_canvas_item())
+	textDrawer = TextDrawer.new(self, TextDrawer.SETTING.FMINIID)
+	textDrawer.position = size/2-getOffset()
 
 func _process(delta:float) -> void:
 	if Game.mouseMoveTimer < 2.0/3: originOpacity = min(originOpacity + delta*1.8, 0.75)
@@ -57,8 +60,25 @@ func _draw() -> void:
 	var rect:Rect2 = Rect2(-getOffset(), size)
 	var center:Vector2 = size/2-getOffset()
 	RenderingServer.canvas_item_add_texture_rect(drawMain, rect, ORIGIN_FOCUSED if isHovered() or isFocused() else ORIGIN, false, Color(Color.WHITE, 0.75 if isFocused() else originOpacity))
+	textDrawer.setOutlineType(TextDrawer.OUTLINE_TYPE.THIN)
+	textDrawer.addVerticalContext(Vector2(0,1), TextDrawer.VERTICAL_ALIGN.CENTER)
+	textDrawer.addHorizontalContext(Vector2.ZERO, TextDrawer.HORIZONTAL_ALIGN.CENTER)
+	textDrawer.addSpacing(2)
 	match type:
 		TYPE.SYMBOL:
 			for offset in [Vector2(0,-1), Vector2(0,1), Vector2(1,0), Vector2(-1,0)]:
 				RenderingServer.canvas_item_add_texture_rect(drawMain, Rect2(center-SYMBOL_SIZE/2+offset, SYMBOL_SIZE), SYMBOL_TEXTURE.current([symbol]), false, Color.BLACK)
 			RenderingServer.canvas_item_add_texture_rect(drawMain, Rect2(center-SYMBOL_SIZE/2, SYMBOL_SIZE), SYMBOL_TEXTURE.current([symbol]), false, Colors.getMainTone(color))
+		TYPE.NUMBER:
+			textDrawer.setNoDropShadow()
+			textDrawer.addNumber(number, Colors.getMainTone(color), Color.BLACK)
+		TYPE.TEXT:
+			textDrawer.setDropShadow(Vector2(2,2), Color(Color.BLACK, 0.35))
+			textDrawer.addString(text, Colors.getMainTone(color), Color.BLACK)
+	textDrawer.evaluate()
+
+func propertyChangedInit(property:StringName) -> void:
+	if property == &"type":
+		if type != TYPE.SYMBOL and symbol != SYMBOL.CHECK: Changes.addChange(Changes.PropertyChange.new(self,&"symbol",SYMBOL.CHECK))
+		if type != TYPE.NUMBER and M.ex(number): Changes.addChange(Changes.PropertyChange.new(self,&"number",M.ZERO()))
+		if type != TYPE.TEXT and text: Changes.addChange(Changes.PropertyChange.new(self,&"text",""))

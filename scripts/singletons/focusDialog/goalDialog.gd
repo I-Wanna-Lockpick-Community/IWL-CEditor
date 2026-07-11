@@ -1,7 +1,5 @@
-extends Control
+extends SubDialog
 class_name GoalDialog
-
-@onready var main:FocusDialog = get_parent()
 
 func focus(focused:Goal, _new:bool, _dontRedirect:bool) -> void:
 	%goalTypeSelector.setSelect(focused.type)

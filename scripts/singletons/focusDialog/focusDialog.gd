@@ -12,7 +12,7 @@ class_name FocusDialog
 
 var focused:GameObject # the object that is currently focused
 var componentFocused:GameComponent # you can focus both a door and a lock at the same time so
-var activeDialog:Control
+var activeDialog:SubDialog
 var bufferFocusObject:bool = false
 var bufferFocusComponent:bool = false
 
@@ -38,11 +38,7 @@ func focus(object:GameObject, dontRedirect:bool=false) -> void:
 
 func showCorrectDialog() -> void:
 	above = false
-	for dialog in get_children():
-		if dialog is not Control: continue
-		dialog.visible = false
 	%speechBubbler.visible = true
-	activeDialog = null
 	match focused.get_script():
 		KeyBulk: activeDialog = keyDialog
 		Door, RemoteLock: activeDialog = doorDialog
@@ -50,8 +46,10 @@ func showCorrectDialog() -> void:
 		KeyCounter: activeDialog = keyCounterDialog; above = true
 		Goal: activeDialog = goalDialog
 		Pencilmark: activeDialog = pencilmarkDialog
-		_: %speechBubbler.visible = false
-	if activeDialog: activeDialog.visible = true
+	%speechBubbler.visible = !!activeDialog
+	for dialog in get_children():
+		if dialog is not SubDialog: continue
+		dialog.visible = dialog == activeDialog
 
 func defocus() -> void:
 	if !focused: return

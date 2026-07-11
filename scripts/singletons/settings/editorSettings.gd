@@ -106,6 +106,14 @@ static var HotkeyTree:Array = [
 			Hotkey.new("Set Symbol Type",					&"focusPencilmarkSymbol",			[eventKey("S")]),
 			Hotkey.new("Set Number Type",					&"focusPencilmarkNumber",			[eventKey("N")]),
 			Hotkey.new("Set Text Type",						&"focusPencilmarkText",				[eventKey("T")]),
+			SubTree.new("Symbol Pencilmark Focused", [
+				Hotkey.new("Set Check Symbol",					&"focusPencilmarkSymbolCheck",		[eventKey("1")]),
+				Hotkey.new("Set Cross Symbol",					&"focusPencilmarkSymbolCross",		[eventKey("2")]),
+				Hotkey.new("Set Circle Symbol",					&"focusPencilmarkSymbolCircle",		[eventKey("3")]),
+				Hotkey.new("Set Square Symbol",					&"focusPencilmarkSymbolSquare",		[eventKey("4")]),
+				Hotkey.new("Set Bang Symbol",					&"focusPencilmarkSymbolBang",		[eventKey("5")]),
+				Hotkey.new("Set Interro Symbol",				&"focusPencilmarkSymbolInterro",	[eventKey("6")]),
+			]),
 		]),
 	]),
 ]

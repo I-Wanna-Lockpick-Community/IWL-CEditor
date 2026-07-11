@@ -5,10 +5,11 @@ var drawMain:RID
 var drawUpsideDown:RID
 var setting:SETTING
 
-enum SETTING {FKEYNUM, FKEYBULK, FTALK}
+enum SETTING {FKEYNUM, FKEYBULK, FTALK, FMINIID}
 enum TYPE {String, Number, Image, Custom, Spacing, VerticalContext, HorizontalContext, Newline}
 enum VERTICAL_ALIGN {NONE, CENTER}
 enum HORIZONTAL_ALIGN {LEFT, RIGHT, CENTER}
+enum OUTLINE_TYPE {THIN, MEDIUM, THICK}
 
 const VERTICAL_CONTEXT_SETTERS:Array[TYPE] = [TYPE.VerticalContext]
 const HORIZONTAL_CONTEXT_SETTERS:Array[TYPE] = [TYPE.VerticalContext, TYPE.HorizontalContext, TYPE.Newline]
@@ -18,6 +19,9 @@ var textsChanged:bool = false
 var textsIndex:int = 0
 
 var mixedFractions:bool = false
+var outlineType:OUTLINE_TYPE = OUTLINE_TYPE.THICK
+var dropShadowOffset:Vector2 = Vector2.ZERO
+var dropShadowColor:Color = Color.TRANSPARENT
 
 const DEBUG:bool = false
 
@@ -30,9 +34,23 @@ func _init(parent:Node2D, _setting:SETTING) -> void:
 	setting = _setting
 	parent.add_child(self)
 
-func setmixedFractions(to:bool) -> void:
+func setMixedFractions(to:bool) -> void:
 	if mixedFractions != to: textsChanged = true
 	mixedFractions = to
+
+func setOutlineType(to:OUTLINE_TYPE) -> void:
+	if outlineType != to: textsChanged = true
+	outlineType = to
+
+func setNoDropShadow() -> void:
+	if dropShadowColor != Color.TRANSPARENT: textsChanged = true
+	dropShadowColor = Color.TRANSPARENT
+
+func setDropShadow(offset:Vector2, color:Color) -> void:
+	if dropShadowOffset != offset: textsChanged = true
+	if dropShadowColor != color: textsChanged = true
+	dropShadowOffset = offset
+	dropShadowColor = color
 
 func addString(string:String, color:Color, outline:Color=Color.TRANSPARENT) -> void: addValue_([TYPE.String, string, color, outline])
 func addNumber(number:PackedInt64Array, color:Color, outline:Color=Color.TRANSPARENT) -> void: addValue_([TYPE.Number, number, color, outline])
@@ -274,7 +292,13 @@ func drawText_(font:Font, string:String, pos:Vector2, fontSize:int, verticalOffs
 	debugCircle(pos, Color.ORANGE)
 	pos.y += verticalOffset
 	var width:float = font.get_string_size(string, HORIZONTAL_ALIGNMENT_LEFT, -1, fontSize).x
-	if outline.a: TextDraw.outlined2(font, drawMain, string, color, outline, fontSize, pos)
+	if dropShadowColor.a:
+		font.draw_string(drawMain, pos+dropShadowOffset, string, HORIZONTAL_ALIGNMENT_LEFT, -1, fontSize, dropShadowColor)
+	if outline.a:
+		match outlineType:
+			OUTLINE_TYPE.THICK: TextDraw.outlined2(font, drawMain, string, color, outline, fontSize, pos)
+			OUTLINE_TYPE.MEDIUM: TextDraw.outlined(font, drawMain, string, color, outline, fontSize, pos)
+			OUTLINE_TYPE.THIN: TextDraw.outlinedHalf(font, drawMain, string, color, outline, fontSize, pos)
 	else: font.draw_string(drawMain, pos, string, HORIZONTAL_ALIGNMENT_LEFT, -1, fontSize, color)
 	return Vector2(width, 0)
 
@@ -282,49 +306,57 @@ func getFont() -> Font:
 	match setting:
 		SETTING.FKEYNUM: return Game.FKEYNUM
 		SETTING.FKEYBULK: return KeyBulk.FKEYBULK
-		SETTING.FTALK, _: return Game.FTALK
+		SETTING.FTALK: return Game.FTALK
+		SETTING.FMINIID, _: return Game.FMINIID
 
 func getFontSize() -> int:
 	match setting:
 		SETTING.FKEYNUM: return 22
 		SETTING.FKEYBULK: return 14
-		SETTING.FTALK, _: return 12
+		SETTING.FTALK: return 12
+		SETTING.FMINIID, _: return 12
 
 func getFractionFontSize() -> int:
 	match setting:
 		SETTING.FKEYNUM: return 14
 		SETTING.FKEYBULK: return 10
-		SETTING.FTALK, _: return 12
+		SETTING.FTALK: return 12
+		SETTING.FMINIID, _: return 12
 
 func getTextVerticalOffset() -> float:
 	match setting:
 		SETTING.FKEYNUM: return -15
 		SETTING.FKEYBULK: return -5
-		SETTING.FTALK, _: return 1
+		SETTING.FTALK: return 1
+		SETTING.FMINIID, _: return 1
 
 func getFractionTextVerticalOffset() -> float:
 	match setting:
 		SETTING.FKEYNUM: return -10
 		SETTING.FKEYBULK: return -4
-		SETTING.FTALK, _: return 1
+		SETTING.FTALK: return 1
+		SETTING.FMINIID, _: return 1
 
 func getFractionVerticalOffset() -> float:
 	match setting:
 		SETTING.FKEYNUM: return 0
 		SETTING.FKEYBULK: return 3
-		SETTING.FTALK, _: return 0
+		SETTING.FTALK: return 0
+		SETTING.FMINIID, _: return 0
 
 func getFractionVerticalDistance() -> float:
 	match setting:
 		SETTING.FKEYNUM: return 4
 		SETTING.FKEYBULK: return 4
-		SETTING.FTALK, _: return 3
+		SETTING.FTALK: return 3
+		SETTING.FMINIID, _: return 3
 
 func getFractionTextHorizontalOffset() -> float:
 	match setting:
 		SETTING.FKEYNUM: return 0
 		SETTING.FKEYBULK: return 0
-		SETTING.FTALK, _: return 1
+		SETTING.FTALK: return 1
+		SETTING.FMINIID, _: return 1
 
 func _notification(what:int) -> void:
 	match what:

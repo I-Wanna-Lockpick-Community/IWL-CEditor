@@ -18,6 +18,11 @@ static func outlined2(font:Font,item:RID,string:String,color:Color,outlineColor:
 			font.draw_string(item,pos+offset*offsetSign,string,HORIZONTAL_ALIGNMENT_LEFT,-1,fontSize,outlineColor)
 	font.draw_string(item,pos,string,HORIZONTAL_ALIGNMENT_LEFT,-1,fontSize,color)
 
+static func outlinedHalf(font:Font,item:RID,string:String,color:Color,outlineColor:Color,fontSize:int,pos:Vector2=Vector2.ZERO) -> void:
+	for offset in [Vector2(0,1),Vector2(1,0),Vector2(0,-1),Vector2(-1,0)]:
+		font.draw_string(item,pos+offset,string,HORIZONTAL_ALIGNMENT_LEFT,-1,fontSize,outlineColor)
+	font.draw_string(item,pos,string,HORIZONTAL_ALIGNMENT_LEFT,-1,fontSize,color)
+
 static func outlinedCentered2(font:Font,item:RID,string:String,color:Color,outlineColor:Color,fontSize:int,pos:Vector2=Vector2.ZERO) -> void:
 	var centerOffset:Vector2 = Vector2(font.get_string_size(string,HORIZONTAL_ALIGNMENT_LEFT,-1,fontSize).x/2,0)
 	outlined2(font,item,string,color,outlineColor,fontSize,pos-centerOffset)

@@ -1,7 +1,5 @@
-extends Control
+extends SubDialog
 class_name KeyCounterDialog
-
-@onready var main:FocusDialog = get_parent()
 
 func focus(focused:KeyCounter, new:bool, dontRedirect:bool) -> void:
 	%keyCounterWidthSelector.setSelect(KeyCounter.WIDTH_AMOUNT.find(focused.size.x))

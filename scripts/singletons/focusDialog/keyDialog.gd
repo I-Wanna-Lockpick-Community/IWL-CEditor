@@ -1,7 +1,5 @@
-extends Control
+extends SubDialog
 class_name KeyDialog
-
-@onready var main:FocusDialog = get_parent()
 
 const STAR_UN_ICONS:Array[Texture2D] = [ preload("res://assets/ui/focusDialog/key/type/star/star.png"), preload("res://assets/ui/focusDialog/key/type/star/unstar.png") ]
 const CURSE_UN_ICONS:Array[Texture2D] = [ preload("res://assets/ui/focusDialog/key/type/curse/curse.png"), preload("res://assets/ui/focusDialog/key/type/curse/uncurse.png") ]

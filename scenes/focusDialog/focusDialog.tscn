@@ -35,7 +35,7 @@
 [ext_resource type="Script" uid="uid://lbaubg2qq1s1" path="res://scripts/nodes/focusDialog/keyCounterHandler.gd" id="25_1rcup"]
 [ext_resource type="Texture2D" uid="uid://biht8y3t1quo7" path="res://assets/ui/focusDialog/door/lockConfiguration/partialBlastV.png" id="25_4u0vg"]
 [ext_resource type="Script" uid="uid://ckcofkmbukj5o" path="res://scripts/nodes/focusDialog/selector/keyCounterWidthSelector.gd" id="25_7tfe2"]
-[ext_resource type="Script" uid="uid://bg8oswa2bhdsv" path="res://scripts/nodes/focusDialog/goalTypeSelector.gd" id="26_1rcup"]
+[ext_resource type="Script" uid="uid://bg8oswa2bhdsv" path="res://scripts/nodes/focusDialog/selector/goalTypeSelector.gd" id="26_1rcup"]
 [ext_resource type="Texture2D" uid="uid://ho244me6p7sn" path="res://assets/ui/focusDialog/door/lockConfiguration/partialBlastH.png" id="26_4g8uu"]
 [ext_resource type="Texture2D" uid="uid://bu7byi0rwpqwd" path="res://assets/ui/focusDialog/door/booleans/frozen.png" id="28_8gwon"]
 [ext_resource type="Texture2D" uid="uid://cln0osp8um3ti" path="res://assets/ui/focusDialog/numberEdit/partialBlast.png" id="29_di8ev"]
@@ -56,7 +56,7 @@
 [ext_resource type="Texture2D" uid="uid://cv1qa4bwwetr5" path="res://assets/ui/focusDialog/numberEdit/parenthesis.png" id="38_lm5cw"]
 [ext_resource type="Script" uid="uid://vfxgywtu3kgg" path="res://scripts/singletons/focusDialog/playerDialog.gd" id="40_p7jkh"]
 [ext_resource type="Texture2D" uid="uid://bde4hvh2i41bh" path="res://assets/ui/focusDialog/key/type/curse/curse.png" id="41_ft2jg"]
-[ext_resource type="PackedScene" uid="uid://ckdtw7bdno4hp" path="res://scenes/game/pencilmarkDialog.tscn" id="57_4g8uu"]
+[ext_resource type="PackedScene" uid="uid://ckdtw7bdno4hp" path="res://scenes/focusDialog/pencilmarkDialog.tscn" id="57_4g8uu"]
 
 [sub_resource type="Resource" id="Resource_hdjws"]
 script = ExtResource("22_s5h3h")

@@ -1,7 +1,5 @@
-extends Control
+extends SubDialog
 class_name DoorDialog
-
-@onready var main:FocusDialog = get_parent()
 
 @onready var lockHandler:LockHandler = %lockHandler
 @onready var doorsHandler:DoorsHandler = %doorsHandler
