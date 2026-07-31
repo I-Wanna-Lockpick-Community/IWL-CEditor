@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://bkp3fklu8mlnk" path="res://scripts/components/other/floatingTile.gd" id="1_f645u"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_simke"]
+resource_local_to_scene = true
 size = Vector2(32, 32)
 
 [node name="floatingTile" type="Node2D" unique_id=741927119]
