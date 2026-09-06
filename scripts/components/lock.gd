@@ -315,10 +315,10 @@ static func drawLock(lockDrawScaled:RID, lockDrawAuraBreaker:RID, lockDrawGlitch
 								effectiveSymbolSize.x = 14
 				lockTextDrawer.addVerticalContext(center+Vector2(0,2) if vertical and M.isInteger(lockCount) else center, TextDrawer.VERTICAL_ALIGN.CENTER)
 				lockTextDrawer.addHorizontalContext(Vector2.ZERO, TextDrawer.HORIZONTAL_ALIGN.CENTER)
-				lockTextDrawer.addSpacing(2)
 				if vertical:
 					var gap:float = 7 if M.isInteger(lockCount) else 2
 					if !noNumber:
+						lockTextDrawer.addSpacing(2)
 						lockTextDrawer.addNumber(M.abs(lockCount), drawColor)
 					if lockType == TYPE.NORMAL and M.isNonzeroImag(lockCount):
 						lockTextDrawer.addNewline(gap,TextDrawer.HORIZONTAL_ALIGN.CENTER)
@@ -330,6 +330,7 @@ static func drawLock(lockDrawScaled:RID, lockDrawAuraBreaker:RID, lockDrawGlitch
 					if symbolLast and !noNumber: lockTextDrawer.addNumber(M.abs(lockCount), drawColor)
 					if !noSymbol: lockTextDrawer.addImage(symbol, lockNegated, drawColor, effectiveSymbolSize)
 					if !symbolLast and !noNumber: lockTextDrawer.addNumber(M.abs(lockCount), drawColor)
+					if !noNumber: lockTextDrawer.addSpacing(4)
 			TYPE.BLANK: pass # nothing really
 			TYPE.BLAST, TYPE.ALL:
 				var drawColor:Color = getConfigurationColor(negative)

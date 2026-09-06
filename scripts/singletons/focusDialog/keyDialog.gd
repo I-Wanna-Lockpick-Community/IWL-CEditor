@@ -45,7 +45,7 @@ func receiveKey(event:InputEventKey) -> bool:
 	if Editor.eventIs(event, &"focusKeyNormal"): _keyTypeSelected(KeyBulk.TYPE.NORMAL)
 	elif Editor.eventIs(event, &"focusKeyExact"): _keyTypeSelected(KeyBulk.TYPE.EXACT if main.focused.type != KeyBulk.TYPE.EXACT else KeyBulk.TYPE.NORMAL)
 	elif Editor.eventIs(event, &"focusKeyStar"):
-		if main.focused.type == KeyBulk.TYPE.STAR: Changes.PropertyChange.new(main.focused,&"boolType",main.focused.value)
+		if main.focused.type == KeyBulk.TYPE.STAR: Changes.PropertyChange.new(main.focused,&"boolType",nextKeyBoolType(main.focused.boolType))
 		else: _keyTypeSelected(KeyBulk.TYPE.STAR)
 	elif Editor.eventIs(event, &"focusKeyRotor"):
 		if main.focused.type != KeyBulk.TYPE.ROTOR: _keyTypeSelected(KeyBulk.TYPE.ROTOR)
@@ -53,14 +53,20 @@ func receiveKey(event:InputEventKey) -> bool:
 		elif M.eq(main.focused.count, M.I()): _keyCountSet(M.nI())
 		elif M.eq(main.focused.count, M.nI()): _keyTypeSelected(KeyBulk.TYPE.NORMAL); _keyCountSet(M.ONE())
 	elif Editor.eventIs(event, &"focusKeyCurse") and Mods.active(&"CurseKeys"):
-			if main.focused.type == KeyBulk.TYPE.CURSE: Changes.PropertyChange.new(main.focused,&"boolType",main.focused.value)
-			else: _keyTypeSelected(KeyBulk.TYPE.CURSE)
+		if main.focused.type == KeyBulk.TYPE.CURSE: Changes.PropertyChange.new(main.focused,&"boolType",nextKeyBoolType(main.focused.boolType))
+		else: _keyTypeSelected(KeyBulk.TYPE.CURSE)
 	elif Editor.eventIs(event, &"focusKeyOperator"): _keyTypeSelected(KeyBulk.TYPE.OPERATOR if main.focused.type != KeyBulk.TYPE.OPERATOR else KeyBulk.TYPE.NORMAL)
 	elif Editor.eventIs(event, &"focusKeyInfinite"): _keyInfiniteToggled(0 if main.focused.infinite else 1)
 	elif Editor.eventIs(event, &"focusKeyGlistening"): _keyGlisteningToggled(!main.focused.glistening)
 	elif Editor.eventIs(event, &"quicksetColor"): Game.editor.quickSet.startQuick(&"quicksetColor", main.focused)
 	else: return false
 	return true
+
+func nextKeyBoolType(type:KeyBulk.BOOL_TYPE) -> KeyBulk.BOOL_TYPE:
+	if Mods.active(&"Boolflip"):
+		if type == KeyBulk.BOOL_TYPE.TOGGLE: return KeyBulk.BOOL_TYPE.ENABLE
+	elif type == KeyBulk.BOOL_TYPE.DISABLE: return KeyBulk.BOOL_TYPE.ENABLE
+	return type + 1 as KeyBulk.BOOL_TYPE
 
 func changedMods() -> void:
 	%keyBoolTypeSelector.setup()

@@ -16,9 +16,9 @@ func _ready() -> void:
 	for button in buttons:
 		var explanation:ControlExplanation
 		match button.value:
-			KeyBulk.BOOL_TYPE.ENABLE: explanation = ControlExplanation.new("[%s]Set enable mode", [&"focusKeyBoolEnable"])
-			KeyBulk.BOOL_TYPE.DISABLE: explanation = ControlExplanation.new("[%s]Set disable mode", [&"focusKeyBoolDisable"])
-			KeyBulk.BOOL_TYPE.TOGGLE: explanation = ControlExplanation.new("[%s]Set toggle mode", [&"focusKeyBoolToggle"])
+			KeyBulk.BOOL_TYPE.ENABLE: explanation = ControlExplanation.new("Set enable mode")
+			KeyBulk.BOOL_TYPE.DISABLE: explanation = ControlExplanation.new("Set disable mode")
+			KeyBulk.BOOL_TYPE.TOGGLE: explanation = ControlExplanation.new("Set toggle mode")
 		Explainer.addControl(button,explanation)
 
 func setup() -> void:

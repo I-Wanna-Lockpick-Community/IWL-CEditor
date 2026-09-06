@@ -81,6 +81,8 @@ var edgeResizing:bool = false
 
 var playerObject:GameObject = PlayerPlaceholderObject.new()
 
+var windowHasFocus:bool = true # for pencilmarks; this is a frame behind
+
 func _ready() -> void:
 	Mods.editor = self
 	Saving.editor = self
@@ -174,6 +176,9 @@ func _process(delta:float) -> void:
 	if Mods.bufferedModsChanged:
 		get_tree().call_group("modUI", "changedMods")
 		Mods.bufferedModsChanged = false
+	
+	if windowHasFocus != get_window().has_focus():
+		windowHasFocus = !windowHasFocus
 
 func objectSelectable(object:GameObject) -> bool:
 	if Game.playState == Game.PLAY_STATE.PLAY: return object.active
@@ -367,6 +372,7 @@ func pencilmarkMouseActions(event:InputEventMouse) -> void:
 	var playing:bool = Game.playState == Game.PLAY_STATE.PLAY
 	var justDefocused:bool = false
 	if isLeftClick(event):
+		print(windowHasFocus)
 		if objectHovered is Pencilmark:
 			startPositionDrag(objectHovered)
 		elif focusDialog.focused:
@@ -375,6 +381,7 @@ func pencilmarkMouseActions(event:InputEventMouse) -> void:
 	if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
 		if objectHovered is not Pencilmark:
 			if playing and (justDefocused or !isLeftClick(event)): return
+			if !windowHasFocus: return
 			var pencilmark:Pencilmark = Changes.addChange(Changes.CreateComponentChange.new(Pencilmark,{&"position":mouseWorldPosition-Vector2(16,16)})).result
 			if playing: AudioManager.play(preload("res://resources/sounds/sndAddMark.wav"), 0.7, 1)
 			focusDialog.defocus()
@@ -580,7 +587,7 @@ func _input(event:InputEvent) -> void:
 			elif eventIs(event, &"editHome"): home()
 			elif eventIs(event, &"editCopy"): multiselect.copySelection()
 			elif eventIs(event, &"editCut"): multiselect.copySelection(); multiselect.delete()
-			elif eventIs(event, &"editPaste") and multiselect.clipboard != []: modes.setMode(MODE.PASTE)
+			elif eventIs(event, &"editPaste") and multiselect.clipboard != []: modes.setMode(MODE.PASTE); focusDialog.defocus()
 			elif eventIs(event, &"editUndo"): multiselect.deselect(); Changes.undo()
 			elif eventIs(event, &"editRedo"): multiselect.deselect(); Changes.redo()
 			elif eventIs(event, &"editDrag"):
