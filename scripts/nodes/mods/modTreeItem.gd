@@ -18,6 +18,8 @@ func _ready() -> void:
 	%label.text = mod.name
 	%button.button_pressed = mod.active
 	%disclosatory.visible = mod.disclosatory
+	%undecided.visible = !!mod.undecided
+	if mod.undecided: %undecided.tooltip_text = mod.undecided
 
 func _toggled(toggled_on:bool) -> void:
 	%icon.texture = CHECKED if toggled_on else UNCHECKED

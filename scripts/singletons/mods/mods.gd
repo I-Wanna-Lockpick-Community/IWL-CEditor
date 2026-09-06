@@ -181,7 +181,8 @@ static var mods:Dictionary[StringName, Mod] = {
 	&"CosmicColor": Mod.new(
 		"Cosmic Color",
 		"Adds the Cosmic color. Added by Bored",
-		{&"CosmicColorUsed": ColorProblem.new([C.olors.COSMIC], "Cosmic Color Used")}
+		{&"CosmicColorUsed": ColorProblem.new([C.olors.COSMIC], "Cosmic Color Used")},
+		false, "Behaviour of cosmic keys may change in the future"
 	),
 	&"StarryWeakForceful": Mod.new(
 		"Starry, Weak and Forceful",
@@ -200,7 +201,8 @@ static var mods:Dictionary[StringName, Mod] = {
 	&"ElementalColors": Mod.new(
 		"Elemental Colors",
 		"Adds four elemental colours that interact with locks. Added by BerryGo",
-		{&"ElementalColorUsed": ColorProblem.new([C.olors.FIRE, C.olors.WATER, C.olors.EARTH, C.olors.AIR], "Elemental Color Used")}
+		{&"ElementalColorUsed": ColorProblem.new([C.olors.FIRE, C.olors.WATER, C.olors.EARTH, C.olors.AIR], "Elemental Color Used")},
+		false, "Behaviour of elemental locks on doors with pure components may change in the future"
 	)
 }
 
@@ -390,16 +392,18 @@ class Mod extends RefCounted:
 	var dependencies:Array[StringName]
 	var incompatibilities:Array[StringName]
 	var disclosatory:bool
+	var undecided:String
 
 	var treeItem:ModTreeItem # for the menu
 	var problems:Dictionary[StringName, Problem] # dictionary[problemtype, [gamecomponent]]
 	var selectButton:FindProblems.ModSelectButton # for findproblems
 
-	func _init(_name:String,_description:String,_problems:Dictionary[StringName,Problem],_disclosatory:bool=false,_dependencies:Array[StringName]=[],_incompatibilities:Array[StringName]=[]) -> void:
+	func _init(_name:String,_description:String,_problems:Dictionary[StringName,Problem],_disclosatory:bool=false,_undecided:String="",_dependencies:Array[StringName]=[],_incompatibilities:Array[StringName]=[]) -> void:
 		name = _name
 		description = _description
 		problems = _problems
 		disclosatory = _disclosatory
+		undecided = _undecided
 		dependencies = _dependencies
 		incompatibilities = _incompatibilities
 	
