@@ -90,12 +90,12 @@ static var mods:Dictionary[StringName, Mod] = {
 	&"CosmicColor": Mod.new(
 		"Cosmic Color",
 		"Adds the Cosmic color. Added by Bored",
-		[&"CosmicColor"]
+		[&"CosmicColor"], false, "Behaviour of cosmic keys may change in the future"
 	),
 	&"ElementalColors": Mod.new(
 		"Elemental Colors",
 		"Adds four elemental colours that interact with locks. Added by BerryGo",
-		[&"ElementalColor"]
+		[&"ElementalColor"], false, "Behaviour of elemental locks on doors with pure components may change in the future"
 	)
 }
 
@@ -244,16 +244,18 @@ class Mod extends RefCounted:
 	var dependencies:Array[StringName]
 	var incompatibilities:Array[StringName]
 	var disclosatory:bool
+	var undecided:String
 
 	var treeItem:ModTreeItem # for the menu
 	var problems:Dictionary[StringName, Array] # dictionary[problemtype, [gamecomponent]]
 	var selectButton:FindProblems.ModSelectButton # for findproblems
 
-	func _init(_name:String,_description:String,_problems:Array[StringName],_disclosatory:bool=false,_dependencies:Array[StringName]=[],_incompatibilities:Array[StringName]=[]) -> void:
+	func _init(_name:String,_description:String,_problems:Array[StringName],_disclosatory:bool=false,_undecided:String="",_dependencies:Array[StringName]=[],_incompatibilities:Array[StringName]=[]) -> void:
 		name = _name
 		description = _description
 		for problem in _problems: problems[problem] = []
 		disclosatory = _disclosatory
+		undecided = _undecided
 		dependencies = _dependencies
 		incompatibilities = _incompatibilities
 	

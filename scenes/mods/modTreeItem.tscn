@@ -5,6 +5,7 @@
 [ext_resource type="Texture2D" uid="uid://cr2it5ofnc1gl" path="res://resources/modTree/unchecked.tres" id="2_rlln3"]
 [ext_resource type="FontFile" uid="uid://cjub6sxbu8elx" path="res://resources/fonts/RobotoMono-SemiBold.ttf" id="3_bp2j1"]
 [ext_resource type="Texture2D" uid="uid://o5pfoemsivxw" path="res://assets/ui/mods/disclosatory.png" id="5_bp2j1"]
+[ext_resource type="Texture2D" uid="uid://bk8bc258gmie0" path="res://assets/ui/mods/undecided.png" id="6_6p0rx"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_6fadb"]
 resource_local_to_scene = true
@@ -57,6 +58,14 @@ size_flags_vertical = 4
 tooltip_text = "This mod is disclosatory, which means it is only declaring the use of an edge case.
 It doesn't introduce new mechanics and so is compatible with but optional for all relevant modpacks."
 texture = ExtResource("5_bp2j1")
+
+[node name="undecided" type="TextureRect" parent="c" unique_id=280498292]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 4
+tooltip_text = "This mod is disclosatory, which means it is only declaring the use of an edge case.
+It doesn't introduce new mechanics and so is compatible with but optional for all relevant modpacks."
+texture = ExtResource("6_6p0rx")
 
 [connection signal="mouse_entered" from="button" to="." method="_hover"]
 [connection signal="mouse_exited" from="button" to="." method="_unhover"]
